@@ -1,0 +1,9 @@
+[
+    {
+        "field": "alarm_sound_on_sec_for_prealarm",
+        "modbus_register_address": 1247,
+        "modbus_datatype": "HOLDING_REGISTER_INT16",
+        "modbus_min_value": 0,
+        "modbus_max_value": 20
+    }
+]

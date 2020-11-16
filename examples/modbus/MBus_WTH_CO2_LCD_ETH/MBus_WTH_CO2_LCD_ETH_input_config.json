@@ -1,0 +1,49 @@
+[
+    {
+        "field": "device_name",
+        "value": "device_37"
+    },
+    {
+        "field": "temperatureC",
+        "modbus_register_address": 202,
+        "modbus_datatype": "HOLDING_REGISTER_INT16",
+        "input_data_factor" : 0.1
+    },
+    {
+        "field": "temperatureF",
+        "modbus_register_address": 203,
+        "modbus_datatype": "HOLDING_REGISTER_INT16",
+        "input_data_factor" : 0.1
+    },
+    {
+        "field": "humidity",
+        "modbus_register_address": 207,
+        "modbus_datatype": "HOLDING_REGISTER_INT16",
+        "input_data_factor" : 0.1
+    },
+    {
+        "field": "co2_value",
+        "modbus_register_address": 211,
+        "modbus_datatype": "HOLDING_REGISTER_INT16"
+    },
+    {
+        "field": "analog_output_config",
+        "modbus_register_address": 1254,
+        "modbus_datatype": "HOLDING_REGISTER_INT8"
+    },
+    {
+        "field": "ip_address",
+        "modbus_register_address": 47,
+        "modbus_register_count": 4,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_min_value": 0,
+        "modbus_max_value": 255
+    },
+    {
+        "field": "alarm_sound_on_sec_for_prealarm",
+        "modbus_register_address": 1247,
+        "modbus_datatype": "HOLDING_REGISTER_INT16",
+        "modbus_min_value": 0,
+        "modbus_max_value": 20
+    }
+]

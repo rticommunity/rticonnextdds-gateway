@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://community.rti.com/schema/gateways/latest/modbus_adapter_output.schema.json",
+    "title": "JSON Schema RTI Connext DDS Modbus Adapter",
+    "description": "This schema defines the syntax to represent the output configuration for the RTI DDS Connext DDS Modbus Adapter",
+    "type" : "array",
+    "items": {
+        "type" : "object",
+        "properties": {
+            "field" : {
+                "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/field"
+            },
+            "modbus_register_address" : {
+                "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/modbus_register_address"
+            },
+            "modbus_datatype": {
+                "$ref" : "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/modbus_datatype"
+            },
+            "modbus_register_count" : {
+                "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/modbus_register_count"
+            },
+            "modbus_min_value" : {
+                "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/modbus_min_value"
+            },
+            "modbus_max_value" : {
+                "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/modbus_max_value"
+            },
+            "modbus_valid_values" : {
+                "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/modbus_valid_values"
+            },
+            "output_data_factor" : {
+                "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/output_data_factor"
+            },
+            "output_data_offset" : {
+                "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/output_data_offset"
+            }
+        },
+        "required": ["field", "modbus_register_address", "modbus_datatype"],
+        "additionalProperties": false
+    }
+}

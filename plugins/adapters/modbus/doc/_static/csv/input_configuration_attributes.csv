@@ -1,0 +1,46 @@
+Attribute name,Required,JSON type,Meaning
+|CONF_FIELD|,YES,string,"Member Name on the associated DynamicData.
+The name can use the hierarchical naming format to indicate access to nested fields."
+|CONF_MODBUS_REGISTER_ADDRESS|,"NO if |CONF_VALUE| is  set, YES otherwise",integer,"The register address in the |MODBUS_SERVER|. This is zero-based, one less than the register number."
+|CONF_MODBUS_DATATYPE|,"NO if |CONF_VALUE| is set, YES otherwise",string,"
+* DISCRETE_INPUT_BOOLEAN
+* INPUT_REGISTER_INT8
+* INPUT_REGISTER_INT16
+* INPUT_REGISTER_INT32
+* INPUT_REGISTER_INT64
+* INPUT_REGISTER_FLOAT_ABCD
+* INPUT_REGISTER_FLOAT_BADC
+* INPUT_REGISTER_FLOAT_CDAB
+* INPUT_REGISTER_FLOAT_DCBA
+
+* COIL_BOOLEAN
+* HOLDING_REGISTER_INT8
+* HOLDING_REGISTER_INT16
+* HOLDING_REGISTER_INT32
+* HOLDING_REGISTER_INT64
+* HOLDING_REGISTER_FLOAT_ABCD
+* HOLDING_REGISTER_FLOAT_BADC
+* HOLDING_REGISTER_FLOAT_CDAB
+* HOLDING_REGISTER_FLOAT_DCBA
+"
+|CONF_VALUE|,"NO if |CONF_MODBUS_REGISTER_ADDRESS| and |CONF_MODBUS_DATATYPE| are set, YES otherwise",string,"Value of a string constant that will be set to the specified field."
+|CONF_MODBUS_REGISTER_COUNT|,NO,number,"The number of registers to read. |BR|
+|BR|
+If unspecified: it defaults to one for COIL, INT8, INT16, to two for INT32 and FLOAT_XXXX, and to four for INT64. |BR|
+|BR|
+If specified: the user should take into account that it takes two registers to read each INT32 and FLOAT_XXXX value and it takes four registers to read an INT64."
+|CONF_MODBUS_MIN_VALUE|,NO,number,the minimum value for the value read
+|CONF_MODBUS_MAX_VALUE|,NO,number,the maximum value for the value read
+|CONF_MODBUS_VALID_VALUES|,"YES for Enums, NO for other datatypes",array of numbers,the complete list of values that can be written. Values not in the list are considered invalid outputs.
+|CONF_INPUT_DATA_FACTOR|,NO,number,"The value read from Modbus is multiplied by this factor. |BR|
+|BR|
+The data stored in the DynamicData field is: |BR|
+
+- |CONF_INPUT_DATA_OFFSET| + |CONF_INPUT_DATA_FACTOR| * <value>
+"
+|CONF_INPUT_DATA_OFFSET|,NO,number,"The offset is added to the value read from Modbus after it has been multiplied times the data_factor. |BR|
+|BR|
+The data stored in the DynamicData field is: |BR|
+
+- |CONF_INPUT_DATA_OFFSET| + |CONF_INPUT_DATA_FACTOR| * <value>
+"

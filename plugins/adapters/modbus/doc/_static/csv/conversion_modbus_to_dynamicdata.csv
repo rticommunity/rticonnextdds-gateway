@@ -1,0 +1,138 @@
+|CONF_MODBUS_DATATYPE|,Number of (16-bit) Modbus registers read,Conversion into a DynamicData field
+"* DISCRETE_INPUT_BOOLEAN
+* COIL_BOOLEAN",N/A,"The (single) bit returned from Modbus may be placed in a boolean or integer DynamicData field. |BR|
+|BR|
+For a boolean field:
+
+* 0 -> FALSE
+* 1 -> TRUE
+
+If it is stored into an integer field, 0 or 1 are the only possible values."
+"* INPUT_REGISTER_INT8
+* HOLDING_REGISTER_INT8",1,"Modbus registers are always 2 bytes. But this datatype ignores the high-order byte (treats it as if it was zero). |BR|
+|BR|
+The low-order byte returned from Modbus can placed into: |BR|
+
+* Signed integer fields
+* Unsigned integer fields
+* Enumerated fields
+* Floating point fields
+
+|BR|
+If |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are set, the value stored is a linear transformation relative to what is read from Modbus:
+
+- <field value> = |CONF_INPUT_DATA_OFFSET| + |CONF_INPUT_DATA_FACTOR| * <register value>
+
+|BR|
+An Unsigned integer field can only be selected if the configuration specifies a |CONF_MODBUS_MIN_VALUE| such that:
+
+- |CONF_INPUT_DATA_OFFSET| + |CONF_INPUT_DATA_FACTOR| * |CONF_MODBUS_MIN_VALUE| >= 0
+
+It is recommended to use a floating point destination DynamicData field if either |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are floating point numbers. If the destination field in DynamicData is an integer and |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are floating point numbers, the result will be truncated. |BR|
+|BR|
+An Enumerated field can only be selected if the configuration specifies a |CONF_MODBUS_VALID_VALUES| that is a subset of the values in the enumeration."
+"
+* INPUT_REGISTER_INT16 
+* HOLDING_REGISTER_INT16
+",1,"The value returned from Modbus can be placed in: |BR|
+
+* Signed integer fields except int8 
+* Unsigned integer fields except uint8 
+* Enumerated fields
+* Floating point fields
+
+The value read from Modbus is interpreted as a big-endian integer (this is the Modbus standard). |BR|
+|BR|
+If |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are set, the value stored is a linear transformation relative to what is read from Modbus:
+
+- <field value> = |CONF_INPUT_DATA_OFFSET| + |CONF_INPUT_DATA_FACTOR| * <register value>
+
+|BR|
+An Unsigned integer field can only be selected if the configuration specifies a |CONF_MODBUS_MIN_VALUE| such that:
+
+- |CONF_INPUT_DATA_OFFSET| + |CONF_INPUT_DATA_FACTOR| * |CONF_MODBUS_MIN_VALUE| >= 0
+
+It is recommended to use a floating point destination DynamicData field if either |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are floating point numbers. If the destination field in DynamicData is an integer and |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are floating point numbers, the result will be truncated. |BR|
+|BR|
+An Enumerated field can only be selected if the configuration specifies a |CONF_MODBUS_VALID_VALUES| that is a subset of the values in the enumeration."
+"
+* INPUT_REGISTER_INT32 
+* HOLDING_REGISTER_INT32
+","2 |BR|
+|BR|
+(|CONF_MODBUS_REGISTER_ADDRESS| and
+|CONF_MODBUS_REGISTER_ADDRESS| +1)","The value returned from Modbus can placed into: |BR|
+
+* Signed integer fields int32 and int64 
+* Unsigned integer fields uint32 uint64
+* Floating point fields
+
+The value read from Modbus is interpreted as a big-endian integer (this is the Modbus standard). |BR|
+|BR|
+If |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are set, the value stored is a linear transformation relative to what is read from Modbus:
+
+- <field value> = |CONF_INPUT_DATA_OFFSET| + |CONF_INPUT_DATA_FACTOR| * <register value>
+
+|BR|
+An Unsigned integer field can only be selected if the configuration specifies a |CONF_MODBUS_MIN_VALUE| such that:
+
+- |CONF_INPUT_DATA_OFFSET| + |CONF_INPUT_DATA_FACTOR| * |CONF_MODBUS_MIN_VALUE| >= 0 |BR|
+
+It is recommended to use a floating point destination DynamicData field if either |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are floating point numbers. If the destination field in DynamicData is an integer and |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are floating point numbers, the result will be truncated. |BR|
+|BR|
+An Enumerated field can only be selected if the configuration specifies a |CONF_MODBUS_VALID_VALUES| that is a subset of the values in the enumeration."
+"
+* INPUT_REGISTER_INT64
+* HOLDING_REGISTER_INT64
+","4 |BR|
+|BR|
+(|CONF_MODBUS_REGISTER_ADDRESS| ,
+|CONF_MODBUS_REGISTER_ADDRESS| +1,
+|CONF_MODBUS_REGISTER_ADDRESS| +2, and
+|CONF_MODBUS_REGISTER_ADDRESS| +3)","The value returned from Modbus can placed into: |BR|
+
+* Signed integer fields int64 
+* Unsigned integer fields uint64
+* Floating point fields
+
+The value read from Modbus is interpreted as a big-endian integer (this is the Modbus standard). |BR|
+|BR|
+If |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are set, the value stored is a linear transformation relative to what is read from Modbus:
+
+- <field value> = |CONF_INPUT_DATA_OFFSET| + |CONF_INPUT_DATA_FACTOR| * <register value>
+
+|BR|
+An Unsigned integer field can only be selected if the configuration specifies a |CONF_MODBUS_MIN_VALUE| such that:
+
+- |CONF_INPUT_DATA_OFFSET| + |CONF_INPUT_DATA_FACTOR| * |CONF_MODBUS_MIN_VALUE| >= 0
+
+It is recommended to use a floating point destination DynamicData field if either |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are floating point numbers. If the destination field in DynamicData is an integer and |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are floating point numbers, the result will be truncated. |BR|
+|BR|
+An Enumerated field can only be selected if the configuration specifies a |CONF_MODBUS_VALID_VALUES| that is a subset of the values in the enumeration."
+"
+* INPUT_REGISTER_FLOAT_ABCD
+* INPUT_REGISTER_FLOAT_BADC
+* INPUT_REGISTER_FLOAT_CDAB 
+* INPUT_REGISTER_FLOAT_DCBA
+* HOLDING_REGISTER_FLOAT_ABCD
+* HOLDING_REGISTER_FLOAT_BADC
+* HOLDING_REGISTER_FLOAT_CDAB
+* HOLDING_REGISTER_FLOAT_DCBA
+","2 |BR|
+|BR|
+(|CONF_MODBUS_REGISTER_ADDRESS|  and
+|CONF_MODBUS_REGISTER_ADDRESS| +1)","The value returned from Modbus can only be placed into a floating point field.
+|BR|
+The four bytes read from two Modbus registers are transformed to a 32-bit floating point according to the byte order indicated by the suffix:
+
+* ABCD: IEEE big endian (usual Modbus format)
+* DCBA: IEEE little endian
+* BADC: Big endian, byte swapped
+* CDAB: Little endian, byte swapped
+
+|BR|
+If |CONF_INPUT_DATA_OFFSET| or |CONF_INPUT_DATA_FACTOR| are set, the value stored is a linear transformation relative to what is read from Modbus:
+
+- <field value> = |CONF_INPUT_DATA_OFFSET| + |CONF_INPUT_DATA_FACTOR| * <register value>
+
+The resulting value may be stored in a 32-bit or 64-bit floating point field."

@@ -1,0 +1,27 @@
+|CONF_MODBUS_DATATYPE|,Modbus function code,`libmodbus <https://libmodbus.org/>`__ function
+* DISCRETE_INPUT_BOOLEAN,"0x02
+(read input status)",`modbus_read_input_bits <https://libmodbus.org/docs/v3.1.6/modbus_read_input_bits.html>`__
+"* INPUT_REGISTER_INT8
+* INPUT_REGISTER_INT16","0x04
+(read input registers)",`modbus_read_input_registers <https://libmodbus.org/docs/v3.1.6/modbus_read_input_registers.html>`__
+"* INPUT_REGISTER_INT32
+* INPUT_REGISTER_FLOAT_ABCD
+* INPUT_REGISTER_FLOAT_BADC
+* INPUT_REGISTER_FLOAT_CDAB
+* INPUT_REGISTER_FLOAT_DCBA","0x04
+(read input registers)","`modbus_read_input_registers <https://libmodbus.org/docs/v3.1.6/modbus_read_input_registers.html>`__
+|BR|
+|CONF_MODBUS_REGISTER_COUNT| must be a power of 2."
+* COIL_BOOLEAN,"0x01 
+(read coil status)",`modbus_read_bits <https://libmodbus.org/docs/v3.1.6/modbus_read_bits.html>`__
+"* HOLDING_REGISTER_INT8
+* HOLDING_REGISTER_INT16","0x03 
+(read holding registers)",`modbus_read_registers <https://libmodbus.org/docs/v3.1.6/modbus_read_registers.html>`__
+"* HOLDING_REGISTER_INT32
+* HOLDING_REGISTER_FLOAT_ABCD
+* HOLDING_REGISTER_FLOAT_BADC
+* HOLDING_REGISTER_FLOAT_CDAB
+* HOLDING_REGISTER_FLOAT_DCBA","0x03 
+(read holding registers)","`modbus_read_registers <https://libmodbus.org/docs/v3.1.6/modbus_read_registers.html>`__
+|BR|
+|CONF_MODBUS_REGISTER_COUNT| must be a power of 2."

@@ -1,0 +1,72 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json",
+    "title": "JSON Schema RTI Connext DDS Modbus Adapter",
+    "description": "This schema defines the syntax to represent the common configuration for the RTI DDS Connext DDS Modbus Adapter",
+    "definitions" : {
+        "field": {
+            "type" : "string",
+            "description" : ""
+        },
+        "modbus_register_address" : {
+            "type" : "integer",
+            "description" : "",
+            "minimum": 0
+        },
+        "modbus_datatype": {
+            "type" : "string",
+            "enum": [
+                "COIL_BOOLEAN",
+                "HOLDING_REGISTER_INT8",
+                "HOLDING_REGISTER_INT16",
+                "HOLDING_REGISTER_INT32",
+                "HOLDING_REGISTER_INT64",
+                "HOLDING_REGISTER_FLOAT_ABCD",
+                "HOLDING_REGISTER_FLOAT_BADC",
+                "HOLDING_REGISTER_FLOAT_CDAB",
+                "HOLDING_REGISTER_FLOAT_DCBA"
+            ],
+            "description": ""
+        },
+        "modbus_register_count" : {
+            "type" : "integer",
+            "description": "",
+            "exclusiveMinimum": 0
+        },
+        "modbus_min_value" : {
+            "type" : "integer",
+            "description": ""
+        },
+        "modbus_max_value" : {
+            "type" : "integer",
+            "description": ""
+        },
+        "modbus_valid_values" : {
+            "type" : "array",
+            "description": "",
+            "items" : {
+                "type" : "number"
+            }
+        },
+        "input_data_factor" : {
+            "type" : "number",
+            "description": ""
+        },
+        "input_data_offset" : {
+            "type" : "number",
+            "description": ""
+        },
+        "output_data_factor" : {
+            "type" : "number",
+            "description": ""
+        },
+        "output_data_offset" : {
+            "type" : "number",
+            "description": ""
+        },
+        "value" : {
+            "type" : "string",
+            "description" : ""
+        }
+    }
+}

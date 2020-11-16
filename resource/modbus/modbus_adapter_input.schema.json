@@ -1,0 +1,76 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://community.rti.com/schema/gateways/latest/modbus_adapter_input.schema.json",
+    "title": "JSON Schema RTI Connext DDS Modbus Adapter",
+    "description": "This schema defines the syntax to represent the input configuration for the RTI DDS Connext DDS Modbus Adapter",
+    "type" : "array",
+    "items": {
+        "anyOf": [
+            {
+                "type" : "object",
+                "properties": {
+                    "field" : {
+                        "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/field"
+                    },
+                    "value" : {
+                        "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/value"
+                    }
+                },
+                "required": ["field", "value"],
+                "additionalProperties": false
+            },
+            {
+                "type" : "object",
+                "properties": {
+                    "field" : {
+                        "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/field"
+                    },
+                    "modbus_register_address" : {
+                        "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/modbus_register_address"
+                    },
+                    "modbus_datatype": {
+                        "oneOf": [
+                            {
+                                "$ref" : "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/modbus_datatype"
+                            },
+                            {
+                                "enum" : [
+                                    "DISCRETE_INPUT_BOOLEAN",
+                                    "INPUT_REGISTER_INT8",
+                                    "INPUT_REGISTER_INT16",
+                                    "INPUT_REGISTER_INT32",
+                                    "INPUT_REGISTER_INT64",
+                                    "INPUT_REGISTER_FLOAT_ABCD",
+                                    "INPUT_REGISTER_FLOAT_BADC",
+                                    "INPUT_REGISTER_FLOAT_CDAB",
+                                    "INPUT_REGISTER_FLOAT_DCBA"
+                                ]
+                            }
+                        ]
+                    },
+                    "modbus_register_count" : {
+                        "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/modbus_register_count"
+                    },
+                    "modbus_min_value" : {
+                        "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/modbus_min_value"
+                    },
+                    "modbus_max_value" : {
+                        "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/modbus_max_value"
+                    },
+                    "modbus_valid_values" : {
+                        "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/modbus_valid_values"
+                    },
+                    "input_data_factor" : {
+                        "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/input_data_factor"
+                    },
+                    "input_data_offset" : {
+                        "$ref": "https://community.rti.com/schema/gateways/latest/modbus_adapter_definitions.schema.json#/definitions/input_data_offset"
+                    }
+                },
+                "required": ["field", "modbus_register_address", "modbus_datatype"],
+                "additionalProperties": false
+            }
+        ],
+        "additionalItems": false
+    }
+}

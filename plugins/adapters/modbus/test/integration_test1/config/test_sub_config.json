@@ -1,0 +1,343 @@
+[
+    {
+        "field": "test_type.enum_field",
+        "modbus_register_address": 0,
+        "modbus_datatype": "HOLDING_REGISTER_INT32",
+        "modbus_valid_values": [
+            1,
+            2
+        ]
+    },
+    {
+        "field": "test_type.optional_non_set",
+        "modbus_register_address": 2,
+        "modbus_datatype": "HOLDING_REGISTER_INT32"
+    },
+    {
+        "field": "test_type.int8_field",
+        "modbus_register_address": 4,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_min_value": -1000,
+        "modbus_max_value": 1000
+    },
+    {
+        "field": "test_type.int8_array_field",
+        "modbus_register_address": 5,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "test_type.uint8_field",
+        "modbus_register_address": 7,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_register_count": 1,
+        "input_data_factor": 0.1,
+        "input_data_offset": -0.5
+    },
+    {
+        "field": "test_type.uint8_seq_field",
+        "modbus_register_address": 8,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_register_count": 2,
+        "input_data_factor": 0.1,
+        "input_data_offset": -0.5
+    },
+    {
+        "field": "test_type.int16_field",
+        "modbus_register_address": 10,
+        "modbus_datatype": "HOLDING_REGISTER_INT16"
+    },
+    {
+        "field": "test_type.int16_array_field",
+        "modbus_register_address": 11,
+        "modbus_datatype": "HOLDING_REGISTER_INT16",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "test_type.uint16_field",
+        "modbus_register_address": 13,
+        "modbus_datatype": "HOLDING_REGISTER_INT16"
+    },
+    {
+        "field": "test_type.uint16_seq_field",
+        "modbus_register_address": 14,
+        "modbus_datatype": "HOLDING_REGISTER_INT16",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "test_type.int32_field",
+        "modbus_register_address": 16,
+        "modbus_datatype": "HOLDING_REGISTER_INT32"
+    },
+    {
+        "field": "test_type.int32_array_field",
+        "modbus_register_address": 18,
+        "modbus_datatype": "HOLDING_REGISTER_INT32",
+        "modbus_register_count": 4
+    },
+    {
+        "field": "test_type.uint32_field",
+        "modbus_register_address": 22,
+        "modbus_datatype": "HOLDING_REGISTER_INT32"
+    },
+    {
+        "field": "test_type.uint32_seq_field",
+        "modbus_register_address": 24,
+        "modbus_datatype": "HOLDING_REGISTER_INT32",
+        "modbus_register_count": 4
+    },
+    {
+        "field": "test_type.int64_field",
+        "modbus_register_address": 28,
+        "modbus_datatype": "HOLDING_REGISTER_INT64"
+    },
+    {
+        "field": "test_type.int64_array_field",
+        "modbus_register_address": 32,
+        "modbus_datatype": "HOLDING_REGISTER_INT64",
+        "modbus_register_count": 8
+    },
+    {
+        "field": "test_type.uint64_field",
+        "modbus_register_address": 40,
+        "modbus_datatype": "HOLDING_REGISTER_INT64"
+    },
+    {
+        "field": "test_type.uint64_seq_field",
+        "modbus_register_address": 44,
+        "modbus_datatype": "HOLDING_REGISTER_INT64",
+        "modbus_register_count": 8
+    },
+    {
+        "field": "test_type.float_abcd_field",
+        "modbus_register_address": 52,
+        "modbus_datatype": "HOLDING_REGISTER_FLOAT_ABCD"
+    },
+    {
+        "field": "test_type.float_abcd_array_field",
+        "modbus_register_address": 54,
+        "modbus_datatype": "HOLDING_REGISTER_FLOAT_ABCD",
+        "modbus_register_count": 4
+    },
+    {
+        "field": "test_type.float_badc_field",
+        "modbus_register_address": 58,
+        "modbus_datatype": "HOLDING_REGISTER_FLOAT_BADC"
+    },
+    {
+        "field": "test_type.float_badc_seq_field",
+        "modbus_register_address": 60,
+        "modbus_datatype": "HOLDING_REGISTER_FLOAT_BADC",
+        "modbus_register_count": 4
+    },
+    {
+        "field": "test_type.float_cdab_field",
+        "modbus_register_address": 64,
+        "modbus_datatype": "HOLDING_REGISTER_FLOAT_CDAB"
+    },
+    {
+        "field": "test_type.float_cdab_array_field",
+        "modbus_register_address": 66,
+        "modbus_datatype": "HOLDING_REGISTER_FLOAT_CDAB",
+        "modbus_register_count": 4
+    },
+    {
+        "field": "test_type.float_dcba_field",
+        "modbus_register_address": 70,
+        "modbus_datatype": "HOLDING_REGISTER_FLOAT_DCBA"
+    },
+    {
+        "field": "test_type.float_dcba_seq_field",
+        "modbus_register_address": 72,
+        "modbus_datatype": "HOLDING_REGISTER_FLOAT_DCBA",
+        "modbus_register_count": 4
+    },
+    {
+        "field": "test_type.bool_field",
+        "modbus_register_address": 0,
+        "modbus_datatype": "COIL_BOOLEAN"
+    },
+    {
+        "field": "test_type.bool_array_field",
+        "modbus_register_address": 1,
+        "modbus_datatype": "COIL_BOOLEAN",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "test_type.bool_seq_field",
+        "modbus_register_address": 3,
+        "modbus_datatype": "COIL_BOOLEAN",
+        "modbus_register_count": 2
+    },
+
+    {
+        "field": "string_field",
+        "value": "value"
+    },
+    {
+        "field": "input_int8_field",
+        "modbus_register_address": 0,
+        "modbus_datatype": "INPUT_REGISTER_INT8",
+        "modbus_min_value": -1000,
+        "modbus_max_value": 1000
+    },
+    {
+        "field": "input_int8_array_field",
+        "modbus_register_address": 1,
+        "modbus_datatype": "INPUT_REGISTER_INT8",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "input_uint8_field",
+        "modbus_register_address": 0,
+        "modbus_datatype": "INPUT_REGISTER_INT8",
+        "modbus_register_count": 1,
+        "input_data_factor": 10,
+        "input_data_offset": 5
+
+    },
+    {
+        "field": "input_uint8_seq_field",
+        "modbus_register_address": 1,
+        "modbus_datatype": "INPUT_REGISTER_INT8",
+        "modbus_register_count": 2,
+        "input_data_factor": 10,
+        "input_data_offset": 5
+    },
+    {
+        "field": "input_int16_field",
+        "modbus_register_address": 3,
+        "modbus_datatype": "INPUT_REGISTER_INT16"
+    },
+    {
+        "field": "input_int16_array_field",
+        "modbus_register_address": 4,
+        "modbus_datatype": "INPUT_REGISTER_INT16",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "input_uint16_field",
+        "modbus_register_address": 3,
+        "modbus_datatype": "INPUT_REGISTER_INT16"
+    },
+    {
+        "field": "input_uint16_seq_field",
+        "modbus_register_address": 4,
+        "modbus_datatype": "INPUT_REGISTER_INT16",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "input_enum_field",
+        "modbus_register_address": 6,
+        "modbus_datatype": "INPUT_REGISTER_INT32",
+        "modbus_valid_values": [
+            1,
+            2
+        ]
+    },
+    {
+        "field": "input_int32_field",
+        "modbus_register_address": 6,
+        "modbus_datatype": "INPUT_REGISTER_INT32"
+    },
+    {
+        "field": "input_int32_array_field",
+        "modbus_register_address": 8,
+        "modbus_datatype": "INPUT_REGISTER_INT32",
+        "modbus_register_count": 4
+    },
+    {
+        "field": "input_uint32_field",
+        "modbus_register_address": 6,
+        "modbus_datatype": "INPUT_REGISTER_INT32"
+    },
+    {
+        "field": "input_uint32_seq_field",
+        "modbus_register_address": 8,
+        "modbus_datatype": "INPUT_REGISTER_INT32",
+        "modbus_register_count": 4
+    },
+    {
+        "field": "input_int64_field",
+        "modbus_register_address": 12,
+        "modbus_datatype": "INPUT_REGISTER_INT64"
+    },
+    {
+        "field": "input_int64_array_field",
+        "modbus_register_address": 16,
+        "modbus_datatype": "INPUT_REGISTER_INT64",
+        "modbus_register_count": 8
+    },
+    {
+        "field": "input_uint64_field",
+        "modbus_register_address": 12,
+        "modbus_datatype": "INPUT_REGISTER_INT64"
+    },
+    {
+        "field": "input_uint64_seq_field",
+        "modbus_register_address": 16,
+        "modbus_datatype": "INPUT_REGISTER_INT64",
+        "modbus_register_count": 8
+    },
+    {
+        "field": "input_float_abcd_field",
+        "modbus_register_address": 24,
+        "modbus_datatype": "INPUT_REGISTER_FLOAT_ABCD"
+    },
+    {
+        "field": "input_float_abcd_array_field",
+        "modbus_register_address": 26,
+        "modbus_datatype": "INPUT_REGISTER_FLOAT_ABCD",
+        "modbus_register_count": 4
+    },
+    {
+        "field": "input_float_badc_field",
+        "modbus_register_address": 30,
+        "modbus_datatype": "INPUT_REGISTER_FLOAT_BADC"
+    },
+    {
+        "field": "input_float_badc_seq_field",
+        "modbus_register_address": 32,
+        "modbus_datatype": "INPUT_REGISTER_FLOAT_BADC",
+        "modbus_register_count": 4
+    },
+    {
+        "field": "input_float_cdab_field",
+        "modbus_register_address": 36,
+        "modbus_datatype": "INPUT_REGISTER_FLOAT_CDAB"
+    },
+    {
+        "field": "input_float_cdab_array_field",
+        "modbus_register_address": 38,
+        "modbus_datatype": "INPUT_REGISTER_FLOAT_CDAB",
+        "modbus_register_count": 4
+    },
+    {
+        "field": "input_float_dcba_field",
+        "modbus_register_address": 42,
+        "modbus_datatype": "INPUT_REGISTER_FLOAT_DCBA"
+    },
+    {
+        "field": "input_float_dcba_seq_field",
+        "modbus_register_address": 44,
+        "modbus_datatype": "INPUT_REGISTER_FLOAT_DCBA",
+        "modbus_register_count": 4
+    },
+    {
+        "field": "input_bool_field",
+        "modbus_register_address": 0,
+        "modbus_datatype": "DISCRETE_INPUT_BOOLEAN"
+    },
+    {
+        "field": "input_bool_array_field",
+        "modbus_register_address": 1,
+        "modbus_datatype": "DISCRETE_INPUT_BOOLEAN",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "input_bool_seq_field",
+        "modbus_register_address": 1,
+        "modbus_datatype": "DISCRETE_INPUT_BOOLEAN",
+        "modbus_register_count": 2
+    }
+]

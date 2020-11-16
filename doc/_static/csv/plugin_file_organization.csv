@@ -1,0 +1,9 @@
+Directory,Contents
+srcC/,C source code and private C header files.
+srcCxx/,C++ source code and private C++ header files.
+srcPy/,Python source code.
+include/,Public C header files.
+hpp/,Public C++ header files
+idl/,IDL files with types used by the plugin.
+test/,Test code.
+doc/,Static documentation written in Sphinx.

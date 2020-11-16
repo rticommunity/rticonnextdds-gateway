@@ -1,0 +1,13 @@
+|CONF_MODBUS_DATATYPE|,|CONF_MODBUS_REGISTER_COUNT|,Modbus function code,`libmodbus <https://libmodbus.org/>`__ function
+* COIL_BOOLEAN,1,"0x05 (force single coil)",`modbus_write_bit <https://libmodbus.org/docs/v3.1.6/modbus_write_bit.html>`__
+* COIL_BOOLEAN,>=2,"0x0F (force multiple coils)",`modbus_write_bits <https://libmodbus.org/docs/v3.1.6/modbus_write_bits.html>`__
+"* HOLDING_REGISTER_INT8
+* HOLDING_REGISTER_INT16",1,"0x06 (preset single register)",`modbus_write_register <https://libmodbus.org/docs/v3.1.6/modbus_write_register.html>`__
+"* HOLDING_REGISTER_INT8
+* HOLDING_REGISTER_INT16",>=2,0x10 (preset multiple registers),`modbus_write_registers <https://libmodbus.org/docs/v3.1.6/modbus_write_registers.html>`__
+"* HOLDING_REGISTER_INT32
+* HOLDING_REGISTER_INT64
+* HOLDING_REGISTER_FLOAT_ABCD
+* HOLDING_REGISTER_FLOAT_BADC
+* HOLDING_REGISTER_FLOAT_CDAB
+* HOLDING_REGISTER_FLOAT_DCBA",any,0x10 (preset multiple registers),`modbus_write_registers <https://libmodbus.org/docs/v3.1.6/modbus_write_registers.html>`__
