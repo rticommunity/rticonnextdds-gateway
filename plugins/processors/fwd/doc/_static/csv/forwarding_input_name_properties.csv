@@ -1,0 +1,12 @@
+Property,Required,Values
+|PROP_FWD_TABLE|, YES,"A JSON array of entries with format 
+
+.. code-block:: json
+
+    [
+        {
+            ""input"": ""INPUT_NAME"",
+            ""output"": ""OUTPUT_NAME""
+        }
+    ]
+"

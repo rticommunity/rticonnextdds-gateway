@@ -1,0 +1,445 @@
+/******************************************************************************/
+/* (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/*                                                                            */
+/* RTI grants Licensee a license to use, modify, compile, and create          */
+/* derivative works of the software solely for use with RTI Connext DDS.      */
+/* Licensee may redistribute copies of the software provided that all such    */
+/* copies are subject to this license.                                        */
+/* The software is provided "as is", with no warranty of any type, including  */
+/* any warranty for fitness for any purpose. RTI is under no obligation to    */
+/* maintain or support the software.  RTI shall not be liable for any         */
+/* incidental or consequential damages arising out of the use or inability to */
+/* use the software.                                                          */
+/*                                                                            */
+/******************************************************************************/
+
+/**
+ * @file rtimqtt_types_client.idl
+ * @brief IDL Types used by the MQTT Client API
+ *
+ */
+
+#include "rtiadapt_mqtt_types_message.idl"
+
+module RTI { module MQTT {
+        
+
+    /**
+     * @addtogroup RtiMqtt_Client_IDL_Config
+     * @{ 
+     */
+        /**
+         * @brief todo
+         */
+        enum MqttProtocolVersion {
+            /**
+             * @brief todo
+             */
+            MQTT_DEFAULT,
+            /**
+             * @brief todo
+             */
+            MQTT_3_1,
+            /**
+             * @brief todo
+             */
+            MQTT_3_1_1,
+            /**
+             * @brief todo
+             */
+            MQTT_5
+        };
+
+        /**
+         * @brief todo
+         */
+        @nested
+        struct Time {
+            /**
+             * @brief todo
+             */
+            int32   seconds;
+            /**
+             * @brief todo
+             */
+            uint32  nanoseconds;
+        };
+
+        /**
+         * @brief todo
+         */
+        enum SslTlsProtocolVersion {
+            /**
+             * @brief todo
+             */
+            TLS_DEFAULT,
+            /**
+             * @brief todo
+             */
+            TLS_1_0,
+            /**
+             * @brief todo
+             */
+            TLS_1_1,
+            /**
+             * @brief todo
+             */
+            TLS_1_2
+        };
+
+        /**
+         * @brief todo
+         */
+        @nested
+        struct SslTlsConfig {
+            /**
+             * @brief todo
+             */
+            string  ca;
+            /**
+             * @brief todo
+             */
+            string  identity;
+            /**
+             * @brief todo
+             */
+            string  private_key;
+            /**
+             * @brief todo
+             */
+            string  private_key_password;
+            /**
+             * @brief todo
+             */
+            SslTlsProtocolVersion protocol_version;
+            /**
+             * @brief todo
+             */
+            boolean verify_server_certificate;
+            /**
+             * @brief todo
+             */
+            string cypher_suites;
+        };
+
+        /**
+         * @brief todo
+         */
+        enum PersistenceLevel {
+            /**
+             * @brief todo
+             */
+            NONE,
+            /**
+             * @brief todo
+             */
+            DURABLE
+        };
+
+        /**
+         * @brief todo
+         */
+        struct ClientConfig {
+            /**
+             * @brief todo
+             */
+            string                      id;
+            /**
+             * @brief todo
+             */
+            MqttProtocolVersion         protocol_version;
+            /**
+             * @brief todo
+             */
+            sequence<string>            server_uris;
+            /**
+             * @brief todo
+             */
+            Time                        connect_timeout;
+            /**
+             * @brief todo
+             */
+            uint32                      max_connection_retries;
+            /**
+             * @brief todo
+             */
+            Time                        keep_alive_period;
+            /**
+             * @brief todo
+             */
+            boolean                     clean_session;
+            /**
+             * @brief todo
+             */
+            boolean                     unsubscribe_on_disconnect;
+            /**
+             * @brief todo
+             */
+            Time                        max_reply_timeout;
+            /**
+             * @brief todo
+             */
+            boolean                     reconnect;
+            /**
+             * @brief todo
+             */
+            uint32                      max_unack_messages;
+            /**
+             * @brief todo
+             */
+            PersistenceLevel            persistence_level;
+            /**
+             * @brief todo
+             */
+            @optional string            persistence_storage;
+            /**
+             * @brief todo
+             */
+            @optional string            username;
+            /**
+             * @brief todo
+             */
+            @optional sequence<octet>   password;
+            /**
+             * @brief todo
+             */
+            @optional SslTlsConfig      ssl_tls_config;
+        };
+
+        /**
+         * @brief todo
+         */
+        struct SubscriptionConfig {
+            /**
+             * @brief todo
+             */
+            sequence<string>    topic_filters;
+            /**
+             * @brief todo
+             */
+            QosLevel            max_qos;
+            /**
+             * @brief todo
+             */
+            uint32              message_queue_size;
+        };
+
+        /**
+         * @brief todo
+         */
+        struct PublicationConfig {
+            /**
+             * @brief todo
+             */
+            string              topic;
+            /**
+             * @brief todo
+             */
+            QosLevel            qos;
+            /**
+             * @brief todo
+             */
+            boolean             retained;
+            /**
+             * @brief todo
+             */
+            boolean             use_message_info;
+            /**
+             * @brief todo
+             */
+            Time                max_wait_time;
+        };
+
+    /** @} */
+
+    /**
+     * @addtogroup RtiMqtt_Client_IDL_Subscription
+     * @{ 
+     */
+        /**
+         * @brief todo
+         */
+        enum SubscriptionStateKind {
+            /**
+             * @brief todo
+             */
+            CREATED,
+            /**
+             * @brief todo
+             */
+            SUBSCRIBED,
+            /**
+             * @brief todo
+             */
+            ERROR
+        };
+
+        /**
+         * @brief todo
+         */
+        @nested
+        struct SubscriptionMessageStatus {
+            /**
+             * @brief todo
+             */
+            uint32              received_count;
+            /**
+             * @brief todo
+             */
+            uint32              unread_count;
+            /**
+             * @brief todo
+             */
+            uint32              read_count;
+            /**
+             * @brief todo
+             */
+            uint32              lost_count;
+        };
+
+        /**
+         * @brief todo
+         */
+        struct SubscriptionStatus {
+            /**
+             * @brief todo
+             */
+            @optional SubscriptionConfig        config;
+            /**
+             * @brief todo
+             */
+            @optional SubscriptionMessageStatus message_status;
+        };
+
+        /**
+         * @brief todo
+         */
+        @nested
+        struct SubscriptionParams {
+            /**
+             * @brief todo
+             */
+            string          topic;
+            /**
+             * @brief todo
+             */
+            QosLevel        max_qos;
+        };
+
+    /** @} */
+
+    /**
+     * @addtogroup RtiMqtt_Client_IDL_Publication
+     * @{ 
+     */
+
+        /**
+         * @brief todo
+         */
+        @nested
+        struct PublicationMessageStatus {
+            /**
+             * @brief todo
+             */
+            uint32              sent_count;
+            /**
+             * @brief todo
+             */
+            uint32              pending_count;
+            /**
+             * @brief todo
+             */
+            uint32              ok_count;
+            /**
+             * @brief todo
+             */
+            uint32              error_count;
+        };
+
+        /**
+         * @brief todo
+         */
+        struct PublicationStatus {
+            /**
+             * @brief todo
+             */
+            @optional PublicationConfig         config;
+            /**
+             * @brief todo
+             */
+            @optional PublicationMessageStatus  message_status;
+        };
+
+        /**
+         * @brief todo
+         */
+        struct WriteParams {
+            /**
+             * @brief todo
+             */
+            QosLevel        qos_level;
+            /**
+             * @brief todo
+             */
+            boolean         retained;
+        };
+
+    /** @} */
+
+    /**
+     * @addtogroup RtiMqtt_Client_IDL_Client
+     * @{ 
+     */
+
+        /**
+         * @brief todo
+         */
+        enum ClientStateKind {
+            /**
+             * @brief todo
+             */
+            DISCONNECTED,
+            /**
+             * @brief todo
+             */
+            DISCONNECTING,
+            /**
+             * @brief todo
+             */
+            CONNECTING,
+            /**
+             * @brief todo
+             */
+            CONNECTED,
+            /**
+             * @brief todo
+             */
+            ERROR
+        };
+
+        /**
+         * @brief todo
+         */
+        struct ClientStatus {
+            /**
+             * @brief todo
+             */
+            ClientStateKind                         state;
+            /**
+             * @brief todo
+             */
+            @optional ClientConfig                  config;
+            /**
+             * @brief todo
+             */
+            @optional sequence<SubscriptionStatus>  subscriptions;
+            /**
+             * @brief todo
+             */
+            @optional sequence<PublicationStatus>   publications;
+        };
+
+    /** @} */
+
+}; // module MQTT
+}; // module RTI

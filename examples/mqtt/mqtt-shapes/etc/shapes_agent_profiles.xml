@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<!--
+  (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. 
+
+  RTI grants Licensee a license to use, modify, compile, and create
+  derivative works of the software solely for use with RTI Connext DDS.
+  Licensee may redistribute copies of the software provided that all such
+  copies are subject to this license.
+  The software is provided "as is", with no warranty of any type, including
+  any warranty for fitness for any purpose. RTI is under no obligation to
+  maintain or support the software.  RTI shall not be liable for any
+  incidental or consequential damages arising out of the use or inability to
+  use the software.
+-->
+
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/6.0.0/rti_dds_profiles.xsd" version="6.0.0">
+
+    <!-- Qos Library -->
+    <qos_library name="ShapesAgentQos">
+        <qos_profile name="default" base_name="BuiltinQosLibExp::Generic.BestEffort" is_default_qos="true">
+            <datareader_qos>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>1</depth>
+                </history>
+            </datareader_qos>
+            <datawriter_qos>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>1</depth>
+                </history>
+            </datawriter_qos>
+        </qos_profile>
+        <qos_profile name="mqtt_message_reader" base_name="default">
+            <datareader_qos>
+                <reader_resource_limits>
+                    <dynamically_allocate_fragmented_samples>
+                        true
+                    </dynamically_allocate_fragmented_samples>
+                </reader_resource_limits>
+                <property>
+                    <value>
+                        <element>
+                            <name>dds.data_reader.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                            <value>10485760</value>
+                        </element>
+                    </value>
+                </property>
+            </datareader_qos>
+        </qos_profile>
+        <qos_profile name="mqtt_message_writer" base_name="default">
+            <datawriter_qos>
+                <property>
+                    <value>
+                        <element>
+                            <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                            <value>10485760</value>
+                        </element>
+                    </value>
+                </property>
+            </datawriter_qos>
+        </qos_profile>
+    </qos_library>
+
+    <!-- Domain Library -->
+    <domain_library name="ShapesAgentDomains">
+        <domain name="domain/def" domain_id="46">
+            <register_type name="RTI::MQTT::KeyedMessage" type_ref="RTI::MQTT::KeyedMessage" />
+            <topic name="dds_mqtt" register_type_ref="RTI::MQTT::KeyedMessage"/>
+        </domain>
+    </domain_library>
+
+    <!-- Participant library -->
+    <domain_participant_library name="ShapesAgentParticipants">
+        <domain_participant name="agent" domain_ref="ShapesAgentDomains::domain/def">
+            <participant_qos name="qos" base_name="ShapesAgentQos::default"/>
+            <publisher name="publisher">
+                <data_writer name="mqtt_messages" topic_ref="dds_mqtt">
+                    <datawriter_qos name="qos" base_name="ShapesAgentQos::mqtt_message_writer"/>
+                </data_writer>
+            </publisher>
+            <subscriber name="subscriber">
+                <data_reader name="mqtt_messages" topic_ref="dds_mqtt">
+                    <datareader_qos name="qos" base_name="ShapesAgentQos::mqtt_message_reader"/>
+                </data_reader>
+            </subscriber>
+        </domain_participant>
+    </domain_participant_library>
+
+</dds>

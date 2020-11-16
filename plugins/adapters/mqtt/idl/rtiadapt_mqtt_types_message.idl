@@ -1,0 +1,133 @@
+/******************************************************************************/
+/* (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/*                                                                            */
+/* RTI grants Licensee a license to use, modify, compile, and create          */
+/* derivative works of the software solely for use with RTI Connext DDS.      */
+/* Licensee may redistribute copies of the software provided that all such    */
+/* copies are subject to this license.                                        */
+/* The software is provided "as is", with no warranty of any type, including  */
+/* any warranty for fitness for any purpose. RTI is under no obligation to    */
+/* maintain or support the software.  RTI shall not be liable for any         */
+/* incidental or consequential damages arising out of the use or inability to */
+/* use the software.                                                          */
+/*                                                                            */
+/******************************************************************************/
+
+/**
+ * @file rtimqtt_types_message.idl
+ * @brief IDL Types to model MQTT messages.
+ *
+ * This file defines two main types @ref RTI::MQTT::Message and
+ * @ref RTI::MQTT::KeyedMessage, which can be used to encapsulate an
+ * MQTT message and some of its metadata.
+ */
+
+module RTI { module MQTT {
+
+/** @addtogroup RtiMqtt_Client_IDL_Message
+* @{
+*/
+    /**
+     * @brief An enum to model the "Quality of Service levels" offered by 
+     * the MQTT Protocol for publication and subscription of messages. 
+     */
+    enum QosLevel {
+        /**
+         * @brief Constant used to represent an invalid Qos value.
+         */
+        UNKNOWN,
+        /**
+         * @brief MQTT Qos level 0.
+         */
+        ZERO,
+        /**
+         * @brief MQTT Qos level 1.
+         */
+        ONE,
+        /**
+         * @brief MQTT Qos level 2.
+         */
+        TWO
+    };
+
+    /**
+     * @brief A data type to model the metadata associated with any MQTT 
+     * message. 
+     */
+    @nested
+    struct MessageInfo {
+        /**
+         * @brief Id of the MQTT message.
+         */
+        int32           id;
+        /**
+         * @brief Qos level used to publish the MQTT message.
+         */
+        QosLevel        qos_level;
+        /**
+         * @brief Retained flag of the MQTT message.
+         */
+        boolean         retained;
+        /**
+         * @brief Duplicate flag of the MQTT message.
+         */
+        boolean         duplicate;
+    };
+
+    /**
+     * @brief A data type to model the payload of an MQTT message as an 
+     * "opaque" buffer of bytes. 
+     */
+    @nested
+    struct MessagePayload {
+        /**
+         * @brief Contents of the MQTT message.
+         */
+        sequence<octet>     data;
+    };
+
+    /**
+     * @brief A data type to model the data and metadata associated with an 
+     * MQTT message. 
+     */
+    struct Message {
+        /**
+         * @brief Topic where the MQTT message was published.
+         */
+        @optional string        topic;
+        /**
+         * @brief Metadata associated with the MQTT message.
+         */
+        @optional MessageInfo   info;
+        /**
+         * @brief Contents of the MQTT message.
+         */
+        MessagePayload          payload;
+    };
+
+    /**
+     * @brief A data type to model the data and metadata associated with an 
+     * MQTT message, with the MQTT topic used as key. 
+     */
+    struct KeyedMessage {
+        /**
+         * @brief Topic where the MQTT message was published.
+         *
+         * This field will be used as `@key` of a `DDS_Topic` created
+         * with type @ref RTI::MQTT::KeyedMessage.
+         */
+        @key string             topic;
+        /**
+         * @brief Metadata associated with the MQTT message.
+         */
+        @optional MessageInfo   info;
+        /**
+         * @brief Contents of the MQTT message.
+         */
+        MessagePayload          payload;
+    };
+
+/** @} */
+
+}; // module MQTT
+}; // module RTI

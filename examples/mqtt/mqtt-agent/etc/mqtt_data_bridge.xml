@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<!--
+  (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. 
+
+  RTI grants Licensee a license to use, modify, compile, and create
+  derivative works of the software solely for use with RTI Connext DDS.
+  Licensee may redistribute copies of the software provided that all such
+  copies are subject to this license.
+  The software is provided "as is", with no warranty of any type, including
+  any warranty for fitness for any purpose. RTI is under no obligation to
+  maintain or support the software.  RTI shall not be liable for any
+  incidental or consequential damages arising out of the use or inability to
+  use the software.
+-->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://community.rti.com/schema/6.0.0/rti_routing_service.xsd">
+
+    <plugin_library name="MqttDataBridgePlugins">
+        <adapter_plugin name="MqttAdapter">
+            <dll>rtimqttadapter</dll>
+            <create_function>
+                RTI_RS_MQTT_AdapterPlugin_create
+            </create_function>
+        </adapter_plugin>
+    </plugin_library>
+
+    <qos_library name="MqttDataBridgeQos">
+        <qos_profile name="default" base_name="BuiltinQosLibExp::Generic.StrictReliable" is_default_qos="true">
+            <datareader_qos>
+                <reader_resource_limits>
+                    <dynamically_allocate_fragmented_samples>
+                        true
+                    </dynamically_allocate_fragmented_samples>
+                </reader_resource_limits>
+                <property>
+                    <value>
+                        <element>
+                            <name>dds.data_reader.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                            <!-- 10MB -->
+                            <value>10485760</value>
+                        </element>
+                    </value>
+                </property>
+            </datareader_qos>
+            <datawriter_qos>
+                <property>
+                    <value>
+                        <element>
+                            <name>dds.data_writer.history.memory_manager.fast_pool.pool_buffer_max_size</name>
+                            <!-- 10MB -->
+                            <value>10485760</value>
+                        </element>
+                    </value>
+                </property>
+            </datawriter_qos>
+        </qos_profile>
+    </qos_library>
+
+    <types>
+        <module name="RTI">
+            <module name="MQTT">
+                <enum name="QosLevel">
+                    <enumerator name="UNKNOWN"/>
+                    <enumerator name="ZERO"/>
+                    <enumerator name="ONE"/>
+                    <enumerator name="TWO"/>
+                </enum>
+                <struct name= "MessageInfo" nested="true">
+                    <member name="id" type="int32"/>
+                    <member name="qos_level" type="nonBasic" nonBasicTypeName= "RTI::MQTT::QosLevel"/>
+                    <member name="retained" type="boolean"/>
+                    <member name="duplicate" type="boolean"/>
+                </struct>
+                <struct name= "MessagePayload" nested="true">
+                    <member name="data" sequenceMaxLength="-1" type="byte"/>
+                </struct>
+                <struct name= "Message">
+                    <member name="topic" stringMaxLength="-1" type="string" optional="true"/>
+                    <member name="info" type="nonBasic" nonBasicTypeName= "RTI::MQTT::MessageInfo" optional="true"/>
+                    <member name="payload" type="nonBasic" nonBasicTypeName= "RTI::MQTT::MessagePayload"/>
+                </struct>
+                <struct name= "KeyedMessage">
+                    <member name="topic" stringMaxLength="-1" type="string" key="true"/>
+                    <member name="info" type="nonBasic" nonBasicTypeName= "RTI::MQTT::MessageInfo" optional="true"/>
+                    <member name="payload" type="nonBasic" nonBasicTypeName= "RTI::MQTT::MessagePayload"/>
+                </struct>
+            </module>
+        </module>
+    </types>
+
+    <routing_service name="mqtt_data_bridge">
+
+        <annotation>
+            <documentation>
+                Passes data between a DDS Databus and an MQTT Broker.
+            </documentation>
+        </annotation>
+
+        <domain_route name="default">
+
+            <participant name="dds">
+                <domain_id>46</domain_id>
+                <registered_type name="RTI::MQTT::Message" type_name="RTI::MQTT::Message"/>
+            </participant>
+
+            <connection name="mqtt" plugin_name="MqttDataBridgePlugins::MqttAdapter">
+                <property>
+                    <value>
+                        <element>
+                            <name>client.id</name>
+                            <value>mqtt_data_bridge</value>
+                        </element>
+                        <element>
+                            <name>client.servers</name>
+                            <value>tcp://127.0.0.1:1883</value>
+                        </element>
+                        <element>
+                            <name>client.connection_timeout.sec</name>
+                            <value>5</value>
+                        </element>
+                    </value>
+                </property>
+                <registered_type name="RTI::MQTT::Message" type_name="RTI::MQTT::Message"/>
+            </connection>
+
+            <session name="mqtt_to_dds">
+                <route name="all_topics">
+                    <route_types>true</route_types>
+                    <input connection="mqtt">
+                        <registered_type_name>RTI::MQTT::Message</registered_type_name>
+                        <property>
+                            <value>
+                                <element>
+                                    <name>subscription.topics</name>
+                                    <value>#</value>
+                                </element>
+                                <element>
+                                    <name>subscription.max_qos</name>
+                                    <value>2</value>
+                                </element>
+                                <element>
+                                    <name>subscription.queue_size</name>
+                                    <value>50</value>
+                                </element>
+                            </value>
+                        </property>
+                    </input>
+                    <dds_output name="mqtt-in" participant="dds">
+                        <registered_type_name>RTI::MQTT::KeyedMessage</registered_type_name>
+                    </dds_output>
+                </route>
+            </session>
+
+            <session name="dds_to_mqtt">
+                <route name="by_message_info">
+                    <route_types>true</route_types>
+                    <dds_input name="mqtt-out" participant="dds">
+                        <registered_type_name>RTI::MQTT::Message</registered_type_name>
+                    </dds_input>
+                    <output connection="mqtt">
+                        <registered_type_name>RTI::MQTT::Message</registered_type_name>
+                        <property>
+                            <value>
+                                <element>
+                                    <name>publication.use_message_info</name>
+                                    <value>true</value>
+                                </element>
+                            </value>
+                        </property>
+                    </output>
+                </route>
+                <route name="to_single_topic">
+                    <route_types>true</route_types>
+                    <dds_input name="mqtt-out" participant="dds">
+                        <registered_type_name>RTI::MQTT::Message</registered_type_name>
+                    </dds_input>
+                    <output connection="mqtt">
+                        <registered_type_name>RTI::MQTT::Message</registered_type_name>
+                        <property>
+                            <value>
+                                <element>
+                                    <name>publication.topic</name>
+                                    <value>dds/in</value>
+                                </element>
+                                <element>
+                                    <name>publication.qos</name>
+                                    <value>1</value>
+                                </element>
+                            </value>
+                        </property>
+                    </output>
+                </route>
+            </session>
+
+        </domain_route>
+
+    </routing_service>
+
+</dds>

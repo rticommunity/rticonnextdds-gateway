@@ -1,0 +1,6 @@
+Property,Required,Default,Accepted Values
+|PROP_BUFFER_MEMBER|,YES,\-,An identifier for a member of a type (e.g. 'foo.bar')
+|PROP_FIELD|,YES,\-,An identifier for a field of a type (e.g. 'foo.bar')
+|PROP_FIELD_TYPE|,YES,\-,"An IDL primitive type (e.g. 'unsigned long', 'uint64')"
+|PROP_MAX_SERIALIZED_SIZE|,NO,255,An integer value greater or equal to 0
+|PROP_SERIALIZATION_FORMAT|,NO,Depends on |PROP_FIELD_TYPE|,A format string accepted by sprintf()

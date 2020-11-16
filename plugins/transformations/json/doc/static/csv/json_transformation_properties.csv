@@ -1,0 +1,7 @@
+Property,Required,Default,Accepted Values
+|PROP_BUFFER_MEMBER|,YES,\-,An identifier for a member of a type (e.g. 'foo.bar')
+|PROP_TRANSFORM_TYPE|, YES,\-, 'serialize' transforms the buffer from DDS to JSON. 'deserialize' transforms the buffer from JSON to DDS.
+|PROP_INDENT|,No,false,A boolean value
+|PROP_SERIALIZED_SIZE_MIN|,No,255,An integer value greater or equal to 0
+|PROP_SERIALIZED_SIZE_MAX|,No,-1,"An integer value greater than 0, or -1"
+|PROP_SERIALIZED_SIZE_INCR|,No,255,An integer value greater or equal to 0

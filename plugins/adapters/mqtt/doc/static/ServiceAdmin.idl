@@ -1,0 +1,206 @@
+/* $Id$
+
+ (c) Copyright, Real-Time Innovations, 2015-2016.
+ All rights reserved.
+ No duplications, whole or partial, manual or electronic, may be made
+ without express written permission.  Any such copies, or
+ revisions thereof, must display this notice unaltered.
+ This code contains trade secrets of Real-Time Innovations, Inc.
+
+==============================================================================*/
+#ifndef RTI_SERVICE_COMMON_IDL
+#define RTI_SERVICE_COMMON_IDL
+
+@autoid @allowed_data_representation(XCDR2)
+module RTI {
+
+    module Service {
+
+        /* Maximum length of a bounded string */
+        const int32 BOUNDED_STRING_LENGTH_MAX = 255;
+        /* Bounded string definition */     
+        typedef string<BOUNDED_STRING_LENGTH_MAX> BoundedString;
+
+        // Type to represent any path name
+        const int32 FILE_PATH_MAX_LENGTH = 1024;
+        typedef string<FILE_PATH_MAX_LENGTH> FilePath;
+
+        /* Maximum length of a resource identifier */
+        const int32 RESOURCE_IDENTIFIER_LENGTH_MAX = 2048;
+        /* Resource Identifier definition  */
+        typedef string<RESOURCE_IDENTIFIER_LENGTH_MAX> ResourceId;
+
+        /* Representation of configuration data. Unbounded. */
+        typedef string XmlString;
+    
+        /* Well-known service object state */
+        @appendable
+        enum EntityStateKind {
+            INVALID,
+            ENABLED,
+            DISABLED,
+            STARTED,
+            STOPPED,
+            RUNNING,
+            PAUSED           
+        };
+
+        @appendable
+        struct EntityState {
+            EntityStateKind state;
+        };                
+
+
+        const int32 BUILTIN_TOPIC_KEY_VALUE_LENGTH = 4;
+
+        @final @nested
+        struct BuiltinTopicKey {
+            uint32 value[BUILTIN_TOPIC_KEY_VALUE_LENGTH];
+        };
+
+        module Monitoring {
+
+            /* Keyed Resource header */
+            const int32 RESOURCE_GUID_VALUE_LENGTH = 16;
+            @final
+            struct ResourceGuid {
+                octet value[RESOURCE_GUID_VALUE_LENGTH];
+            };      
+
+            @mutable
+            struct KeyedResource {
+                @key ResourceGuid object_guid;
+                ResourceGuid owner_guid;  
+            };
+
+            /* Statistics */
+            @appendable @nested
+            struct StatisticMetrics {
+                int64 period_ms;
+                int64 count;
+                float mean;
+                float minimum;
+                float maximum;
+                float std_dev;
+            };            
+
+            @appendable @nested
+            struct StatisticVariable {
+                StatisticMetrics publication_period_metrics;
+            };
+
+            /* CountStatus */
+            @mutable @nested
+            struct CountStatus {
+                int64 total_count;
+                int64 current_count;
+                int64 current_count_peak;
+            };
+
+            /* Process */
+            @appendable @nested
+            struct ProcessConfig {                   
+                uint64 id;
+            };  
+            @mutable @nested
+            struct ProcessPeriodic {
+                @optional StatisticVariable cpu_usage_percentage;
+                @optional StatisticVariable physical_memory_kb;
+                @optional StatisticVariable total_memory_kb;     
+                int32 uptime_sec;
+            };                       
+            
+            /* Host */
+            @appendable @nested
+            struct HostPeriodic {
+                @optional StatisticVariable cpu_usage_percentage;
+                @optional StatisticVariable free_memory_kb;                   
+                @optional StatisticVariable free_swap_memory_kb;                    
+                int32 uptime_sec;
+            };            
+           
+            @appendable @nested
+            struct HostConfig {
+                BoundedString name;
+                uint32 id;
+                int64 total_memory_kb;
+                int64 total_swap_memory_kb;
+            };
+
+            /* NetworkPerformance */
+            @appendable @nested
+            struct NetworkPerformance {
+                @optional StatisticVariable samples_per_sec;
+                @optional StatisticVariable bytes_per_sec;
+                @optional StatisticVariable latency_millisec;
+            };
+
+            /* Entity */
+            @mutable @nested
+            struct EntityConfig {
+                ResourceId resource_id;
+                XmlString configuration;
+            };
+            @mutable @nested
+            struct EntityEvent{
+                EntityStateKind state;
+            };
+
+            /* DistributionTopicKind */
+            enum DistributionTopicKind {
+                CONFIG,
+                EVENT,
+                PERIODIC
+            };
+
+            /* ResourceKindIndex */
+            @mutable
+            enum ResourceKindIndex {
+                DDS_INDEX = 1,
+                ROUTING_INDEX = 10000,
+                RECORDING_INDEX = 20000
+            };
+
+           /*
+            * ResourceKind
+            */
+           @mutable
+           enum ResourceKind {
+                UNKNOWN,
+                ROUTING_SERVICE = ROUTING_INDEX,
+                ROUTING_DOMAIN_ROUTE,
+                ROUTING_SESSION,
+                ROUTING_AUTO_ROUTE,
+                ROUTING_ROUTE,
+                ROUTING_INPUT,
+                ROUTING_OUTPUT,
+                RECORDING_SERVICE = RECORDING_INDEX,
+                RECORDING_SESSION,
+                RECORDING_TOPIC_GROUP,
+                RECORDING_TOPIC
+            };
+
+
+            /* Topic names */
+            const string CONFIG_TOPIC_NAME =
+                    "rti/service/monitoring/config";
+            const string EVENT_TOPIC_NAME =
+                    "rti/service/monitoring/event";
+            const string PERIODIC_TOPIC_NAME =
+                    "rti/service/monitoring/periodic";
+            /* Type names */
+            const string CONFIG_REGISTERED_TYPE_NAME =
+                    "RTI::Service::Monitoring::Config";
+            const string EVENT_REGISTERED_TYPE_NAME =
+                    "RTI::Service::Monitoring::Event";
+            const string PERIODIC_REGISTERED_TYPE_NAME =
+                    "RTI::Service::Monitoring::Periodic";
+
+
+        }; // Module Monitoring
+
+    }; // Module Service
+
+}; // Module RTI
+
+#endif

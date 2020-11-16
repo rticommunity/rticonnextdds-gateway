@@ -1,0 +1,308 @@
+/* $Id$
+
+ (c) Copyright, Real-Time Innovations, 2015-2016.
+ All rights reserved.
+ No duplications, whole or partial, manual or electronic, may be made
+ without express written permission.  Any such copies, or
+ revisions thereof, must display this notice unaltered.
+ This code contains trade secrets of Real-Time Innovations, Inc.
+
+==============================================================================*/
+
+#ifndef RTI_ROUTING_SERVICE_MONITORING_IDL
+#define RTI_ROUTING_SERVICE_MONITORING_IDL
+
+#include "ServiceCommon.idl"
+
+@autoid @allowed_data_representation(XCDR2)
+module RTI {
+
+    module RoutingService {
+        
+        module Monitoring {
+
+            /* Convenient typedefs */
+            typedef Service::BoundedString BoundedString;
+            typedef Service::FilePath FilePath;
+            typedef Service::XmlString XmlString;
+            typedef Service::Monitoring::DistributionTopicKind DistributionTopicKind;
+
+            enum AdapterClassKind {
+                GENERIC,
+                DDS
+            };
+
+            /* StreamPort: Route Input/Output Base Type */
+            @mutable @nested
+            struct TransformationInfo {
+                BoundedString plugin_name;
+                XmlString configuration;
+            };
+
+            @mutable @nested
+            struct StreamPortConfig : Service::Monitoring::EntityConfig {
+                BoundedString stream_name;
+                BoundedString registered_type_name;
+                BoundedString connection_name;
+                @optional TransformationInfo transformation;
+            };
+
+            @mutable @nested
+            struct StreamPortEvent : Service::Monitoring::EntityEvent{
+                @optional Service::BuiltinTopicKey endpoint_key;
+            };
+
+            @mutable @nested
+            struct StreamPortPeriodic {
+                @optional Service::Monitoring::StatisticVariable samples_per_sec;
+                @optional Service::Monitoring::StatisticVariable bytes_per_sec;
+            };
+
+            /* 
+             * Input
+             */
+            @mutable @nested
+            struct InputConfig : StreamPortConfig {
+            };
+
+            @mutable @nested
+            struct InputEvent: StreamPortEvent {
+            };
+
+            @mutable @nested
+            struct InputPeriodic : StreamPortPeriodic {
+            };
+
+            /*
+             * Output
+             */
+            @mutable @nested
+            struct OutputConfig : StreamPortConfig {
+            };
+
+            @mutable @nested
+            struct OutputEvent: StreamPortEvent {
+            };
+
+            @mutable @nested
+            struct OutputPeriodic : StreamPortPeriodic {
+            };
+
+            /* Route */
+            @mutable @nested
+            struct RouteConfig : Service::Monitoring::EntityConfig {
+                @optional Service::Monitoring::ResourceGuid auto_route_guid;
+            };
+
+            @mutable @nested
+            struct RouteEvent : Service::Monitoring::EntityEvent {
+            };
+
+            @mutable @nested
+            struct RoutePeriodic {
+                @optional Service::Monitoring::StatisticVariable in_samples_per_sec;
+                @optional Service::Monitoring::StatisticVariable in_bytes_per_sec;
+                @optional Service::Monitoring::StatisticVariable out_samples_per_sec;
+                @optional Service::Monitoring::StatisticVariable out_bytes_per_sec;
+                @optional Service::Monitoring::StatisticVariable latency_millisec;
+            };
+
+            /* AutoRoute  */
+            @mutable @nested
+            struct AutoRouteStreamPortInfo {
+                XmlString configuration;
+            };
+
+            @mutable @nested
+            struct AutoRouteConfig : Service::Monitoring::EntityConfig {
+                @optional AutoRouteStreamPortInfo input;
+                @optional AutoRouteStreamPortInfo output;
+            };
+
+            @mutable @nested
+            struct AutoRouteEvent : Service::Monitoring::EntityEvent {
+            };
+
+            @mutable @nested
+            struct AutoRoutePeriodic  {
+                @optional Service::Monitoring::StatisticVariable in_samples_per_sec;
+                @optional Service::Monitoring::StatisticVariable in_bytes_per_sec;
+                @optional Service::Monitoring::StatisticVariable out_samples_per_sec;
+                @optional Service::Monitoring::StatisticVariable out_bytes_per_sec;
+                @optional Service::Monitoring::StatisticVariable latency_millisec;
+                int64 route_count;
+            };
+
+            /* Session */
+            @mutable @nested
+            struct SessionConfig : Service::Monitoring::EntityConfig {
+            };
+
+            @mutable @nested
+            struct SessionEvent : Service::Monitoring::EntityEvent {
+            };
+
+            @mutable @nested
+            struct SessionPeriodic {
+                @optional Service::Monitoring::StatisticVariable in_samples_per_sec;
+                @optional Service::Monitoring::StatisticVariable in_bytes_per_sec;
+                @optional Service::Monitoring::StatisticVariable out_samples_per_sec;
+                @optional Service::Monitoring::StatisticVariable out_bytes_per_sec;
+                @optional Service::Monitoring::StatisticVariable latency_millisec;
+            };
+
+            /* DomainRoute */
+            @mutable @nested
+            struct ConnectionConfigInfo {
+                BoundedString name;                
+                AdapterClassKind class;
+                BoundedString plugin_name;
+                XmlString configuration;
+            };
+            @mutable @nested
+            struct ConnectionEventInfo {
+                BoundedString name;
+                @optional Service::BuiltinTopicKey participant_key;
+            };
+
+            @mutable @nested
+            struct DomainRouteConfig : Service::Monitoring::EntityConfig {
+                @optional sequence<ConnectionConfigInfo> connections;
+            };
+
+            @mutable @nested
+            struct DomainRouteEvent : Service::Monitoring::EntityEvent {
+                @optional sequence<ConnectionEventInfo> connections;
+            };
+
+            @mutable @nested
+            struct DomainRoutePeriodic {
+                @optional Service::Monitoring::StatisticVariable in_samples_per_sec;
+                @optional Service::Monitoring::StatisticVariable in_bytes_per_sec;
+                @optional Service::Monitoring::StatisticVariable out_samples_per_sec;
+                @optional Service::Monitoring::StatisticVariable out_bytes_per_sec;
+                @optional Service::Monitoring::StatisticVariable latency_millisec;
+            };
+
+            /* Service */
+            @mutable @nested
+            struct ServiceConfig : Service::Monitoring::EntityConfig {
+                BoundedString application_name;
+                Service::Monitoring::ResourceGuid application_guid;
+                @optional Service::Monitoring::HostConfig host;
+                @optional Service::Monitoring::ProcessConfig process;
+            };
+
+            @mutable @nested
+            struct ServiceEvent : Service::Monitoring::EntityEvent {
+            };
+            
+            @mutable @nested
+            struct ServicePeriodic {
+                @optional Service::Monitoring::HostPeriodic host;
+                @optional Service::Monitoring::ProcessPeriodic process;
+            };
+
+            /* --- Top-level ----------------------------------------------- */
+
+            /*
+             * Config Topic
+             */             
+            @mutable @nested
+            union ConfigUnion switch (RTI::Service::Monitoring::ResourceKind) {
+                case RTI::Service::Monitoring::ROUTING_SERVICE:
+                ServiceConfig routing_service;
+
+                case RTI::Service::Monitoring::ROUTING_DOMAIN_ROUTE:
+                DomainRouteConfig routing_domain_route;
+
+                case RTI::Service::Monitoring::ROUTING_SESSION:
+                SessionConfig routing_session;
+
+                case RTI::Service::Monitoring::ROUTING_AUTO_ROUTE:
+                AutoRouteConfig routing_auto_route;
+
+                case RTI::Service::Monitoring::ROUTING_ROUTE:
+                RouteConfig routing_route;
+
+                case RTI::Service::Monitoring::ROUTING_INPUT:
+                InputConfig routing_input;
+
+                case RTI::Service::Monitoring::ROUTING_OUTPUT:
+                OutputConfig routing_output;
+            };
+            @mutable
+            struct Config : Service::Monitoring::KeyedResource {
+                ConfigUnion value;
+            };
+
+
+            /*
+             * Event Topic
+             */            
+            @mutable @nested
+            union EventUnion switch (RTI::Service::Monitoring::ResourceKind) {
+                case RTI::Service::Monitoring::ROUTING_SERVICE:
+                ServiceEvent routing_service;
+
+                case RTI::Service::Monitoring::ROUTING_DOMAIN_ROUTE:
+                DomainRouteEvent routing_domain_route;
+
+                case RTI::Service::Monitoring::ROUTING_SESSION:
+                SessionEvent routing_session;
+
+                case RTI::Service::Monitoring::ROUTING_AUTO_ROUTE:
+                AutoRouteEvent routing_auto_route;
+
+                case RTI::Service::Monitoring::ROUTING_ROUTE:
+                RouteEvent routing_route;
+
+                case RTI::Service::Monitoring::ROUTING_INPUT:
+                InputEvent routing_input;
+
+                case RTI::Service::Monitoring::ROUTING_OUTPUT:
+                OutputEvent routing_output;
+            };
+            @mutable
+            struct Event : Service::Monitoring::KeyedResource {
+                EventUnion value;
+            };
+
+            /*
+             * Periodic Topic
+             */           
+            @mutable @nested
+            union PeriodicUnion switch (RTI::Service::Monitoring::ResourceKind) {
+                case RTI::Service::Monitoring::ROUTING_SERVICE:
+                ServicePeriodic routing_service;
+
+                case RTI::Service::Monitoring::ROUTING_DOMAIN_ROUTE:
+                DomainRoutePeriodic routing_domain_route;
+
+                case RTI::Service::Monitoring::ROUTING_SESSION:
+                SessionPeriodic routing_session;
+
+                case RTI::Service::Monitoring::ROUTING_AUTO_ROUTE:
+                AutoRoutePeriodic routing_auto_route;
+
+                case RTI::Service::Monitoring::ROUTING_ROUTE:
+                RoutePeriodic routing_route;
+
+                case RTI::Service::Monitoring::ROUTING_INPUT:
+                InputPeriodic routing_input;
+
+                case RTI::Service::Monitoring::ROUTING_OUTPUT:
+                OutputPeriodic routing_output;
+            };
+            @mutable
+            struct Periodic : Service::Monitoring::KeyedResource {
+                PeriodicUnion value;
+            };
+
+        }; /* Module Monitoring */
+
+    }; /* Module RoutingService */
+
+}; /* Module RTI */
+
+#endif
