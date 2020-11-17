@@ -4,6 +4,7 @@
 .. |RTI_RSTSFM| replace:: *RTI* |RSTSFM|
 .. |JSON_TRANSFORMATION_NAME| replace:: *JSON Transformation*
 .. |JSON_TRANSFORMATION_LIB_NAME_LINUX| replace:: ``librtijsontransf.so``
+.. |JSON_TRANSFORMATION_LIB_NAME_MAC| replace:: ``librtijsontransf.dylib``
 .. |JSON_TRANSFORMATION_LIB_NAME_WIN| replace:: ``rtijsontransf.dll``
 .. |TRANSFORMATION_API| replace:: *Transformation API*
 .. |PROCESSOR_API| replace:: *Processor API*

@@ -42,11 +42,12 @@ The following snippet demonstrates how to register the plugin in the
     </dds>
 
 .. warning:: |RS| must be able to find the |RSFWD| dynamic library
-             (|FWD_PROCESSOR_LIB_NAME_LINUX| on Linux and macOS systems,
+             (|FWD_PROCESSOR_LIB_NAME_LINUX| on Linux systems,
+             |FWD_PROCESSOR_LIB_NAME_MAC| on macOS systems,
              or |FWD_PROCESSOR_LIB_NAME_WIN| on Windows systems). Make
              sure to include the library's directory in the library search
              path environment variable appropriate for your system
-             (``LD_LIBRARY_PATH`` on Linux systems, ``DYLD_LIBRARY_PATH`` on macOS
+             (``LD_LIBRARY_PATH`` on Linux systems, ``RTI_LD_LIBRARY_PATH`` on macOS
              systems, or ``Path`` on Windows systems).
 
 Once the dynamic library and constructor function have been

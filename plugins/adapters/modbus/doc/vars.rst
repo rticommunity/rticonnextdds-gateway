@@ -9,6 +9,7 @@
 .. |MODBUS_DEVICEs| replace:: *Modbus Devices*
 .. |MODBUS_ADAPTER_NAME| replace:: *ModbusAdapter*
 .. |MODBUS_ADAPTER_LIB_NAME_LINUX| replace:: ``librtimodbusadapter.so``
+.. |MODBUS_ADAPTER_LIB_NAME_MAC| replace:: ``librtimodbusadapter.dylib``
 .. |MODBUS_ADAPTER_LIB_NAME_WIN| replace:: ``rtimodbusadapter.dll``
 .. |CONF_FIELD| replace:: *field*
 .. |CONF_VALUE| replace:: *value*

@@ -11,6 +11,9 @@
 .. |MQTT_TOPIC| replace:: *MQTT Topic*
 .. |MQTT_TOPIC_FILTERS| replace:: *MQTT Topic Filters*
 .. |MQTT_QOS| replace:: *MQTT Qos*
+.. |MQTT_ADAPTER_LIB_NAME_LINUX| replace:: ``librtimqttadapter.so``
+.. |MQTT_ADAPTER_LIB_NAME_MAC| replace:: ``librtimqttadapter.dylib``
+.. |MQTT_ADAPTER_LIB_NAME_WIN| replace:: ``rtimqttadapter.dll``
 .. |TRANSFORMATION_API| replace:: *Transformation API*
 .. |PROCESSOR_API| replace:: *Processor API*
 .. |PARTICIPANTS| replace:: *DomainParticipants*

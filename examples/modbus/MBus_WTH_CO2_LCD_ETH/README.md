@@ -47,7 +47,7 @@ rtiroutingservice -cfgFile RSConfigAdapter.xml -cfgName RSModbusAdapterExample
 
 > **NOTE**: the libmodbus and rtimodbusadapter libraries should be reachable by
 > the OS. Add the corresponding folders to your LD_LIBRARY_PATH, PATH or
-> DYLD_LIBRARY_PATH environment variable (depending of your OS).
+> RTI_LD_LIBRARY_PATH environment variable (depending of your OS).
 
 After running the Routing Service and MBus_WTH_CO2_LCD_ETH_INPUT, you will read
 messages from the modbus device:

@@ -72,7 +72,7 @@ and shows an "OK" message or an error otherwise.
 In order to run the integration_test1 three elements are required:
 
 1. Add the folders which contains libmodbus and rtimodbusadapter libraries to
-your LD_LIBRARY_PATH, PATH or DYLD_LIBRARY_PATH environment variable (depending
+your LD_LIBRARY_PATH, PATH or RTI_LD_LIBRARY_PATH environment variable (depending
 of your OS).
 
 1. Modbus server (bin directory)

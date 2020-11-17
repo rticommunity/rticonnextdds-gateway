@@ -4,6 +4,7 @@
 .. |RTI_RSTSFM| replace:: *RTI* |RSTSFM|
 .. |FIELD_TRANSFORMATION_NAME| replace:: *Field Transformation*
 .. |FIELD_TRANSFORMATION_LIB_NAME_LINUX| replace:: ``librtifieldtransf.so``
+.. |FIELD_TRANSFORMATION_LIB_NAME_MAC| replace:: ``librtifieldtransf.dylib``
 .. |FIELD_TRANSFORMATION_LIB_NAME_WIN| replace:: ``rtifieldtransf.dll``
 .. |TRANSFORMATION_API| replace:: *Transformation API*
 .. |PROCESSOR_API| replace:: *Processor API*
