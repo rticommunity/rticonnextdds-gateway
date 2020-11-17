@@ -66,7 +66,6 @@ public:
      */
     void parse(const char *json, size_t length)
     {
-        const char *method_name = "rti::webdds::json_document::parse";
         char error[STRING_BUFFER_LENGTH] = "There was something here";
         json_settings settings = { 0 };
         _json_value = json_parse_ex(&settings, json, length, error);

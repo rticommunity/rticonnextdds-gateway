@@ -42,16 +42,13 @@ typedef struct RTI_TSFM_Json_FlatTypeTransformationConfig {
 
 } RTI_TSFM_Json_FlatTypeTransformationConfig;
 
-typedef struct RTI_TSFM_Json_FlatTypeTransformationImpl
-        RTI_TSFM_Json_FlatTypeTransformation;
+struct RTI_TSFM_Json_FlatTypeTransformationImpl;
 
 typedef struct RTI_TSFM_Json_FlatTypeTransformation_MemberMappingImpl
         RTI_TSFM_Json_FlatTypeTransformation_MemberMapping;
 
-typedef struct _json_value json_value;
-
 typedef DDS_ReturnCode_t (*RTI_TSFM_Json_FlatTypeTransformation_ParseMemberFn)(
-        RTI_TSFM_Json_FlatTypeTransformation *self,
+        struct RTI_TSFM_Json_FlatTypeTransformationImpl *self,
         RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
         json_value *json_member_val,
         DDS_DynamicData *sample);

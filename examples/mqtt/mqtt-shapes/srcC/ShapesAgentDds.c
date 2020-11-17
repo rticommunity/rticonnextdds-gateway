@@ -446,7 +446,8 @@ int ShapesAgent_publish_message(struct ShapesAgent *self)
 
     self->msg_sent_tot += 1;
 
-    msg_buf = DDS_OctetSeq_get_contiguous_buffer(&self->pub_msg->payload.data);
+    msg_buf = (char *) DDS_OctetSeq_get_contiguous_buffer(
+            &self->pub_msg->payload.data);
     if (msg_buf == NULL) {
         RTI_MQTT_ERROR_1(
                 "failed to get message buffer",
@@ -558,7 +559,8 @@ void ShapesAgent_print_mqtt_message(
         msg_payload = "<none>";
         msg_payload_len = RTI_TSFM_String_length(msg_payload);
     } else {
-        msg_payload = DDS_OctetSeq_get_contiguous_buffer(&msg->payload.data);
+        msg_payload = (char *) DDS_OctetSeq_get_contiguous_buffer(
+                &msg->payload.data);
 
         if (DDS_RETCODE_OK
             != ShapesAgent_deserialize_shape(

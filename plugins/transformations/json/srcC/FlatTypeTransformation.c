@@ -1121,7 +1121,7 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_serialize(
 
     if (!DDS_OctetSeq_loan_contiguous(
                 &buffer_seq,
-                self->state->json_buffer,
+                (DDS_Octet *) self->state->json_buffer,
                 serialized_size,
                 self->state->json_buffer_size)) {
         /* TODO Log error */
@@ -1283,7 +1283,7 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_deserialize(
         goto done;
     }
 
-    buffer_seq_buff = DDS_OctetSeq_get_contiguous_buffer(&buffer_seq);
+    buffer_seq_buff = (char *) DDS_OctetSeq_get_contiguous_buffer(&buffer_seq);
     if (buffer_seq_buff == NULL) {
         /* TODO Log error */
         goto done;

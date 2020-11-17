@@ -55,30 +55,30 @@
  *                        User Type Plugin Class
  *****************************************************************************/
 
-typedef struct RTI_TSFM_TransformationImpl RTI_TSFM_Transformation;
-typedef struct RTI_TSFM_TransformationPluginImpl RTI_TSFM_TransformationPlugin;
-typedef struct RTI_TSFM_UserTypePluginImpl RTI_TSFM_UserTypePlugin;
+struct RTI_TSFM_TransformationImpl;
+struct RTI_TSFM_TransformationPluginImpl;
+struct RTI_TSFM_UserTypePluginImpl;
 
-typedef RTI_TSFM_UserTypePlugin *(*RTI_TSFM_UserTypePlugin_CreateFn)(
-        RTI_TSFM_UserTypePlugin *plugin,
+typedef struct RTI_TSFM_UserTypePluginImpl *(*RTI_TSFM_UserTypePlugin_CreateFn)(
+        struct RTI_TSFM_UserTypePluginImpl *plugin,
         const struct RTI_RoutingServiceProperties *properties,
         RTI_RoutingServiceEnvironment *env);
 
 typedef DDS_ReturnCode_t (*RTI_TSFM_UserTypePlugin_SerializeSampleFn)(
-        RTI_TSFM_UserTypePlugin *plugin,
-        RTI_TSFM_Transformation *transform,
+        struct RTI_TSFM_UserTypePluginImpl *plugin,
+        struct RTI_TSFM_TransformationImpl *transform,
         DDS_DynamicData *sample_in,
         DDS_DynamicData *sample_out);
 
 typedef DDS_ReturnCode_t (*RTI_TSFM_UserTypePlugin_DeserializeSampleFn)(
-        RTI_TSFM_UserTypePlugin *plugin,
-        RTI_TSFM_Transformation *transform,
+        struct RTI_TSFM_UserTypePluginImpl *plugin,
+        struct RTI_TSFM_TransformationImpl *transform,
         DDS_DynamicData *sample_in,
         DDS_DynamicData *sample_out);
 
 typedef void (*RTI_TSFM_UserTypePlugin_DeletePluginFn)(
-        RTI_TSFM_UserTypePlugin *self,
-        RTI_TSFM_TransformationPlugin *plugin);
+        struct RTI_TSFM_UserTypePluginImpl *self,
+        struct RTI_TSFM_TransformationPluginImpl *plugin);
 
 typedef struct RTI_TSFM_UserTypePluginImpl {
     RTI_TSFM_UserTypePlugin_DeletePluginFn delete_plugin;
@@ -95,13 +95,13 @@ typedef struct RTI_TSFM_UserTypePluginImpl {
     }
 
 RTI_TSFM_UserTypePlugin *RTI_TSFM_UserTypePlugin_create_static(
-        RTI_TSFM_TransformationPlugin *transform_plugin,
+        struct RTI_TSFM_TransformationPluginImpl *transform_plugin,
         RTI_TSFM_UserTypePlugin_SerializeSampleFn serialize_sample,
         RTI_TSFM_UserTypePlugin_DeserializeSampleFn deserialize_sample);
 
 void RTI_TSFM_UserTypePlugin_delete_default(
         RTI_TSFM_UserTypePlugin *self,
-        RTI_TSFM_TransformationPlugin *transform_plugin);
+        struct RTI_TSFM_TransformationPluginImpl *transform_plugin);
 
 /*****************************************************************************
  *                       Base Transformation Class
@@ -119,7 +119,7 @@ DDS_ReturnCode_t RTI_TSFM_TransformationConfig_parse_from_properties(
 
 typedef struct RTI_TSFM_TransformationImpl {
     RTI_TSFM_TransformationConfig *config;
-    RTI_TSFM_TransformationPlugin *plugin;
+    struct RTI_TSFM_TransformationPluginImpl *plugin;
     struct DDS_DynamicDataTypeSupport *tsupport;
     struct RTI_TSFM_DDS_DynamicDataPtrSeq read_buffer;
     DDS_Boolean read_buffer_loaned;
@@ -131,7 +131,7 @@ typedef struct RTI_TSFM_TransformationImpl {
 
 DDS_ReturnCode_t RTI_TSFM_Transformation_initialize(
         RTI_TSFM_Transformation *self,
-        RTI_TSFM_TransformationPlugin *plugin,
+        struct RTI_TSFM_TransformationPluginImpl *plugin,
         const struct RTI_RoutingServiceTypeInfo *input_type_info,
         const struct RTI_RoutingServiceTypeInfo *output_type_info,
         const struct RTI_RoutingServiceProperties *properties,

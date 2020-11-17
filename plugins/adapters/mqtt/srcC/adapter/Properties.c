@@ -239,7 +239,7 @@ static DDS_ReturnCode_t
         goto done;
     }
 
-    seq_val = DDS_OctetSeq_get_contiguous_buffer(seq);
+    seq_val = (char *) DDS_OctetSeq_get_contiguous_buffer(seq);
 
     RTI_MQTT_Memory_copy(seq_val, str, sizeof(char) * str_len);
 

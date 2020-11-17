@@ -182,7 +182,8 @@ DDS_ReturnCode_t RTI_MQTT_Publication_write(
         goto done;
     }
 
-    payload_buffer = DDS_OctetSeq_get_contiguous_buffer(&self->req_ctx.payload);
+    payload_buffer =
+            (char *) DDS_OctetSeq_get_contiguous_buffer(&self->req_ctx.payload);
     payload_len = DDS_OctetSeq_get_length(&self->req_ctx.payload);
 
     if (DDS_RETCODE_OK

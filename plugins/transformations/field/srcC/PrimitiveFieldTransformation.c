@@ -539,7 +539,7 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
 
     if (!DDS_OctetSeq_loan_contiguous(
                 &buffer_seq,
-                self->state->msg_payload,
+                (DDS_Octet *)self->state->msg_payload,
                 serialized_size,
                 self->state->msg_payload_size)) {
         /* TODO Log error */
@@ -594,7 +594,7 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_deserialize(
         goto done;
     }
 
-    buffer_seq_buff = DDS_OctetSeq_get_contiguous_buffer(&buffer_seq);
+    buffer_seq_buff = (char *) DDS_OctetSeq_get_contiguous_buffer(&buffer_seq);
     if (buffer_seq_buff == NULL) {
         /* TODO Log error */
         goto done;

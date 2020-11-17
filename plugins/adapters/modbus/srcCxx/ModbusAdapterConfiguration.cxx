@@ -87,6 +87,8 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
                 is_compatible = true;
             }
             break;
+        default:
+            is_compatible = false;
         }
     } else {
         switch (modbus_datatype()) {
@@ -592,7 +594,7 @@ size_t ModbusAdapterConfigurationElement::number_of_registers_primitive_type()
         break;
     default:
         std::string error = "Error: Unsupported datatype "
-                + static_cast<int>(modbus_datatype());
+                + modbus_datatype_to_string(modbus_datatype());
         throw std::runtime_error(error);
     }
     return number_of_registers_type;
@@ -1106,8 +1108,6 @@ void ModbusAdapterConfiguration::check_configuration_consistency(
                     dynamic_data::get_member_type(dds_type, element.field());
             auto field_kind = field_type.kind();
             bool is_compatible = false;
-            int32_t enum_max_value = 0;
-            int32_t enum_min_value = 0;
 
             // set the minimum to 0 if the datatype is an unsigned number.
             // int8_t and uint8_t are mapped to octets. They both can store

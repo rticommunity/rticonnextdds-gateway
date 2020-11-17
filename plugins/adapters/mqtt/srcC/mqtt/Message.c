@@ -572,7 +572,7 @@ DDS_ReturnCode_t RTI_MQTT_MessageReceiveQueue_receive(
 
     if (!DDS_OctetSeq_loan_contiguous(
                 &msg_static.payload.data,
-                (char *) buffer,
+                (DDS_Octet *) buffer,
                 buffer_len,
                 buffer_len)) {
         /* TODO Log error */

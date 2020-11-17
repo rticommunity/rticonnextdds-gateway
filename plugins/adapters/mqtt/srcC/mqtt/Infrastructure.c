@@ -116,7 +116,7 @@ DDS_ReturnCode_t RTI_MQTT_DDS_OctetSeq_to_string(
         goto done;
     }
     buff_len = DDS_OctetSeq_get_length(self);
-    str_buff = DDS_OctetSeq_get_contiguous_buffer(self);
+    str_buff = (const char *) DDS_OctetSeq_get_contiguous_buffer(self);
     str = (char *) RTI_MQTT_Heap_allocate(sizeof(char) * (buff_len + 1));
     if (str == NULL) {
         RTI_MQTT_HEAP_ALLOCATE_FAILED(sizeof(char) * (buff_len + 1))
