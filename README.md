@@ -57,7 +57,7 @@ you should add the following flag when calling CMake:
 ## Documentation
 
 The documentation can be found online in the following link:
-https://community.rti.com/static/documentation/rti-gateway/latest/index.html
+https://community.rti.com/static/documentation/gateway/current/index.html
 
 ### Building Documentation Locally
 
