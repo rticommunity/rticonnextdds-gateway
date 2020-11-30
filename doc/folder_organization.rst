@@ -21,7 +21,7 @@ Repository Organization
 
 - **LICENSE**:
 
-  - Text file stating the licensing of the |RTI_CONNEXT_GATEWAYS|.
+  - Text file stating the licensing of the |RTI_GATEWAY|.
 
 - **README**:
 
@@ -45,7 +45,7 @@ Repository Organization
 
 - **doc/**:
 
-  - Top-level documentation for |RTI_CONNEXT_GATEWAYS| (i.e. this manual).
+  - Top-level documentation for |RTI_GATEWAY| (i.e. this manual).
 
   - Plugins and other helper modules store their documentation in a ``doc/``
     subdirectory.
@@ -78,7 +78,7 @@ Repository Organization
 Build System
 ============
 
-All |RTI_CONNEXT_GATEWAYS| plugins shall adopt a common, CMake-based,
+All |RTI_GATEWAY| plugins shall adopt a common, CMake-based,
 build system, which along with the utilities provided by the SDK, will
 make it easier to create more portable and consistent plugins.
 

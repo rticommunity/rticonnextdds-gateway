@@ -6,7 +6,7 @@
 Installation
 ************
 
-|RTI_CONNEXT_GATEWAYS| is distributed in source format. You can clone the source repository
+|RTI_GATEWAY| is distributed in source format. You can clone the source repository
 using ``git``:
 
 .. code-block:: sh

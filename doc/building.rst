@@ -6,7 +6,7 @@
 Building from source
 ********************
 
-Since |RTI_CONNEXT_GATEWAYS| is distributed in source format, it must
+Since |RTI_GATEWAY| is distributed in source format, it must
 be compiled into a shared library before it can be used by |RS|.
 
 The code can be built using |CMAKE|, version 3.7.0 or greater.
@@ -142,7 +142,7 @@ RTIGATEWAY_ENABLE_DOCS
 
 :Required: No
 :Default: ``ON``
-:Description: If enabled, the |RTI_CONNEXT_GATEWAYS| user manual (this document)
+:Description: If enabled, the |RTI_GATEWAY| user manual (this document)
               will be built, along with specific documentation for every enabled
               plugin. Make sure to have Sphinx, breathe and doxygen installed.
 

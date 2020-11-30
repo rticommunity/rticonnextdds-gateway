@@ -14,6 +14,6 @@ Examples
 ^^^^^^^^
 
 There is only one example that uses |RSTSFM|, it is located under
-``<|RTI_CONNEXT_GATEWAYS|'s main folder>/examples/mqtt/mqtt-shapes``.
+``<RTI Gateway main folder>/examples/mqtt/mqtt-shapes``.
 If you have provided CMake with an installation directory, it will be under
 ``<CMake Installation directory>/examples/mqtt/mqtt-shapes``.
