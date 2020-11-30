@@ -1,6 +1,4 @@
-.. |br| raw:: html
-
-   <br />
+.. include:: vars.rst
 
 
 ********************
@@ -26,7 +24,7 @@ as `ctype`).
 
 The general model of a *Processor* is shown in figure below.
 
-.. figure:: ./images/RouterProcessorComponent.svg
+.. figure:: _static/img/RouterProcessorComponent.svg
     :align: center
     :width: 700px
 
@@ -243,7 +241,7 @@ API Overview
 
 The Processor Python API component model is shown below.
 
-.. figure:: ./images/RouterPythonProcessor.svg
+.. figure:: _static/img/RouterPythonProcessor.svg
     :align: center
 
 
@@ -280,14 +278,6 @@ API Documentation
 -----------------
 
 Documentation for all the components of the Processor API is embedded in
-the definition of the types in the `proc` module. You can build the documentation
-to generate an html output as follows:
-
-.. code-block:: bash
-
-    cd ./api_doc
-    sphinx-build . <output_dir>
-
-where ``<output_dir`` is the directory path where you want the generated html
-files to be placed.
+the definition of the types in the `proc` module and also part of this
+page in :ref:`section-api-reference`.
 

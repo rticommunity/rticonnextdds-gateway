@@ -77,6 +77,6 @@ install(
 ###############################################################################
 # Build documentation if they are enabled
 
-#if (RTIGATEWAY_ENABLE_DOCS)
-#    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/doc")
-#endif()
+if (RTIGATEWAY_ENABLE_DOCS)
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/doc")
+endif()
