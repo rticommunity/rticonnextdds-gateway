@@ -98,7 +98,7 @@ file contains the RTI Gateway documentation:
 
 - *&lt;RTI Gateway folder&gt;/install/doc/index.html*
 
-Specific documentation for the plugins can be found find them in the section
+Specific documentation for the plugins can be found in the section
 `1.4. RTI Gateway Plugins`.
 
 Further information about how to customize the build can be found in the
