@@ -11,7 +11,7 @@ using ``git``:
 
 .. code-block:: sh
 
-    git clone --recurse-submodule https://github.com/rticommunity/rticonnextdds-gateways.git
+    git clone --recurse-submodule https://github.com/rticommunity/rticonnextdds-gateway.git
 
 
 The ``--recurse-submodule`` option is required to clone additional
@@ -31,7 +31,7 @@ External Librarires
 |RSMODBUS|
 ~~~~~~~~~~
 
-:libmodbus: :link_libmodbus:`Libmodus <>` is used as implementation of the
+:libmodbus: :link_libmodbus:`Libmodbus <>` is used as implementation of the
             client and server of the Modbus protocol.
 
 |RSMQTT|
