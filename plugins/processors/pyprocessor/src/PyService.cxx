@@ -35,7 +35,42 @@ RTI_RoutingServiceProperty& to_native(
     RTI_PY_TO_NATIVE_MEMBER(py_dict, dest, service_name, Unicode);
     RTI_PY_TO_NATIVE_MEMBER(py_dict, dest, enforce_xsd_validation, Bool);
     RTI_PY_TO_NATIVE_MEMBER(py_dict, dest, service_verbosity, Long);
+    switch(dest.service_verbosity) {
+    case 0:
+        dest.service_verbosity = RTI_ROUTING_SERVICE_LOG_VERBOSITY_SILENT;
+        break;
+    case 1:
+        dest.service_verbosity = RTI_ROUTING_SERVICE_LOG_VERBOSITY_EXCEPTIONS;
+        break;
+    case 2:
+        dest.service_verbosity = RTI_ROUTING_SERVICE_LOG_VERBOSITY_WARNINGS;
+        break;
+    
+    default:
+        dest.service_verbosity = RTI_ROUTING_SERVICE_LOG_VERBOSITY_ALL;
+    }
+
     RTI_PY_TO_NATIVE_MEMBER(py_dict, dest, dds_verbosity, Long);
+    switch(dest.dds_verbosity) {
+    case 0:
+        dest.dds_verbosity = NDDS_CONFIG_LOG_VERBOSITY_SILENT;
+        break;
+    case 1:
+        dest.dds_verbosity = NDDS_CONFIG_LOG_VERBOSITY_ERROR;
+        break;
+    case 2:
+        dest.dds_verbosity = NDDS_CONFIG_LOG_VERBOSITY_WARNING;
+        break;
+    case 3:
+        dest.dds_verbosity =
+                NDDS_CONFIG_LOG_VERBOSITY_STATUS_LOCAL
+                | NDDS_CONFIG_LOG_VERBOSITY_STATUS_REMOTE;
+        break;
+    default:
+        dest.dds_verbosity =
+                NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL;
+    }
+    
     RTI_PY_TO_NATIVE_MEMBER(py_dict, dest, domain_id_base, Long);
     RTI_PY_TO_NATIVE_MEMBER(py_dict, dest, plugin_search_path, Unicode);
     RTI_PY_TO_NATIVE_MEMBER(py_dict, dest, dont_start_service, Bool);
@@ -57,7 +92,7 @@ PyObject* PyService::start(PyService *self, PyObject *Py_UNUSED(ignored))
         PyErr_SetString(PyExc_RuntimeError, "error starting service");
         return NULL;
     }
-
+    
     Py_RETURN_NONE;
 }
 
@@ -103,6 +138,8 @@ PyObject* PyService::new_service(
     RTI_RoutingServiceProperty_copy(
             &native_property,
             &RTI_ROUTING_SERVICE_PROPERTY_DEFAULT);
+    native_property.service_verbosity = 0;
+    native_property.dds_verbosity = 0;
     PyService *py_service = NULL;
     try {
         if (py_dict != NULL) {
@@ -149,7 +186,8 @@ static PyMethodDef PyService_g_methods[] = {
 
 PyService::PyService(
         const RTI_RoutingServiceProperty& property)
-        :PyNativeWrapper(RTI_RoutingService_new(&property))
+        :PyNativeWrapper(RTI_RoutingService_new(&property)),
+        state_(NULL)
 
 {
     if (native_ == NULL) {

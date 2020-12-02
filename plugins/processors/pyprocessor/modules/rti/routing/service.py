@@ -7,7 +7,7 @@ class RoutingService:
 
     @staticmethod
     def init():
-        rs_lib_path = util.find_library('rtipyroutingserviced')
+        rs_lib_path = util.find_library('rtirspyprocessor')
         if rs_lib_path is None:
             raise ImportError('RoutingService native library not found.')
         rs_lib = PyDLL(rs_lib_path)

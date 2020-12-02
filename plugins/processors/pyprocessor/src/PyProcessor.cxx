@@ -84,6 +84,8 @@ PyProcessor::create_native(
         const struct RTI_RoutingServiceProperties *native_properties,
         RTI_RoutingServiceEnvironment *environment)
 {
+    PyGilScopedHandler gil_handler;
+
     PyProcessor *forwarder = NULL;
     try {
         PyRoute *py_route = new PyRoute(native_route);        
@@ -104,6 +106,7 @@ PyProcessor::create_native(
                 "unexpected exception");
     }
 
+
     return (forwarder != NULL) ? forwarder->native() : NULL;
 }
 
@@ -112,6 +115,8 @@ void PyProcessor::delete_native(
         RTI_RoutingServiceProcessor *native_processor,
         RTI_RoutingServiceEnvironment *environment)
 {
+    PyGilScopedHandler gil_handler;
+    
     PyProcessor *processor_forwarder =
             static_cast<PyProcessor*> (native_processor->processor_data);
     try {
@@ -125,7 +130,7 @@ void PyProcessor::delete_native(
         RTI_RoutingServiceEnvironment_set_error(
                 environment,
                 "unexpected exception");
-    }
+    };
 }
 
 RTI_RoutingServiceProcessor* PyProcessor::native()
@@ -138,19 +143,9 @@ void PyProcessor::forward_on_route_event(
         void *native_processor_data,
         RTI_RoutingServiceRouteEvent *native_route_event,
         RTI_RoutingServiceEnvironment *environment)
-{
-    PyGILState_STATE gstate = PyGILState_UNLOCKED;
-    bool needs_gil = false;
-    if (PyServiceGlobals::instance().from_service()) {
-        PyThreadState *tstate = PyThreadState_Swap(NULL);
-        if (tstate == NULL) {
-            needs_gil = true;
-            gstate = PyGILState_Ensure();
-        } else {
-            PyThreadState_Swap(tstate);
-        }
-    }
-
+{   
+    PyGilScopedHandler gil_handler;
+    
     PyProcessor *forwarder =
             static_cast<PyProcessor*> (native_processor_data);
 
@@ -335,11 +330,7 @@ void PyProcessor::forward_on_route_event(
                 environment,
                 "%s",
                 "unexpected exception");
-    }
-
-    if (needs_gil) {
-        PyGILState_Release(gstate);
-    }
+    }   
 }
 
 
@@ -432,6 +423,11 @@ PyProcessorPlugin::PyProcessorPlugin(
     // Check module properties
     property_.module_path(MODULE_PATH_VALUE_DEFAULT);
 
+    if (PyServiceGlobals::instance().from_service()) {
+        //PyEval_RestoreThread(PyServiceGlobals::instance().assert_state());
+        PyGILState_Ensure();
+    }
+
     for (int i = 0; i < native_properties->count; i++) {
         if (MODULE_PATH_PROPERTY_NAME
                 == native_properties->properties[i].name) {
@@ -483,6 +479,18 @@ PyProcessorPlugin::PyProcessorPlugin(
     }
 
     load_module();
+
+    /* 
+     * IMPORTANT: When running RS executable we need to relinquish the control
+     * of this thread of the GIL. The thread that instantiates the
+     * PyProcessorPlugin will be the 'main' thread and hence the one currently
+     * onwing the GIL. 
+     */
+    if (PyServiceGlobals::instance().from_service()) {
+        PyGILState_Release(PyGILState_LOCKED);
+    } else {
+        PyEval_SaveThread();
+    }
 }
 
 const PyProcessorPluginProperty& PyProcessorPlugin::property() const
@@ -653,7 +661,7 @@ PyProcessorPlugin::create_plugin(
             "RTI_RoutingServiceProcessorPlugin");
     RTI_RoutingServiceProcessorPlugin_initialize(native_plugin);
 
-    // TODO: retrieve version from python
+    PyServiceGlobals::instance();
 
     // Initialize native implementation
     native_plugin->processor_plugin_data =

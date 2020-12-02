@@ -37,19 +37,62 @@ const std::string PyServiceGlobals::SERVICE_MODULE_NAME = "rti.routing.service";
 const std::string PyServiceGlobals::PROCESSOR_MODULE_NAME = "rti.routing.proc";
 
 PyServiceGlobals::PyServiceGlobals()
-        :service_initd_(false)
+        :service_initd_(false),
+        tss_factory_(RTIOsapiThread_createTssFactory()),
+        state_key_(0),
+        main_thread_id_(RTIOsapiThread_getCurrentThreadID())
 {
-    Py_Initialize();
+    RTIOsapiThread_createKey(&state_key_, tss_factory_);
+    if (!Py_IsInitialized()) {
+        Py_Initialize();
+    }
+
+    main_thread_state_ = PyThreadState_Get();
+    RTIOsapiThread_setTss(state_key_, main_thread_state_);
+    
 }
 
 
 PyServiceGlobals::~PyServiceGlobals()
 {
-    //Py_Finalize();
+    cleanup_states();
+    if (!service_initd_) {
+        PyEval_RestoreThread(PyServiceGlobals::instance().assert_state());        
+        Py_Finalize();
+    }
+    
+    if (tss_factory_ != NULL) {
+        RTIOsapiThread_deleteKey(tss_factory_, state_key_);
+        RTIOsapiThread_deleteTssFactory(tss_factory_);
+    }
+}
+
+PyThreadState * PyServiceGlobals::assert_state()
+{   
+    PyThreadState *state = reinterpret_cast<PyThreadState *>(
+            RTIOsapiThread_getTss(state_key_));
+    if (state == NULL) {
+        state = PyThreadState_New(main_thread_state_->interp);
+        RTIOsapiThread_setTss(state_key_, state);
+    }
+
+    return state;
+}
+
+void PyServiceGlobals::cleanup_states()
+{
+    for (auto state : states_) {
+        PyThreadState_Delete(state);
+    }
+}
+
+bool PyServiceGlobals::is_main()
+{
+    return (RTIOsapiThread_getCurrentThreadID()  == main_thread_id_);
 }
 
 PyServiceGlobals& PyServiceGlobals::instance()
-{
+{    
     static PyServiceGlobals _instance;
 
     return _instance;

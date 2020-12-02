@@ -47,6 +47,8 @@ public:
     static PyObject* started(PyService *self, void *closure);
     static PyObject* new_service(PyTypeObject *type, PyObject *args, PyObject *kwds);
 
+private:
+    PyThreadState* state_;
 };
 
 } } }
