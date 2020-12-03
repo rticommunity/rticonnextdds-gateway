@@ -37,8 +37,8 @@ public:
             const std::string& class_name,
             const std::string& module);
 
-    void class_name(const std::string& class_name);
-    const std::string& class_name() const;
+    void create_function(const std::string& class_name);
+    const std::string& create_function() const;
     void module_path(const std::string& module_path);
     const std::string& module_path() const;
     void module(const std::string& module_name);
@@ -47,7 +47,7 @@ public:
     bool autoreload() const;
 
 private:
-    std::string class_name_;
+    std::string create_function_;
     std::string module_;
     std::string module_path_;
     bool module_autoreload_;
@@ -60,7 +60,7 @@ public:
     static const std::string BASE_PROCESSOR_TYPE_NAME;
     static const std::string MODULE_PROPERTY_NAME;
     static const std::string MODULE_PATH_PROPERTY_NAME;
-    static const std::string CLASS_NAME_PROPERTY_NAME;
+    static const std::string CREATE_FUNCTION_PROPERTY_NAME;
     static const std::string MODULE_AUTORELOAD_PROPERTY_NAME;
     static const std::string MODULE_PATH_VALUE_DEFAULT;
 
@@ -111,7 +111,7 @@ private:
     /*
      * @brief Reference to the create_processor function
      */
-    PyObject *processor_class_;
+    PyObject *create_function_;
     /* indicates whether module is reloading before each event */
     bool autoreload_;
 };

@@ -163,10 +163,9 @@ void PyProcessor::forward_on_route_event(
         case RTI_ROUTING_SERVICE_ROUTE_EVENT_PERIODIC_ACTION:
         {
             if (PyObject_CallMethod(
-                    forwarder->plugin_->processor_class_,
-                    PyProcessor_METHOD_NAMES[event_kind],
-                    "OO",
                     forwarder->py_processor_,
+                    PyProcessor_METHOD_NAMES[event_kind],
+                    "O",
                     forwarder->py_route_) == NULL) {
                 PyErr_Print();
                 throw dds::core::Error(std::string(
@@ -190,10 +189,9 @@ void PyProcessor::forward_on_route_event(
                     static_cast<PyInput::native_type *> (affected_entity),
                     py_input.get());
             if (PyObject_CallMethod(
-                    forwarder->plugin_->processor_class_,
-                    PyProcessor_METHOD_NAMES[event_kind],
-                    "OOO",
                     forwarder->py_processor_,
+                    PyProcessor_METHOD_NAMES[event_kind],
+                    "OO",
                     forwarder->py_route_,
                     py_input.get()) == NULL) {
                 PyErr_Print();
@@ -215,10 +213,9 @@ void PyProcessor::forward_on_route_event(
             PyObjectGuard py_input =
                     forwarder->py_route_->input(native_input);
             if (PyObject_CallMethod(
-                    forwarder->plugin_->processor_class_,
-                    PyProcessor_METHOD_NAMES[event_kind],
-                    "OOO",
                     forwarder->py_processor_,
+                    PyProcessor_METHOD_NAMES[event_kind],
+                    "OO",
                     forwarder->py_route_,
                     py_input.get()) == NULL) {
                 PyErr_Print();
@@ -246,10 +243,9 @@ void PyProcessor::forward_on_route_event(
                     static_cast<PyOutput::native_type *> (affected_entity),
                     py_output.get());
             if (PyObject_CallMethod(
-                    forwarder->plugin_->processor_class_,
-                    PyProcessor_METHOD_NAMES[event_kind],
-                    "OOO",
                     forwarder->py_processor_,
+                    PyProcessor_METHOD_NAMES[event_kind],
+                    "OO",
                     forwarder->py_route_,
                     py_output.get()) == NULL) {
                 PyErr_Print();
@@ -272,10 +268,9 @@ void PyProcessor::forward_on_route_event(
             PyObjectGuard py_output =
                     forwarder->py_route_->output(native_output);
             if (PyObject_CallMethod(
-                    forwarder->plugin_->processor_class_,
-                    PyProcessor_METHOD_NAMES[event_kind],
-                    "OOO",
                     forwarder->py_processor_,
+                    PyProcessor_METHOD_NAMES[event_kind],
+                    "OO",
                     forwarder->py_route_,
                     py_output.get()) == NULL) {
                 PyErr_Print();
@@ -301,10 +296,9 @@ void PyProcessor::forward_on_route_event(
             }
 
             if (PyObject_CallMethod(
-                    forwarder->plugin_->processor_class_,
-                    PyProcessor_METHOD_NAMES[event_kind],
-                    "OO",
                     forwarder->py_processor_,
+                    PyProcessor_METHOD_NAMES[event_kind],
+                    "O",
                     forwarder->py_route_) == NULL) {
                 PyErr_Print();
                 throw dds::core::Error(std::string(
@@ -347,7 +341,7 @@ PyProcessorPluginProperty::PyProcessorPluginProperty()
 PyProcessorPluginProperty::PyProcessorPluginProperty(
         const std::string& class_name,
         const std::string& module_name = "")
-        : class_name_(class_name),
+        : create_function_(class_name),
         module_(module_name),
         module_autoreload_(false)
 {
@@ -355,14 +349,14 @@ PyProcessorPluginProperty::PyProcessorPluginProperty(
 }
 
 
-void PyProcessorPluginProperty::class_name(const std::string& class_name)
+void PyProcessorPluginProperty::create_function(const std::string& class_name)
 {
-    class_name_ = class_name;
+    create_function_ = class_name;
 }
 
-const std::string& PyProcessorPluginProperty::class_name() const
+const std::string& PyProcessorPluginProperty::create_function() const
 {
-    return class_name_;
+    return create_function_;
 }
 
 void PyProcessorPluginProperty::module(const std::string& module_name)
@@ -407,8 +401,8 @@ const std::string PyProcessorPlugin::MODULE_PATH_PROPERTY_NAME =
 
 const std::string PyProcessorPlugin::MODULE_PATH_VALUE_DEFAULT = ".";
 
-const std::string PyProcessorPlugin::CLASS_NAME_PROPERTY_NAME =
-        "rti.routing.proc.py.class_name";
+const std::string PyProcessorPlugin::CREATE_FUNCTION_PROPERTY_NAME =
+        "rti.routing.proc.py.create_function";
 
 const std::string PyProcessorPlugin::MODULE_AUTORELOAD_PROPERTY_NAME =
         "rti.routing.proc.py.module.autoreload";
@@ -417,16 +411,15 @@ const std::string PyProcessorPlugin::MODULE_AUTORELOAD_PROPERTY_NAME =
 PyProcessorPlugin::PyProcessorPlugin(
         const struct RTI_RoutingServiceProperties *native_properties)
         : pyproc_type_(NULL),
-          processor_class_(NULL)
+          create_function_(NULL)
 {
-    PyServiceGlobals::instance();
     // Check module properties
     property_.module_path(MODULE_PATH_VALUE_DEFAULT);
 
-    if (PyServiceGlobals::instance().from_service()) {
-        //PyEval_RestoreThread(PyServiceGlobals::instance().assert_state());
-        PyGILState_Ensure();
-    }
+//    if (PyServiceGlobals::instance().from_service()) {
+//        //PyEval_RestoreThread(PyServiceGlobals::instance().assert_state());
+//        PyGILState_Ensure();
+//    }
 
     for (int i = 0; i < native_properties->count; i++) {
         if (MODULE_PATH_PROPERTY_NAME
@@ -435,9 +428,9 @@ PyProcessorPlugin::PyProcessorPlugin(
         } else if (MODULE_PROPERTY_NAME
                 == native_properties->properties[i].name) {
             property_.module((char *) native_properties->properties[i].value);
-        } else if (CLASS_NAME_PROPERTY_NAME
+        } else if (CREATE_FUNCTION_PROPERTY_NAME
                 == native_properties->properties[i].name) {
-            property_.class_name((char *) native_properties->properties[i].value);
+            property_.create_function((char *) native_properties->properties[i].value);
         } else if (MODULE_AUTORELOAD_PROPERTY_NAME
                 == native_properties->properties[i].name) {
             RTIBool boolValue = false;
@@ -460,7 +453,7 @@ PyProcessorPlugin::PyProcessorPlugin(
                 "PyProcessorPlugin: module name must be provided");
     }
 
-    if (property_.class_name().empty()) {
+    if (property_.create_function().empty()) {
         throw dds::core::Error(
                 "PyProcessorPlugin: Processor class name must be provided");
     }
@@ -480,17 +473,17 @@ PyProcessorPlugin::PyProcessorPlugin(
 
     load_module();
 
-    /* 
+    /*
      * IMPORTANT: When running RS executable we need to relinquish the control
      * of this thread of the GIL. The thread that instantiates the
      * PyProcessorPlugin will be the 'main' thread and hence the one currently
-     * onwing the GIL. 
+     * onwing the GIL.
      */
-    if (PyServiceGlobals::instance().from_service()) {
-        PyGILState_Release(PyGILState_LOCKED);
-    } else {
-        PyEval_SaveThread();
-    }
+//    if (PyServiceGlobals::instance().from_service()) {
+//        PyGILState_Release(PyGILState_LOCKED);
+//    } else {
+//        PyEval_SaveThread();
+//    }
 }
 
 const PyProcessorPluginProperty& PyProcessorPlugin::property() const
@@ -570,20 +563,15 @@ void PyProcessorPlugin::load_module()
     add_type<PySampleType>();
     add_type<PyLoanedSamplesType>();
 
-
-    processor_class_ = PyDict_GetItemString(
+    create_function_ = PyDict_GetItemString(
             user_dict,
-            property_.class_name().c_str());
-    if (processor_class_ == NULL) {
+            property_.create_function().c_str());
+    if (create_function_ == NULL) {
         PyErr_Print();
         throw dds::core::Error("load_module: create processor method not found");
     }
-    if (!PyCallable_Check(processor_class_)) {
+    if (!PyCallable_Check(create_function_)) {
         throw dds::core::Error("load_module: create processor is not callable");
-    }
-    if (!PyObject_IsSubclass(processor_class_, find_pyproc_type("Processor"))) {
-        PyErr_Print();
-        throw dds::core::Error("PyProcessorPlugin: create_processor must return an implementation of Processor");
     }
 }
 
@@ -604,20 +592,15 @@ void PyProcessorPlugin::reload()
         throw dds::core::Error("load_module: error getting user dictionary");
     }
 
-    processor_class_ = PyDict_GetItemString(
+    create_function_ = PyDict_GetItemString(
             user_dict,
-            property_.class_name().c_str());
-    if (processor_class_ == NULL) {
+            property_.create_function().c_str());
+    if (create_function_ == NULL) {
         PyErr_Print();
         throw dds::core::Error("reload: create processor method not found");
     }
-    if (!PyCallable_Check(processor_class_)) {
+    if (!PyCallable_Check(create_function_)) {
         throw dds::core::Error("reload: create processor is not callable");
-    }
-    if (!PyObject_IsSubclass(processor_class_, find_pyproc_type("Processor"))) {
-        PyErr_Print();
-        throw dds::core::Error(
-                "reload: create_processor must return an implementation of Processor");
     }
 }
 
@@ -629,17 +612,17 @@ PyProcessorPlugin::~PyProcessorPlugin()
 PyObject* PyProcessorPlugin::create_processor(
         PyRoute *py_route,
         PyObject *py_properties)
-{
-    PyObject *py_proc = PyObject_CallFunction(
-            processor_class_,
-            "OO",
+{   
+    PyObject *py_proc = PyObject_CallFunctionObjArgs(
+            create_function_,
             py_route,
-            py_properties);
+            py_properties,
+            NULL /* end of params */);
     if (py_proc == NULL) {
         PyErr_Print();
         throw dds::core::Error("PyProcessorPlugin: failed to create processor from plugin");
     }
-    if (!PyObject_IsInstance(py_proc, find_pyproc_type("Processor"))) {
+    if (!PyObject_IsInstance(py_proc, pyproc_type_)) {
         PyErr_Print();
         Py_DECREF(py_proc);
         throw dds::core::Error("PyProcessorPlugin: create_processor must return an implementation of Processor");
@@ -660,8 +643,6 @@ PyProcessorPlugin::create_plugin(
             native_plugin,
             "RTI_RoutingServiceProcessorPlugin");
     RTI_RoutingServiceProcessorPlugin_initialize(native_plugin);
-
-    PyServiceGlobals::instance();
 
     // Initialize native implementation
     native_plugin->processor_plugin_data =
@@ -718,8 +699,19 @@ struct RTI_RoutingServiceProcessorPlugin * PyProcessorPlugin_create_processor_pl
         const struct RTI_RoutingServiceProperties * native_properties,
         RTI_RoutingServiceEnvironment *environment)
 {
+    RTI_RoutingServiceProcessorPlugin *plugin = NULL;
+    bool py_init = Py_IsInitialized();
+
+    if (PyServiceGlobals::instance().from_service()) {
+        PyGILState_Ensure();
+    } else {
+        if (py_init) {
+            PyEval_RestoreThread(PyServiceGlobals::instance().assert_state());
+        } 
+    }
+    
     try {
-        return PyProcessorPlugin::create_plugin(
+        plugin = PyProcessorPlugin::create_plugin(
                 new PyProcessorPlugin(native_properties));
     } catch (const std::exception& ex) {
         RTI_RoutingServiceEnvironment_set_error(
@@ -728,7 +720,19 @@ struct RTI_RoutingServiceProcessorPlugin * PyProcessorPlugin_create_processor_pl
                 ex.what());
     } catch (...) {}
 
-    return NULL;
+    /*
+     * IMPORTANT: When running RS executable we need to relinquish the control
+     * of this thread of the GIL. The thread that instantiates the
+     * PyProcessorPlugin will be the 'main' thread and hence the one currently
+     * onwing the GIL.
+     */
+    if (PyServiceGlobals::instance().from_service()) {
+        PyGILState_Release(PyGILState_LOCKED);
+    } else {
+        PyEval_SaveThread();
+    }
+
+    return plugin;
 }
 
 } } }

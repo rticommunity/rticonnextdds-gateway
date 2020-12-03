@@ -54,10 +54,22 @@ PyObject* PyOutput::write(PyOutput *self, PyObject *args)
             out_info = reinterpret_cast<void *>(&self->output_info_);
         }
 
-        if (!RTI_RoutingServiceOutput_write_sample(
+        /*
+         * Relinquish GIL to allow other RS session threads to execute python.
+         * We do this for the write() operation which is I/O and may also
+         * block.
+         */
+        bool ok;
+        Py_BEGIN_ALLOW_THREADS
+
+        ok = RTI_RoutingServiceOutput_write_sample(
                 self->get(),
                 out_data,
-                out_info)) {
+                out_info);
+
+        Py_END_ALLOW_THREADS
+                
+        if (!ok) {
             throw dds::core::Error("error writing sample");
         }
     } catch (const std::exception &ex) {

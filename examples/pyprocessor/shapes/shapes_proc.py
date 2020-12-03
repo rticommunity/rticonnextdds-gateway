@@ -1,19 +1,18 @@
 import os
 import sys
 import time
+from typing import Dict
 
 sys.path.insert(0, os.path.abspath('../../../modules'))
 
 from rti.routing import proc
 
+
 class ShapesProcessor(proc.Processor):
-    def __init__(self, route, properties):
+    def __init__(self, route: proc.Route, properties: Dict):
         pass
 
-    def on_input_enabled(self, route, input):
-        pass
-
-    def on_data_available(self, route):
+    def on_data_available(self, route: proc.Route) -> None:
         # Use squares as 'leading' input. For each Square instance, get the
         # equivalent instance from the Circle topic
         squares = route.inputs['Square'].read()
@@ -31,3 +30,7 @@ class ShapesProcessor(proc.Processor):
                 route.outputs['Triangle'].write(shape)
                 # clear cache
                 route.inputs['Square'].take(dict(instance=shape.info['instance_handle']))
+
+
+def create_processor(route: proc.Route, properties: Dict) -> proc.Processor:
+    return ShapesProcessor(route, properties)
