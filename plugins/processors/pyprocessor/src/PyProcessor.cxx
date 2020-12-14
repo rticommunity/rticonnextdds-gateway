@@ -143,188 +143,190 @@ void PyProcessor::forward_on_route_event(
         void *native_processor_data,
         RTI_RoutingServiceRouteEvent *native_route_event,
         RTI_RoutingServiceEnvironment *environment)
-{   
+{
     PyGilScopedHandler gil_handler;
+    bool ok = false;
     
     PyProcessor *forwarder =
             static_cast<PyProcessor*> (native_processor_data);
 
-    try {
-        if (forwarder->plugin_->property().autoreload()) {
-            forwarder->plugin_->reload();
-        }
-
-        RTI_RoutingServiceRouteEventKind event_kind =
+    RTI_RoutingServiceRouteEventKind event_kind =
                 RTI_RoutingServiceRouteEvent_get_kind(native_route_event);
-        // build up wrapper objects based on the event
-        switch (event_kind) {
 
-        case RTI_ROUTING_SERVICE_ROUTE_EVENT_DATA_ON_INPUTS:
-        case RTI_ROUTING_SERVICE_ROUTE_EVENT_PERIODIC_ACTION:
-        {
-            if (PyObject_CallMethod(
-                    forwarder->py_processor_,
-                    PyProcessor_METHOD_NAMES[event_kind],
-                    "O",
-                    forwarder->py_route_) == NULL) {
-                PyErr_Print();
-                throw dds::core::Error(std::string(
-                        PyProcessor_METHOD_NAMES[event_kind])
-                        + ": error calling Python processor");
-            }
-
+    if (forwarder->plugin_->property().autoreload()) {
+        try {
+            forwarder->plugin_->reload();
+        } catch (const std::exception& ex) {
+            RTI_RoutingServiceEnvironment_set_error(
+                    environment,
+                    "%s",
+                    ex.what());
+            goto done;
+        } catch (...) {
+            RTI_RoutingServiceEnvironment_set_error(
+                    environment,
+                    "%s",
+                    "unexpected exception");
+            goto done;
         }
-            break;
+    }    
 
-        case RTI_ROUTING_SERVICE_ROUTE_EVENT_INPUT_ENABLED:
-        {
-            void *affected_entity =
-                    RTI_RoutingServiceRouteEvent_get_affected_entity(native_route_event);
-            void *event_data =
-                    RTI_RoutingServiceRouteEvent_get_event_data(native_route_event);
-            PyObjectGuard py_input = new PyInput(
-                    static_cast<PyInput::native_type *>(affected_entity),
-                    *(static_cast<int32_t*>(event_data)));
-            RTI_RoutingServiceInput_set_user_data(
-                    static_cast<PyInput::native_type *> (affected_entity),
-                    py_input.get());
-            if (PyObject_CallMethod(
-                    forwarder->py_processor_,
-                    PyProcessor_METHOD_NAMES[event_kind],
-                    "OO",
-                    forwarder->py_route_,
-                    py_input.get()) == NULL) {
-                PyErr_Print();
-                throw dds::core::Error(std::string(
-                        PyProcessor_METHOD_NAMES[event_kind])
-                        + ": error calling Python processor");
-            }
+    // build up wrapper objects based on the event
+    switch (event_kind) {
 
+    case RTI_ROUTING_SERVICE_ROUTE_EVENT_DATA_ON_INPUTS:
+    case RTI_ROUTING_SERVICE_ROUTE_EVENT_PERIODIC_ACTION:
+    {
+        if (PyObject_CallMethod(
+                forwarder->py_processor_,
+                PyProcessor_METHOD_NAMES[event_kind],
+                "O",
+                forwarder->py_route_) == NULL) {
+            PyErr_Print();
+            
+            goto done;
+        }
+        
+    }
+        break;
+
+    case RTI_ROUTING_SERVICE_ROUTE_EVENT_INPUT_ENABLED:
+    {
+        void *affected_entity =
+                RTI_RoutingServiceRouteEvent_get_affected_entity(native_route_event);
+        void *event_data =
+                RTI_RoutingServiceRouteEvent_get_event_data(native_route_event);
+        PyObjectGuard py_input = new PyInput(
+                static_cast<PyInput::native_type *> (affected_entity),
+                *(static_cast<int32_t*> (event_data)));
+        RTI_RoutingServiceInput_set_user_data(
+                static_cast<PyInput::native_type *> (affected_entity),
+                py_input.get());
+        if (PyObject_CallMethod(
+                forwarder->py_processor_,
+                PyProcessor_METHOD_NAMES[event_kind],
+                "OO",
+                forwarder->py_route_,
+                py_input.get()) == NULL) {
+            PyErr_Print();
+            goto done;
+        }
+
+        py_input.release();
+    }
+        break;
+
+    case RTI_ROUTING_SERVICE_ROUTE_EVENT_INPUT_DISABLED:
+    {
+        void *affected_entity =
+                RTI_RoutingServiceRouteEvent_get_affected_entity(native_route_event);
+        PyInput::native_type *native_input =
+                static_cast<PyInput::native_type *> (affected_entity);
+        PyObjectGuard py_input =
+                forwarder->py_route_->input(native_input);
+        if (PyObject_CallMethod(
+                forwarder->py_processor_,
+                PyProcessor_METHOD_NAMES[event_kind],
+                "OO",
+                forwarder->py_route_,
+                py_input.get()) == NULL) {
             py_input.release();
+            PyErr_Print();
+            goto done;
         }
-            break;
 
-        case RTI_ROUTING_SERVICE_ROUTE_EVENT_INPUT_DISABLED:
-        {
-            void *affected_entity =
-                    RTI_RoutingServiceRouteEvent_get_affected_entity(native_route_event);
-            PyInput::native_type *native_input =
-                    static_cast<PyInput::native_type *> (affected_entity);
-            PyObjectGuard py_input =
-                    forwarder->py_route_->input(native_input);
-            if (PyObject_CallMethod(
-                    forwarder->py_processor_,
-                    PyProcessor_METHOD_NAMES[event_kind],
-                    "OO",
-                    forwarder->py_route_,
-                    py_input.get()) == NULL) {
-                PyErr_Print();
-                py_input.release();
-                throw dds::core::Error(std::string(
-                        PyProcessor_METHOD_NAMES[event_kind])
-                        + ": error calling Python processor");
-            }
+        RTI_RoutingServiceInput_set_user_data(native_input, NULL);
+    }
+        break;
 
-            RTI_RoutingServiceInput_set_user_data(native_input, NULL);
+
+    case RTI_ROUTING_SERVICE_ROUTE_EVENT_OUTPUT_ENABLED:
+    {
+        void *affected_entity =
+                RTI_RoutingServiceRouteEvent_get_affected_entity(native_route_event);
+        void *event_data =
+                RTI_RoutingServiceRouteEvent_get_event_data(native_route_event);
+        PyObjectGuard py_output = new PyOutput(
+                static_cast<PyOutput::native_type *> (affected_entity),
+                *(static_cast<int32_t*> (event_data)));
+        RTI_RoutingServiceOutput_set_user_data(
+                static_cast<PyOutput::native_type *> (affected_entity),
+                py_output.get());
+        if (PyObject_CallMethod(
+                forwarder->py_processor_,
+                PyProcessor_METHOD_NAMES[event_kind],
+                "OO",
+                forwarder->py_route_,
+                py_output.get()) == NULL) {
+            PyErr_Print();
+            goto done;
         }
-            break;
+
+        py_output.release();
+    }
+        break;
 
 
-        case RTI_ROUTING_SERVICE_ROUTE_EVENT_OUTPUT_ENABLED:
-        {
-            void *affected_entity =
-                    RTI_RoutingServiceRouteEvent_get_affected_entity(native_route_event);
-            void *event_data =
-                    RTI_RoutingServiceRouteEvent_get_event_data(native_route_event);
-            PyObjectGuard py_output = new PyOutput(
-                    static_cast<PyOutput::native_type *>(affected_entity),
-                    *(static_cast<int32_t*>(event_data)));
-            RTI_RoutingServiceOutput_set_user_data(
-                    static_cast<PyOutput::native_type *> (affected_entity),
-                    py_output.get());
-            if (PyObject_CallMethod(
-                    forwarder->py_processor_,
-                    PyProcessor_METHOD_NAMES[event_kind],
-                    "OO",
-                    forwarder->py_route_,
-                    py_output.get()) == NULL) {
-                PyErr_Print();
-                throw dds::core::Error(std::string(
-                        PyProcessor_METHOD_NAMES[event_kind])
-                        + ": error calling Python processor");
-            }
-
+    case RTI_ROUTING_SERVICE_ROUTE_EVENT_OUTPUT_DISABLED:
+    {
+        void *affected_entity =
+                RTI_RoutingServiceRouteEvent_get_affected_entity(native_route_event);
+        PyOutput::native_type *native_output =
+                static_cast<PyOutput::native_type *> (affected_entity);
+        PyObjectGuard py_output =
+                forwarder->py_route_->output(native_output);
+        if (PyObject_CallMethod(
+                forwarder->py_processor_,
+                PyProcessor_METHOD_NAMES[event_kind],
+                "OO",
+                forwarder->py_route_,
+                py_output.get()) == NULL) {
             py_output.release();
-        }
-            break;
-
-
-        case RTI_ROUTING_SERVICE_ROUTE_EVENT_OUTPUT_DISABLED:
-        {
-            void *affected_entity =
-                    RTI_RoutingServiceRouteEvent_get_affected_entity(native_route_event);
-            PyOutput::native_type *native_output =
-                    static_cast<PyOutput::native_type *> (affected_entity);
-            PyObjectGuard py_output =
-                    forwarder->py_route_->output(native_output);
-            if (PyObject_CallMethod(
-                    forwarder->py_processor_,
-                    PyProcessor_METHOD_NAMES[event_kind],
-                    "OO",
-                    forwarder->py_route_,
-                    py_output.get()) == NULL) {
-                PyErr_Print();
-                py_output.release();
-                throw dds::core::Error(std::string(
-                        PyProcessor_METHOD_NAMES[event_kind])
-                        + ": error calling Python processor");
-            }
-
-            RTI_RoutingServiceOutput_set_user_data(native_output, NULL);
-        }
-            break;
-
-        case RTI_ROUTING_SERVICE_ROUTE_EVENT_ROUTE_STARTED:
-        case RTI_ROUTING_SERVICE_ROUTE_EVENT_ROUTE_STOPPED:
-        case RTI_ROUTING_SERVICE_ROUTE_EVENT_ROUTE_RUNNING:
-        case RTI_ROUTING_SERVICE_ROUTE_EVENT_ROUTE_PAUSED:
-        {
-            if (event_kind == RTI_ROUTING_SERVICE_ROUTE_EVENT_ROUTE_STARTED) {
-                forwarder->py_route_->started(true);
-            } else if (event_kind == RTI_ROUTING_SERVICE_ROUTE_EVENT_ROUTE_STOPPED) {
-                forwarder->py_route_->started(false);
-            }
-
-            if (PyObject_CallMethod(
-                    forwarder->py_processor_,
-                    PyProcessor_METHOD_NAMES[event_kind],
-                    "O",
-                    forwarder->py_route_) == NULL) {
-                PyErr_Print();
-                throw dds::core::Error(std::string(
-                        PyProcessor_METHOD_NAMES[event_kind])
-                        + ": error calling Python processor");
-            }
-        }
-            break;
-
-
-        default:
-            // nothing to do
-            break;
+            PyErr_Print();
+            goto done;
         }
 
-    } catch (const std::exception& ex) {
-        RTI_RoutingServiceEnvironment_set_error(
-                environment,
-                "%s",
-                ex.what());
-    } catch (...) {
-        RTI_RoutingServiceEnvironment_set_error(
-                environment,
-                "%s",
-                "unexpected exception");
+        RTI_RoutingServiceOutput_set_user_data(native_output, NULL);
+    }
+        break;
+
+    case RTI_ROUTING_SERVICE_ROUTE_EVENT_ROUTE_STARTED:
+    case RTI_ROUTING_SERVICE_ROUTE_EVENT_ROUTE_STOPPED:
+    case RTI_ROUTING_SERVICE_ROUTE_EVENT_ROUTE_RUNNING:
+    case RTI_ROUTING_SERVICE_ROUTE_EVENT_ROUTE_PAUSED:
+    {
+        if (event_kind == RTI_ROUTING_SERVICE_ROUTE_EVENT_ROUTE_STARTED) {
+            forwarder->py_route_->started(true);
+        } else if (event_kind == RTI_ROUTING_SERVICE_ROUTE_EVENT_ROUTE_STOPPED) {
+            forwarder->py_route_->started(false);
+        }
+
+        if (PyObject_CallMethod(
+                forwarder->py_processor_,
+                PyProcessor_METHOD_NAMES[event_kind],
+                "O",
+                forwarder->py_route_) == NULL) {
+            PyErr_Print();
+            goto done;
+        }
+    }
+        break;
+
+
+    default:
+        // nothing to do
+        break;
     }   
+
+    ok = true;
+done:
+            
+    if (!ok) {
+        RTI_RoutingServiceEnvironment_set_error(
+                environment,
+                "%s: error calling Python processor",
+                PyProcessor_METHOD_NAMES[event_kind]);
+    }
 }
 
 
@@ -416,11 +418,6 @@ PyProcessorPlugin::PyProcessorPlugin(
     // Check module properties
     property_.module_path(MODULE_PATH_VALUE_DEFAULT);
 
-//    if (PyServiceGlobals::instance().from_service()) {
-//        //PyEval_RestoreThread(PyServiceGlobals::instance().assert_state());
-//        PyGILState_Ensure();
-//    }
-
     for (int i = 0; i < native_properties->count; i++) {
         if (MODULE_PATH_PROPERTY_NAME
                 == native_properties->properties[i].name) {
@@ -472,18 +469,6 @@ PyProcessorPlugin::PyProcessorPlugin(
     }
 
     load_module();
-
-    /*
-     * IMPORTANT: When running RS executable we need to relinquish the control
-     * of this thread of the GIL. The thread that instantiates the
-     * PyProcessorPlugin will be the 'main' thread and hence the one currently
-     * onwing the GIL.
-     */
-//    if (PyServiceGlobals::instance().from_service()) {
-//        PyGILState_Release(PyGILState_LOCKED);
-//    } else {
-//        PyEval_SaveThread();
-//    }
 }
 
 const PyProcessorPluginProperty& PyProcessorPlugin::property() const
@@ -705,9 +690,7 @@ struct RTI_RoutingServiceProcessorPlugin * PyProcessorPlugin_create_processor_pl
     if (PyServiceGlobals::instance().from_service()) {
         PyGILState_Ensure();
     } else {
-        if (py_init) {
-            PyEval_RestoreThread(PyServiceGlobals::instance().assert_state());
-        } 
+        PyEval_RestoreThread(PyServiceGlobals::instance().assert_state());
     }
     
     try {

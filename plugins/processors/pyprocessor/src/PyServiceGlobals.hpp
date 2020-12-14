@@ -14,8 +14,10 @@
 #ifndef PYSERVICEGLOBALS_HPP
     #define PYSERVICEGLOBALS_HPP
 
+#include <string>
+#include <list>
+
 #include "Python.h"
-#include "NativeUtils.hpp"
 #include "osapi/osapi_thread.h"
 
 namespace rti { namespace routing { namespace py {

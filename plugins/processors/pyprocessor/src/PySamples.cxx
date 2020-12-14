@@ -190,13 +190,7 @@ PyLoanedSamples::PyLoanedSamples(
 
 PyLoanedSamples::~PyLoanedSamples()
 {
-    if (!RTI_RoutingServiceInput_return_loan(native_input_, &native_samples_)) {
-        PyErr_Format(
-                PyExc_RuntimeError,
-                "%s",
-                "PyLoanedSamples::~PyLoanedSamples:: error returning loaned samples");
-    }
-    Py_DECREF(py_list_);
+    PyLoanedSamples::return_loan(this);
 }
 
 
@@ -220,10 +214,71 @@ PyObject* PyLoanedSamples::iterator_next(PyObject* self)
     return PyIter_Next(self);
 }
 
+PyObject* PyLoanedSamples::return_loan(PyLoanedSamples *self)
+{
+    if (self->py_list_ == NULL) {
+        Py_RETURN_NONE;
+    }
+  
+    if (!RTI_RoutingServiceInput_return_loan(
+            self->native_input_,
+            &self->native_samples_)) {
+        PyErr_Format(
+                PyExc_RuntimeError,
+                "%s",
+                "PyLoanedSamples::~PyLoanedSamples:: error returning loaned samples");
+        Py_RETURN_NONE;
+    }
+    Py_DECREF(self->py_list_);
+    self->py_list_ = NULL;
+
+    Py_RETURN_NONE;
+}
+
+PyObject* PyLoanedSamples::__enter__(PyLoanedSamples *self)
+{
+    Py_INCREF(self);
+    return self;
+}
+
+PyObject* PyLoanedSamples::__exit__(
+        PyLoanedSamples *self,
+        PyObject *type,
+        PyObject *value,
+        PyObject *tb)
+{
+    PyLoanedSamples::return_loan(self);
+    
+    return PyBool_FromLong(0);
+}
+
 static PyMappingMethods PyLoanedSamples_g_mapping = {
     .mp_length = (lenfunc) PyLoanedSamples::count,
     .mp_subscript = (binaryfunc) PyLoanedSamples::binary,
     .mp_ass_subscript = NULL
+};
+
+static PyMethodDef PyLoanedSamples_g_methods[] = {
+    {
+        "__enter__",
+        (PyCFunction) PyLoanedSamples::__enter__,
+        METH_NOARGS,
+        ""
+    },
+    {
+        "__exit__",
+        (PyCFunction) PyLoanedSamples::__exit__,
+        METH_VARARGS,
+        ""
+    },
+    {
+        "return_loan",
+        (PyCFunction) PyLoanedSamples::return_loan,
+        METH_NOARGS,
+        "returns the current outstanding loan. This operation does nothing if"
+        "the loan has already been returned."
+    },
+    {NULL}  /* Sentinel */
 };
 
 PyTypeObject* PyLoanedSamplesType::type()
@@ -244,6 +299,7 @@ PyTypeObject* PyLoanedSamplesType::type()
         __loaned_samples_type.tp_flags = Py_TPFLAGS_DEFAULT;
         __loaned_samples_type.tp_doc = "LoanedSamples object";
         __loaned_samples_type.tp_new = NULL;
+        __loaned_samples_type.tp_methods = PyLoanedSamples_g_methods;
         _init = true;
     }
 

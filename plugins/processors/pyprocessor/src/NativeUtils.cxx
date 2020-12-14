@@ -2,6 +2,7 @@
 
 #include "dds_c/dds_c_string.h"
 #include "NativeUtils.hpp"
+#include "pystrhex.h"
 
 namespace rti { namespace routing { namespace py {
 
@@ -38,15 +39,15 @@ PyObject* from_native(
         const RTICdrOctet *byte_array,
         int32_t size)
 {
-    PyObject* py_bytes = PyBytes_FromStringAndSize(
+    PyObject* py_hex = _Py_strhex(
             (const char *) byte_array,
             size);
-    if (py_bytes == NULL) {
+    if (py_hex == NULL) {
         PyErr_Print();
         throw dds::core::Error("from_native: error creating byte array");
     }
 
-    return py_bytes;
+    return py_hex;
 }
 
 PyObject* from_native(
@@ -93,17 +94,17 @@ PyObject* from_native(const DDS_InstanceHandle_t& handle)
         throw dds::core::Error("from_native: error setting valid element");
     }
 
-    PyObjectGuard py_bytes = from_native(
+    PyObjectGuard py_hex = from_native(
             handle.keyHash.value,
             handle.keyHash.length);
-    if (py_bytes.get() == NULL) {
+    if (py_hex.get() == NULL) {
         PyErr_Print();
         throw dds::core::Error("from_native: error creating Python list");
     }
     if (PyDict_SetItemString(
             py_dict.get(),
             "key_hash",
-            py_bytes.get()) == -1) {
+            py_hex.get()) == -1) {
         PyErr_Print();
         throw dds::core::Error("from_native: error setting key_hash element");
     }

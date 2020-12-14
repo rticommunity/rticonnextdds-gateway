@@ -86,13 +86,20 @@ public:
             native_loaned_samples& native_samples,
             RTI_RoutingServiceInput *native_input);
 
-    ~PyLoanedSamples();
+    ~PyLoanedSamples();    
 
     /* python methods */
     static Py_ssize_t count(PyLoanedSamples *self);
     static PyObject* binary(PyLoanedSamples *self, PyObject *key);
     static PyObject* get_iterator(PyLoanedSamples *self);
     static PyObject* iterator_next(PyObject *self);
+    static PyObject* __enter__(PyLoanedSamples *self);
+    static PyObject* __exit__(
+            PyLoanedSamples *self,
+            PyObject *type,
+            PyObject *value,
+            PyObject *tb);
+    static PyObject* return_loan(PyLoanedSamples *self);
 
 
 private:

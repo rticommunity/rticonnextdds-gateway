@@ -1,4 +1,4 @@
-Example Code: Routing Service Processor
+Example Code: Shapes topics aggregation
 =======================================
 
 Below there are the instructions to run this example. All the commands

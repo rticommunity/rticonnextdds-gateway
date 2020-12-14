@@ -15,14 +15,14 @@ class ShapesProcessor(proc.Processor):
     def on_data_available(self, route: proc.Route) -> None:
         # Use squares as 'leading' input. For each Square instance, get the
         # equivalent instance from the Circle topic
-        squares = route.inputs['Square'].read()
+        with route.inputs['Square'].read() as squares
         for shape in squares:
             if shape.valid_data:
                 # read equivalent existing instance in the Circles Topic
                 selector = dict(instance=shape.info['instance_handle'])
-                circles = route.inputs['Circle'].read(selector)
-                if len(circles) != 0 and circles[0].valid_data:
-                    shape.data['shapesize'] = circles[0].data['y']
+                with oute.inputs['Circle'].read(selector) as circles
+                    if len(circles) != 0 and circles[0].valid_data:
+                        shape.data['shapesize'] = circles[0].data['y']
 
                 route.outputs['Triangle'].write(shape.data)
             else:

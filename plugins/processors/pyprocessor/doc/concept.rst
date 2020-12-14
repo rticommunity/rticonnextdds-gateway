@@ -195,9 +195,9 @@ properties. The complete set of properties is shown in table below.
         <base_name> = **rti.routing.proc.py**
       - Value
       - Description
-    * - **<base_name>.class_name**
+    * - **<base_name>.create_function**
       - ``<string>``
-      - Name of class that implements the Processor.
+      - Name of function that instantiates the Processor.
         Required
     * - **<base_name>.module.name**
       - ``<string>``

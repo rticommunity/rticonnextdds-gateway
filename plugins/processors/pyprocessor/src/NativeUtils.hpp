@@ -4,6 +4,7 @@
 #include "Python.h"
 
 #include <rti/routing/processor/Processor.hpp>
+#include <PyServiceGlobals.hpp>
 
 namespace rti { namespace routing { namespace py {
 

@@ -43,22 +43,39 @@ PyServiceGlobals::PyServiceGlobals()
         main_thread_id_(RTIOsapiThread_getCurrentThreadID())
 {
     RTIOsapiThread_createKey(&state_key_, tss_factory_);
+    bool release_thread =  false;
     if (!Py_IsInitialized()) {
         Py_Initialize();
+        release_thread = true;
     }
 
     main_thread_state_ = PyThreadState_Get();
     RTIOsapiThread_setTss(state_key_, main_thread_state_);
-    
+    if (release_thread) {
+        PyEval_SaveThread();
+    }    
 }
 
 
 PyServiceGlobals::~PyServiceGlobals()
-{
-    cleanup_states();
+{    
     if (!service_initd_) {
-        PyEval_RestoreThread(PyServiceGlobals::instance().assert_state());        
-        Py_Finalize();
+        PyThreadState *current_state = PyServiceGlobals::instance().assert_state();
+        PyEval_RestoreThread(current_state);
+        for (auto state : states_) {
+            if (state != current_state) {
+                PyThreadState_Clear(state);
+                PyThreadState_Delete(state);
+            }
+        }
+
+        /*
+         * TODO: review the memory management of the python objects. It appears
+         * that this will run the GC and delete unexpected objects that were
+         * cycle referenced after an uncaught exception.
+         * 
+         * Py_Finalize();
+         */        
     }
     
     if (tss_factory_ != NULL) {
@@ -74,6 +91,7 @@ PyThreadState * PyServiceGlobals::assert_state()
     if (state == NULL) {
         state = PyThreadState_New(main_thread_state_->interp);
         RTIOsapiThread_setTss(state_key_, state);
+        states_.push_back(state);
     }
 
     return state;
@@ -82,6 +100,7 @@ PyThreadState * PyServiceGlobals::assert_state()
 void PyServiceGlobals::cleanup_states()
 {
     for (auto state : states_) {
+        PyThreadState_Clear(state);
         PyThreadState_Delete(state);
     }
 }
