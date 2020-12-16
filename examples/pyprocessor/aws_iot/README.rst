@@ -192,16 +192,61 @@ contain the location of the Python binding modules. For example:
 
     .. code-block::
 
-        Circle               <TIMESTAMP>                           Export  Hide
+        Circle               <TIMESTAMP>                           Export  Hide        
         {
-          "color": "BLUE",
-          "x": 107,
-          "y": 216,
-          "shapesize": 30,
-          "fillKind": 0,
-          "angle": 0
-        }
+            "data": {
+                "color": "BLUE",
+                "x": 153,
+                "y": 24,
+                "shapesize": 30,
+                "fillKind": 0,
+                "angle": 0
+            },
+            "info:": {
+                "instance_handle": {
+                  "valid": 1,
+                  "key_hash": "cac217c318363f8ef1160eeedef9e886"
+                },
+                "publication_handle": {
+                  "valid": 1,
+                  "key_hash": "0101a2b69a46581a35cc849180000002"
+                },
+                "sample_state": 2,
+                "view_state": 2,
+                "instance_state": 1,
+                "valid_data": 1,
+                "flag": 0,
+                "original_publication_virtual_sequence_number": {
+                  "low": 44356,
+                  "high": 0
+                },
+                "original_publication_virtual_guid": "0101a2b69a46581a35cc849180000002",
+                "related_original_publication_virtual_sequence_number": {
+                  "low": 4294967295,
+                  "high": -1
+                },
+                "related_original_publication_virtual_guid": "00000000000000000000000000000000",
+                "reception_sequence_number": {
+                  "low": 6,
+                  "high": 0
+                },
+                "publication_sequence_number": {
+                  "low": 44356,
+                  "high": 0
+                },
+                "reception_timestamp": {
+                  "low": 1608086393,
+                  "high": 476256999
+                },
+                "source_timestamp": {
+                  "low": 1608086393,
+                  "high": 475839999
+                }
+              }
+          }
 
         ...
 
-
+   As you can see, a sample is represented in JSON with two main components:
+   ``data`` and ``info``, which represent the actual user data and metadata
+   portions of the *Topic* samples, respectively.

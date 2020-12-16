@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import json
+from enum import Enum
 from typing import Dict
 import AWSIoTPythonSDK.MQTTLib as AWSIoTPyMQTT
 
@@ -18,19 +19,23 @@ else:
 from rti.routing import proc
 from rti.routing import service
 
-
-ENDPOINT = "a28hekebdxkvd3-ats.iot.us-west-2.amazonaws.com"
-CLIENT_ID = "rti_connext_gw"
-PATH_TO_CERT = "rti_connext_gw.cert.pem"
-PATH_TO_KEY = "rti_connext_gw.private.key"
-PATH_TO_ROOT = "root-CA.crt"
+class ConfigProperty(Enum):
+    ENDPOINT = "rti.aws_iot_connector.endpoint_url"
+    CLIENT_ID = "rti.aws_iot_connector.client_id"
+    PATH_TO_CERT = "rti.aws_iot_connector.cert"
+    PATH_TO_KEY = "rti.aws_iot_connector.private_key"
+    PATH_TO_ROOT = "rti.aws_iot_connector.root_ca"
 
 class AwsIotConnector(proc.Processor):
     def __init__(self, route: proc.Route, properties : Dict):
-        # # Spin up resources
-        self.mqtt_connection = AWSIoTPyMQTT.AWSIoTMQTTClient(CLIENT_ID)
-        self.mqtt_connection.configureEndpoint(ENDPOINT, 8883)
-        self.mqtt_connection.configureCredentials(PATH_TO_ROOT, PATH_TO_KEY, PATH_TO_CERT)
+        # get configuration values for MQTT connection
+
+        self.mqtt_connection = AWSIoTPyMQTT.AWSIoTMQTTClient(properties[ConfigProperty.CLIENT_ID.value])
+        self.mqtt_connection.configureEndpoint(properties[ConfigProperty.ENDPOINT.value], 8883)
+        self.mqtt_connection.configureCredentials(
+                properties[ConfigProperty.PATH_TO_ROOT.value],
+                properties[ConfigProperty.PATH_TO_KEY.value],
+                properties[ConfigProperty.PATH_TO_CERT.value])
         self.mqtt_connection.connect()
 
     def on_data_available(self, route) -> None:
