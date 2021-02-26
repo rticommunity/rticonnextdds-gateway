@@ -102,7 +102,7 @@ function(generate_doc)
         DEPENDS
             "${_COMMON_FUNCTIONS_OUTPUT_DIR}"
     )
-    
+
     if (${_COMMON_FUNCTIONS_DOXYGEN_ENABLED})
         if (NOT DOXYGEN_BIN)
             set(DOXYGEN_BIN "doxygen")
@@ -131,7 +131,7 @@ function(generate_doc)
 endfunction()
 
 macro(configure_plugin_defines)
-    if(RTIGATEWAY_ENABLE_LOG 
+    if(RTIGATEWAY_ENABLE_LOG
             OR CMAKE_BUILD_TYPE STREQUAL "Debug"
             OR NOT CMAKE_BUILD_TYPE)
         list(APPEND ${RSPLUGIN_PREFIX}_DEFINES ${RSPLUGIN_PREFIX}_ENABLE_LOG)

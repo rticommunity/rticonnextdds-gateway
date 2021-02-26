@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'RTI Gateway'
-copyright = '2020, Real-Time Innovations, Inc.'
+copyright = '2020, Real-Time Innovations, Inc'
 author = 'Real-Time Innovations, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for

@@ -22,11 +22,10 @@
 #include "rtiadapt_mqtt_types_message.idl"
 
 module RTI { module MQTT {
-        
 
     /**
      * @addtogroup RtiMqtt_Client_IDL_Config
-     * @{ 
+     * @{
      */
         /**
          * @brief todo
@@ -254,7 +253,7 @@ module RTI { module MQTT {
 
     /**
      * @addtogroup RtiMqtt_Client_IDL_Subscription
-     * @{ 
+     * @{
      */
         /**
          * @brief todo
@@ -330,7 +329,7 @@ module RTI { module MQTT {
 
     /**
      * @addtogroup RtiMqtt_Client_IDL_Publication
-     * @{ 
+     * @{
      */
 
         /**
@@ -388,7 +387,7 @@ module RTI { module MQTT {
 
     /**
      * @addtogroup RtiMqtt_Client_IDL_Client
-     * @{ 
+     * @{
      */
 
         /**

@@ -28,7 +28,7 @@ of this parameter has a maximum of 20, therefore, the example will throw
 errors when the value reaches 20.
 
 If you don't have the DataNab MBus_WTH_CO2_LCD_ETH device, you can simulate
-a Modbus server using the 'bin/modbuserver' utility.
+a Modbus server using the `bin/modbusserver` utility.
 
 > **NOTE**: you need to modify the modbus_server_ip and modbus_server_port to
 > point to the correct device IP.
@@ -45,14 +45,15 @@ rtiroutingservice -cfgFile RSConfigAdapter.xml -cfgName RSModbusAdapterExample
 ./MBus_WTH_CO2_LCD_ETH_INPUT
 ```
 
-> **NOTE**: the libmodbus and rtimodbusadapter libraries should be reachable by
-> the OS. Add the corresponding folders to your LD_LIBRARY_PATH, PATH or
-> RTI_LD_LIBRARY_PATH environment variable (depending of your OS).
+> **NOTE**: the `libmodbus` and `rtimodbusadapter` libraries should be reachable
+> by the OS. Add the corresponding folders to your `LD_LIBRARY_PATH`, `PATH` or
+> `RTI_LD_LIBRARY_PATH` environment variable (depending on your OS). If you
+> follow these instructions, the folder is: `.../rticonnextdds-gateway/install`.
 
 After running the Routing Service and MBus_WTH_CO2_LCD_ETH_INPUT, you will read
 messages from the modbus device:
 
-> Received data  
+> Received data
 > &nbsp; device_name: "device_37"
 > &nbsp; ip_address:
 > &nbsp; &nbsp; &nbsp; ip_address[0]: <7F>

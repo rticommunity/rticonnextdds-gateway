@@ -8,7 +8,7 @@ Release Notes
 Supported Platforms
 --------------------
 
-|RTI_RSTSFM| is expected to build and run on the platforms in
+|RTI_RS_JSON_TSFM| is expected to build and run on the platforms in
 :numref:`TableSupportedPlatforms`.
 
 It can also be deployed as a C library linked into your application.
@@ -23,9 +23,9 @@ This is true for all platforms in :numref:`TableSupportedPlatforms`.
     * - Platform
       - Operating System
 
-    * - Linux®
+    * - Linux systems
       - All Linux platforms supported by |RTI_RS|.
-    * - OS X®
-      - All OS X platforms supported by |RTI_RS|.
-    * - Windows®
+    * - macOS systems
+      - All macOS platforms supported by |RTI_RS|.
+    * - Windows systems
       - All Windows platforms supported by |RTI_RS|.

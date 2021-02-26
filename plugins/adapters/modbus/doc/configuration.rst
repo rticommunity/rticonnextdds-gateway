@@ -36,13 +36,13 @@ The following snippet demonstrates how to register the plugin in the
     </dds>
 
 .. warning:: |RS| must be able to find the |RSMODBUS| dynamic library
-             (|MODBUS_ADAPTER_LIB_NAME_LINUX| on Linux systems,
-             |MODBUS_ADAPTER_LIB_NAME_MAC| on macOS systems,
-             or |MODBUS_ADAPTER_LIB_NAME_WIN| on Windows systems). Make
+             (|MODBUS_ADAPTER_LIB_NAME_LINUX| on Linux® systems,
+             |MODBUS_ADAPTER_LIB_NAME_MAC| on macOS® systems,
+             or |MODBUS_ADAPTER_LIB_NAME_WIN| on Windows® systems). Make
              sure to include the library's directory in the library search
              path environment variable appropriate for your system
              (``LD_LIBRARY_PATH`` on Linux systems, ``RTI_LD_LIBRARY_PATH`` on
-             macOS systems, or ``Path`` on Windows systems).
+             macOS systems, or ``PATH`` on Windows systems, etc.).
 
 Once the dynamic library and constructor function have been
 registered, |RS| will create an instance of the plugin during start-up, and

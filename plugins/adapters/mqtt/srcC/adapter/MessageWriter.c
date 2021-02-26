@@ -114,7 +114,7 @@ int RTI_RS_MQTT_MessageWriter_write(
     struct DDS_TypeAllocationParams_t alloc_params =
             DDS_TYPE_ALLOCATION_PARAMS_DEFAULT;
     DDS_Boolean failed = DDS_BOOLEAN_FALSE;
-    DDS_UnsignedLong i = 0;
+    int i = 0;
 
     RTI_MQTT_LOG_FN(RTI_RS_MQTT_MessageWriter_write)
 

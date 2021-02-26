@@ -16,6 +16,7 @@
 #ifndef Transformation_Simple_h
 #define Transformation_Simple_h
 
+#include "ndds/ndds_c.h"
 #include "routingservice/routingservice_transformation.h"
 
 #include "TransformationInfrastructure.h"
@@ -150,7 +151,7 @@ DDS_ReturnCode_t RTI_TSFM_Transformation_transform(
         int in_count,
         RTI_RoutingServiceEnvironment *env);
 
-DDS_ReturnCode_t RTI_TSFM_Transformation_return_loan(
+void RTI_TSFM_Transformation_return_loan(
         RTI_TSFM_Transformation *self,
         RTI_RoutingServiceSample *sample_lst,
         RTI_RoutingServiceSampleInfo *info_lst,

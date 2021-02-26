@@ -31,12 +31,11 @@ readonly window2_name="BROKER"
 #== function definitions
 
 function send_tmux_commands {
-    
-    # Create sessions first, then windows, then panes, then send commands to 
-    # panes. This parallelizes commands best as commands in all windows to can 
-    # start parallel, but we may need to sequence some commands in some panes.  
-    # Additionally there's less variability on sessions/windows than 
-    # panes/commands so this way we are making it easier to compose where 
+    # Create sessions first, then windows, then panes, then send commands to
+    # panes. This parallelizes commands best as commands in all windows to can
+    # start parallel, but we may need to sequence some commands in some panes.
+    # Additionally there's less variability on sessions/windows than
+    # panes/commands so this way we are making it easier to compose where
     # there's more variability.
 
 
@@ -73,7 +72,6 @@ function send_tmux_commands {
     tmux split-window -t "$session_name:1.2" -h -p 50
 
     # tmux split-window -t "$session_name:1.1" -h -p 50
-    
 
     # window 3 panes (router)
     # -----------------------------
@@ -102,7 +100,7 @@ function send_tmux_commands {
 
     # window 0 panes (monitor)
     # ---------------
-    # |    top      | 
+    # |    top      |
     # |-------------|
     # |   <none>    |
     # ---------------
@@ -111,7 +109,7 @@ function send_tmux_commands {
 
     ## pane commands (if possible, all panes should be created already, so
     ## commands in panes can startup in parallel).
-    
+
     #######################################################################
 
     # tmux send-keys -t "$session_name:2.0" \
@@ -121,7 +119,7 @@ function send_tmux_commands {
         "$NDDSHOME/bin/rtishapesdemo -compact -workspaceFile ${DEMO_DIR}/etc/shapes_demo_workspace.xml -dataType Shape -pubInterval 1000" C-m
 
     #######################################################################
-    
+
     tmux send-keys -t "$session_name:1.0" \
         "LD_LIBRARY_PATH=$NDDSHOME/lib/$CONNEXTDDS_ARCH ./mqtt-shapes" C-m
     tmux send-keys -t "$session_name:1.1" \
@@ -131,7 +129,7 @@ function send_tmux_commands {
         "sleep 2 && ${DEMO_DIR}/scripts/shapes_mqtt_publisher.sh GREEN" C-m
     tmux send-keys -t "$session_name:1.3" \
         "sleep 2 && ${DEMO_DIR}/scripts/shapes_mqtt_subscriber.sh \"#\"" C-m
-    
+
     #######################################################################
 
     tmux select-window -t "$session_name:1.0"
@@ -150,7 +148,7 @@ fi
 # (and so we can keep creating windows in the new session)
 tmux new-session -s  "$session_name"   -n "$window0_name" -d
 
-# send commands in the background so we can attach and see things as they 
+# send commands in the background so we can attach and see things as they
 # happen
 send_tmux_commands &
 

@@ -28,8 +28,8 @@ module RTI { module MQTT {
 * @{
 */
     /**
-     * @brief An enum to model the "Quality of Service levels" offered by 
-     * the MQTT Protocol for publication and subscription of messages. 
+     * @brief An enum to model the "Quality of Service levels" offered by
+     * the MQTT Protocol for publication and subscription of messages.
      */
     enum QosLevel {
         /**
@@ -51,8 +51,8 @@ module RTI { module MQTT {
     };
 
     /**
-     * @brief A data type to model the metadata associated with any MQTT 
-     * message. 
+     * @brief A data type to model the metadata associated with any MQTT
+     * message.
      */
     @nested
     struct MessageInfo {
@@ -75,8 +75,8 @@ module RTI { module MQTT {
     };
 
     /**
-     * @brief A data type to model the payload of an MQTT message as an 
-     * "opaque" buffer of bytes. 
+     * @brief A data type to model the payload of an MQTT message as an
+     * "opaque" buffer of bytes.
      */
     @nested
     struct MessagePayload {
@@ -87,8 +87,8 @@ module RTI { module MQTT {
     };
 
     /**
-     * @brief A data type to model the data and metadata associated with an 
-     * MQTT message. 
+     * @brief A data type to model the data and metadata associated with an
+     * MQTT message.
      */
     struct Message {
         /**
@@ -106,8 +106,8 @@ module RTI { module MQTT {
     };
 
     /**
-     * @brief A data type to model the data and metadata associated with an 
-     * MQTT message, with the MQTT topic used as key. 
+     * @brief A data type to model the data and metadata associated with an
+     * MQTT message, with the MQTT topic used as key.
      */
     struct KeyedMessage {
         /**

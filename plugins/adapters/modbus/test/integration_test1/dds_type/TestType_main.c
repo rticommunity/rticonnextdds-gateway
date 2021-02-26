@@ -26,9 +26,9 @@
 #define UNSIGNED_VALUE 1
 #define VALUE_WITH_OFFSET_DATA_FACTOR(value) 5 + (value) * 10
 #define BOOLEAN_VALUE DDS_BOOLEAN_TRUE
-#define FLOAT_VALUE 1.5
-#define FLOAT_NEGATIVE_VALUE -1.5
-#define FLOAT_INCREMENT 0.5
+#define FLOAT_VALUE 1.5f
+#define FLOAT_NEGATIVE_VALUE -1.5f
+#define FLOAT_INCREMENT 0.5f
 #define SIGNED_ARRAY_VALUE(i) (i) * (-1)
 #define UNSIGNED_ARRAY_VALUE(i) (i)
 #define BOOLEAN_ARRAY_VALUE(i) i % 2
@@ -37,10 +37,12 @@
 
 
 #define ASSERT_COND(cond) \
-    if (!(cond)) { \
-        printf("error assertion: <%s> in line <%d>\n", #cond, __LINE__); \
-        goto done; \
-    }
+    do { \
+        if (!(cond)) { \
+            printf("error assertion: <%s> in line <%d>\n", #cond, __LINE__); \
+            goto done; \
+        } \
+    } while (0)
 
 
 DDS_Boolean check_received_parameters(TestType_sub *sample) {
@@ -50,11 +52,18 @@ DDS_Boolean check_received_parameters(TestType_sub *sample) {
     /* Check holding registers from the writer */
 
     ASSERT_COND(*(sample->test_type.enum_field) == ENUM_VALUE);
-    // The optional is not set, but the adapter reads a value from
-    // the modbus server. This case is the default 0
+    /*
+     * The optional is not set, but the adapter reads a value from
+     * the modbus server. This case is the default 0
+     */
     ASSERT_COND(*(sample->test_type.optional_non_set) == 0);
     ASSERT_COND(sample->test_type.bool_field == BOOLEAN_VALUE);
-    ASSERT_COND(sample->test_type.int8_field == (DDS_Octet)SIGNED_VALUE);
+    /*
+     * The following conversion to DDS_Octet is done to ensure compatibility
+     * between 6.0.1, where int8 are represented as octets, and 6.1.0, where
+     * int8 are represented by signed int8
+     */
+    ASSERT_COND((DDS_Octet)sample->test_type.int8_field == (DDS_Octet)SIGNED_VALUE);
     ASSERT_COND(sample->test_type.uint8_field == (DDS_Octet)UNSIGNED_VALUE);
     ASSERT_COND(*(sample->test_type.int16_field) == SIGNED_VALUE);
     ASSERT_COND(sample->test_type.uint16_field == UNSIGNED_VALUE);
@@ -68,11 +77,16 @@ DDS_Boolean check_received_parameters(TestType_sub *sample) {
     ASSERT_COND(sample->test_type.float_dcba_field == FLOAT_NEGATIVE_VALUE);
 
     for (i = 0; i < 2; ++i) {
-        DDS_Octet octet = SIGNED_ARRAY_VALUE(i);
         ASSERT_COND(sample->test_type.bool_array_field[i] == i % 2);
         ASSERT_COND(DDS_BooleanSeq_get(
-                &sample->test_type.bool_seq_field, i) == (DDS_Octet)BOOLEAN_ARRAY_VALUE(i));
-        ASSERT_COND(sample->test_type.int8_array_field[i] == octet);
+                &sample->test_type.bool_seq_field, i) == (DDS_Boolean)BOOLEAN_ARRAY_VALUE(i));
+        /*
+         * The following conversion to DDS_Octet is done to ensure compatibility
+         * between 6.0.1, where int8 are represented as octets, and 6.1.0, where
+         * int8 are represented by signed int8
+         */
+        ASSERT_COND((DDS_Octet) (sample->test_type.int8_array_field[i])
+                == (DDS_Octet) (SIGNED_ARRAY_VALUE(i)));
         ASSERT_COND(DDS_OctetSeq_get(
                 &sample->test_type.uint8_seq_field, i) == (DDS_Octet)UNSIGNED_ARRAY_VALUE(i));
         ASSERT_COND(sample->test_type.int16_array_field[i] == SIGNED_ARRAY_VALUE(i));
@@ -91,7 +105,7 @@ DDS_Boolean check_received_parameters(TestType_sub *sample) {
                 sample->test_type.float_cdab_array_field[i]
                         == FLOAT_ARRAY_NEGATIVE_VALUE(i));
         ASSERT_COND(DDS_FloatSeq_get(
-                &sample->test_type.float_dcba_seq_field, i) 
+                &sample->test_type.float_dcba_seq_field, i)
                         == FLOAT_ARRAY_NEGATIVE_VALUE(i));
     }
 
@@ -100,7 +114,7 @@ DDS_Boolean check_received_parameters(TestType_sub *sample) {
     ASSERT_COND(*sample->input_enum_field == ENUM_VALUE);
     ASSERT_COND(*sample->input_bool_field == DDS_BOOLEAN_TRUE);
     ASSERT_COND(*sample->input_int8_field == UNSIGNED_VALUE);
-    ASSERT_COND(*sample->input_uint8_field 
+    ASSERT_COND(*sample->input_uint8_field
             == VALUE_WITH_OFFSET_DATA_FACTOR(UNSIGNED_VALUE));
     ASSERT_COND(*sample->input_int16_field == UNSIGNED_VALUE);
     ASSERT_COND(*sample->input_uint16_field == UNSIGNED_VALUE);
@@ -120,7 +134,7 @@ DDS_Boolean check_received_parameters(TestType_sub *sample) {
                 &sample->input_bool_seq_field, i) == BOOLEAN_ARRAY_VALUE(value));
         ASSERT_COND(sample->input_int8_array_field[i] == UNSIGNED_ARRAY_VALUE(value));
         ASSERT_COND(DDS_OctetSeq_get(
-                &sample->input_uint8_seq_field, i) 
+                &sample->input_uint8_seq_field, i)
                         == VALUE_WITH_OFFSET_DATA_FACTOR(UNSIGNED_ARRAY_VALUE(value)));
         ASSERT_COND(sample->input_int16_array_field[i] == UNSIGNED_ARRAY_VALUE(value));
         ASSERT_COND(DDS_UnsignedShortSeq_get(
@@ -200,7 +214,7 @@ int publish_data_test(DDS_DomainParticipant *participant) {
     struct DDS_ConditionSeq active_conditions = DDS_SEQUENCE_INITIALIZER;
     int errorCode = 0; /* 0 --> OK, -1 --> error */
 
-    /* To customize publisher QoS, use 
+    /* To customize publisher QoS, use
     the configuration file USER_QOS_PROFILES.xml */
     publisher = DDS_DomainParticipant_create_publisher(
         participant, &DDS_PUBLISHER_QOS_DEFAULT, NULL /* listener */,
@@ -221,7 +235,7 @@ int publish_data_test(DDS_DomainParticipant *participant) {
         goto done;
     }
 
-    /* To customize topic QoS, use 
+    /* To customize topic QoS, use
     the configuration file USER_QOS_PROFILES.xml */
     topic_pub = DDS_DomainParticipant_create_topic(
         participant, "Modbus Adapter Test Pub",
@@ -233,7 +247,7 @@ int publish_data_test(DDS_DomainParticipant *participant) {
         goto done;
     }
 
-    /* To customize data writer QoS, use 
+    /* To customize data writer QoS, use
     the configuration file USER_QOS_PROFILES.xml */
     writer = DDS_Publisher_create_datawriter(
         publisher, topic_pub,
@@ -257,7 +271,7 @@ int publish_data_test(DDS_DomainParticipant *participant) {
         errorCode = -1;
         goto done;
     }
-    
+
     /* Fill out the instance */
     instance->enum_field = (ShapeFillKind*) malloc(sizeof(ShapeFillKind));
     *instance->enum_field = ENUM_VALUE;
@@ -308,7 +322,7 @@ int publish_data_test(DDS_DomainParticipant *participant) {
                 FLOAT_ARRAY_NEGATIVE_VALUE(i);
     }
 
-    /* 
+    /*
      * Create a Waitset for the writer with status condition
      * on_subscription_matched
      */
@@ -401,7 +415,7 @@ int read_data_test(DDS_DomainParticipant *participant) {
     int errCode = 0;
 
     /*************************** Reader side **********************/
-    /* To customize subscriber QoS, use 
+    /* To customize subscriber QoS, use
     the configuration file USER_QOS_PROFILES.xml */
     subscriber = DDS_DomainParticipant_create_subscriber(
             participant, &DDS_SUBSCRIBER_QOS_DEFAULT, NULL /* listener */,
@@ -421,7 +435,7 @@ int read_data_test(DDS_DomainParticipant *participant) {
         goto done;
     }
 
-    /* To customize topic QoS, use 
+    /* To customize topic QoS, use
     the configuration file USER_QOS_PROFILES.xml */
     topic_sub = DDS_DomainParticipant_create_topic(
         participant, "Modbus Adapter Test Sub",
@@ -433,7 +447,7 @@ int read_data_test(DDS_DomainParticipant *participant) {
         goto done;
     }
 
-    /* To customize data reader QoS, use 
+    /* To customize data reader QoS, use
     the configuration file USER_QOS_PROFILES.xml */
     reader = DDS_Subscriber_create_datareader(
         subscriber, DDS_Topic_as_topicdescription(topic_sub),
@@ -557,7 +571,7 @@ int main(int argc, char *argv[]) {
         sample_count = atoi(argv[2]);
     }
 
-    /* To customize participant QoS, use 
+    /* To customize participant QoS, use
     the configuration file USER_QOS_PROFILES.xml */
     participant = DDS_DomainParticipantFactory_create_participant(
         DDS_TheParticipantFactory, domain_id, &DDS_PARTICIPANT_QOS_DEFAULT,
@@ -583,7 +597,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    /* Cleanup and delete all entities */ 
+    /* Cleanup and delete all entities */
     return tester_shutdown(participant);
 }
 

@@ -414,17 +414,16 @@ DDS_ReturnCode_t RTI_MQTT_MessageReceiveQueue_finalize(
     }
 
     retval = DDS_RETCODE_OK;
-done:
+
     return retval;
 }
 
-static DDS_ReturnCode_t RTI_MQTT_MessageReceiveQueue_receive_circular(
+void RTI_MQTT_MessageReceiveQueue_receive_circular(
         struct RTI_MQTT_MessageReceiveQueue *self,
         DDS_DynamicData *msg,
         DDS_DynamicData **dropped_out,
         DDS_Boolean *lost_out)
 {
-    DDS_ReturnCode_t retval = DDS_RETCODE_ERROR;
     DDS_Boolean lost = DDS_BOOLEAN_FALSE;
     DDS_DynamicData *dropped = NULL;
     struct RTI_MQTT_ReceivedMessage *msg_new = NULL;
@@ -433,7 +432,6 @@ static DDS_ReturnCode_t RTI_MQTT_MessageReceiveQueue_receive_circular(
     msg_new = *RTI_MQTT_ReceivedMessagePtrSeq_get_reference(
             &self->queue,
             self->next);
-
 
     if (msg_new->message != NULL) {
         dropped = msg_new->message;
@@ -463,11 +461,6 @@ static DDS_ReturnCode_t RTI_MQTT_MessageReceiveQueue_receive_circular(
     if (dropped_out != NULL) {
         *dropped_out = dropped;
     }
-
-    retval = DDS_RETCODE_OK;
-
-done:
-    return retval;
 }
 
 static DDS_ReturnCode_t RTI_MQTT_MessageReceiveQueue_receive_unbounded(
@@ -588,15 +581,11 @@ DDS_ReturnCode_t RTI_MQTT_MessageReceiveQueue_receive(
     RTI_MQTT_Mutex_assert_w_state(&self->lock, &locked);
 
     if (self->capacity > 0) {
-        if (DDS_RETCODE_OK
-            != RTI_MQTT_MessageReceiveQueue_receive_circular(
-                    self,
-                    msg,
-                    dropped_out,
-                    &lost)) {
-            RTI_MQTT_LOG_MSG_RECV_QUEUE_RECEIVE_CIRCULAR_FAILED(self)
-            goto done;
-        }
+        RTI_MQTT_MessageReceiveQueue_receive_circular(
+            self,
+            msg,
+            dropped_out,
+            &lost);
     } else {
         if (DDS_RETCODE_OK
             != RTI_MQTT_MessageReceiveQueue_receive_unbounded(

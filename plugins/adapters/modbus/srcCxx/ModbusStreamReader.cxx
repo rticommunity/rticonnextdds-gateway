@@ -292,6 +292,7 @@ void ModbusStreamReader::read(
     std::unique_ptr<DynamicData> sample(new DynamicData(*internal_instance_));
 
     samples[0] = sample.release();
+
     return;
 }
 

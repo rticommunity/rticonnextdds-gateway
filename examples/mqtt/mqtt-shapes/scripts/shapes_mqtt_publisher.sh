@@ -71,7 +71,7 @@ random_period()
   printf "%d.%d" \
     0 \
     $(random_no 1 1000)
-    # $(random_no 0 ${SHAPE_PERIOD}) 
+    # $(random_no 0 ${SHAPE_PERIOD})
 }
 
 publish_topic()
@@ -92,14 +92,14 @@ publish_topic()
   done | mosquitto_pub -l \
                        $([ -z "${SHAPE_RETAINED}" ] || printf "%s" "-r") \
                        -q ${SHAPE_QOS} \
-                       -t "${topic}" 
+                       -t "${topic}"
 }
 
 kill_publishers()
 {
   printf "killing child processes: ${PUB_PIDS}"
   kill ${PUB_PIDS}
-  ps aux  | grep "/bin/sh ./bin/shapes_mqtt_publisher.sh ${SHAPE_COLOR}" | 
+  ps aux  | grep "/bin/sh ./bin/shapes_mqtt_publisher.sh ${SHAPE_COLOR}" |
     grep -v grep | awk '{print $2;}' | xargs kill
 }
 

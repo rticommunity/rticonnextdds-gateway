@@ -23,9 +23,9 @@ This is true for all platforms in :numref:`TableSupportedPlatforms`.
     * - Platform
       - Operating System
 
-    * - Linux®
+    * - Linux systems
       - All Linux platforms supported by |RTI_RS| and by |PAHO_ASYNC|.
-    * - OS X®
-      - All OS X platforms supported by |RTI_RS| and by |PAHO_ASYNC|.
-    * - Windows®
+    * - macOS systems
+      - All macOS platforms supported by |RTI_RS| and by |PAHO_ASYNC|.
+    * - Windows systems
       - All Windows platforms supported by |RTI_RS| and by |PAHO_ASYNC|.

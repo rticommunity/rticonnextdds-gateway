@@ -1690,8 +1690,6 @@ static DDS_ReturnCode_t RTI_MQTT_Client_set_state(
 
     retval = DDS_RETCODE_OK;
 
-done:
-
     RTI_MQTT_Mutex_release(&self->cfg_lock);
 
     return retval;

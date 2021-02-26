@@ -23,9 +23,9 @@ This is true for all platforms in :numref:`TableSupportedPlatforms`.
     * - Platform
       - Operating System
 
-    * - Linux®
+    * - Linux systems
       - All Linux platforms supported by |RTI_RS|.
-    * - macOS®
+    * - macOS systems
       - All macOS platforms supported by |RTI_RS|.
-    * - Windows®
+    * - Windows systems
       - All Windows platforms supported by |RTI_RS|.

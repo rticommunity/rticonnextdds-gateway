@@ -113,7 +113,7 @@ int ModbusStreamWriter::write(
                     std::vector<uint8_t> values(mace.modbus_register_count());
 
                     for (int i = 0; i < float_vector.size(); ++i) {
-                        values[i] = float_vector[i];
+                        values[i] = static_cast<uint8_t>(float_vector[i]);
                     }
                     // write coils to a modbus server
                     try {
