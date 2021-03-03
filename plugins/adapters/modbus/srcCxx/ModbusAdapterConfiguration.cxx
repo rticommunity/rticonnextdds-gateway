@@ -413,7 +413,7 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
             if (dynamic_data::is_signed_kind(element_kind)) {
                 int8_t value = static_cast<int8_t>(input[i]);
                 check_correct_value(
-                        (long double)((int8_t) value),
+                        static_cast<long double>(static_cast<int8_t>(value)),
                         index,
                         element_kind);
 
@@ -422,7 +422,7 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
             } else {
                 uint8_t value = static_cast<uint8_t>(input[i]);
                 check_correct_value(
-                        (long double) ((uint8_t) value),
+                        static_cast<long double>(static_cast<uint8_t>(value)),
                         index,
                         element_kind);
 
@@ -443,7 +443,7 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
             } else {
                 uint16_t value = input[i];
                 check_correct_value(
-                        (long double)((uint16_t) value),
+                        static_cast<long double>(static_cast<uint16_t>(value)),
                         index,
                         element_kind);
 
@@ -462,7 +462,7 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                         const_cast<uint16_t *>(input.data()) + i);
 
                 check_correct_value(
-                        (long double)((int32_t) value),
+                        static_cast<long double>(static_cast<int32_t>(value)),
                         index,
                         element_kind);
 
@@ -475,7 +475,7 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                         const_cast<uint16_t *>(input.data()) + i);
 
                 check_correct_value(
-                        (long double)((uint32_t) value),
+                        static_cast<long double>(static_cast<uint32_t>(value)),
                         index,
                         element_kind);
 
@@ -497,7 +497,7 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                 // case is for signed numbers, therefore we need to cast it
                 // to a signed type before checking it is a correct value.
                 check_correct_value(
-                    (long double) ((int64_t) value),
+                    static_cast<long double>(static_cast<int64_t>(value)),
                     index,
                     element_kind);
 
@@ -510,7 +510,7 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                         const_cast<uint16_t *>(input.data()) + i);
 
                 check_correct_value(
-                    (long double) ((uint64_t) value),
+                    static_cast<long double>(static_cast<uint64_t>(value)),
                     index,
                     element_kind);
 
@@ -527,7 +527,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                     value,
                     const_cast<uint16_t *>(input.data()) + i);
 
-            check_correct_value((long double) value, index, element_kind);
+            check_correct_value(
+                    static_cast<long double>(value),
+                    index,
+                    element_kind);
 
             float_vector.push_back(data_offset() + value * data_factor());
 
@@ -540,7 +543,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                     value,
                     const_cast<uint16_t *>(input.data()) + i);
 
-            check_correct_value((long double) value, index, element_kind);
+            check_correct_value(
+                    static_cast<long double>(value),
+                    index,
+                    element_kind);
 
             float_vector.push_back(data_offset() + value * data_factor());
 
@@ -553,7 +559,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                     value,
                     const_cast<uint16_t *>(input.data()) + i);
 
-            check_correct_value((long double) value, index, element_kind);
+            check_correct_value(
+                    static_cast<long double>(value),
+                    index,
+                    element_kind);
 
             float_vector.push_back(data_offset() + value * data_factor());
 
@@ -566,7 +575,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                     value,
                     const_cast<uint16_t *>(input.data()) + i);
 
-            check_correct_value((long double) value, index, element_kind);
+            check_correct_value(
+                    static_cast<long double>(value),
+                    index,
+                    element_kind);
 
             float_vector.push_back(data_offset() + value * data_factor());
 
