@@ -1,4 +1,8 @@
 build
+build-*
+dist
 install
 .vscode
 compile_commands.json
+nb
+__pycache__
