@@ -46,7 +46,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'RTI Routing Service Modbus Adapter'
-copyright = '2020, Real-Time Innovations, Inc. asdf'
+copyright = '2020, Real-Time Innovations, Inc'
 author = 'Real-Time Innovations, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for

@@ -16,9 +16,7 @@
 #ifndef Transformation_Types_h
 #define Transformation_Types_h
 
-#ifndef ndds_c_h
-    #include "ndds/ndds_c.h"
-#endif
+#include "ndds/ndds_c.h"
 
 typedef enum RTI_TSFM_TransformationKind {
     RTI_TSFM_TransformationKind_SERIALIZER,

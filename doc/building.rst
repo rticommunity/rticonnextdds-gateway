@@ -16,7 +16,7 @@ The code can be built using |CMAKE|, version 3.7.0 or greater.
 Build Setup
 ===========
 
-|RTI_CONNEXT| (version |CONNEXT_VERSION_600| or greater) must be available
+|RTI_CONNEXT| (version |CONNEXT_VERSION_601| or greater) must be available
 on the build system. The installation must include libraries for the
 target build architecture, and ``rtiddsgen``.
 
@@ -37,7 +37,7 @@ At a minimum, you will need to specify:
 
   - ``CONNEXTDDS_DIR`` or ``NDDSHOME`` environment variable to select an
     |RTI_CONNEXT| installation.
-  
+
 Optionally, you can use ``CMAKE_BUILD_TYPE`` to select the type of libraries to
 build (either ``Release``, or ``Debug``, default: ``Debug``).
 

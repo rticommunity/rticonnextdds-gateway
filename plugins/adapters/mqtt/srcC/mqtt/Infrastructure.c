@@ -52,7 +52,7 @@ DDS_ReturnCode_t RTI_MQTT_Time_normalize(RTI_MQTT_Time *self)
 
     if (ns > 0) {
         /* Check if we would overflow adding ns to self->seconds*/
-        if (INT_MAX - ns > self->seconds) {
+        if (INT_MAX - ns > (DDS_UnsignedLong) self->seconds) {
             RTI_MQTT_TIME_OVERFLOW_DETECTED(self)
             goto done;
         }
@@ -257,7 +257,8 @@ DDS_ReturnCode_t RTI_MQTT_TopicFilter_match(
         DDS_Boolean *match_out)
 {
     DDS_ReturnCode_t retval = DDS_RETCODE_ERROR;
-    DDS_UnsignedLong f_i = 0, v_i = 0, value_len = 0, filter_len = 0;
+    size_t f_i = 0, v_i = 0;
+    size_t value_len = 0, filter_len = 0;
     char f_ch = '\0', f_ch_next = '\0', v_ch = '\0';
     DDS_Boolean match = DDS_BOOLEAN_TRUE, match_done = DDS_BOOLEAN_FALSE;
 
@@ -935,7 +936,7 @@ DDS_ReturnCode_t RTI_MQTT_Mutex_initialize(RTI_MQTT_Mutex *self)
     *self = CreateMutex(NULL, 0, NULL);
 
     retval = DDS_RETCODE_OK;
-done:
+
     return retval;
 }
 
@@ -946,7 +947,7 @@ DDS_ReturnCode_t RTI_MQTT_Mutex_finalize(RTI_MQTT_Mutex *self)
     CloseHandle(*self);
 
     retval = DDS_RETCODE_OK;
-done:
+
     return retval;
 }
 
@@ -973,7 +974,7 @@ DDS_ReturnCode_t RTI_MQTT_Mutex_give(RTI_MQTT_Mutex *self)
     ReleaseMutex(*self);
 
     retval = DDS_RETCODE_OK;
-done:
+
     return retval;
 }
 

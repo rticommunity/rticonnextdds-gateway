@@ -277,7 +277,7 @@ void ModbusAdapterConfigurationElement::check_for_errors(void)
 
 void ModbusAdapterConfigurationElement::check_correct_value(
         long double float_value,
-        int32_t index,
+        size_t index,
         TypeKind element_kind)
 {
     // The value is not out of range
@@ -398,10 +398,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
 {
     std::vector<long double> float_vector;
 
-    for (int i = 0;
+    for (size_t i = 0;
             i < modbus_register_count();
             i += number_of_registers_primitive_type()) {
-        int32_t index = i / number_of_registers_primitive_type();
+        size_t index = i / number_of_registers_primitive_type();
 
         switch (modbus_datatype()) {
         // in this case, check_corrent_value() checks directly the value
@@ -411,14 +411,20 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
             // cast the value into signed/unsigned depending on
             // the datatype used
             if (dynamic_data::is_signed_kind(element_kind)) {
-                int8_t value = input[i];
-                check_correct_value(value, index, element_kind);
+                int8_t value = static_cast<int8_t>(input[i]);
+                check_correct_value(
+                        static_cast<long double>(static_cast<int8_t>(value)),
+                        index,
+                        element_kind);
 
                 float_vector.push_back(
                         (int8_t) data_offset() + value * data_factor());
             } else {
-                uint8_t value = input[i];
-                check_correct_value((uint8_t) value, index, element_kind);
+                uint8_t value = static_cast<uint8_t>(input[i]);
+                check_correct_value(
+                        static_cast<long double>(static_cast<uint8_t>(value)),
+                        index,
+                        element_kind);
 
                 float_vector.push_back(
                         (unsigned) (int8_t) data_offset()
@@ -436,7 +442,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                         (int16_t) data_offset() + value * data_factor());
             } else {
                 uint16_t value = input[i];
-                check_correct_value((uint16_t) value, index, element_kind);
+                check_correct_value(
+                        static_cast<long double>(static_cast<uint16_t>(value)),
+                        index,
+                        element_kind);
 
                 float_vector.push_back(
                         (unsigned) (int16_t) data_offset()
@@ -452,7 +461,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                         (uint32_t &) value,
                         const_cast<uint16_t *>(input.data()) + i);
 
-                check_correct_value((int32_t) value, index, element_kind);
+                check_correct_value(
+                        static_cast<long double>(static_cast<int32_t>(value)),
+                        index,
+                        element_kind);
 
                 float_vector.push_back(
                         (int32_t) data_offset() + value * data_factor());
@@ -462,7 +474,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                         value,
                         const_cast<uint16_t *>(input.data()) + i);
 
-                check_correct_value((uint32_t) value, index, element_kind);
+                check_correct_value(
+                        static_cast<long double>(static_cast<uint32_t>(value)),
+                        index,
+                        element_kind);
 
                 float_vector.push_back(
                         (unsigned) (int32_t) data_offset()
@@ -478,7 +493,13 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                         (uint64_t &) value,
                         const_cast<uint16_t *>(input.data()) + i);
 
-                check_correct_value((int64_t) value, index, element_kind);
+                // The int16_to_int64() function uses unsigned types, but this
+                // case is for signed numbers, therefore we need to cast it
+                // to a signed type before checking it is a correct value.
+                check_correct_value(
+                    static_cast<long double>(static_cast<int64_t>(value)),
+                    index,
+                    element_kind);
 
                 float_vector.push_back(
                         (int64_t) data_offset() + value * data_factor());
@@ -488,7 +509,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                         value,
                         const_cast<uint16_t *>(input.data()) + i);
 
-                check_correct_value((uint64_t) value, index, element_kind);
+                check_correct_value(
+                    static_cast<long double>(static_cast<uint64_t>(value)),
+                    index,
+                    element_kind);
 
                 float_vector.push_back(
                         (unsigned) (int64_t) data_offset()
@@ -503,7 +527,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                     value,
                     const_cast<uint16_t *>(input.data()) + i);
 
-            check_correct_value(value, index, element_kind);
+            check_correct_value(
+                    static_cast<long double>(value),
+                    index,
+                    element_kind);
 
             float_vector.push_back(data_offset() + value * data_factor());
 
@@ -516,7 +543,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                     value,
                     const_cast<uint16_t *>(input.data()) + i);
 
-            check_correct_value(value, index, element_kind);
+            check_correct_value(
+                    static_cast<long double>(value),
+                    index,
+                    element_kind);
 
             float_vector.push_back(data_offset() + value * data_factor());
 
@@ -529,7 +559,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                     value,
                     const_cast<uint16_t *>(input.data()) + i);
 
-            check_correct_value(value, index, element_kind);
+            check_correct_value(
+                    static_cast<long double>(value),
+                    index,
+                    element_kind);
 
             float_vector.push_back(data_offset() + value * data_factor());
 
@@ -542,7 +575,10 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                     value,
                     const_cast<uint16_t *>(input.data()) + i);
 
-            check_correct_value(value, index, element_kind);
+            check_correct_value(
+                    static_cast<long double>(value),
+                    index,
+                    element_kind);
 
             float_vector.push_back(data_offset() + value * data_factor());
 
@@ -696,7 +732,8 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                             "<modbus_register_address>.");
                 }
 
-                mace.modbus_register_address_ = number_node->u.integer;
+                mace.modbus_register_address_ =
+                        static_cast<int>(number_node->u.integer);
             } else if (element_name == "modbus_register_count") {
                 json_value *number_node = node_object->u.object.values[j].value;
                 if (number_node->type != json_integer) {
@@ -705,7 +742,7 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                             "<modbus_register_count>.");
                 }
 
-                mace.modbus_register_count_ = number_node->u.integer;
+                mace.modbus_register_count_ = static_cast<int>(number_node->u.integer);
             } else if (element_name == "modbus_datatype") {
                 json_value *string_node = node_object->u.object.values[j].value;
                 if (string_node->type != json_string) {
@@ -958,7 +995,7 @@ void ModbusAdapterConfiguration::parse_json_config_string(
             && mace.modbus_datatype() != ModbusDataType::constant_value) {
             // primitive type, update the register count
             mace.modbus_register_count_ =
-                    mace.number_of_registers_primitive_type();
+                    static_cast<int>(mace.number_of_registers_primitive_type());
         }
 
         config_.push_back(mace);
@@ -1032,7 +1069,7 @@ void ModbusAdapterConfiguration::check_configuration_consistency(
                 if (element.modbus_datatype() != ModbusDataType::coil_boolean
                     && element.modbus_datatype()
                             != ModbusDataType::constant_value
-                    && element.modbus_datatype() 
+                    && element.modbus_datatype()
                             != ModbusDataType::discrete_input_boolean
                     && element.modbus_datatype()
                             != ModbusDataType::holding_register_int8
@@ -1142,17 +1179,9 @@ void ModbusAdapterConfiguration::check_configuration_consistency(
             if (field_kind == TypeKind::ENUMERATION_TYPE) {
                 const EnumType &dynamic_enum =
                         static_cast<const EnumType &>(field_type);
-                auto enum_members = dynamic_enum.members();
                 for (auto member : element.modbus_valid_values()) {
-                    bool member_exists = false;
-                    for (int i = 0; i < enum_members.size(); ++i) {
-                        if (enum_members[i].ordinal()
-                                == static_cast<int32_t>(member)) {
-                            member_exists = true;
-                            break;
-                        }
-                    }
-                    if (!member_exists) {
+                    if (dynamic_enum.find_member_by_ordinal((int32_t) member)
+                            == EnumType::INVALID_INDEX) {
                         std::string error = "Error: the value of the "
                             "modbus_valid_values <"
                             + std::to_string(static_cast<int32_t>(member))

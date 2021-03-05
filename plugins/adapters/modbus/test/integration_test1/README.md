@@ -4,7 +4,7 @@
 
 ### Description
 
-The integration_test1 is an application that writes data from DDS to a Modbus
+The `integration_test1` is an application that writes data from DDS to a Modbus
 server, and vice versa, it also reads data from a Modbus server and publishes
 it as a DDS Sample.
 
@@ -12,9 +12,9 @@ After that, the application tests that the data written/read to/from the Modbus
 server is the same that the DDS application has published.
 
 The configuration of the adapter is described in
-rticonnextgateways/plugins/adapters/modbus/test/integration_test1/RSConfigTest.xml.
+`rticonnextgateways/plugins/adapters/modbus/test/integration_test1/RSConfigTest.xml`.
 
-The RSConfigTest.xml file configures the following elements:
+The `RSConfigTest.xml` file configures the following elements:
 
 * Connection
   * TestConnection: connection that includes the IP and port
@@ -24,13 +24,14 @@ The RSConfigTest.xml file configures the following elements:
 * Routes
   * dds_input and Modbus output: this route publishes data from DDS and reads
     it in Modbus according to the configuration under
-    integration_test1/config/test_pub_config.json
+    `integration_test1/config/test_pub_config.json`
   * dds_output and Modbus input: this route reads data from Modbus and
     publishes it in DDS according to the configuration under
-    integration_test1/config/test_sub_config.json
+    `integration_test1/config/test_sub_config.json`
 
-> **_NOTE:_**  the QoS of the DDS entities is set to use RELIABILITY, KEEP_LAST
-> with depth 1 and TRANSIENT_LOCAL. These QoS settings are required to run integration_test1.
+> **_NOTE:_**  the QoS of the DDS entities is set to use `RELIABILITY`,
+> `KEEP_LAST` with `depth` 1 and `TRANSIENT_LOCAL`. These QoS settings are
+> required to run `integration_test1`.
 
 The JSON configuration of these routes indicates the matching between DDS
 fields and Modbus registers, as well as other parameters that the Modbus
@@ -57,11 +58,11 @@ topic *Modbus Adapter Test Pub*. As this test only publishes one sample, it has
 to be reliable to ensure that the Modbus Adapter has received it.
 
 The Modbus Adapter will read the data from the DDS sample and forward it to
-a Modbus server according to the configuration *test_pub_config.json*.
+a Modbus server according to the configuration `test_pub_config.json`.
 
 Later, the integration_test1 will subscribe to the Modbus Adapter and will read
 the data that comes from the Modbus server, including a set of input registers.
-As the DataReader is created after publishing the data, TRANSIENT_LOCAL is
+As the DataReader is created after publishing the data, `TRANSIENT_LOCAL` is
 the mandatory durability policy.
 
 Finally, integration_test1 checks whether the received data is the expected one
@@ -71,23 +72,24 @@ and shows an "OK" message or an error otherwise.
 
 In order to run the integration_test1 three elements are required:
 
-1. Add the folders which contains libmodbus and rtimodbusadapter libraries to
-your LD_LIBRARY_PATH, PATH or RTI_LD_LIBRARY_PATH environment variable (depending
-of your OS).
+1. Add the folders which contains `libmodbus` and `rtimodbusadapter` libraries to
+your `LD_LIBRARY_PATH`, `PATH` or `RTI_LD_LIBRARY_PATH` environment variable
+(depending on your OS). If you follow these instructions, the folder is:
+`.../rticonnextdds-gateway/install`.
 
-1. Modbus server (bin directory)
+1. Modbus server (`bin` directory)
 
     ```sh
     ./modbusserver
     ```
 
-1. Routing Service with the configuration RSConfigTest.xml (test/modbus/integration_test1/ directory)
+1. Routing Service with the configuration RSConfigTest.xml (`test/modbus/integration_test1/` directory)
 
     ```sh
     rtiroutingservice -cfgFile RSConfigTest.xml -cfgName RSModbusAdapterTest
     ```
 
-1. The integration test 1 application (test/modbus/integration_test1/ directory)
+1. The integration test 1 application (`test/modbus/integration_test1/` directory)
 
     ```sh
     ./integration_test1
@@ -98,5 +100,5 @@ If the test has passed correctly, the following message will be printed:
 
 > **_NOTE:_** after running Routing Service, you may see the following message:
 > ```Error: value <0> of element <test_type.enum_field> not in the modbus_valid_values list.```
-> This happens because the modbusserver application initializes everything
+> This happens because the `modbusserver` application initializes everything
 > to 0 and it is not part of the enum_field *modbus_valid_values*.

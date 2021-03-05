@@ -86,6 +86,7 @@ typedef struct TPluginImpl {
 #endif
 } TPlugin;
 
+RTI_USER_DLL_EXPORT
 extern struct RTI_RoutingServiceTransformationPlugin *TPlugin_create(
         const struct RTI_RoutingServiceProperties *properties,
         RTI_RoutingServiceEnvironment *env);

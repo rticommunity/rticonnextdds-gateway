@@ -140,8 +140,6 @@ DDS_ReturnCode_t RTI_TSFM_TransformationPluginConfig_new(
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
     RTI_TSFM_TransformationPluginConfig *config = NULL;
-    struct DDS_TypeAllocationParams_t alloc_params =
-            DDS_TYPE_ALLOCATION_PARAMS_DEFAULT;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_TransformationPluginConfig_new)
 

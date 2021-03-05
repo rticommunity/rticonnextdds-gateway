@@ -58,7 +58,7 @@ DDS_ReturnCode_t RTI_RS_MQTT_AdapterPlugin_new(
     plugin->parent.adapter_plugin_delete_connection =
             RTI_RS_MQTT_AdapterPlugin_delete_connection;
 #if 0
-    plugin->parent.connection_create_session = 
+    plugin->parent.connection_create_session =
                     RTI_RS_MQTT_BrokerConnection_create_session;
     plugin->parent.connection_delete_session =
                     RTI_RS_MQTT_BrokerConnection_delete_session;
@@ -76,7 +76,7 @@ DDS_ReturnCode_t RTI_RS_MQTT_AdapterPlugin_new(
     plugin->parent.connection_delete_stream_writer =
             RTI_RS_MQTT_BrokerConnection_delete_stream_writer;
 #if 0
-    plugin->parent.connection_get_input_stream_discovery_reader = 
+    plugin->parent.connection_get_input_stream_discovery_reader =
                     RTI_RS_MQTT_BrokerConnection_get_input_discovery_reader;
     plugin->parent.connection_get_output_stream_discovery_reader =
                     RTI_RS_MQTT_BrokerConnection_get_output_discovery_reader;

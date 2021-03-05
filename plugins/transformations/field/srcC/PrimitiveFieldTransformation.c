@@ -240,7 +240,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_short);
 
@@ -259,7 +261,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_long);
 
@@ -278,7 +282,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_ushort);
 
@@ -297,7 +303,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_ulong);
 
@@ -316,7 +324,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_float);
 
@@ -335,7 +345,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_double);
 
@@ -354,7 +366,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_bool);
 
@@ -373,7 +387,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_char);
 
@@ -392,7 +408,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_octet);
 
@@ -413,7 +431,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_string);
 
@@ -436,7 +456,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_llong);
 
@@ -455,7 +477,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_ullong);
 
@@ -474,7 +498,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_ldouble);
 
@@ -493,7 +519,9 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
             goto done;
         }
 
-        sprintf(self->state->msg_payload,
+        snprintf(
+                self->state->msg_payload,
+                self->state->msg_payload_size,
                 self->config->serialization_format,
                 v_wchar);
 
@@ -522,7 +550,7 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
 
             sprintf(cur_buf, self->config->serialization_format, cur_str);
 
-            str_len += RTI_TSFM_String_length(cur_buf);
+            str_len += (DDS_UnsignedLong) RTI_TSFM_String_length(cur_buf);
         }
 
         DDS_Wstring_free(v_wstring);
@@ -535,7 +563,8 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_serialize(
         goto done;
     }
 
-    serialized_size = RTI_TSFM_String_length(self->state->msg_payload);
+    serialized_size = (DDS_UnsignedLong)
+            RTI_TSFM_String_length(self->state->msg_payload);
 
     if (!DDS_OctetSeq_loan_contiguous(
                 &buffer_seq,
@@ -631,7 +660,7 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_deserialize(
     switch (self->config->field_type) {
     case RTI_TSFM_Field_FieldType_SHORT: {
         /* TODO Check overflow */
-        DDS_Short v_short =
+        DDS_Short v_short = (DDS_Short)
                 RTI_TSFM_String_to_long(self->state->msg_payload, NULL, 0);
 
         if (DDS_RETCODE_OK
@@ -664,7 +693,7 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_deserialize(
     }
     case RTI_TSFM_Field_FieldType_USHORT: {
         /* TODO Check for overlow */
-        DDS_UnsignedShort v_ushort =
+        DDS_UnsignedShort v_ushort = (DDS_UnsignedShort)
                 RTI_TSFM_String_to_ulong(self->state->msg_payload, NULL, 0);
 
         if (DDS_RETCODE_OK
@@ -697,7 +726,7 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_deserialize(
     }
     case RTI_TSFM_Field_FieldType_FLOAT: {
         /* TODO Check for overflow */
-        DDS_Float v_float =
+        DDS_Float v_float = (DDS_Float)
                 RTI_TSFM_String_to_double(self->state->msg_payload, NULL);
 
         if (DDS_RETCODE_OK
@@ -729,7 +758,7 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_deserialize(
         break;
     }
     case RTI_TSFM_Field_FieldType_BOOLEAN: {
-        DDS_Boolean v_bool =
+        DDS_Boolean v_bool = (DDS_Boolean)
                 RTI_TSFM_String_to_long(self->state->msg_payload, NULL, 0);
 
         switch (v_bool) {
@@ -771,7 +800,7 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_deserialize(
     }
     case RTI_TSFM_Field_FieldType_OCTET: {
         /* TODO Check for overflow */
-        DDS_Octet v_octet =
+        DDS_Octet v_octet = (DDS_Octet)
                 RTI_TSFM_String_to_long(self->state->msg_payload, NULL, 0);
 
         if (DDS_RETCODE_OK
@@ -788,7 +817,7 @@ DDS_ReturnCode_t RTI_TSFM_Field_PrimitiveTransformation_deserialize(
     }
     case RTI_TSFM_Field_FieldType_STRING: {
         char *v_string = NULL;
-        DDS_UnsignedLong val_len =
+        DDS_UnsignedLong val_len = (DDS_UnsignedLong)
                 RTI_TSFM_String_to_double(self->state->msg_payload, NULL);
 
         if (DDS_RETCODE_OK

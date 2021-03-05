@@ -125,6 +125,7 @@ const struct RTI_RoutingServiceVersion TPlugin_VERSION = { T_VERSION_MAJOR,
                                                            T_VERSION_REVISION };
 #endif /* TPlugin_VERSION */
 
+RTI_USER_DLL_EXPORT
 struct RTI_RoutingServiceTransformationPlugin *TPlugin_create(
         const struct RTI_RoutingServiceProperties *properties,
         RTI_RoutingServiceEnvironment *env)
@@ -318,8 +319,6 @@ void TPlugin_delete(
     RTI_TSFM_Heap_free(self);
 
     retval = DDS_BOOLEAN_TRUE;
-
-done:
 
     if (!retval) {
         /* TODO Log error */
@@ -622,15 +621,12 @@ void T_return_loan(
     }
 #endif /* RTI_TSFM_USE_MUTEX */
 
-    if (DDS_RETCODE_OK
-        != RTI_TSFM_Transformation_return_loan(
-                &self->parent,
-                sample_lst,
-                info_lst,
-                count,
-                env)) {
-        /* TODO Log error */
-    }
+    RTI_TSFM_Transformation_return_loan(
+            &self->parent,
+            sample_lst,
+            info_lst,
+            count,
+            env);
 #if RTI_TSFM_USE_MUTEX
     if (DDS_RETCODE_OK != RTI_TSFM_Mutex_give(&self->parent.lock)) {
         /* TODO Log error */

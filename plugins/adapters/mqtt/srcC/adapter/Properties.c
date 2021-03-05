@@ -150,7 +150,7 @@ static DDS_ReturnCode_t
         DDS_StringSeq_from_string(const char *str, struct DDS_StringSeq *seq)
 {
     DDS_ReturnCode_t retval = DDS_RETCODE_ERROR;
-    DDS_UnsignedLong str_len = 0, cur_str_len = 0, consumed_len = 0,
+    size_t str_len = 0, cur_str_len = 0, consumed_len = 0,
                      seq_len = 0, orig_seq_len = 0;
     const char *str_ptr = str, *cur_str = NULL;
     char cur_ch = '\0', *seq_val = NULL;
@@ -179,22 +179,24 @@ static DDS_ReturnCode_t
             cur_ch = cur_str[cur_str_len];
         }
 
-        if (!DDS_StringSeq_ensure_length(seq, seq_len + 1, seq_len + 1)) {
+        if (!DDS_StringSeq_ensure_length(
+                seq,
+                (DDS_Long) seq_len + 1,
+                (DDS_Long) seq_len + 1)) {
             /* TODO Log error */
             goto done;
         }
 
-        seq_val = (char *) RTI_MQTT_Heap_allocate(
-                sizeof(char) * (cur_str_len + 1));
+        seq_val = DDS_String_alloc(sizeof(char) * (cur_str_len));
         if (seq_val == NULL) {
             /* TODO Log error */
             goto done;
         }
 
-        RTI_MQTT_Memory_copy(seq_val, cur_str, sizeof(char) * cur_str_len);
+        RTIOsapiMemory_copy(seq_val, cur_str, sizeof(char) * cur_str_len);
         seq_val[cur_str_len] = '\0';
 
-        *DDS_StringSeq_get_reference(seq, seq_len) = seq_val;
+        *DDS_StringSeq_get_reference(seq, (DDS_Long) seq_len) = seq_val;
 
         consumed_len += cur_str_len + 1;
         seq_len += 1;
@@ -203,7 +205,8 @@ static DDS_ReturnCode_t
     retval = DDS_RETCODE_OK;
 done:
     if (retval != DDS_RETCODE_OK) {
-        if (DDS_RETCODE_OK != DDS_StringSeq_set_length(seq, orig_seq_len)) {
+        if (DDS_RETCODE_OK !=
+                DDS_StringSeq_set_length(seq, (DDS_Long) orig_seq_len)) {
             /* TODO Log error */
         }
     }
@@ -217,7 +220,7 @@ static DDS_ReturnCode_t
 {
     DDS_ReturnCode_t retval = DDS_RETCODE_ERROR;
     char *seq_val = NULL;
-    DDS_UnsignedLong str_len = 0, orig_seq_len = 0;
+    size_t str_len = 0, orig_seq_len = 0;
 
 
     str_len = RTI_MQTT_String_length(str);
@@ -231,11 +234,14 @@ static DDS_ReturnCode_t
     }
     orig_seq_len = DDS_OctetSeq_get_length(seq);
 
-    if (!DDS_OctetSeq_ensure_length(seq, str_len, str_len)) {
+    if (!DDS_OctetSeq_ensure_length(
+            seq,
+            (DDS_Long) str_len,
+            (DDS_Long) str_len)) {
         RTI_MQTT_ERROR_1(
                 "failed to ensure octet sequence length:",
                 "%u",
-                str_len + 1)
+                (DDS_UnsignedLong) str_len + 1)
         goto done;
     }
 
@@ -246,11 +252,11 @@ static DDS_ReturnCode_t
     retval = DDS_RETCODE_OK;
 done:
     if (retval != DDS_RETCODE_OK) {
-        if (!DDS_OctetSeq_set_length(seq, orig_seq_len)) {
+        if (!DDS_OctetSeq_set_length(seq, (DDS_Long) orig_seq_len)) {
             RTI_MQTT_ERROR_1(
                     "failed to reset octet sequence length:",
                     "%u",
-                    orig_seq_len)
+                    (DDS_UnsignedLong) orig_seq_len)
         }
     }
 

@@ -39,7 +39,7 @@ DDS_ReturnCode_t RTI_TSFM_realloc_buffer(
         cur_len += size_incr;
     }
 
-    if (size_max > 0 && cur_len > size_max) {
+    if (size_max > 0 && cur_len > (DDS_UnsignedLong) size_max) {
         /* TODO Log error */
         goto done;
     }
