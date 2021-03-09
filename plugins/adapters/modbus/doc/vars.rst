@@ -1,13 +1,12 @@
 .. include:: ../../../../doc/vars.rst
 
-.. |RSMODBUS_TM| replace:: |RTI_RS_TM| *Modbus Adapter*
+.. |RSMODBUS_TM| replace:: |RTI_RS_TM| *Modbus® Adapter*
 .. |RTI_RSMODBUS| replace:: |RTI_RS| *Modbus Adapter*
 .. |MODBUS_CLIENT| replace:: *Modbus Client*
 .. |MODBUS_CLIENTs| replace:: *Modbus Clients*
 .. |MODBUS_SERVER| replace:: *Modbus Server*
 .. |MODBUS_DEVICE| replace:: *Modbus Device*
 .. |MODBUS_DEVICEs| replace:: *Modbus Devices*
-.. |MODBUS_ADAPTER_NAME| replace:: *ModbusAdapter*
 .. |MODBUS_ADAPTER_LIB_NAME_LINUX| replace:: ``librtimodbusadapter.so``
 .. |MODBUS_ADAPTER_LIB_NAME_MAC| replace:: ``librtimodbusadapter.dylib``
 .. |MODBUS_ADAPTER_LIB_NAME_WIN| replace:: ``rtimodbusadapter.dll``

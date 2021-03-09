@@ -1,8 +1,8 @@
 .. include:: ../../../../doc/vars.rst
 
+.. |RS_JSON_TSFM_TM| replace:: |RTI_RS_TM| *JSON Trasformation*
 .. |RS_JSON_TSFM| replace:: |RS| *JSON Trasformation*
 .. |RTI_RS_JSON_TSFM| replace:: *RTI* |RS_JSON_TSFM|
-.. |JSON_TRANSFORMATION_NAME| replace:: *JSON Transformation*
 .. |JSON_TRANSFORMATION_LIB_NAME_LINUX| replace:: ``librtijsontransf.so``
 .. |JSON_TRANSFORMATION_LIB_NAME_MAC| replace:: ``librtijsontransf.dylib``
 .. |JSON_TRANSFORMATION_LIB_NAME_WIN| replace:: ``rtijsontransf.dll``

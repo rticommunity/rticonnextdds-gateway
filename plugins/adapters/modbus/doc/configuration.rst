@@ -101,7 +101,7 @@ and `modbus_new_tcp <https://libmodbus.org/docs/v3.1.6/modbus_new_tcp.html>`__.
 
 .. _section-input-output:
 
-Modbus Input/Output 
+Modbus Input/Output
 ===================
 
 This adapter allows you to write or read multiple Modbus registers
@@ -147,7 +147,7 @@ Consider the following custom data-type, which will hold the information
 to be written to each |MODBUS_DEVICE|.
 
 This example shows the configuration for DataNab
-`MBus_WTH_CO2_LCD_ETH <https://www.datanab.com/zc/docs/datanab/dth_wth/MBus_xTH_CO2_LCD_ETH.pdf>`__
+`MBus_WTH_CO2_LCD_ETH <https://github.com/rticommunity/rticonnextdds-gateway/tree/master/examples/modbus/MBus_WTH_CO2_LCD_ETH/MBus_xTH_CO2_LCD_ETH_datasheet.pdf>`__
 |MODBUS_DEVICE|. The data-type is defined as follows:
 
 .. code-block:: idl
@@ -547,7 +547,7 @@ in-line as in:
                     },
                     {
                       "field": "mac_address",
-                      "modbus_register_address": 100, 
+                      "modbus_register_address": 100,
                       "modbus_register_count": 6,
                       "modbus_datatype": "INPUT_REGISTER_INT8"
                     },
