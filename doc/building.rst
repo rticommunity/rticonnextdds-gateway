@@ -233,9 +233,20 @@ MQTT Adapter CMake Options
 RTIGATEWAY_ENABLE_SSL
 ^^^^^^^^^^^^^^^^^^^^^
 
+|OPENSSL| must be available on the system, if support for SSL/TLS is required.
+
+.. note:: In case that this fails or do not find the correct version, you can
+          provide |CMAKE| with the correct path by setting the variable
+          ``-DOPENSSL_ROOT_DIR=<path_to_openssl>``. This directory must contain
+          header files in an ``include/`` subdirectory, and libraries in a
+          ``lib/`` subdirectory. In Windows, there will be dll files in
+          the ``bin/`` subdirectory as well.
+
 :Required: No
 :Default: ``OFF``
 :Description: When this option is enabled, SSL/TLS support will be compiled in
               |RSMQTT|, and |PAHO_ASYNC|. ``OPENSSLHOME`` must also be
-              specified to provide the required |OPENSSL| dependencies.
+              specified to provide the required |OPENSSL| dependencies. You can
+              specify ``OPENSSLHOME`` when calling |CMAKE| by adding
+              ``-DOPENSSLHOME=/path/to/openssl``.
 
