@@ -6,7 +6,7 @@
 Introduction
 ************
 
-|RS_JSON_TSFM| provides a way of transforming DDS types into a JSON string
+|RS_JSON_TSFM_TM| provides a way of transforming DDS types into a JSON string
 (using standard DDS-JSON mapping), and store the result in an octet
 sequence field of the output.
 

@@ -12,8 +12,8 @@ All configuration is specified in |RS|'s XML configuration file.
 
 .. _section-how-to-load-plugin:
 
-Load the |FIELD_TRANSFORMATION_NAME| Plugin
-===========================================
+Load the Field Transformation Plugin
+====================================
 
 |RS_FIELD_TSFM| must be registered as a |RS| plugin by using the
 ``<transformation_plugin>`` tag.

@@ -12,8 +12,8 @@ All configuration is specified in |RS|'s XML configuration file.
 
 .. _section-how-to-load-plugin:
 
-Load the |JSON_TRANSFORMATION_NAME| Plugin
-===========================================
+Load the JSON Transformation Plugin
+===================================
 
 |RS_JSON_TSFM| must be registered as a |RS| plugin by using the
 ``<transformation_plugin>`` tag.

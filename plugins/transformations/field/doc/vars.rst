@@ -1,8 +1,8 @@
 .. include:: ../../../../doc/vars.rst
 
+.. |RS_FIELD_TSFM_TM| replace:: |RTI_RS_TM| *Field Trasformation*
 .. |RS_FIELD_TSFM| replace:: |RS| *Field Trasformation*
 .. |RTI_RS_FIELD_TSFM| replace:: *RTI* |RS_FIELD_TSFM|
-.. |FIELD_TRANSFORMATION_NAME| replace:: *Field Transformation*
 .. |FIELD_TRANSFORMATION_LIB_NAME_LINUX| replace:: ``librtifieldtransf.so``
 .. |FIELD_TRANSFORMATION_LIB_NAME_MAC| replace:: ``librtifieldtransf.dylib``
 .. |FIELD_TRANSFORMATION_LIB_NAME_WIN| replace:: ``rtifieldtransf.dll``

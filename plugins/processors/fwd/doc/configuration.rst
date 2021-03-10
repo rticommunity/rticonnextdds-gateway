@@ -12,7 +12,7 @@ All configuration is specified in |RS|'s XML configuration file.
 
 .. _section-how-to-load-plugin:
 
-Load the |FWD_PROCESSOR_NAME| Plugin
+Load the Forwarding Processor Plugin
 ====================================
 
 |RSFWD| must be registered as a |RS| plugin by using the ``<processor_plugin>``

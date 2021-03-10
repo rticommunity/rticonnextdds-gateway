@@ -9,7 +9,7 @@ Building from source
 Since |RTI_GATEWAY| is distributed in source format, it must
 be compiled into a shared library before it can be used by |RS|.
 
-The code can be built using |CMAKE|, version 3.7.0 or greater.
+The code can be built using |CMAKE|, version 3.10.0 or greater.
 
 .. _section-build-env:
 
@@ -59,7 +59,7 @@ directories.
     # CONNEXTDDS_DIR and CONNEXTDDS_ARCH will be read from the
     # shell environment if not passed explicitly to cmake
     cmake .. -DCONNEXTDDS_DIR=/path/to/rti_connext_dds/ \
-             -DCMAKE_BUILD_TYPE=Release                 \
+             -DCMAKE_BUILD_TYPE=Debug|Release           \
              -DCMAKE_INSTALL_PREFIX=../install
 
 Compilation
@@ -68,23 +68,34 @@ Compilation
 Once the project has been configured, libraries can be built using the selected
 toolchain, e.g.:
 
+Linux® and macOS® systems:
+
 .. code-block:: sh
 
-    # Replace BUILD_DIR with the location of your build directory.
-    cmake --build BUILD_DIR
+    cmake --build .
 
+Windows® systems:
+
+.. code-block:: bat
+
+    cmake --build . --config Debug|Release
 
 Installation
 ------------
 
 It is recommended that you also run the ``install`` step, e.g.:
 
+Linux and macOS systems:
+
 .. code-block:: sh
 
-    # Pass install to the "native" builder (this will work e.g. when
-    # using make or ninja to build the project).
-    # Replace BUILD_DIR with the location of your build directory.
-    cmake --build BUILD_DIR -- install
+    cmake --build . -- install
+
+Windows systems:
+
+.. code-block:: bat
+
+    cmake --build . --config Debug|Release --target install
 
 CMake General Options
 ---------------------
@@ -201,10 +212,10 @@ RTIGATEWAY_ENABLE_LOG
 :Default: ``OFF`` (for ``Release``), ``ON`` (for ``Debug``)
 :Description: By default, plugins will not print any messages to standard
               output when built in ``Release`` mode. When built in ``Debug``
-              mode, or if ``RTIGATEWAY_ENABLE_LOG`` is enabled, plugins will print
-              informational and error messages to standard output. These
+              mode, or if ``RTIGATEWAY_ENABLE_LOG`` is enabled, plugins will
+              print informational and error messages to standard output. These
               messages cannot be disabled at run-time.
-:Note: This doesn't apply to Modbus Adapter.
+:Note: This doesn't apply to the Modbus Adapter.
 
 RTIGATEWAY_ENABLE_TRACE
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -214,17 +225,28 @@ RTIGATEWAY_ENABLE_TRACE
 :Description: If enabled, this option will cause plugins to produce a much
               more verbose logging output, which can be used to trace all
               function calls within the adapter code.
-:Note: This doesn't apply to Modbus Adapter.
+:Note: This doesn't apply to the Modbus Adapter.
 
-MQTT CMake Options
-------------------
+MQTT Adapter CMake Options
+--------------------------
 
 RTIGATEWAY_ENABLE_SSL
 ^^^^^^^^^^^^^^^^^^^^^
 
+|OPENSSL| must be available on the system, if support for SSL/TLS is required.
+
+.. note:: In case that this fails or do not find the correct version, you can
+          provide |CMAKE| with the correct path by setting the variable
+          ``-DOPENSSL_ROOT_DIR=<path_to_openssl>``. This directory must contain
+          header files in an ``include/`` subdirectory, and libraries in a
+          ``lib/`` subdirectory. In Windows, there will be dll files in
+          the ``bin/`` subdirectory as well.
+
 :Required: No
-:Default: ON
+:Default: ``OFF``
 :Description: When this option is enabled, SSL/TLS support will be compiled in
               |RSMQTT|, and |PAHO_ASYNC|. ``OPENSSLHOME`` must also be
-              specified to provide the required |OPENSSL| dependencies.
+              specified to provide the required |OPENSSL| dependencies. You can
+              specify ``OPENSSLHOME`` when calling |CMAKE| by adding
+              ``-DOPENSSLHOME=/path/to/openssl``.
 

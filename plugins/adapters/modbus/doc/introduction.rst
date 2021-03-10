@@ -17,7 +17,7 @@ You can configure |RS| to route data between multiple |DDS_DOMAINS| and
 
 .. _section-adapter-registers-addresses:
 
-This document assumes you have a basic understanding of the Modbus protocol,
+This document assumes you have a basic understanding of the MODBUS protocol,
 DDS and Routing Service, and their terminology.
 
 Modbus Registers and Addresses
