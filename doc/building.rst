@@ -227,14 +227,14 @@ RTIGATEWAY_ENABLE_TRACE
               function calls within the adapter code.
 :Note: This doesn't apply to the Modbus Adapter.
 
-MQTT CMake Options
-------------------
+MQTT Adapter CMake Options
+--------------------------
 
 RTIGATEWAY_ENABLE_SSL
 ^^^^^^^^^^^^^^^^^^^^^
 
 :Required: No
-:Default: ON
+:Default: ``OFF``
 :Description: When this option is enabled, SSL/TLS support will be compiled in
               |RSMQTT|, and |PAHO_ASYNC|. ``OPENSSLHOME`` must also be
               specified to provide the required |OPENSSL| dependencies.
