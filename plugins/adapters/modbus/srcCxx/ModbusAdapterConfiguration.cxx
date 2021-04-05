@@ -25,7 +25,7 @@
 #include "json.hpp"
 
 using namespace rti::adapter::modbus;
-using namespace rti::adapter::common;
+using namespace rti::common;
 using namespace rti::json;
 using namespace dds::core::xtypes;
 

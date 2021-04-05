@@ -13,8 +13,8 @@
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef rtitransform_simple_log_h
-#define rtitransform_simple_log_h
+#ifndef TransformationLog_h
+#define TransformationLog_h
 
 #ifndef RTI_TSFM_ENABLE_LOG
 #define RTI_TSFM_USE_LOG                    0
@@ -298,4 +298,4 @@
         RTI_TSFM_LOG_GUID_BIT(g_,11), RTI_TSFM_LOG_GUID_BIT(g_,10), RTI_TSFM_LOG_GUID_BIT(g_,9), RTI_TSFM_LOG_GUID_BIT(g_,8), \
         RTI_TSFM_LOG_GUID_BIT(g_,15), RTI_TSFM_LOG_GUID_BIT(g_,14), RTI_TSFM_LOG_GUID_BIT(g_,13), RTI_TSFM_LOG_GUID_BIT(g_,12))
 
-#endif /* rtitransform_simple_log_h */
+#endif /* TransformationLog_h */

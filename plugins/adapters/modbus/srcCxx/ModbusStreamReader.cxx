@@ -31,7 +31,7 @@
 using namespace dds::core::xtypes;
 using namespace dds::domain;
 
-using namespace rti::adapter::common;
+using namespace rti::common;
 using namespace rti::adapter::modbus;
 
 void ModbusStreamReader::on_data_available_thread()

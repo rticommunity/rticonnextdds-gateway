@@ -13,8 +13,8 @@
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef Transformation_Simple_h
-#define Transformation_Simple_h
+#ifndef TransformationSimple_h
+#define TransformationSimple_h
 
 #include "ndds/ndds_c.h"
 #include "routingservice/routingservice_transformation.h"
@@ -221,4 +221,4 @@ DDS_ReturnCode_t RTI_TSFM_TransformationPlugin_finalize_transformation(
 
 #include "TransformationLog.h"
 
-#endif /* Transformation_Simple_h */
+#endif /* TransformationSimple_h */

@@ -32,7 +32,7 @@ public:
      * json_value to NULL.
      */
     json_document() : _json_value(NULL) {}
-    
+
     /**
      * Destructor of the json_ducument class. It releases memory allocated for
      * the json_value.
@@ -44,7 +44,7 @@ public:
             _json_value = NULL;
         }
     }
-    
+
     /**
      * This method parses a JSON string and returns a pointer to the root
      * node of the JSON tree.
@@ -56,7 +56,7 @@ public:
     {
         parse(json, strlen(json));
     }
-    
+
     /**
      * This method parses a JSON string and returns a pointer to the root
      * node of the JSON tree.
@@ -69,14 +69,14 @@ public:
         char error[STRING_BUFFER_LENGTH] = "There was something here";
         json_settings settings = { 0 };
         _json_value = json_parse_ex(&settings, json, length, error);
-        
+
         //_json_value = json_parse(json, length);
-        
+
         if (_json_value == NULL) {
             throw std::runtime_error(ERR_MSG_PARSE_JSON);
         }
     }
-    
+
     /**
      * This method looks for a node within the JSON node tree with the given
      * name.
@@ -87,7 +87,7 @@ public:
     {
         return find_node(_json_value, node_name);
     }
-    
+
     /**
      * This method returns the root of the json document.
      * @return Pointer to the root of the JSON document. If the JSON document
@@ -98,14 +98,13 @@ public:
     {
         return _json_value;
     }
-    
+
 private:
     /**
      * Root of the JSON document.
      */
     json_value * _json_value;
 
-    
     /**
      * This method looks for a node within the JSON node tree with the given
      * name.
@@ -116,7 +115,7 @@ private:
     json_value * find_node(json_value * parent_node, const char * node_name)
     {
         json_value * node = NULL;
-        
+
         if (parent_node == NULL) {
             return node;
         }
@@ -154,12 +153,12 @@ private:
                 // NOOP
             }
         }
-        
+
         return node;
-        
+
     }
 };
-    
+
 }}
 
 #endif //JSON_HPP

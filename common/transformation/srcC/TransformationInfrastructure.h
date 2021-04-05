@@ -13,8 +13,8 @@
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef Transformation_Infrastructure_h
-#define Transformation_Infrastructure_h
+#ifndef TransformationInfrastructure_h
+#define TransformationInfrastructure_h
 
 #include "ndds/ndds_c.h"
 
@@ -32,4 +32,4 @@ RTIBool RTI_TSFM_DDS_DynamicDataPtr_copy(
 
 DDS_SEQUENCE(RTI_TSFM_DDS_DynamicDataPtrSeq, DDS_DynamicData *);
 
-#endif /* Transformation_Infrastructure_h */
+#endif /* TransformationInfrastructure_h */

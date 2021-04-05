@@ -13,8 +13,8 @@
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef Transformation_Types_h
-#define Transformation_Types_h
+#ifndef TransformationTypes_h
+#define TransformationTypes_h
 
 #include "ndds/ndds_c.h"
 
@@ -36,4 +36,4 @@ typedef struct RTI_TSFM_TransformationConfig {
 
 } RTI_TSFM_TransformationConfig;
 
-#endif /* Transformation_Types_h */
+#endif /* TransformationTypes_h */

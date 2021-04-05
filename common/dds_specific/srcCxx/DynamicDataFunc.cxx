@@ -19,7 +19,7 @@
 using namespace dds::core::xtypes;
 
 long double
-    rti::adapter::common::dynamic_data::get_dds_primitive_or_enum_type_value(
+    rti::common::dynamic_data::get_dds_primitive_or_enum_type_value(
         const DynamicData& data,
         const std::string &field)
 {
@@ -67,7 +67,7 @@ long double
 }
 
 std::vector<long double>
-    rti::adapter::common::dynamic_data::get_vector_values(
+    rti::common::dynamic_data::get_vector_values(
         const DynamicData& data,
         const std::string& field)
 {
@@ -166,7 +166,7 @@ std::vector<long double>
 }
 
 
-void rti::adapter::common::dynamic_data::set_dds_primitive_or_enum_type_value(
+void rti::common::dynamic_data::set_dds_primitive_or_enum_type_value(
         DynamicData& data,
         const TypeKind type,
         const std::string& field,
@@ -224,7 +224,7 @@ void rti::adapter::common::dynamic_data::set_dds_primitive_or_enum_type_value(
     }
 }
 
-void rti::adapter::common::dynamic_data::set_vector_values(
+void rti::common::dynamic_data::set_vector_values(
         DynamicData& data,
         const TypeKind type,
         const std::string& field,
@@ -332,7 +332,7 @@ void rti::adapter::common::dynamic_data::set_vector_values(
     }
 }
 
-bool rti::adapter::common::dynamic_data::is_signed_kind(TypeKind kind)
+bool rti::common::dynamic_data::is_signed_kind(TypeKind kind)
 {
     switch (kind.underlying()) {
     case TypeKind::CHAR_8_TYPE:
@@ -355,7 +355,7 @@ bool rti::adapter::common::dynamic_data::is_signed_kind(TypeKind kind)
     }
 }
 
-DynamicType rti::adapter::common::dynamic_data::get_member_type(
+DynamicType rti::common::dynamic_data::get_member_type(
         const StructType& struct_type,
         const std::string& field_name)
 {
