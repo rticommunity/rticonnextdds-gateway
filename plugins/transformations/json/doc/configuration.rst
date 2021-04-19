@@ -12,6 +12,21 @@ All configuration is specified in |RS|'s XML configuration file.
 
 .. _section-how-to-load-plugin:
 
+Supported Data Types
+====================
+
+The |RS_JSON_TSFM| supports the following datatypes to serialize and
+deserialize:
+
+- Sequences of Octets (`DDS_OctetSeq`)
+- Strings
+
+Therefore, we can serialize a DynamicData object to any of these types, and
+vice versa. In the example shown in the
+:ref:`section-processor-configuration-attributes` section, the `payload.data`
+should be either a `DDS_OctetSeq` or a `string`.
+
+
 Load the JSON Transformation Plugin
 ===================================
 

@@ -13,12 +13,12 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include "json.h"
 #include "ndds/ndds_c.h"
 
 #include "FlatTypeInfrastructure.h"
 #include "TransformationPlatform.h"
 #include "TransformationSimple.h"
+#include "DynamicDataFunc.h"
 
 #define RTI_TSFM_LOG_ARGS "rtitransform::json::flat"
 
@@ -30,7 +30,6 @@ static RTIBool
     self->kind = DDS_TK_NULL;
     self->id = 0;
     self->name = NULL;
-    self->parse_fn = NULL;
     return RTI_TRUE;
 }
 
@@ -67,7 +66,6 @@ static RTIBool RTI_TSFM_Json_FlatTypeTransformation_MemberMapping_copy(
     dst->name = src->name;
     dst->kind = src->kind;
     dst->id = src->id;
-    dst->parse_fn = src->parse_fn;
 
     return RTI_TRUE;
 }
@@ -101,527 +99,8 @@ static RTIBool RTI_TSFM_Json_FlatTypeTransformation_MemberMapping_copy(
      || (tck_) == DDS_TK_STRING || (tck_) == DDS_TK_LONGLONG              \
      || (tck_) == DDS_TK_ULONGLONG)
 
-#define RTI_TSFM_Json_MemberValue_validate_string(name_, val_, max_len_) \
-    {                                                                    \
-        switch ((val_)->type) {                                          \
-        case json_string:                                                \
-            if ((val_)->u.string.length > (max_len_)) {                  \
-                RTI_TSFM_ERROR_3(                                        \
-                        "INVALID JSON: string value too long:",          \
-                        "member=%s, max_len=%d, found_len=%d",           \
-                        (name_),                                         \
-                        (max_len_),                                      \
-                        (val_)->u.string.length)                         \
-                goto done;                                               \
-            }                                                            \
-            break;                                                       \
-        default:                                                         \
-            RTI_TSFM_ERROR_2(                                            \
-                    "INVALID JSON: member expected to be a string:",     \
-                    "member=%s, found_type=%d",                          \
-                    (name_),                                             \
-                    (val_)->type)                                        \
-            goto done;                                                   \
-        }                                                                \
-    }
-
-#define RTI_TSFM_Json_MemberValue_validate_integer(name_, val_)        \
-    {                                                                  \
-        switch ((val_)->type) {                                        \
-        case json_integer:                                             \
-            break;                                                     \
-        default:                                                       \
-            RTI_TSFM_ERROR_2(                                          \
-                    "INVALID JSON: member expected to be an integer:", \
-                    "member=%s, found_type=%d",                        \
-                    (name_),                                           \
-                    (val_)->type)                                      \
-            goto done;                                                 \
-        }                                                              \
-    }
-
-#define RTI_TSFM_Json_MemberValue_validate_double(name_, val_)       \
-    {                                                                \
-        switch ((val_)->type) {                                      \
-        case json_double:                                            \
-            break;                                                   \
-        default:                                                     \
-            RTI_TSFM_ERROR_2(                                        \
-                    "INVALID JSON: member expected to be a double:", \
-                    "member=%s, found_type=%d",                      \
-                    (name_),                                         \
-                    (val_)->type)                                    \
-            goto done;                                               \
-        }                                                            \
-    }
-
-#define RTI_TSFM_Json_MemberValue_validate_boolean(name_, val_)       \
-    {                                                                 \
-        switch ((val_)->type) {                                       \
-        case json_boolean:                                            \
-            break;                                                    \
-        default:                                                      \
-            RTI_TSFM_ERROR_2(                                         \
-                    "INVALID JSON: member expected to be a boolean:", \
-                    "member=%s, found_type=%d",                       \
-                    (name_),                                          \
-                    (val_)->type)                                     \
-            goto done;                                                \
-        }                                                             \
-    }
-
-static DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_parse_member_short(
-        RTI_TSFM_Json_FlatTypeTransformation *self,
-        RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-        json_value *json_member_val,
-        DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_Short member_val = 0;
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_parse_member_short)
-
-    RTI_TSFM_Json_MemberValue_validate_integer(member->name, json_member_val);
-
-    member_val = (DDS_Short) json_member_val->u.integer;
-
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_short(
-                sample,
-                member->name,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                member_val)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
-
-static DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_parse_member_long(
-        RTI_TSFM_Json_FlatTypeTransformation *self,
-        RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-        json_value *json_member_val,
-        DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_Long member_val = 0;
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_parse_member_long)
-
-    RTI_TSFM_Json_MemberValue_validate_integer(member->name, json_member_val);
-
-    member_val = (DDS_Long) json_member_val->u.integer;
-
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_long(
-                sample,
-                member->name,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                member_val)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
-
-static DDS_ReturnCode_t
-        RTI_TSFM_Json_FlatTypeTransformation_parse_member_ushort(
-                RTI_TSFM_Json_FlatTypeTransformation *self,
-                RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-                json_value *json_member_val,
-                DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_UnsignedShort member_val = 0;
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_parse_member_ushort)
-
-    RTI_TSFM_Json_MemberValue_validate_integer(member->name, json_member_val);
-
-    member_val = (DDS_UnsignedShort) json_member_val->u.integer;
-
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_ushort(
-                sample,
-                member->name,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                member_val)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
-
-static DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_parse_member_ulong(
-        RTI_TSFM_Json_FlatTypeTransformation *self,
-        RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-        json_value *json_member_val,
-        DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_UnsignedLong member_val = 0;
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_parse_member_ulong)
-
-    RTI_TSFM_Json_MemberValue_validate_integer(member->name, json_member_val);
-
-    member_val = (DDS_UnsignedLong) json_member_val->u.integer;
-
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_ulong(
-                sample,
-                member->name,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                member_val)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
-
-static DDS_ReturnCode_t
-        RTI_TSFM_Json_FlatTypeTransformation_parse_member_ulonglong(
-                RTI_TSFM_Json_FlatTypeTransformation *self,
-                RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-                json_value *json_member_val,
-                DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_UnsignedLongLong member_val = 0;
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_parse_member_ulonglong)
-
-    RTI_TSFM_Json_MemberValue_validate_integer(member->name, json_member_val);
-
-    member_val = (DDS_UnsignedLongLong) json_member_val->u.integer;
-
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_ulonglong(
-                sample,
-                member->name,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                member_val)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
-
-static DDS_ReturnCode_t
-        RTI_TSFM_Json_FlatTypeTransformation_parse_member_longlong(
-                RTI_TSFM_Json_FlatTypeTransformation *self,
-                RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-                json_value *json_member_val,
-                DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_LongLong member_val = 0;
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_parse_member_longlong)
-
-    RTI_TSFM_Json_MemberValue_validate_integer(member->name, json_member_val);
-
-    member_val = (DDS_LongLong) json_member_val->u.integer;
-
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_longlong(
-                sample,
-                member->name,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                member_val)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
-
-static DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_parse_member_float(
-        RTI_TSFM_Json_FlatTypeTransformation *self,
-        RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-        json_value *json_member_val,
-        DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_Float member_val = .0;
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_parse_member_float)
-
-    RTI_TSFM_Json_MemberValue_validate_double(member->name, json_member_val);
-
-    member_val = (DDS_Float) json_member_val->u.dbl;
-
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_float(
-                sample,
-                member->name,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                member_val)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
-
-static DDS_ReturnCode_t
-        RTI_TSFM_Json_FlatTypeTransformation_parse_member_double(
-                RTI_TSFM_Json_FlatTypeTransformation *self,
-                RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-                json_value *json_member_val,
-                DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_Double member_val = .0;
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_parse_member_double)
-
-    RTI_TSFM_Json_MemberValue_validate_double(member->name, json_member_val);
-
-    member_val = (DDS_Double) json_member_val->u.dbl;
-
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_double(
-                sample,
-                member->name,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                member_val)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
-
-static DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_parse_member_octet(
-        RTI_TSFM_Json_FlatTypeTransformation *self,
-        RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-        json_value *json_member_val,
-        DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_Octet member_val = 0;
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_parse_member_octet)
-
-    RTI_TSFM_Json_MemberValue_validate_integer(member->name, json_member_val);
-
-    member_val = (DDS_Octet) json_member_val->u.integer;
-
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_octet(
-                sample,
-                member->name,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                member_val)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
-
-static DDS_ReturnCode_t
-        RTI_TSFM_Json_FlatTypeTransformation_parse_member_boolean(
-                RTI_TSFM_Json_FlatTypeTransformation *self,
-                RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-                json_value *json_member_val,
-                DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_Boolean member_val = DDS_BOOLEAN_FALSE;
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_parse_member_boolean)
-
-    RTI_TSFM_Json_MemberValue_validate_boolean(member->name, json_member_val);
-
-    member_val = (DDS_Boolean) json_member_val->u.boolean;
-
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_boolean(
-                sample,
-                member->name,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                member_val)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
-
-static DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_parse_member_char(
-        RTI_TSFM_Json_FlatTypeTransformation *self,
-        RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-        json_value *json_member_val,
-        DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_Char member_val = '\0';
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_parse_member_char)
-
-    RTI_TSFM_Json_MemberValue_validate_string(member->name, json_member_val, 1);
-
-    if (json_member_val->u.string.length == 0) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    member_val = (DDS_Char) json_member_val->u.string.ptr[0];
-
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_char(
-                sample,
-                member->name,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                member_val)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
-
-static DDS_ReturnCode_t
-        RTI_TSFM_Json_FlatTypeTransformation_parse_member_string(
-                RTI_TSFM_Json_FlatTypeTransformation *self,
-                RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-                json_value *json_member_val,
-                DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_parse_member_string)
-
-    RTI_TSFM_Json_MemberValue_validate_string(
-            member->name,
-            json_member_val,
-            member->max_len);
-
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_string(
-                sample,
-                member->name,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                json_member_val->u.string.ptr)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
-
-#define RTI_TSFM_Json_FlatTypeTransformation_parse_member_enum \
-    RTI_TSFM_Json_FlatTypeTransformation_parse_member_long
-
-static DDS_ReturnCode_t
-        RTI_TSFM_Json_FlatTypeTransformation_get_member_parse_function(
-                RTI_TSFM_Json_FlatTypeTransformation *self,
-                DDS_TCKind member_kind,
-                RTI_TSFM_Json_FlatTypeTransformation_ParseMemberFn
-                        *parse_fn_out)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    RTI_TSFM_Json_FlatTypeTransformation_ParseMemberFn parse_fn = NULL;
-
-
-    RTI_TSFM_LOG_FN(
-            RTI_TSFM_Json_FlatTypeTransformation_get_member_parse_function)
-
-    switch (member_kind) {
-    case DDS_TK_SHORT:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_short;
-        break;
-    case DDS_TK_LONG:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_long;
-        break;
-    case DDS_TK_USHORT:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_ushort;
-        break;
-    case DDS_TK_ULONG:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_ulong;
-        break;
-    case DDS_TK_LONGLONG:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_longlong;
-        break;
-    case DDS_TK_ULONGLONG:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_ulonglong;
-        break;
-    case DDS_TK_FLOAT:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_float;
-        break;
-    case DDS_TK_DOUBLE:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_double;
-        break;
-    case DDS_TK_OCTET:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_octet;
-        break;
-    case DDS_TK_CHAR:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_char;
-        break;
-    case DDS_TK_BOOLEAN:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_boolean;
-        break;
-    case DDS_TK_STRING:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_string;
-        break;
-    case DDS_TK_ENUM:
-        parse_fn = RTI_TSFM_Json_FlatTypeTransformation_parse_member_enum;
-        break;
-    default:
-        /* TODO Log error */
-        goto done;
-    }
-
-    *parse_fn_out = parse_fn;
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    return retcode;
-}
+#define RTI_TSFM_Json_FlatTypeTransformation_validate_container_tckind(tck_) \
+    ((tck_) == DDS_TK_STRUCT || (tck_) == DDS_TK_VALUE)
 
 static DDS_ReturnCode_t
         RTI_TSFM_Json_FlatTypeTransformation_validate_buffer_member(
@@ -632,82 +111,47 @@ static DDS_ReturnCode_t
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
     DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
-    DDS_UnsignedLong buffer_member_id = 0;
     struct DDS_TypeCode *member_type = NULL, *member_content_type = NULL;
     DDS_TCKind tckind = DDS_TK_NULL;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_validate_buffer_member)
 
-    /* Currently we don't validate nor create a mapping for the "buffer member"
-       because users specify it as a possibly nested selector but
-       DDS_TypeCode_find_member_by_name doesn't support nested selectors. */
-
-#if 0
-
     /* Check that output type has the specified buffer member */
-    buffer_member_id = 
-        DDS_TypeCode_find_member_by_name(base_type, member_name, &ex);
-    if (DDS_NO_EXCEPTION_CODE != ex)
-    {
-        /* TODO Log error */
+    member_type = RTI_COMMON_TypeCode_get_member_type(base_type, member_name);
+    if (member_type == NULL) {
         goto done;
     }
-    member_type = DDS_TypeCode_member_type(base_type, buffer_member_id, &ex);
-    if (ex != DDS_NO_EXCEPTION_CODE)
-    {
-        /* TODO Log error */
-        goto done;
-    }
+
     tckind = DDS_TypeCode_kind(member_type, &ex);
-    if (ex != DDS_NO_EXCEPTION_CODE)
-    {
+    if (ex != DDS_NO_EXCEPTION_CODE) {
         /* TODO Log error */
         goto done;
     }
 
-    if (tckind != DDS_TK_SEQUENCE)
-    {
+    /* In case of a Sequence, check it is a DDS_OctetSeq */
+    if (tckind == DDS_TK_SEQUENCE) {
+        member_content_type = DDS_TypeCode_content_type(member_type, &ex);
+        if (ex != DDS_NO_EXCEPTION_CODE) {
+            /* TODO Log error */
+            goto done;
+        }
+
+        tckind = DDS_TypeCode_kind(member_content_type, &ex);
+        if (ex != DDS_NO_EXCEPTION_CODE) {
+            /* TODO Log error */
+            goto done;
+        }
+
+        if (tckind != DDS_TK_OCTET) {
+            /* TODO Log error */
+            goto done;
+        }
+    } else if (tckind != DDS_TK_STRING) {
         /* TODO Log error */
         goto done;
     }
 
-    member_content_type = DDS_TypeCode_content_type(member_type, &ex);
-    if (ex != DDS_NO_EXCEPTION_CODE)
-    {
-        /* TODO Log error */
-        goto done;
-    }
-
-    tckind = DDS_TypeCode_kind(member_content_type, &ex);
-    if (ex != DDS_NO_EXCEPTION_CODE)
-    {
-        /* TODO Log error */
-        goto done;
-    }
-
-    if (tckind != DDS_TK_OCTET)
-    {
-        /* TODO Log error */
-        goto done;
-    }
-
-    mapping->name = self->config->buffer_member;
-    mapping->id = buffer_member_id;
-    mapping->max_len = DDS_TypeCode_length(member_type,&ex);
-    if (ex != DDS_NO_EXCEPTION_CODE)
-    {
-        /* TODO Log error */
-        goto done;
-    }
-    mapping->kind = DDS_TK_SEQUENCE;
-    mapping->optional =
-        !DDS_TypeCode_is_member_required(base_type, mapping->id, &ex);
-    if (ex != DDS_NO_EXCEPTION_CODE)
-    {
-        /* TODO Log error */
-        goto done;
-    }
-#endif
+    /* As this might be a nested type, we cannot fill out the mapping*/
 
     retcode = DDS_RETCODE_OK;
 
@@ -721,7 +165,7 @@ static DDS_ReturnCode_t
                 RTI_TSFM_Json_FlatTypeTransformation *self,
                 struct DDS_TypeCode *input_type)
 {
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
+    DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
     RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *mapping = NULL;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_validate_input_type)
@@ -729,8 +173,7 @@ static DDS_ReturnCode_t
     if (self->config->parent.type == RTI_TSFM_TransformationKind_SERIALIZER) {
         /* Nothing to check for serializer mode, since we can serialize any
          * DDS type using DDS_DynamicData_print_json */
-        retcode = DDS_RETCODE_OK;
-        goto done;
+        goto done; /* DDS_RETCODE_OK */
     }
 
     /* Check that output type has the specified buffer member */
@@ -739,6 +182,7 @@ static DDS_ReturnCode_t
                 1,
                 1)) {
         /* TODO Log error */
+        retcode = DDS_RETCODE_ERROR;
         goto done;
     }
 
@@ -747,17 +191,15 @@ static DDS_ReturnCode_t
                     &self->state->input_mappings,
                     0);
 
-    if (DDS_RETCODE_OK
-        != RTI_TSFM_Json_FlatTypeTransformation_validate_buffer_member(
+    retcode = RTI_TSFM_Json_FlatTypeTransformation_validate_buffer_member(
                 self,
                 mapping,
                 input_type,
-                self->config->buffer_member)) {
+                self->config->buffer_member);
+    if (retcode != DDS_RETCODE_OK) {
         /* TODO Log error */
         goto done;
     }
-
-    retcode = DDS_RETCODE_OK;
 
 done:
     if (retcode != DDS_RETCODE_OK) {
@@ -815,13 +257,13 @@ static DDS_ReturnCode_t
 
     /* Configure output for deserializer mode */
 
-    /* Check that the base type is a struct (only type supported for now) */
+    /* Check that the base type is supported (struct or value) */
     tckind = DDS_TypeCode_kind(output_type, &ex);
     if (ex != DDS_NO_EXCEPTION_CODE) {
         /* TODO Log error */
         goto done;
     }
-    if (tckind != DDS_TK_STRUCT) {
+    if (!RTI_TSFM_Json_FlatTypeTransformation_validate_container_tckind(tckind)) {
         /* TODO Log error */
         goto done;
     }
@@ -884,15 +326,6 @@ static DDS_ReturnCode_t
         mapping->optional =
                 !DDS_TypeCode_is_member_required(output_type, i, &ex);
         if (ex != DDS_NO_EXCEPTION_CODE) {
-            /* TODO Log error */
-            goto done;
-        }
-
-        if (RTI_TSFM_Json_FlatTypeTransformation_get_member_parse_function(
-                    self,
-                    mapping->kind,
-                    &mapping->parse_fn)
-            != DDS_RETCODE_OK) {
             /* TODO Log error */
             goto done;
         }
@@ -1064,6 +497,8 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_serialize(
                 buffer_seq_initd = DDS_BOOLEAN_FALSE,
                 failed_serialization = DDS_BOOLEAN_FALSE;
     DDS_UnsignedLong serialized_size = 0;
+    struct DDS_DynamicDataMemberInfo member_info =
+            DDS_DynamicDataMemberInfo_INITIALIZER;
     char *p = NULL;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_serialize)
@@ -1072,25 +507,25 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_serialize(
         if (failed_serialization || self->state->json_buffer == NULL
             || self->state->json_buffer_size == 0) {
             failed_serialization = DDS_BOOLEAN_FALSE;
-            if (DDS_RETCODE_OK
-                != RTI_TSFM_realloc_buffer(
-                        self->config->serialized_size_min,
-                        self->config->serialized_size_incr,
-                        self->config->serialized_size_max,
-                        &self->state->json_buffer,
-                        &self->state->json_buffer_size)) {
-                /* TODO Log error */
+            retcode = RTI_TSFM_realloc_buffer(
+                    self->config->serialized_size_min,
+                    self->config->serialized_size_incr,
+                    self->config->serialized_size_max,
+                    &self->state->json_buffer,
+                    &self->state->json_buffer_size);
+            if (retcode != DDS_RETCODE_OK) {
+                RTI_TSFM_ERROR("unable to realloc_buffer");
                 goto done;
             }
         }
 
         serialized_size = self->state->json_buffer_size;
-        if (DDS_RETCODE_OK
-            != DDS_DynamicDataFormatter_to_json(
-                    sample_in,
-                    self->state->json_buffer,
-                    &serialized_size,
-                    self->config->indent)) {
+        retcode = DDS_DynamicDataFormatter_to_json(
+                sample_in,
+                self->state->json_buffer,
+                &serialized_size,
+                self->config->indent);
+        if (retcode != DDS_RETCODE_OK) {
             failed_serialization = DDS_BOOLEAN_TRUE;
             continue;
         }
@@ -1119,25 +554,75 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_serialize(
         serialized = DDS_BOOLEAN_TRUE;
     }
 
-    if (!DDS_OctetSeq_loan_contiguous(
+    /*
+     * Select the method to set the output depending on the type:
+     * DDS_OctetSeq or string.
+     */
+    retcode = DDS_DynamicData_get_member_info(
+            sample_out,
+            &member_info,
+            self->config->buffer_member,
+            DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
+    if (retcode != DDS_RETCODE_OK) {
+        RTI_TSFM_ERROR_1(
+                "unable to get_member_info for member:",
+                "%s",
+                self->config->buffer_member);
+        goto done;
+    }
+
+    switch (member_info.member_kind) {
+    case DDS_TK_STRING:
+        retcode = DDS_DynamicData_set_string(
+                    sample_out,
+                    self->config->buffer_member,
+                    DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
+                    self->state->json_buffer);
+        if (retcode != DDS_RETCODE_OK) {
+            RTI_TSFM_ERROR_1(
+                    "unable to set_string for member:",
+                    "%s",
+                    self->config->buffer_member);
+            goto done;
+        }
+        break;
+
+    case DDS_TK_SEQUENCE: {
+        if (!DDS_OctetSeq_loan_contiguous(
                 &buffer_seq,
                 (DDS_Octet *) self->state->json_buffer,
                 serialized_size,
                 self->state->json_buffer_size)) {
-        /* TODO Log error */
-        goto done;
-    }
+            RTI_TSFM_ERROR_1(
+                    "unable to loan_contiguous in DDS_OctetSeq for member:",
+                    "%s",
+                    self->config->buffer_member);
+            goto done;
+        }
 
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_set_octet_seq(
+        retcode = DDS_DynamicData_set_octet_seq(
                 sample_out,
                 self->config->buffer_member,
                 DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                &buffer_seq)) {
-        /* TODO Log error */
+                &buffer_seq);
+        if (retcode != DDS_RETCODE_OK) {
+            RTI_TSFM_ERROR_1(
+                "unable to set_octet_seq for member:",
+                "%s",
+                self->config->buffer_member);
+            goto done;
+        }
+
+        break;
+    }
+    default:
+        RTI_TSFM_ERROR_1(
+                "incompatible kind (only Strings and DDS_OctetSeq are "
+                        "supported) of member : ",
+                "%s",
+                self->config->buffer_member);
         goto done;
     }
-
 
     retcode = DDS_RETCODE_OK;
 done:
@@ -1150,113 +635,47 @@ done:
     return retcode;
 }
 
-DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_find_json_member(
-        const char *member_name,
-        json_value *value,
-        json_object_entry **member_out)
+/**
+ * @brief Add an EOS ('\0') character to the sequence if it doesn't exist.
+ * @param self the sequence to add the EOS character.
+ * @return A boolean that says whether it has been added successfully.
+ */
+DDS_Boolean RTI_TSFM_Json_FlatTypeTransformation_add_eos_octet_seq(
+        struct DDS_OctetSeq *self)
 {
-    DDS_UnsignedLong i = 0;
-    json_object_entry *member = NULL;
+    DDS_Long max = 0;
+    DDS_Long length = 0;
 
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_find_json_member)
+    max = DDS_OctetSeq_get_maximum(self);
+    length = DDS_OctetSeq_get_length(self);
 
-    *member_out = NULL;
-
-    for (i = 0; i < value->u.object.length && *member_out == NULL; i++) {
-        member = &value->u.object.values[i];
-
-        if (RTI_TSFM_String_compare(member->name, member_name) == 0) {
-            *member_out = member;
-        }
+    /* The sequence is well terminated, no need to add EOS */
+    if (DDS_OctetSeq_get_reference(self, length - 1) == '\0') {
+        return DDS_BOOLEAN_TRUE;
     }
 
-    return DDS_RETCODE_OK;
+    /* The EOS character cannot be added without allocating new memory */
+    if (max == length) {
+        return DDS_BOOLEAN_FALSE;
+    }
+
+    /*
+     * In this case, we have at least one 'emtpy' space in the sequence,
+     * therefore, we can add the EOS character.
+     */
+    if (!DDS_OctetSeq_set_length(self, length + 1)) {
+        return DDS_BOOLEAN_FALSE;
+    }
+
+    /*
+     * length contains the length before increasing it,
+     * hence it is pointing ot the new element.
+     */
+    *DDS_OctetSeq_get_reference(self, length) = '\0';
+
+    return DDS_BOOLEAN_TRUE;
+
 }
-
-DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_deserialize_sample(
-        RTI_TSFM_Json_FlatTypeTransformation *self,
-        const char *json_buffer,
-        DDS_UnsignedLong json_buffer_size,
-        DDS_DynamicData *sample)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    json_value *value = NULL, *member_value = NULL;
-    json_object_entry *member = NULL;
-    DDS_UnsignedLong i = 0, mappings_len = 0;
-    DDS_Long member_val_l = 0;
-    RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *mapping = NULL;
-
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_deserialize_sample)
-
-    /* json_buffer should not be printed with printf() because there is
-     * no guarantee that the string is well terminated (and most likely
-     * it won't be, i.e. no 'nul' terminator) */
-
-    value = json_parse(json_buffer, json_buffer_size);
-    if (value == NULL) {
-        /* TODO Log error */
-        RTI_TSFM_ERROR("failed: json_parse")
-        goto done;
-    }
-    if (value->type != json_object) {
-        /* TODO Log error */
-        RTI_TSFM_ERROR("failed: invalid parsed value")
-        goto done;
-    }
-
-    mappings_len =
-            RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_get_length(
-                    &self->state->output_mappings);
-
-    for (i = 0; i < mappings_len; i++) {
-        mapping =
-                RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_get_reference(
-                        &self->state->output_mappings,
-                        i);
-        if (DDS_RETCODE_OK
-            != RTI_TSFM_Json_FlatTypeTransformation_find_json_member(
-                    mapping->name,
-                    value,
-                    &member)) {
-            /* TODO Log error */
-            goto done;
-        }
-        if (member == NULL) {
-            if (!mapping->optional) {
-                RTI_TSFM_ERROR_1(
-                        "required member not found in JSON sample:",
-                        "member=%s",
-                        mapping->name)
-                goto done;
-            }
-            continue;
-        }
-
-        if (DDS_RETCODE_OK
-            != RTI_TSFM_Json_FlatTypeTransformation_parse_member(
-                    self,
-                    mapping,
-                    member->value,
-                    sample)) {
-            /* TODO Log error */
-            goto done;
-        }
-    }
-
-#if 0
-    DDS_DynamicData_print(sample, stdout, 0);
-#endif
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    if (value != NULL) {
-        json_value_free(value);
-    }
-
-    return retcode;
-}
-
 
 DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_deserialize(
         RTI_TSFM_UserTypePlugin *plugin,
@@ -1264,51 +683,131 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_deserialize(
         DDS_DynamicData *sample_in,
         DDS_DynamicData *sample_out)
 {
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
+    DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
     RTI_TSFM_Json_FlatTypeTransformation *self =
             (RTI_TSFM_Json_FlatTypeTransformation *) transform;
     struct DDS_OctetSeq buffer_seq = DDS_SEQUENCE_INITIALIZER;
-    char *buffer_seq_buff = NULL;
+    char *buffer = NULL;
+    DDS_Boolean owned_buffer = DDS_BOOLEAN_TRUE;
     DDS_UnsignedLong buffer_seq_max = 0, buffer_seq_len = 0;
+    struct DDS_DynamicDataMemberInfo member_info =
+            DDS_DynamicDataMemberInfo_INITIALIZER;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_deserialize)
 
-    if (DDS_RETCODE_OK
-        != DDS_DynamicData_get_octet_seq(
+    retcode = DDS_DynamicData_get_member_info(
+            sample_in,
+            &member_info,
+            self->config->buffer_member,
+            DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
+    if (retcode != DDS_RETCODE_OK) {
+        RTI_TSFM_ERROR_1(
+                "unable to get_member_info for member:",
+                "%s",
+                self->config->buffer_member);
+        goto done;
+    }
+
+    switch (member_info.member_kind) {
+    /*
+     * We need to ensure that we have a string or a sequence of octets with the
+     * DynamicData because the TypeCode cannot access to nested elements
+     */
+    case DDS_TK_STRING:
+        /* As buffer and size are NULL, this function allocates memory for it */
+        retcode = DDS_DynamicData_get_string(
                 sample_in,
-                &buffer_seq,
+                &buffer,
+                NULL,
                 self->config->buffer_member,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED)) {
-        /* TODO Log error */
+                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
+        if (retcode != DDS_RETCODE_OK) {
+            RTI_TSFM_ERROR_1(
+                    "unable to get_string from DynamicData member:",
+                    "%s",
+                    self->config->buffer_member);
+            goto done;
+        }
+        owned_buffer = DDS_BOOLEAN_TRUE;
+
+        break;
+    case DDS_TK_SEQUENCE: {
+        retcode = DDS_DynamicData_get_octet_seq(
+                    sample_in,
+                    &buffer_seq,
+                    self->config->buffer_member,
+                    DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
+        if (retcode != DDS_RETCODE_OK) {
+            RTI_TSFM_ERROR_1(
+                    "unable to retreive DDS_OctetSeq: ",
+                    "%s",
+                    self->config->buffer_member);
+            goto done;
+        }
+
+        /*
+         * The buffer might or might not be is well terminated with '\0'. We
+         * need to ensure that.
+         */
+        if (RTI_TSFM_Json_FlatTypeTransformation_add_eos_octet_seq(&buffer_seq)) {
+            /* We have successfully added an EOS char to the sequence */
+            buffer = (char *) DDS_OctetSeq_get_contiguous_buffer(&buffer_seq);
+            if (buffer == NULL) {
+                RTI_TSFM_ERROR_1(
+                    "unable to get_contiguous_buffer of element: ",
+                    "%s",
+                    self->config->buffer_member);
+                goto done;
+            }
+            /* The seq owns the buffer */
+            owned_buffer = DDS_BOOLEAN_FALSE;
+        } else {
+            /* buffer is NULL at this point */
+            DDS_Long buffer_length = 0;
+
+            buffer_length = DDS_OctetSeq_get_length(&buffer_seq) + 1;
+
+            buffer = DDS_String_alloc(buffer_length);
+            if (buffer == NULL) {
+                RTI_TSFM_ERROR("unable to allocate memory for buffer");
+                goto done;
+            }
+            owned_buffer = DDS_BOOLEAN_TRUE;
+
+            if (!DDS_OctetSeq_to_array(
+                    &buffer_seq,
+                    (DDS_Octet *) buffer,
+                    buffer_length)) {
+                RTI_TSFM_ERROR_1(
+                    "unable to convert DDS_OctetSeq to string of member: ",
+                    "%s",
+                    self->config->buffer_member);
+                goto done;
+            }
+        }
+        break;
+    }
+    default:
+        RTI_TSFM_ERROR_1(
+                "incompatible kind (only Strings and DDS_OctetSeq supported) "
+                        "of member : ",
+                "%s",
+                self->config->buffer_member);
         goto done;
     }
 
-    buffer_seq_buff = (char *) DDS_OctetSeq_get_contiguous_buffer(&buffer_seq);
-    if (buffer_seq_buff == NULL) {
-        /* TODO Log error */
-        goto done;
-    }
-    /* The buffer should not be printed with printf() because there is
-     * no guarantee that the string is well terminated (and most likely
-     * it won't be, i.e. no 'nul' terminator) */
-    buffer_seq_max = DDS_OctetSeq_get_maximum(&buffer_seq);
-    buffer_seq_len = DDS_OctetSeq_get_length(&buffer_seq);
-
-    if (DDS_RETCODE_OK
-        != RTI_TSFM_Json_FlatTypeTransformation_deserialize_sample(
-                self,
-                buffer_seq_buff,
-                buffer_seq_len,
-                sample_out)) {
-        /* TODO Log error */
+    retcode = DDS_DynamicDataFormatter_from_json(sample_out, buffer);
+    if (retcode != DDS_RETCODE_OK) {
+        RTI_TSFM_ERROR("unable to format from json");
         goto done;
     }
 
-    retcode = DDS_RETCODE_OK;
 done:
-
+    if (buffer != NULL && owned_buffer) {
+        DDS_String_free(buffer);
+    }
     if (!DDS_OctetSeq_finalize(&buffer_seq)) {
-        /* TODO Log error */
+        RTI_TSFM_ERROR("unable to finalize DDS_OctetSeq");
     }
 
     RTI_TSFM_TRACE_1(

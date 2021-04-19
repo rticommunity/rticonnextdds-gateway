@@ -46,26 +46,13 @@ struct RTI_TSFM_Json_FlatTypeTransformationImpl;
 
 typedef struct RTI_TSFM_Json_FlatTypeTransformation_MemberMappingImpl
         RTI_TSFM_Json_FlatTypeTransformation_MemberMapping;
-
-typedef DDS_ReturnCode_t (*RTI_TSFM_Json_FlatTypeTransformation_ParseMemberFn)(
-        struct RTI_TSFM_Json_FlatTypeTransformationImpl *self,
-        RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *member,
-        json_value *json_member_val,
-        DDS_DynamicData *sample);
-
 struct RTI_TSFM_Json_FlatTypeTransformation_MemberMappingImpl {
     DDS_UnsignedLong id;
     DDS_TCKind kind;
     DDS_UnsignedLong max_len;
     DDS_Boolean optional;
     const char *name;
-    RTI_TSFM_Json_FlatTypeTransformation_ParseMemberFn parse_fn;
 };
-
-
-#define RTI_TSFM_Json_FlatTypeTransformation_parse_member(t_, m_, j_, s_) \
-    ((m_)->parse_fn((t_), (m_), (j_), (s_)))
-
 
 DDS_SEQUENCE(
         RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq,

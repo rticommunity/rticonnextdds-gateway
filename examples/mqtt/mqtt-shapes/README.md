@@ -165,7 +165,7 @@ system:
     `"agent/circles"`, `"agent/squares"`, and `"agent/triangles"`, based
     on the contents of each sample's key.
 
-  - The MQTT Broker delivers all MQTT bessages to *MQTT Subscriber*, and
+  - The MQTT Broker delivers all MQTT messages to *MQTT Subscriber*, and
     back to the *MQTT Adapter*.
 
   - A custom transformation parses `ShapeType` instances from the JSON

@@ -23,11 +23,11 @@ add_library(
     ${RSPLUGIN_LIB_NAME}
     SHARED
         "srcC/FlatTypeTransformation.c"
-        "${JSON_PARSER_DIR}/json.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationInfrastructure.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/Transformation.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationPlugin.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationUserPlugin.c"
+        "${DDS_COMMON_DIR}/srcC/DynamicDataFunc.c"
 )
 
 target_include_directories(
@@ -36,7 +36,7 @@ target_include_directories(
         ${CONNEXTDDS_INCLUDE_DIRS}
         "srcC/"
         "${TRANSFORMATION_COMMON_DIR}/srcC/"
-        "${JSON_PARSER_DIR}/"
+        "${DDS_COMMON_DIR}/srcC/"
 )
 
 target_link_libraries(

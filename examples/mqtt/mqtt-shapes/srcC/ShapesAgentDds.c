@@ -16,7 +16,6 @@
 #include <signal.h>
 
 #include "ShapesAgentDds.h"
-#include "json.h"
 #include "termcolor.h"
 
 #define RTI_MQTT_LOG_ARGS "ShapesAgent::DDS"
@@ -791,181 +790,36 @@ DDS_ReturnCode_t ShapesAgent_deserialize_shape(
         DDS_UnsignedLong json_buffer_size,
         DDS_DynamicData *shape)
 {
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    json_value *value = NULL, *member_value = NULL;
-    json_object_entry *member = NULL;
-    DDS_UnsignedLong i = 0;
-    DDS_Long member_val_l = 0;
+    DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
+    char *json_buffer_w_eos = NULL;
 
-    /* json_buffer should not be printed with printf() because there is
-     * no guarantee that the string is well terminated (and most likely
-     * it won't be, i.e. no 'nul' terminator) */
-
-    value = json_parse(json_buffer, json_buffer_size);
-    if (value == NULL) {
-        /* TODO Log error */
-        RTI_MQTT_ERROR("failed: json_parse")
-        goto done;
-    }
-    if (value->type != json_object) {
-        /* TODO Log error */
-        RTI_MQTT_ERROR("failed: invalid parsed value")
-        goto done;
-    }
-    /* ShapeType has 4 fields */
-    if (value->u.object.length < SHAPE_TYPE_FIELDS) {
-        /* TODO Log error */
-        RTI_MQTT_ERROR("failed: insufficient fields")
-        goto done;
-    }
-
-    for (i = 0; i < value->u.object.length; i++) {
-        member = &value->u.object.values[i];
-        member_value = member->value;
-
-        if (RTI_TSFM_String_compare(member->name, SHAPE_TYPE_FIELD_COLOR)
-            == 0) {
-            switch (member_value->type) {
-            case json_string:
-
-                if (member_value->u.string.length == 0) {
-                    /* TODO Log error */
-                    RTI_MQTT_ERROR("failed: invalid COLOR string")
-                    goto done;
-                }
-
-                break;
-
-            default:
-                /* TODO Log error */
-                RTI_MQTT_ERROR("failed: COLOR field type")
-                goto done;
-            }
-
-            if (DDS_RETCODE_OK
-                != DDS_DynamicData_set_string(
-                        shape,
-                        SHAPE_TYPE_FIELD_COLOR,
-                        DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                        member_value->u.string.ptr)) {
-                /* TODO Log error */
-                RTI_MQTT_ERROR("failed: set COLOR")
-                goto done;
-            }
-        } else if (
-                RTI_TSFM_String_compare(member->name, SHAPE_TYPE_FIELD_X)
-                == 0) {
-            switch (member_value->type) {
-            case json_string:
-
-                member_val_l = RTI_TSFM_String_to_long(
-                        member_value->u.string.ptr,
-                        NULL,
-                        0);
-                break;
-
-            case json_integer:
-
-                member_val_l = (DDS_Long) member_value->u.integer;
-                break;
-
-            default:
-                /* TODO Log error */
-                RTI_MQTT_ERROR("failed: X field type")
-                goto done;
-            }
-
-            if (DDS_RETCODE_OK
-                != DDS_DynamicData_set_long(
-                        shape,
-                        SHAPE_TYPE_FIELD_X,
-                        DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                        member_val_l)) {
-                /* TODO Log error */
-                RTI_MQTT_ERROR("failed: set X")
-                goto done;
-            }
-        } else if (
-                RTI_TSFM_String_compare(member->name, SHAPE_TYPE_FIELD_Y)
-                == 0) {
-            switch (member_value->type) {
-            case json_string:
-
-                member_val_l = RTI_TSFM_String_to_long(
-                        member_value->u.string.ptr,
-                        NULL,
-                        0);
-                break;
-
-            case json_integer:
-
-                member_val_l = (DDS_Long) member_value->u.integer;
-                break;
-
-            default:
-                /* TODO Log error */
-                RTI_MQTT_ERROR("failed: Y field type")
-                goto done;
-            }
-
-            if (DDS_RETCODE_OK
-                != DDS_DynamicData_set_long(
-                        shape,
-                        SHAPE_TYPE_FIELD_Y,
-                        DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                        member_val_l)) {
-                /* TODO Log error */
-                RTI_MQTT_ERROR("failed: set Y")
-                goto done;
-            }
-        } else if (
-                RTI_TSFM_String_compare(
-                        member->name,
-                        SHAPE_TYPE_FIELD_SHAPESIZE)
-                == 0) {
-            switch (member_value->type) {
-            case json_string:
-
-                member_val_l = RTI_TSFM_String_to_long(
-                        member_value->u.string.ptr,
-                        NULL,
-                        0);
-                break;
-
-            case json_integer:
-
-                member_val_l = (DDS_Long) member_value->u.integer;
-                break;
-
-            default:
-                /* TODO Log error */
-                RTI_MQTT_ERROR("failed: SHAPESIZE field type")
-                goto done;
-            }
-
-
-            if (DDS_RETCODE_OK
-                != DDS_DynamicData_set_long(
-                        shape,
-                        SHAPE_TYPE_FIELD_SHAPESIZE,
-                        DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                        member_val_l)) {
-                /* TODO Log error */
-                RTI_MQTT_ERROR("failed: set SHAPESIZE")
-                goto done;
-            }
+    /* The json_buffer might not be ended with a '\0' */
+    if (json_buffer[json_buffer_size - 1] != '\0') {
+        json_buffer_w_eos = DDS_String_alloc(json_buffer_size + 1);
+        if (json_buffer_w_eos == NULL) {
+            retcode = DDS_RETCODE_ERROR;
+            RTI_MQTT_ERROR("unable to allocate json_buffer_w_eos string");
+            goto done;
         }
+
+        memcpy(json_buffer_w_eos, json_buffer, json_buffer_size);
+        json_buffer_w_eos[json_buffer_size] = '\0';
+    }
+    /* Now the string is well terminated */
+
+    retcode = DDS_DynamicDataFormatter_from_json(shape, json_buffer_w_eos);
+    if (retcode != DDS_RETCODE_OK) {
+        RTI_MQTT_ERROR("unable to format from json");
+        goto done;
     }
 
 #if 0
     DDS_DynamicData_print(shape, stdout, 0);
 #endif
 
-    retcode = DDS_RETCODE_OK;
-
 done:
-    if (value != NULL) {
-        json_value_free(value);
+    if (json_buffer_w_eos != NULL) {
+        DDS_String_free(json_buffer_w_eos);
     }
 
     return retcode;
