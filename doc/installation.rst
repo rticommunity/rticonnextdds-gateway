@@ -40,12 +40,21 @@ External Librarires
 
 :libmodbus: :link_libmodbus:`Libmodbus <>` is used as implementation of the
             client and server of the MODBUS protocol.
+:License: `LGPL v2.1 <https://github.com/stephane/libmodbus/blob/master/COPYING.LESSER>`__
 
 |RSMQTT|
 ~~~~~~~~
 
 :paho.mqtt.c: The :link_paho_c:`Paho C Client <>` library is used as
               implementation of the client side of the MQTT protocol.
+:License: `Eclipse Public License - v 2.0 <https://github.com/eclipse/paho.mqtt.c/blob/master/LICENSE>`__
+
+Other Dependencies
+------------------
+
+:json_parser: :link_json_parser:`json_parser <>` is used in order to parse json
+              files.
+:License: `BSD with no dependencies <https://github.com/udp/json-parser/blob/master/LICENSE>`__
 
 Documentation
 -------------
