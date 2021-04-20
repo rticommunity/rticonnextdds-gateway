@@ -88,7 +88,7 @@ specify the configuration mode when building it:
 ## Documentation
 
 The documentation can be found online in the following link:
-https://community.rti.com/static/documentation/gateway/current/index.html
+https://community.rti.com/static/documentation/gateway/6.0.1/index.html
 
 ### Building Documentation Locally
 
