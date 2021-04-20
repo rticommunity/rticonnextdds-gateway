@@ -17,7 +17,6 @@ set(RSPLUGIN_LIB_NAME "rtimodbusadapter")
 
 add_library(${RSPLUGIN_LIB_NAME}
     SHARED
-        "${JSON_PARSER_DIR}/json.c"
         "${DDS_COMMON_DIR}/srcCxx/DynamicDataFunc.cxx"
         "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/ModbusAdapter.cxx"
         "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/ModbusAdapterConfiguration.cxx"
@@ -34,8 +33,6 @@ target_include_directories(${RSPLUGIN_LIB_NAME}
         "${LIBMODBUS_DIR}/src"
         "${UTILS_COMMON_DIR}/srcCxx"
         "${DDS_COMMON_DIR}/srcCxx"
-        "${JSON_PARSER_WRAPPER_DIR}/srcCxx"
-        "${JSON_PARSER_DIR}/"
 )
 
 target_link_libraries(${RSPLUGIN_LIB_NAME}

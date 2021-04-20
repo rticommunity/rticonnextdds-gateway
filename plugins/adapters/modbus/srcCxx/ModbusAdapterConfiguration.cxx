@@ -18,11 +18,11 @@
 #include <vector>
 
 #include <dds/dds.hpp>
+#include <rti/json/JsonDom.hpp>
 
 #include "DynamicDataFunc.hpp"
 #include "LibModbusClient.hpp"
 #include "ModbusAdapterConfiguration.hpp"
-#include "json.hpp"
 
 using namespace rti::adapter::modbus;
 using namespace rti::common;
@@ -689,20 +689,24 @@ void ModbusAdapterConfiguration::parse_json_config_file(
 void ModbusAdapterConfiguration::parse_json_config_string(
         const std::string& json_content)
 {
-    json_document json_doc;
-    json_doc.parse(json_content.c_str(), json_content.length());
-    json_value *node = json_doc.first_node();
 
-    if (node->type != json_array) {
+    JsonDom json_doc(json_content.c_str());
+
+    if (json_doc.is_valid() == false) {
+        throw std::runtime_error(
+                "Error in the JSON configuration, it is not valid.");
+    }
+
+    if (json_doc.root().kind() != rti::json::ObjectKind::ARRAY) {
         throw std::runtime_error(
                 "Error in the JSON configuration, it should contain an array.");
     }
 
     // loop through all the elements in the top-level JSON array
-    size_t length = node->u.array.length;
-    for (size_t i = 0; i < length; ++i) {
-        json_value *node_object = node->u.array.values[i];
-        if (node_object->type != json_object) {
+    //for (auto node = json_doc.root().begin(); node != json_doc.root().end(); ++node) {
+    //    (*node).kind()
+    for (auto node : json_doc.root()) {
+        if (node.kind() != rti::json::ObjectKind::OBJECT) {
             throw std::runtime_error(
                     "Error in the JSON configuration, there "
                     "should be objects inside the array.");
@@ -711,48 +715,49 @@ void ModbusAdapterConfiguration::parse_json_config_string(
         // create a ModbusAdapterConfigurationElement and fill it out with
         // the information in the JSON
         ModbusAdapterConfigurationElement mace;
-        size_t object_length = node_object->u.object.length;
+        size_t object_length = node.child_count();
+        // As we need parse the whole configuration file, this is done iterating
+        // through all nodes instead of using the API find_node. find_node will
+        // iterate the whole object to find a specific node.
         for (size_t j = 0; j < object_length; j++) {
-            std::string element_name(node_object->u.object.values[j].name);
+            std::string element_name(node.child_name(j));
+            auto current_element = node.get_child(j);
 
             // all the elements that may appear
             if (element_name == "field") {
-                json_value *string_node = node_object->u.object.values[j].value;
-                if (string_node->type != json_string) {
+                if (current_element.kind() != rti::json::ObjectKind::STRING) {
                     throw std::runtime_error(
                             "Error in the JSON configuration <field>.");
                 }
 
-                mace.field_ = string_node->u.string.ptr;
+                mace.field_ = current_element.string_value();
             } else if (element_name == "modbus_register_address") {
-                json_value *number_node = node_object->u.object.values[j].value;
-                if (number_node->type != json_integer) {
+                if (current_element.kind() != rti::json::ObjectKind::INTEGER) {
                     throw std::runtime_error(
                             "Error in the JSON configuration "
                             "<modbus_register_address>.");
                 }
 
                 mace.modbus_register_address_ =
-                        static_cast<int>(number_node->u.integer);
+                        static_cast<int>(current_element.int_value());
             } else if (element_name == "modbus_register_count") {
-                json_value *number_node = node_object->u.object.values[j].value;
-                if (number_node->type != json_integer) {
+                if (current_element.kind() != rti::json::ObjectKind::INTEGER) {
                     throw std::runtime_error(
                             "Error in the JSON configuration "
                             "<modbus_register_count>.");
                 }
 
-                mace.modbus_register_count_ = static_cast<int>(number_node->u.integer);
+                mace.modbus_register_count_ = static_cast<int>(
+                        current_element.int_value());
             } else if (element_name == "modbus_datatype") {
-                json_value *string_node = node_object->u.object.values[j].value;
-                if (string_node->type != json_string) {
+                if (current_element.kind() != rti::json::ObjectKind::STRING) {
                     throw std::runtime_error(
                             "Error in the JSON configuration "
                             "<modbus_datatype>.");
                 }
 
                 // translates the string of the type to an enum element
-                std::string type_string = string_node->u.string.ptr;
+                std::string type_string = current_element.string_value();
                 if (type_string == "HOLDING_REGISTER_INT16") {
                     mace.modbus_datatype_
                             = ModbusDataType::holding_register_int16;
@@ -825,49 +830,53 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                 // - input_data_factor
                 // - input_data_offset
 
-                json_value *number_node = node_object->u.object.values[j].value;
-
-                if (number_node->type == json_integer) {
-                    mace.modbus_min_value_ =
-                            (long double) number_node->u.integer;
-                } else if (number_node->type == json_double) {
-                    mace.modbus_min_value_ = (long double) number_node->u.dbl;
+                if (current_element.kind() == rti::json::ObjectKind::INTEGER) {
+                    mace.modbus_min_value_ = static_cast<long double>(
+                        current_element.int_value());
+                } else if (current_element.kind()
+                        == rti::json::ObjectKind::DOUBLE) {
+                    mace.modbus_min_value_ = static_cast<long double>(
+                            current_element.double_value());
                 } else {
                     throw std::runtime_error(
                             "Error in the JSON configuration "
                             "<modbus_min_value>.");
                 }
             } else if (element_name == "modbus_max_value") {
-                json_value *number_node = node_object->u.object.values[j].value;
-
-                if (number_node->type == json_integer) {
-                    mace.modbus_max_value_ =
-                            (long double) number_node->u.integer;
-                } else if (number_node->type == json_double) {
-                    mace.modbus_max_value_ = (long double) number_node->u.dbl;
+                if (current_element.kind() == rti::json::ObjectKind::INTEGER) {
+                    mace.modbus_max_value_ = static_cast<long double>(
+                        current_element.int_value());
+                } else if (current_element.kind()
+                        == rti::json::ObjectKind::DOUBLE) {
+                    mace.modbus_max_value_ = static_cast<long double>(
+                        current_element.double_value());
                 } else {
                     throw std::runtime_error(
                             "Error in the JSON configuration "
                             "<modbus_max_value>.");
                 }
             } else if (element_name == "modbus_valid_values") {
-                json_value *array_node = node_object->u.object.values[j].value;
-
-                if (array_node->type != json_array) {
+                if (current_element.kind() != rti::json::ObjectKind::ARRAY) {
                     throw std::runtime_error(
                             "Error in the JSON configuration "
                             "<modbus_valid_values>.");
                 }
-                size_t array_length = array_node->u.array.length;
-                for (unsigned int k = 0; k < array_length; ++k) {
-                    json_value *node_number = array_node->u.array.values[k];
+                // loop though all the valid_values array and add to the
+                // internal ModbusAdapterConfigurationElement (MACE)
+                for (auto valid_values_element = current_element.begin();
+                        valid_values_element != current_element.end();
+                        valid_values_element++) {
 
-                    if (node_number->type == json_double) {
+                    if ((*valid_values_element).kind()
+                            == rti::json::ObjectKind::DOUBLE) {
                         mace.modbus_valid_values_.push_back(
-                                (long double) node_number->u.dbl);
-                    } else if (node_number->type == json_integer) {
+                                static_cast<long double>(
+                                        (*valid_values_element).double_value()));
+                    } else if ((*valid_values_element).kind()
+                            == rti::json::ObjectKind::INTEGER) {
                         mace.modbus_valid_values_.push_back(
-                                (long double) node_number->u.integer);
+                                static_cast<long double>(
+                                        (*valid_values_element).int_value()));
                     } else {
                         throw std::runtime_error(
                                 "Error in the JSON configuration "
@@ -882,13 +891,14 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                             + element_name + "> in a StreamReader.");
                     throw std::runtime_error(error);
                 } else if (kind() == RoutingServiceEntityType::stream_writer) {
-                    json_value *number_node =
-                            node_object->u.object.values[j].value;
-
-                    if (number_node->type == json_integer) {
-                        mace.data_factor_ = (float) number_node->u.integer;
-                    } else if (number_node->type == json_double) {
-                        mace.data_factor_ = (float) number_node->u.dbl;
+                    if (current_element.kind()
+                            == rti::json::ObjectKind::INTEGER) {
+                        mace.data_factor_ = static_cast<float>(
+                                current_element.int_value());
+                    } else if (current_element.kind()
+                            == rti::json::ObjectKind::DOUBLE) {
+                        mace.data_factor_ = static_cast<float>(
+                                current_element.double_value());
                     } else {
                         throw std::runtime_error(
                                 "Error in the JSON configuration "
@@ -903,13 +913,14 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                             + element_name + "> in a StreamReader.");
                     throw std::runtime_error(error);
                 } else if (kind() == RoutingServiceEntityType::stream_writer) {
-                    json_value *number_node =
-                            node_object->u.object.values[j].value;
-
-                    if (number_node->type == json_integer) {
-                        mace.data_offset_ = (float) number_node->u.integer;
-                    } else if (number_node->type == json_double) {
-                        mace.data_offset_ = (float) number_node->u.dbl;
+                    if (current_element.kind()
+                            == rti::json::ObjectKind::INTEGER) {
+                        mace.data_offset_ = static_cast<float>(
+                                current_element.int_value());
+                    } else if (current_element.kind()
+                            == rti::json::ObjectKind::DOUBLE) {
+                        mace.data_offset_ = static_cast<float>(
+                                current_element.double_value());
                     } else {
                         throw std::runtime_error(
                                 "Error in the JSON configuration "
@@ -924,13 +935,14 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                             + element_name + "> in a StreamWriter.");
                     throw std::runtime_error(error);
                 } else if (kind() == RoutingServiceEntityType::stream_reader) {
-                    json_value *number_node =
-                            node_object->u.object.values[j].value;
-
-                    if (number_node->type == json_integer) {
-                        mace.data_factor_ = (float) number_node->u.integer;
-                    } else if (number_node->type == json_double) {
-                        mace.data_factor_ = (float) number_node->u.dbl;
+                    if (current_element.kind()
+                            == rti::json::ObjectKind::INTEGER) {
+                        mace.data_factor_ = static_cast<float>(
+                                current_element.int_value());
+                    } else if (current_element.kind()
+                            == rti::json::ObjectKind::DOUBLE) {
+                        mace.data_factor_ = static_cast<float>(
+                                current_element.double_value());
                     } else {
                         throw std::runtime_error(
                                 "Error in the JSON configuration "
@@ -945,13 +957,14 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                             + element_name + "> in a StreamWriter.");
                     throw std::runtime_error(error);
                 } else if (kind() == RoutingServiceEntityType::stream_reader) {
-                    json_value *number_node =
-                            node_object->u.object.values[j].value;
-
-                    if (number_node->type == json_integer) {
-                        mace.data_offset_ = (float) number_node->u.integer;
-                    } else if (number_node->type == json_double) {
-                        mace.data_offset_ = (float) number_node->u.dbl;
+                    if (current_element.kind()
+                            == rti::json::ObjectKind::INTEGER) {
+                        mace.data_offset_ = static_cast<float>(
+                                current_element.int_value());
+                    } else if (current_element.kind()
+                            == rti::json::ObjectKind::DOUBLE) {
+                        mace.data_offset_ = static_cast<float>(
+                                current_element.double_value());
                     } else {
                         throw std::runtime_error(
                                 "Error in the JSON configuration "
@@ -959,14 +972,13 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                     }
                 }
             } else if (element_name == "value") {
-                json_value *string_node = node_object->u.object.values[j].value;
-                if (string_node->type != json_string) {
+                if (current_element.kind() != rti::json::ObjectKind::STRING) {
                     throw std::runtime_error(
                             "Error in the JSON configuration "
                             "value of <value>.");
                 }
 
-                mace.value_ = string_node->u.string.ptr;
+                mace.value_ = current_element.string_value();
             } else {
                 std::string error(
                         "Error in the JSON configuration. Unsupported "
