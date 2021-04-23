@@ -63,6 +63,7 @@ typedef struct RTI_TSFM_Json_FlatTypeTransformationStateImpl {
     char *json_buffer;
     DDS_UnsignedLong json_buffer_size;
     struct DDS_OctetSeq octet_seq;
+    struct DDS_CharSeq char_seq;
     struct RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq
             output_mappings;
     struct RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq input_mappings;
