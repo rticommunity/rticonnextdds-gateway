@@ -42,20 +42,29 @@ DDS_TypeCode * RTI_COMMON_TypeCode_get_member_type(
         char *token = NULL;
         const char *delim = ".";
         char *remaining_string = NULL;
+        char original_name_stack[TYPE_CODE_LENGTH] = "";
 
         /*
          * strToken modifies the original string, so we dup that string so
          * we can modify it safely
          */
-        original_name = DDS_String_dup(member_name);
-        if (original_name == NULL) {
-            goto done; /* returns NULL */
+        if (strlen(member_name) > TYPE_CODE_LENGTH - 1) {
+            original_name = DDS_String_dup(member_name);
+            if (original_name == NULL) {
+                goto done; /* returns NULL */
+            }
+        } else {
+            RTIOsapiUtility_strcpy(
+                    original_name_stack,
+                    TYPE_CODE_LENGTH,
+                    member_name);
         }
 
+        /* Get the first token and modify the remaining_string pointer */
         token = RTIOsapiUtility_strToken(
-            original_name,
-            delim,
-            &remaining_string);
+                original_name != NULL ? original_name : original_name_stack,
+                delim,
+                &remaining_string);
 
         member_tc = self;
 
@@ -70,7 +79,8 @@ DDS_TypeCode * RTI_COMMON_TypeCode_get_member_type(
                 member_tc = NULL;
                 goto done;
             }
-            /* Get next token */
+
+            /* Get next token, remaining_string is the input parameter here */
             token = RTIOsapiUtility_strToken(
                     NULL,
                     delim,

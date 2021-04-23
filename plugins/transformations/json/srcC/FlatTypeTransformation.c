@@ -372,6 +372,15 @@ DDS_Boolean RTI_TSFM_Json_FlatTypeTransformation_preallocate_buffers(
 
     RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_preallocate_buffers)
 
+     /* Initialize buffers. The transformation will only use one of them */
+    self->state->json_buffer = NULL;
+    self->state->json_buffer_size = 0;
+
+    if (!DDS_OctetSeq_initialize(&self->state->octet_seq)) {
+        /* TODO log error */
+        goto done;
+    }
+
     /* Preallocate serialized_size_min depending on the type that will be used */
     tc = RTI_COMMON_TypeCode_get_member_type(tc, self->config->buffer_member);
     if (tc == NULL) {
@@ -464,19 +473,6 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_initialize(
     retcode = RTI_TSFM_Json_FlatTypeTransformation_validate_output_type(self, tc);
     if (retcode != DDS_RETCODE_OK) {
         /* TODO Log error */
-        goto done;
-    }
-
-    /*
-     * Initialize optional members. The transformation will only use one of
-     * them
-     */
-    self->state->json_buffer = NULL;
-    self->state->json_buffer_size = 0;
-
-    if (!DDS_OctetSeq_initialize(&self->state->octet_seq)) {
-        /* TODO log error */
-        retcode = DDS_RETCODE_ERROR;
         goto done;
     }
 
@@ -754,10 +750,8 @@ done:
 DDS_Boolean RTI_TSFM_Json_FlatTypeTransformation_octet_seq_assert_terminator(
         struct DDS_OctetSeq *self)
 {
-    DDS_Long max = 0;
     DDS_Long length = 0;
 
-    max = DDS_OctetSeq_get_maximum(self);
     length = DDS_OctetSeq_get_length(self);
 
     /* The sequence is well terminated, no need to add a nul terminator */
@@ -765,21 +759,10 @@ DDS_Boolean RTI_TSFM_Json_FlatTypeTransformation_octet_seq_assert_terminator(
         return DDS_BOOLEAN_TRUE;
     }
 
-    /* The nul terminator cannot be added without allocating new memory */
-    if (max == length) {
-        if (!DDS_OctetSeq_ensure_length(self, length + 1, length + 1)) {
-            RTI_TSFM_ERROR("failed to ensure_length of an octet sequence")
-            return DDS_BOOLEAN_FALSE;
-        }
-    } else {
-        /*
-         * In this case, we have at least one emtpy space in the sequence,
-         * therefore, we can add the nul terminator.
-         */
-        if (!DDS_OctetSeq_set_length(self, length + 1)) {
-            RTI_TSFM_ERROR("failed to set_length of an octet sequence")
-            return DDS_BOOLEAN_FALSE;
-        }
+    /* The nul terminator cannot be added without modifying the length */
+    if (!DDS_OctetSeq_ensure_length(self, length + 1, length + 1)) {
+        RTI_TSFM_ERROR("failed to ensure_length of an octet sequence")
+        return DDS_BOOLEAN_FALSE;
     }
 
     /*

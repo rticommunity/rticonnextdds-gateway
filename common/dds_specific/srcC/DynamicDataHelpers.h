@@ -16,6 +16,8 @@
 #ifndef DynamicDataHelpers_h
 #define DynamicDataHelpers_h
 
+#define TYPE_CODE_LENGTH 256
+
 /**
  * @brief Get the TypeCode of the element, including nested elements.
  * @param self the main TypeCode object.
