@@ -13,8 +13,8 @@
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef DynamicDataFunc_h
-#define DynamicDataFunc_h
+#ifndef DynamicDataHelpers_h
+#define DynamicDataHelpers_h
 
 /**
  * @brief Get the TypeCode of the element, including nested elements.
@@ -26,4 +26,4 @@ DDS_TypeCode * RTI_COMMON_TypeCode_get_member_type(
     DDS_TypeCode * self,
     const char * member_name);
 
-#endif /* DynamicDataFunc_h */
+#endif /* DynamicDataHelpers_h */

@@ -27,7 +27,7 @@ add_library(
         "${TRANSFORMATION_COMMON_DIR}/srcC/Transformation.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationPlugin.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationUserPlugin.c"
-        "${DDS_COMMON_DIR}/srcC/DynamicDataFunc.c"
+        "${DDS_COMMON_DIR}/srcC/DynamicDataHelpers.c"
 )
 
 target_include_directories(

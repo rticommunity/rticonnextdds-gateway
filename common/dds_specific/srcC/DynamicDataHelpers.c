@@ -15,7 +15,7 @@
 
 #include <ndds/ndds_c.h>
 
-#include "DynamicDataFunc.h"
+#include "DynamicDataHelpers.h"
 
 DDS_TypeCode * RTI_COMMON_TypeCode_get_member_type(
     DDS_TypeCode * self,
@@ -23,7 +23,7 @@ DDS_TypeCode * RTI_COMMON_TypeCode_get_member_type(
 {
     DDS_UnsignedLong id = 0;
     DDS_TypeCode *member_tc = NULL;
-    DDS_ExceptionCode_t ex;
+    DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
     char *original_name = NULL;
 
     /* Determine whether it is a nested member or not */
@@ -43,6 +43,10 @@ DDS_TypeCode * RTI_COMMON_TypeCode_get_member_type(
         const char *delim = ".";
         char *remaining_string = NULL;
 
+        /*
+         * strToken modifies the original string, so we dup that string so
+         * we can modify it safely
+         */
         original_name = DDS_String_dup(member_name);
         if (original_name == NULL) {
             goto done; /* returns NULL */

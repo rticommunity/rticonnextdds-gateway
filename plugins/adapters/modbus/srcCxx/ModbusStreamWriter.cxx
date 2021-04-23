@@ -21,7 +21,7 @@
 
 #include <dds/dds.hpp>
 
-#include "DynamicDataFunc.hpp"
+#include "DynamicDataHelpers.hpp"
 #include "ModbusStreamWriter.hpp"
 
 using namespace dds::core::xtypes;
