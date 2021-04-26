@@ -18,8 +18,11 @@ Supported Data Types
 The |RS_JSON_TSFM| supports the following datatypes to serialize and
 deserialize:
 
-- Sequences of Octets (`DDS_OctetSeq`)
 - Strings
+- Sequences of DDS_Octets (`DDS_OctetSeq`)
+- Sequences of DDS_Chars (`DDS_CharSeq`)
+- Arrays of DDS_Octets
+- Arrays of DDS_Chars
 
 Therefore, we can serialize a DynamicData object to any of these types, and
 vice versa. In the example shown in the
@@ -44,7 +47,7 @@ The following snippet demonstrates how to register the plugin in the
             <transformation_plugin name="PrimitiveField">
             <dll>rtijsontransf</dll>
             <create_function>
-                RTI_TSFM_Json_FlatTypeTransformationPlugin_create
+                RTI_TSFM_JsonTransformationPlugin_create
             </create_function>
         </transformation_plugin>
         </plugin_library>

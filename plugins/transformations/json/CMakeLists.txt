@@ -22,7 +22,7 @@ set(RSPLUGIN_LIB_NAME rtijsontransf)
 add_library(
     ${RSPLUGIN_LIB_NAME}
     SHARED
-        "srcC/FlatTypeTransformation.c"
+        "srcC/JsonTransformation.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationInfrastructure.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/Transformation.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationPlugin.c"

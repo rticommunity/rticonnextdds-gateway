@@ -15,16 +15,16 @@
 
 #include "ndds/ndds_c.h"
 
-#include "FlatTypeInfrastructure.h"
+#include "JsonTransformationInfrastructure.h"
 #include "TransformationPlatform.h"
 #include "TransformationSimple.h"
 #include "DynamicDataHelpers.h"
 
-#define RTI_TSFM_LOG_ARGS "rtitransform::json::flat"
+#define RTI_TSFM_LOG_ARGS "rtitransform::json"
 
 static RTIBool
-        RTI_TSFM_Json_FlatTypeTransformation_MemberMapping_initialize_w_params(
-                RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *self,
+        RTI_TSFM_JsonTransformation_MemberMapping_initialize_w_params(
+                RTI_TSFM_JsonTransformation_MemberMapping *self,
                 const struct DDS_TypeAllocationParams_t *allocParams)
 {
     self->kind = DDS_TK_NULL;
@@ -34,8 +34,8 @@ static RTIBool
 }
 
 static RTIBool
-        RTI_TSFM_Json_FlatTypeTransformation_MemberMapping_finalize_w_params(
-                RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *self,
+        RTI_TSFM_JsonTransformation_MemberMapping_finalize_w_params(
+                RTI_TSFM_JsonTransformation_MemberMapping *self,
                 const struct DDS_TypeDeallocationParams_t *deallocParams)
 {
     /* WARNING self->name is not deallocated because it's "borrowed" from
@@ -43,7 +43,7 @@ static RTIBool
     return RTI_TRUE;
 }
 
-#define RTI_TSFM_Json_FlatTypeTransformation_MemberMapping_copy_string( \
+#define RTI_TSFM_JsonTransformation_MemberMapping_copy_string( \
         dst_,                                                           \
         src_)                                                           \
     {                                                                   \
@@ -59,9 +59,9 @@ static RTIBool
         }                                                               \
     }
 
-static RTIBool RTI_TSFM_Json_FlatTypeTransformation_MemberMapping_copy(
-        RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *dst,
-        const RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *src)
+static RTIBool RTI_TSFM_JsonTransformation_MemberMapping_copy(
+        RTI_TSFM_JsonTransformation_MemberMapping *dst,
+        const RTI_TSFM_JsonTransformation_MemberMapping *src)
 {
     dst->name = src->name;
     dst->kind = src->kind;
@@ -70,13 +70,13 @@ static RTIBool RTI_TSFM_Json_FlatTypeTransformation_MemberMapping_copy(
     return RTI_TRUE;
 }
 
-#define T RTI_TSFM_Json_FlatTypeTransformation_MemberMapping
-#define TSeq RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq
+#define T RTI_TSFM_JsonTransformation_MemberMapping
+#define TSeq RTI_TSFM_JsonTransformation_MemberMappingSeq
 #define T_initialize_w_params \
-    RTI_TSFM_Json_FlatTypeTransformation_MemberMapping_initialize_w_params
+    RTI_TSFM_JsonTransformation_MemberMapping_initialize_w_params
 #define T_finalize_w_params \
-    RTI_TSFM_Json_FlatTypeTransformation_MemberMapping_finalize_w_params
-#define T_copy RTI_TSFM_Json_FlatTypeTransformation_MemberMapping_copy
+    RTI_TSFM_JsonTransformation_MemberMapping_finalize_w_params
+#define T_copy RTI_TSFM_JsonTransformation_MemberMapping_copy
 #include "dds_c/generic/dds_c_sequence_TSeq.gen"
 #undef T_copy
 #undef T_finalize_w_params
@@ -90,7 +90,7 @@ static RTIBool RTI_TSFM_Json_FlatTypeTransformation_MemberMapping_copy(
  * Currently only primitive type kinds are supported (except for LongDouble,
  * Wstring, and Wchar).
  */
-#define RTI_TSFM_Json_FlatTypeTransformation_validate_member_tckind(tck_) \
+#define RTI_TSFM_JsonTransformation_validate_member_tckind(tck_) \
     ((tck_) == DDS_TK_SHORT || (tck_) == DDS_TK_LONG                      \
      || (tck_) == DDS_TK_USHORT || (tck_) == DDS_TK_ULONG                 \
      || (tck_) == DDS_TK_FLOAT || (tck_) == DDS_TK_DOUBLE                 \
@@ -99,13 +99,13 @@ static RTIBool RTI_TSFM_Json_FlatTypeTransformation_MemberMapping_copy(
      || (tck_) == DDS_TK_STRING || (tck_) == DDS_TK_LONGLONG              \
      || (tck_) == DDS_TK_ULONGLONG)
 
-#define RTI_TSFM_Json_FlatTypeTransformation_validate_container_tckind(tck_) \
+#define RTI_TSFM_JsonTransformation_validate_container_tckind(tck_) \
     ((tck_) == DDS_TK_STRUCT || (tck_) == DDS_TK_VALUE)
 
 static DDS_ReturnCode_t
-        RTI_TSFM_Json_FlatTypeTransformation_validate_buffer_member(
-                RTI_TSFM_Json_FlatTypeTransformation *self,
-                RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *mapping,
+        RTI_TSFM_JsonTransformation_validate_buffer_member(
+                RTI_TSFM_JsonTransformation *self,
+                RTI_TSFM_JsonTransformation_MemberMapping *mapping,
                 struct DDS_TypeCode *base_type,
                 const char *member_name)
 {
@@ -114,7 +114,7 @@ static DDS_ReturnCode_t
     struct DDS_TypeCode *member_type = NULL, *member_content_type = NULL;
     DDS_TCKind tckind = DDS_TK_NULL;
 
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_validate_buffer_member)
+    RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_validate_buffer_member)
 
     /* Check that output type has the specified buffer member */
     member_type = RTI_COMMON_TypeCode_get_member_type(base_type, member_name);
@@ -164,14 +164,14 @@ done:
 
 
 static DDS_ReturnCode_t
-        RTI_TSFM_Json_FlatTypeTransformation_validate_input_type(
-                RTI_TSFM_Json_FlatTypeTransformation *self,
+        RTI_TSFM_JsonTransformation_validate_input_type(
+                RTI_TSFM_JsonTransformation *self,
                 struct DDS_TypeCode *input_type)
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
-    RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *mapping = NULL;
+    RTI_TSFM_JsonTransformation_MemberMapping *mapping = NULL;
 
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_validate_input_type)
+    RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_validate_input_type)
 
     if (self->config->parent.type == RTI_TSFM_TransformationKind_SERIALIZER) {
         /* Nothing to check for serializer mode, since we can serialize any
@@ -180,7 +180,7 @@ static DDS_ReturnCode_t
     }
 
     /* Check that output type has the specified buffer member */
-    if (!RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_ensure_length(
+    if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_ensure_length(
                 &self->state->input_mappings,
                 1,
                 1)) {
@@ -190,11 +190,11 @@ static DDS_ReturnCode_t
     }
 
     mapping =
-            RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_get_reference(
+            RTI_TSFM_JsonTransformation_MemberMappingSeq_get_reference(
                     &self->state->input_mappings,
                     0);
 
-    retcode = RTI_TSFM_Json_FlatTypeTransformation_validate_buffer_member(
+    retcode = RTI_TSFM_JsonTransformation_validate_buffer_member(
                 self,
                 mapping,
                 input_type,
@@ -206,7 +206,7 @@ static DDS_ReturnCode_t
 
 done:
     if (retcode != DDS_RETCODE_OK) {
-        if (!RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_set_length(
+        if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_set_length(
                     &self->state->input_mappings,
                     0)) {
             /* TODO Log error */
@@ -216,8 +216,8 @@ done:
 }
 
 static DDS_ReturnCode_t
-        RTI_TSFM_Json_FlatTypeTransformation_validate_output_type(
-                RTI_TSFM_Json_FlatTypeTransformation *self,
+        RTI_TSFM_JsonTransformation_validate_output_type(
+                RTI_TSFM_JsonTransformation *self,
                 struct DDS_TypeCode *output_type)
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
@@ -225,13 +225,13 @@ static DDS_ReturnCode_t
     DDS_UnsignedLong members_count = 0, i = 0, buffer_member_id = 0;
     struct DDS_TypeCode *member_type = NULL, *member_content_type = NULL;
     DDS_TCKind tckind = DDS_TK_NULL;
-    RTI_TSFM_Json_FlatTypeTransformation_MemberMapping *mapping = NULL;
+    RTI_TSFM_JsonTransformation_MemberMapping *mapping = NULL;
 
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_validate_output_type)
+    RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_validate_output_type)
 
     if (self->config->parent.type == RTI_TSFM_TransformationKind_SERIALIZER) {
         /* Check that output type has the specified buffer member */
-        if (!RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_ensure_length(
+        if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_ensure_length(
                 &self->state->output_mappings,
                 1,
                 1)) {
@@ -240,12 +240,12 @@ static DDS_ReturnCode_t
         }
 
         mapping =
-                RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_get_reference(
+                RTI_TSFM_JsonTransformation_MemberMappingSeq_get_reference(
                         &self->state->output_mappings,
                         0);
 
         if (DDS_RETCODE_OK
-            != RTI_TSFM_Json_FlatTypeTransformation_validate_buffer_member(
+            != RTI_TSFM_JsonTransformation_validate_buffer_member(
                     self,
                     mapping,
                     output_type,
@@ -266,7 +266,7 @@ static DDS_ReturnCode_t
         /* TODO Log error */
         goto done;
     }
-    if (!RTI_TSFM_Json_FlatTypeTransformation_validate_container_tckind(tckind)) {
+    if (!RTI_TSFM_JsonTransformation_validate_container_tckind(tckind)) {
         /* TODO Log error */
         goto done;
     }
@@ -283,7 +283,7 @@ static DDS_ReturnCode_t
     }
 
     /* Allocate entries for output_mappings in transformation */
-    if (!RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_ensure_length(
+    if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_ensure_length(
                 &self->state->output_mappings,
                 members_count,
                 members_count)) {
@@ -293,7 +293,7 @@ static DDS_ReturnCode_t
 
     for (i = 0; i < members_count; i++) {
         mapping =
-                RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_get_reference(
+                RTI_TSFM_JsonTransformation_MemberMappingSeq_get_reference(
                         &self->state->output_mappings,
                         i);
         member_type = DDS_TypeCode_member_type(output_type, i, &ex);
@@ -307,7 +307,7 @@ static DDS_ReturnCode_t
             goto done;
         }
 
-        if (!RTI_TSFM_Json_FlatTypeTransformation_validate_member_tckind(
+        if (!RTI_TSFM_JsonTransformation_validate_member_tckind(
                     tckind)) {
             /* TODO Log error */
             goto done;
@@ -354,7 +354,7 @@ static DDS_ReturnCode_t
 
 done:
     if (retcode != DDS_RETCODE_OK) {
-        if (!RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_set_length(
+        if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_set_length(
                     &self->state->output_mappings,
                     0)) {
             /* TODO Log error */
@@ -363,8 +363,8 @@ done:
     return retcode;
 }
 
-DDS_Boolean RTI_TSFM_Json_FlatTypeTransformation_preallocate_buffers(
-        RTI_TSFM_Json_FlatTypeTransformation *self,
+DDS_Boolean RTI_TSFM_JsonTransformation_preallocate_buffers(
+        RTI_TSFM_JsonTransformation *self,
         struct DDS_TypeCode *tc)
 {
     DDS_Boolean ok = DDS_BOOLEAN_FALSE;
@@ -373,7 +373,7 @@ DDS_Boolean RTI_TSFM_Json_FlatTypeTransformation_preallocate_buffers(
     DDS_TypeCode *content_tc = NULL;
     DDS_TCKind content_kind = DDS_TK_NULL;
 
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_preallocate_buffers)
+    RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_preallocate_buffers)
 
      /* Initialize buffers. The transformation will only use one of them */
     self->state->json_buffer = NULL;
@@ -451,9 +451,9 @@ done:
 }
 
 
-DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_initialize(
-        RTI_TSFM_Json_FlatTypeTransformation *self,
-        RTI_TSFM_Json_FlatTypeTransformationPlugin *plugin,
+DDS_ReturnCode_t RTI_TSFM_JsonTransformation_initialize(
+        RTI_TSFM_JsonTransformation *self,
+        RTI_TSFM_JsonTransformationPlugin *plugin,
         const struct RTI_RoutingServiceTypeInfo *input_type_info,
         const struct RTI_RoutingServiceTypeInfo *output_type_info,
         const struct RTI_RoutingServiceProperties *properties,
@@ -463,7 +463,7 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_initialize(
     struct DDS_TypeCode *tc = NULL;
     DDS_TCKind member_kind = DDS_TK_NULL;
 
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_initialize)
+    RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_initialize)
 
     retcode = RTI_TSFM_Transformation_initialize(
             &self->parent,
@@ -486,7 +486,7 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_initialize(
 
     tc = (struct DDS_TypeCode *) input_type_info->type_representation;
 
-    retcode = RTI_TSFM_Json_FlatTypeTransformation_validate_input_type(self, tc);
+    retcode = RTI_TSFM_JsonTransformation_validate_input_type(self, tc);
     if (retcode != DDS_RETCODE_OK) {
         /* TODO Log error */
         goto done;
@@ -494,7 +494,7 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_initialize(
 
     tc = (struct DDS_TypeCode *) output_type_info->type_representation;
 
-    retcode = RTI_TSFM_Json_FlatTypeTransformation_validate_output_type(self, tc);
+    retcode = RTI_TSFM_JsonTransformation_validate_output_type(self, tc);
     if (retcode != DDS_RETCODE_OK) {
         /* TODO Log error */
         goto done;
@@ -506,7 +506,7 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_initialize(
          * If we are serializing from DynamicData to JSON, the TypeCode is
          * the ouput
          */
-        if (!RTI_TSFM_Json_FlatTypeTransformation_preallocate_buffers(
+        if (!RTI_TSFM_JsonTransformation_preallocate_buffers(
                 self,
                 (struct DDS_TypeCode *) output_type_info->type_representation)) {
             /* TODO Log error */
@@ -518,7 +518,7 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_initialize(
          * If we are serializing from DynamicData to JSON, the TypeCode is
          * the ouput
          */
-        if (!RTI_TSFM_Json_FlatTypeTransformation_preallocate_buffers(
+        if (!RTI_TSFM_JsonTransformation_preallocate_buffers(
                 self,
                 (struct DDS_TypeCode *) input_type_info->type_representation)) {
             /* TODO Log error */
@@ -533,14 +533,14 @@ done:
 
 
 DDS_ReturnCode_t
-        RTI_TSFM_Json_FlatTypeTransformationConfig_parse_from_properties(
-                RTI_TSFM_Json_FlatTypeTransformationConfig *self,
+        RTI_TSFM_JsonTransformationConfig_parse_from_properties(
+                RTI_TSFM_JsonTransformationConfig *self,
                 const struct RTI_RoutingServiceProperties *properties)
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
 
     RTI_TSFM_LOG_FN(
-            RTI_TSFM_Json_FlatTypeTransformationConfig_parse_from_properties)
+            RTI_TSFM_JsonTransformationConfig_parse_from_properties)
 
     if (DDS_RETCODE_OK
         != RTI_TSFM_TransformationConfig_parse_from_properties(
@@ -557,7 +557,7 @@ DDS_ReturnCode_t
 
     RTI_TSFM_lookup_property(
             properties,
-            RTI_TSFM_JSON_FLATTYPE_PROPERTY_TRANSFORMATION_BUFFER_MEMBER,
+            RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_BUFFER_MEMBER,
             DDS_String_replace(&self->buffer_member, pval);
             if (self->buffer_member == NULL) {
                 /* TODO Log error */
@@ -566,20 +566,20 @@ DDS_ReturnCode_t
 
     RTI_TSFM_lookup_property(
             properties,
-            RTI_TSFM_JSON_FLATTYPE_PROPERTY_TRANSFORMATION_SERIALIZED_SIZE_MIN,
+            RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_SERIALIZED_SIZE_MIN,
             self->serialized_size_min =
                     RTI_TSFM_String_to_long(pval, NULL, 0);
             self->serialized_size_incr = self->serialized_size_min;)
 
     RTI_TSFM_lookup_property(
             properties,
-            RTI_TSFM_JSON_FLATTYPE_PROPERTY_TRANSFORMATION_SERIALIZED_SIZE_MAX,
+            RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_SERIALIZED_SIZE_MAX,
             self->serialized_size_max =
                     RTI_TSFM_String_to_long(pval, NULL, 0);)
 
     RTI_TSFM_lookup_property(
             properties,
-            RTI_TSFM_JSON_FLATTYPE_PROPERTY_TRANSFORMATION_SERIALIZED_SIZE_INCR,
+            RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_SERIALIZED_SIZE_INCR,
             self->serialized_size_incr =
                     RTI_TSFM_String_to_long(
                             pval,
@@ -588,7 +588,7 @@ DDS_ReturnCode_t
 
     RTI_TSFM_lookup_property(
             properties,
-            RTI_TSFM_JSON_FLATTYPE_PROPERTY_TRANSFORMATION_INDENT,
+            RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_INDENT,
             self->indent =
                     RTI_TSFM_String_to_long(
                             pval,
@@ -600,15 +600,15 @@ done:
     return retcode;
 }
 
-DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_serialize(
+DDS_ReturnCode_t RTI_TSFM_JsonTransformation_serialize(
         RTI_TSFM_UserTypePlugin *plugin,
         RTI_TSFM_Transformation *transform,
         DDS_DynamicData *sample_in,
         DDS_DynamicData *sample_out)
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    RTI_TSFM_Json_FlatTypeTransformation *self =
-            (RTI_TSFM_Json_FlatTypeTransformation *) transform;
+    RTI_TSFM_JsonTransformation *self =
+            (RTI_TSFM_JsonTransformation *) transform;
     DDS_Boolean serialized = DDS_BOOLEAN_FALSE,
                 buffer_seq_initd = DDS_BOOLEAN_FALSE,
                 failed_serialization = DDS_BOOLEAN_FALSE;
@@ -617,7 +617,7 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_serialize(
             DDS_DynamicDataMemberInfo_INITIALIZER;
     char *p = NULL;
 
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_serialize)
+    RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_serialize)
 
     while (!serialized) {
         if (failed_serialization || self->state->json_buffer == NULL
@@ -845,7 +845,7 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_serialize(
 done:
 
     RTI_TSFM_TRACE_1(
-            "RTI_TSFM_Json_FlatTypeTransformation_serialize:",
+            "RTI_TSFM_JsonTransformation_serialize:",
             "retcode=%d",
             retcode)
 
@@ -860,7 +860,7 @@ done:
  * @return A boolean that says whether the terminator was has been added
  * successfully.
  */
-DDS_Boolean RTI_TSFM_Json_FlatTypeTransformation_octet_seq_assert_terminator(
+DDS_Boolean RTI_TSFM_JsonTransformation_octet_seq_assert_terminator(
         struct DDS_OctetSeq *self)
 {
     DDS_Long length = 0;
@@ -888,21 +888,21 @@ DDS_Boolean RTI_TSFM_Json_FlatTypeTransformation_octet_seq_assert_terminator(
 
 }
 
-DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_deserialize(
+DDS_ReturnCode_t RTI_TSFM_JsonTransformation_deserialize(
         RTI_TSFM_UserTypePlugin *plugin,
         RTI_TSFM_Transformation *transform,
         DDS_DynamicData *sample_in,
         DDS_DynamicData *sample_out)
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    RTI_TSFM_Json_FlatTypeTransformation *self =
-            (RTI_TSFM_Json_FlatTypeTransformation *) transform;
+    RTI_TSFM_JsonTransformation *self =
+            (RTI_TSFM_JsonTransformation *) transform;
     char *buffer = NULL;
     DDS_UnsignedLong buffer_seq_max = 0, buffer_seq_len = 0;
     struct DDS_DynamicDataMemberInfo member_info =
             DDS_DynamicDataMemberInfo_INITIALIZER;
 
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformation_deserialize)
+    RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_deserialize)
 
     retcode = DDS_DynamicData_get_member_info(
             sample_in,
@@ -999,7 +999,7 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_deserialize(
          * The buffer might or might not be well terminated with '\0'. We
          * need to ensure that it is.
          */
-        if (!RTI_TSFM_Json_FlatTypeTransformation_octet_seq_assert_terminator(
+        if (!RTI_TSFM_JsonTransformation_octet_seq_assert_terminator(
                 &self->state->octet_seq)) {
             RTI_TSFM_ERROR_1("failed to assert nul terminator: ",
                     "%s", self->config->buffer_member)
@@ -1038,7 +1038,7 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_deserialize(
 done:
 
     RTI_TSFM_TRACE_1(
-            "RTI_TSFM_Json_FlatTypeTransformation_deserialize:",
+            "RTI_TSFM_JsonTransformation_deserialize:",
             "retcode=%d",
             retcode)
 
@@ -1046,27 +1046,27 @@ done:
 }
 
 
-static RTI_TSFM_Json_FlatTypeTransformationState *
-        RTI_TSFM_Json_FlatTypeTransformationState_create_data()
+static RTI_TSFM_JsonTransformationState *
+        RTI_TSFM_JsonTransformationState_create_data()
 {
-    RTI_TSFM_Json_FlatTypeTransformationState *retval = NULL, *state = NULL;
+    RTI_TSFM_JsonTransformationState *retval = NULL, *state = NULL;
 
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformationState_create_data)
+    RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformationState_create_data)
 
-    state = (RTI_TSFM_Json_FlatTypeTransformationState *)
+    state = (RTI_TSFM_JsonTransformationState *)
             RTI_TSFM_Heap_allocate(
-                    sizeof(RTI_TSFM_Json_FlatTypeTransformationState));
+                    sizeof(RTI_TSFM_JsonTransformationState));
     if (state == NULL) {
         /* TODO Log error */
         goto done;
     }
 
-    if (!RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_initialize(
+    if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_initialize(
                 &state->output_mappings)) {
         /* TODO Log error */
         goto done;
     }
-    if (!RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_initialize(
+    if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_initialize(
                 &state->input_mappings)) {
         /* TODO Log error */
         goto done;
@@ -1085,14 +1085,14 @@ done:
     return retval;
 }
 
-static void RTI_TSFM_Json_FlatTypeTransformationState_delete_data(
-        RTI_TSFM_Json_FlatTypeTransformationState *data)
+static void RTI_TSFM_JsonTransformationState_delete_data(
+        RTI_TSFM_JsonTransformationState *data)
 {
-    RTI_TSFM_LOG_FN(RTI_TSFM_Json_FlatTypeTransformationState_delete_data)
+    RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformationState_delete_data)
 
-    RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_finalize(
+    RTI_TSFM_JsonTransformation_MemberMappingSeq_finalize(
             &data->output_mappings);
-    RTI_TSFM_Json_FlatTypeTransformation_MemberMappingSeq_finalize(
+    RTI_TSFM_JsonTransformation_MemberMappingSeq_finalize(
             &data->input_mappings);
     if (data->json_buffer != NULL) {
         DDS_String_free(data->json_buffer);
@@ -1101,8 +1101,8 @@ static void RTI_TSFM_Json_FlatTypeTransformationState_delete_data(
     RTI_TSFM_Heap_free(data);
 }
 
-void RTI_TSFM_Json_FlatTypeTransformationConfigTypeSupport_delete_data(
-        RTI_TSFM_Json_FlatTypeTransformationConfig *sample)
+void RTI_TSFM_JsonTransformationConfigTypeSupport_delete_data(
+        RTI_TSFM_JsonTransformationConfig *sample)
 {
     /* delete parent */
     if (sample->parent.input_type != NULL) {
@@ -1124,15 +1124,15 @@ void RTI_TSFM_Json_FlatTypeTransformationConfigTypeSupport_delete_data(
     sample = NULL;
 }
 
-RTI_TSFM_Json_FlatTypeTransformationConfig *
-        RTI_TSFM_Json_FlatTypeTransformationConfigTypeSupport_create_data(void)
+RTI_TSFM_JsonTransformationConfig *
+        RTI_TSFM_JsonTransformationConfigTypeSupport_create_data(void)
 {
-    RTI_TSFM_Json_FlatTypeTransformationConfig *sample = NULL;
+    RTI_TSFM_JsonTransformationConfig *sample = NULL;
     DDS_Boolean ok = DDS_BOOLEAN_FALSE;
 
     RTIOsapiHeap_allocateStructure(
             &(sample),
-            RTI_TSFM_Json_FlatTypeTransformationConfig);
+            RTI_TSFM_JsonTransformationConfig);
     if (sample == NULL) {
         return NULL;
     }
@@ -1154,18 +1154,18 @@ RTI_TSFM_Json_FlatTypeTransformationConfig *
     ok = DDS_BOOLEAN_TRUE;
 done:
     if (!ok) {
-        RTI_TSFM_Json_FlatTypeTransformationConfigTypeSupport_delete_data(
+        RTI_TSFM_JsonTransformationConfigTypeSupport_delete_data(
                 sample);
         sample = NULL;
     }
     return sample;
 }
 
-#define T RTI_TSFM_Json_FlatTypeTransformation
-#define T_initialize RTI_TSFM_Json_FlatTypeTransformation_initialize
-#define TConfig RTI_TSFM_Json_FlatTypeTransformationConfig
-#define TState RTI_TSFM_Json_FlatTypeTransformationState
-#define TState_new RTI_TSFM_Json_FlatTypeTransformationState_create_data
-#define TState_delete RTI_TSFM_Json_FlatTypeTransformationState_delete_data
+#define T RTI_TSFM_JsonTransformation
+#define T_initialize RTI_TSFM_JsonTransformation_initialize
+#define TConfig RTI_TSFM_JsonTransformationConfig
+#define TState RTI_TSFM_JsonTransformationState
+#define TState_new RTI_TSFM_JsonTransformationState_create_data
+#define TState_delete RTI_TSFM_JsonTransformationState_delete_data
 #define T_static
 #include "TransformationTemplateDefine.h"

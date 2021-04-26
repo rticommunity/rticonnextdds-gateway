@@ -25,7 +25,7 @@
         <transformation_plugin name="JsonShapes">
             <dll>rtijsontransf</dll>
             <create_function>
-                RTI_TSFM_Json_FlatTypeTransformationPlugin_create
+                RTI_TSFM_JsonTransformationPlugin_create
             </create_function>
         </transformation_plugin>
     </plugin_library>

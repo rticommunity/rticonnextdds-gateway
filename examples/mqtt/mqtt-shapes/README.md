@@ -190,7 +190,7 @@ demo on your system.
 
     - Adapter: MQTT
     - Processor: Forward Engine (By Input Value)
-    - Transformation: JSON (Flat Type)
+    - Transformation: JSON
     - Transformation: Field (Primitive)
     - Example: MQTT Shapes
 
