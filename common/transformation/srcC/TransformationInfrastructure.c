@@ -27,6 +27,11 @@ DDS_ReturnCode_t RTI_TSFM_realloc_buffer(
     DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
     DDS_UnsignedLong cur_len = 0;
 
+    if (size_incr == 0) {
+        /* TODO Log error */
+        goto done;
+    }
+
     if (*buffer_str != NULL) {
         cur_len = *buffer_str_size;
         DDS_String_free(*buffer_str);

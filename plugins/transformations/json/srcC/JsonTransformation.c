@@ -128,11 +128,28 @@ static DDS_ReturnCode_t
         goto done;
     }
 
-    /*
-     * In case of a Sequence/Array, check that the inner type is DDS_Octet or
-     * DDS_Char
-     */
-    if (tckind == DDS_TK_SEQUENCE || tckind == DDS_TK_ARRAY) {
+
+    switch (tckind) {
+    case DDS_TK_ARRAY: {
+        DDS_UnsignedLong array_dimensions = 0;
+        /* If the TC is array, check it has only one dimension */
+        array_dimensions = DDS_TypeCode_array_dimension_count(member_type, &ex);
+        if (ex != DDS_NO_EXCEPTION_CODE) {
+            /* TODO Log error */
+            goto done;
+        }
+        if (array_dimensions != 1) {
+            /* TODO Log error */
+            goto done;
+        }
+    }
+
+    /* Do not break because checking the inner datatype is the same for seqs */
+    case DDS_TK_SEQUENCE:
+        /*
+         * In case of a Sequence/Array, check that the inner type is DDS_Octet
+         * or DDS_Char
+         */
         member_content_type = DDS_TypeCode_content_type(member_type, &ex);
         if (ex != DDS_NO_EXCEPTION_CODE) {
             /* TODO Log error */
@@ -149,7 +166,13 @@ static DDS_ReturnCode_t
             /* TODO Log error */
             goto done;
         }
-    } else if (tckind != DDS_TK_STRING) {
+        break;
+
+    case DDS_TK_STRING:
+        /* Do nothing */
+        break;
+
+    default:
         /* TODO Log error */
         goto done;
     }
@@ -407,7 +430,7 @@ DDS_Boolean RTI_TSFM_JsonTransformation_preallocate_buffers(
      */
     case DDS_TK_ARRAY:
         content_tc = DDS_TypeCode_content_type(tc, &ex);
-        if (content_tc = NULL) {
+        if (content_tc == NULL) {
             /* TODO Log error */
             goto done;
         }
@@ -419,6 +442,15 @@ DDS_Boolean RTI_TSFM_JsonTransformation_preallocate_buffers(
             /* TODO Log error */
             goto done;
         }
+        /* For arrays, the serialized_size_min will be the size array. */
+        self->config->serialized_size_min = DDS_TypeCode_length(tc, &ex);
+        if (ex != DDS_NO_EXCEPTION_CODE) {
+            /* TODO Log error */
+            goto done;
+        }
+        self->config->serialized_size_max = self->config->serialized_size_min;
+        self->config->serialized_size_incr = 0;
+
         /* Do not break because arrays will use json_buffer as well as strings */
     case DDS_TK_STRING:
         if (self->state->json_buffer == NULL) {
@@ -650,19 +682,6 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_serialize(
             continue;
         }
 
-        /* update serialized_size to actual length of string */
-        p = strchr(self->state->json_buffer, '\0');
-        if (p == NULL) {
-            /* TODO log */
-            goto done;
-        }
-        serialized_size = (DDS_UnsignedLong) (p - self->state->json_buffer);
-        if (serialized_size == 0) {
-            /* empty message */
-            /* TODO log */
-            goto done;
-        }
-
         if (self->config->indent == 0) {
             /* Replace all '\n' with a space */
             for (p = self->state->json_buffer; (p = strchr(p, '\n')) != NULL;
@@ -709,73 +728,39 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_serialize(
 
     case DDS_TK_SEQUENCE: {
         switch (member_info.element_kind) {
-        case DDS_TK_OCTET:
-            if (!DDS_OctetSeq_loan_contiguous(
-                    &self->state->octet_seq,
-                    (DDS_Octet *) self->state->json_buffer,
-                    serialized_size,
-                    self->state->json_buffer_size)) {
-                RTI_TSFM_ERROR_1(
-                        "unable to loan_contiguous in DDS_OctetSeq for member",
-                        "%s",
-                        self->config->buffer_member)
-                retcode = DDS_RETCODE_ERROR;
-                goto done;
-            }
 
-            retcode = DDS_DynamicData_set_octet_seq(
-                    sample_out,
-                    self->config->buffer_member,
-                    DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                    &self->state->octet_seq);
-            if (retcode != DDS_RETCODE_OK) {
-                RTI_TSFM_ERROR_1(
-                    "unable to set_octet_seq for member",
-                    "%s",
-                    self->config->buffer_member)
-                goto done;
-            }
-
-            if (!DDS_OctetSeq_unloan(&self->state->octet_seq)) {
-                RTI_TSFM_ERROR("unable to unloan DDS_Octet sequence");
-                retcode = DDS_RETCODE_ERROR;
-                goto done;
-            }
-
-            break;
         case DDS_TK_CHAR:
-            if (!DDS_CharSeq_loan_contiguous(
-                    &self->state->char_seq,
-                    (DDS_Octet *) self->state->json_buffer,
-                    serialized_size,
-                    self->state->json_buffer_size)) {
-                RTI_TSFM_ERROR_1(
-                        "unable to loan_contiguous in DDS_ChartSeq for member",
-                        "%s",
-                        self->config->buffer_member)
-                retcode = DDS_RETCODE_ERROR;
-                goto done;
-            }
-
-            retcode = DDS_DynamicData_set_char_seq(
+            retcode = RTI_COMMON_DynamicData_set_char_seq_from_string(
                     sample_out,
+                    &self->state->char_seq,
                     self->config->buffer_member,
-                    DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                    &self->state->char_seq);
+                    self->state->json_buffer,
+                    self->state->json_buffer_size);
             if (retcode != DDS_RETCODE_OK) {
                 RTI_TSFM_ERROR_1(
-                    "unable to set_char_seq for member",
-                    "%s",
-                    self->config->buffer_member)
-                goto done;
-            }
-
-            if (!DDS_CharSeq_unloan(&self->state->char_seq)) {
-                RTI_TSFM_ERROR("unable to unloan DDS_Char sequence");
-                retcode = DDS_RETCODE_ERROR;
+                        "unable to set_char_seq_from_string for member",
+                        "%s",
+                        self->config->buffer_member)
                 goto done;
             }
             break;
+
+        case DDS_TK_OCTET:
+            retcode = RTI_COMMON_DynamicData_set_octet_seq_from_string(
+                    sample_out,
+                    &self->state->octet_seq,
+                    self->config->buffer_member,
+                    self->state->json_buffer,
+                    self->state->json_buffer_size);
+            if (retcode != DDS_RETCODE_OK) {
+                RTI_TSFM_ERROR_1(
+                        "unable to set_octet_seq_from_string for member",
+                        "%s",
+                        self->config->buffer_member)
+                goto done;
+            }
+            break;
+
         default:
             RTI_TSFM_ERROR_1(
                 "sequence member_kind not supported",
@@ -789,22 +774,6 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_serialize(
 
     case DDS_TK_ARRAY:
         switch (member_info.element_kind) {
-        case DDS_TK_OCTET:
-            retcode = DDS_DynamicData_set_octet_array(
-                    sample_out,
-                    self->config->buffer_member,
-                    DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                    self->state->json_buffer_size,
-                    (const DDS_Octet *) self->state->json_buffer);
-            if (retcode != DDS_RETCODE_OK) {
-                RTI_TSFM_ERROR_1(
-                    "unable to set_octet_array for member",
-                    "%s",
-                    self->config->buffer_member)
-                goto done;
-            }
-            break;
-
         case DDS_TK_CHAR:
             retcode = DDS_DynamicData_set_char_array(
                     sample_out,
@@ -815,6 +784,22 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_serialize(
             if (retcode != DDS_RETCODE_OK) {
                 RTI_TSFM_ERROR_1(
                     "unable to set_char_array for member",
+                    "%s",
+                    self->config->buffer_member)
+                goto done;
+            }
+            break;
+
+        case DDS_TK_OCTET:
+            retcode = DDS_DynamicData_set_octet_array(
+                    sample_out,
+                    self->config->buffer_member,
+                    DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
+                    self->state->json_buffer_size,
+                    (const DDS_Octet *) self->state->json_buffer);
+            if (retcode != DDS_RETCODE_OK) {
+                RTI_TSFM_ERROR_1(
+                    "unable to set_octet_array for member",
                     "%s",
                     self->config->buffer_member)
                 goto done;
@@ -852,42 +837,6 @@ done:
     return retcode;
 }
 
-/**
- * @brief Add a nul terminator ('\0') at the last element of an octet sequence
- * if it doesn't already end with it. This function increases the length of the
- * sequence by one if there is no room for the nul terminator character.
- * @param self the sequence to add the nul character.
- * @return A boolean that says whether the terminator was has been added
- * successfully.
- */
-DDS_Boolean RTI_TSFM_JsonTransformation_octet_seq_assert_terminator(
-        struct DDS_OctetSeq *self)
-{
-    DDS_Long length = 0;
-
-    length = DDS_OctetSeq_get_length(self);
-
-    /* The sequence is well terminated, no need to add a nul terminator */
-    if (*DDS_OctetSeq_get_reference(self, length - 1) == '\0') {
-        return DDS_BOOLEAN_TRUE;
-    }
-
-    /* The nul terminator cannot be added without modifying the length */
-    if (!DDS_OctetSeq_ensure_length(self, length + 1, length + 1)) {
-        RTI_TSFM_ERROR("failed to ensure_length of an octet sequence")
-        return DDS_BOOLEAN_FALSE;
-    }
-
-    /*
-     * length contains the length before increasing it,
-     * hence it is pointing ot the new element.
-     */
-    *DDS_OctetSeq_get_reference(self, length) = '\0';
-
-    return DDS_BOOLEAN_TRUE;
-
-}
-
 DDS_ReturnCode_t RTI_TSFM_JsonTransformation_deserialize(
         RTI_TSFM_UserTypePlugin *plugin,
         RTI_TSFM_Transformation *transform,
@@ -918,40 +867,70 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_deserialize(
     }
 
     switch (member_info.member_kind) {
-    case DDS_TK_ARRAY:
+    case DDS_TK_ARRAY: {
+        /*
+         * current_len is needed because the get_<type>_array will modify it and
+         * we don't want to modify state->json_buffer_size
+         */
+        DDS_UnsignedLong current_len = self->state->json_buffer_size;
+        switch (member_info.element_kind) {
+        case DDS_TK_CHAR:
+            retcode = DDS_DynamicData_get_char_array(
+                    sample_in,
+                    (DDS_Char *) self->state->json_buffer,
+                    &current_len,
+                    self->config->buffer_member,
+                    DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
+            break;
+
+        case DDS_TK_OCTET:
+            retcode = DDS_DynamicData_get_octet_array(
+                    sample_in,
+                    (DDS_Octet *) self->state->json_buffer,
+                    &current_len,
+                    self->config->buffer_member,
+                    DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
+            break;
+
+        default:
+             RTI_TSFM_ERROR_1(
+                "unsupported datatype for array, member",
+                "%s",
+                self->config->buffer_member)
+            goto done;
+        }
+
+        if (retcode != DDS_RETCODE_OK) {
+            RTI_TSFM_ERROR_1(
+                    "unable to get_array from DynamicData member",
+                    "%s",
+                    self->config->buffer_member)
+            goto done;
+        }
+
+        buffer = self->state->json_buffer;
+
+        break;
+    }
     case DDS_TK_STRING:
         do {
             DDS_ReturnCode_t aux_retcode = DDS_RETCODE_OK;
-            /* current_len is needed because the get_string will modify and
-             * we don't want to modify state->json_buffer
+            /*
+             * current_len is needed because the get_string will modify it and
+             * we don't want to modify state->json_buffer_size
              */
             DDS_UnsignedLong current_len = self->state->json_buffer_size;
             /*
              * Get the string or the array buffer (DDS_Char/DDS_Octet), if
              * json_buffer doesn't have enough space, realloc it
              */
-            if (member_info.element_kind == DDS_TK_CHAR) {
-                retcode = DDS_DynamicData_get_char_array(
-                        sample_in,
-                        (DDS_Char *) &self->state->json_buffer,
-                        &current_len,
-                        self->config->buffer_member,
-                        DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
-            } else if (member_info.element_kind == DDS_TK_CHAR) {
-                retcode = DDS_DynamicData_get_octet_array(
-                        sample_in,
-                        (DDS_Octet *) &self->state->json_buffer,
-                        &current_len,
-                        self->config->buffer_member,
-                        DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
-            } else {
-                retcode = DDS_DynamicData_get_string(
-                        sample_in,
-                        &self->state->json_buffer,
-                        &current_len,
-                        self->config->buffer_member,
-                        DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
-            }
+            retcode = DDS_DynamicData_get_string(
+                    sample_in,
+                    &self->state->json_buffer,
+                    &current_len,
+                    self->config->buffer_member,
+                    DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
+
             /*
              * the DDS_RETCODE_PRECONDITION_NOT_MET means that there is no
              * enough space to save the string and the json_buffer_size contains
@@ -982,40 +961,36 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_deserialize(
         break;
 
     case DDS_TK_SEQUENCE:
-        retcode = DDS_DynamicData_get_octet_seq(
-                sample_in,
-                &self->state->octet_seq,
-                self->config->buffer_member,
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED);
+        switch (member_info.element_kind) {
+        case DDS_TK_CHAR:
+            retcode = RTI_COMMON_DynamicData_get_char_seq_contiguous_buffer(
+                    sample_in,
+                    &buffer,
+                    &self->state->char_seq,
+                    self->config->buffer_member);
+            break;
+
+        case DDS_TK_OCTET:
+            retcode = RTI_COMMON_DynamicData_get_octet_seq_contiguous_buffer(
+                    sample_in,
+                    &buffer,
+                    &self->state->octet_seq,
+                    self->config->buffer_member);
+            break;
+
+        default:
+            RTI_TSFM_ERROR_1(
+                "unsupported datatype for array, member",
+                "%s",
+                self->config->buffer_member)
+            goto done;
+        }
+
         if (retcode != DDS_RETCODE_OK) {
             RTI_TSFM_ERROR_1(
-                    "unable to retreive DDS_OctetSeq: ",
+                    "unable to get_contiguous_buffer from DynamicData member",
                     "%s",
                     self->config->buffer_member)
-            goto done;
-        }
-
-        /*
-         * The buffer might or might not be well terminated with '\0'. We
-         * need to ensure that it is.
-         */
-        if (!RTI_TSFM_JsonTransformation_octet_seq_assert_terminator(
-                &self->state->octet_seq)) {
-            RTI_TSFM_ERROR_1("failed to assert nul terminator: ",
-                    "%s", self->config->buffer_member)
-            retcode = DDS_RETCODE_ERROR;
-            goto done;
-        }
-
-        /* We have successfully added a nul terminator to the sequence */
-        buffer = (char *) DDS_OctetSeq_get_contiguous_buffer(
-                &self->state->octet_seq);
-        if (buffer == NULL) {
-            RTI_TSFM_ERROR_1(
-                    "unable to get_contiguous_buffer of element: ",
-                    "%s",
-                    self->config->buffer_member)
-            retcode = DDS_RETCODE_ERROR;
             goto done;
         }
         break;
