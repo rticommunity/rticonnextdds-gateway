@@ -1,4 +1,4 @@
-# RTI Gateway
+# RTI Connext Gateway
 
 The RTI® Gateway is a software component that allows integrating
 different types of connectivity protocols with DDS. Integration in this
