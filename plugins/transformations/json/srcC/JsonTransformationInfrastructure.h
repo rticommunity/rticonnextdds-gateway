@@ -32,41 +32,25 @@
 
 #include "TransformationTypes.h"
 
-typedef struct RTI_TSFM_JsonTransformationConfig {
+#define RTI_TSFM_JSON_BUFFER_SIZE_INCREMENT(buffer_size__) \
+        (size_t) 1.5 * (buffer_size__)
+
+#define RTI_TSFM_JSON_UNBOUNDED_INITIAL_SERIALIZED_SIZE_DEFAULT 255
+#define RTI_TSFM_JSON_INDENT_DEFAULT 0
+
+typedef struct {
     RTI_TSFM_TransformationConfig parent;
     DDS_Char *buffer_member;
-    DDS_Long serialized_size_max;
-    DDS_UnsignedLong serialized_size_min;
-    DDS_UnsignedLong serialized_size_incr;
+    DDS_UnsignedLong unbounded_initial_serialized_size;
     DDS_UnsignedLong indent;
 
 } RTI_TSFM_JsonTransformationConfig;
-
-struct RTI_TSFM_JsonTransformationImpl;
-
-typedef struct RTI_TSFM_JsonTransformation_MemberMappingImpl
-        RTI_TSFM_JsonTransformation_MemberMapping;
-struct RTI_TSFM_JsonTransformation_MemberMappingImpl {
-    DDS_UnsignedLong id;
-    DDS_TCKind kind;
-    DDS_UnsignedLong max_len;
-    DDS_Boolean optional;
-    const char *name;
-};
-
-DDS_SEQUENCE(
-        RTI_TSFM_JsonTransformation_MemberMappingSeq,
-        RTI_TSFM_JsonTransformation_MemberMapping);
-
-
-typedef struct RTI_TSFM_JsonTransformationStateImpl {
+typedef struct {
     char *json_buffer;
     DDS_UnsignedLong json_buffer_size;
+    DDS_Long json_buffer_bound;
     struct DDS_OctetSeq octet_seq;
     struct DDS_CharSeq char_seq;
-    struct RTI_TSFM_JsonTransformation_MemberMappingSeq
-            output_mappings;
-    struct RTI_TSFM_JsonTransformation_MemberMappingSeq input_mappings;
 } RTI_TSFM_JsonTransformationState;
 
 #define T RTI_TSFM_JsonTransformation
@@ -78,22 +62,19 @@ typedef struct RTI_TSFM_JsonTransformationStateImpl {
 /*****************************************************************************
  *                         Configuration Properties
  *****************************************************************************/
-#define RTI_TSFM_JSON_TRANSFORMATION_PROPERTY_PREFIX \
+#define RTI_TSFM_JSON_PROPERTY_PREFIX \
         ""
 
-#define RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_BUFFER_MEMBER \
-        RTI_TSFM_JSON_TRANSFORMATION_PROPERTY_PREFIX "buffer_member"
+#define RTI_TSFM_JSON_PROPERTY_BUFFER_MEMBER \
+        RTI_TSFM_JSON_PROPERTY_PREFIX "buffer_member"
 
-#define RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_SERIALIZED_SIZE_MIN \
-        RTI_TSFM_JSON_TRANSFORMATION_PROPERTY_PREFIX "serialized_size_min"
+#define RTI_TSFM_JSON_PROPERTY_SERIALIZED_SIZE_MIN \
+        RTI_TSFM_JSON_PROPERTY_PREFIX "serialized_size_min"
 
-#define RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_SERIALIZED_SIZE_MAX \
-        RTI_TSFM_JSON_TRANSFORMATION_PROPERTY_PREFIX "serialized_size_max"
+#define RTI_TSFM_JSON_PROPERTY_UNBOUNDED_INITIAL_SERIALIZED_SIZE \
+        RTI_TSFM_JSON_PROPERTY_PREFIX "unbounded_initial_serialized_size"
 
-#define RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_SERIALIZED_SIZE_INCR \
-        RTI_TSFM_JSON_TRANSFORMATION_PROPERTY_PREFIX "serialized_size_incr"
-
-#define RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_INDENT \
-        RTI_TSFM_JSON_TRANSFORMATION_PROPERTY_PREFIX "indent"
+#define RTI_TSFM_JSON_PROPERTY_INDENT \
+        RTI_TSFM_JSON_PROPERTY_PREFIX "indent"
 
 #endif /* Json_Transformation_Infrastructure_h */

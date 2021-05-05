@@ -108,13 +108,6 @@
         }                                                                  \
     }
 
-DDS_ReturnCode_t RTI_TSFM_realloc_buffer(
-        DDS_UnsignedLong size_min,
-        DDS_UnsignedLong size_incr,
-        DDS_Long size_max,
-        char **buffer_str,
-        DDS_UnsignedLong *buffer_str_size);
-
 /****************************************************************************/
 /*                              Mutex utilities                            */
 /****************************************************************************/

@@ -127,6 +127,9 @@
 #define RTI_TSFM_WARNING(msg_) \
     fprintf(stdout,RTI_TSFM_LOG_HEAD_WARNING "%s\n", RTI_TSFM_LOG_ARGS, (msg_));
 
+#define RTI_TSFM_WARNING_2(msg_,fmt_,a1_,a2_) \
+    fprintf(stdout,RTI_TSFM_LOG_HEAD_ERROR "%s:" fmt_ "\n", RTI_TSFM_LOG_ARGS, (msg_), (a1_), (a2_));
+
 #define RTI_TSFM_ERROR(msg_) \
     fprintf(stdout,RTI_TSFM_LOG_HEAD_ERROR "%s\n", RTI_TSFM_LOG_ARGS, (msg_));
 
@@ -167,6 +170,7 @@
                    a9_,a10_,a11_,a12_,\
                    a13_,a14_,a15_,a16_)
 #define RTI_TSFM_WARNING(msg_)
+#define RTI_TSFM_WARNING_2(msg_,fmt_,a1_,a2_)
 #define RTI_TSFM_ERROR(msg_)
 #define RTI_TSFM_ERROR_1(msg_,fmt_,a1_)
 #define RTI_TSFM_ERROR_2(msg_,fmt_,a1_,a2_)

@@ -22,90 +22,12 @@
 
 #define RTI_TSFM_LOG_ARGS "rtitransform::json"
 
-static RTIBool
-        RTI_TSFM_JsonTransformation_MemberMapping_initialize_w_params(
-                RTI_TSFM_JsonTransformation_MemberMapping *self,
-                const struct DDS_TypeAllocationParams_t *allocParams)
-{
-    self->kind = DDS_TK_NULL;
-    self->id = 0;
-    self->name = NULL;
-    return RTI_TRUE;
-}
-
-static RTIBool
-        RTI_TSFM_JsonTransformation_MemberMapping_finalize_w_params(
-                RTI_TSFM_JsonTransformation_MemberMapping *self,
-                const struct DDS_TypeDeallocationParams_t *deallocParams)
-{
-    /* WARNING self->name is not deallocated because it's "borrowed" from
-       the DDS_TypeCode object from which the mapping was generated */
-    return RTI_TRUE;
-}
-
-#define RTI_TSFM_JsonTransformation_MemberMapping_copy_string( \
-        dst_,                                                           \
-        src_)                                                           \
-    {                                                                   \
-        if ((src_) != NULL) {                                           \
-            DDS_String_replace(&(dst_), (src_));                        \
-            if ((dst_) == NULL) {                                       \
-                /* TODO Log error */                                    \
-                goto done;                                              \
-            }                                                           \
-        } else if ((dst_) != NULL) {                                    \
-            DDS_String_free((dst_));                                    \
-            (dst_) = NULL;                                              \
-        }                                                               \
-    }
-
-static RTIBool RTI_TSFM_JsonTransformation_MemberMapping_copy(
-        RTI_TSFM_JsonTransformation_MemberMapping *dst,
-        const RTI_TSFM_JsonTransformation_MemberMapping *src)
-{
-    dst->name = src->name;
-    dst->kind = src->kind;
-    dst->id = src->id;
-
-    return RTI_TRUE;
-}
-
-#define T RTI_TSFM_JsonTransformation_MemberMapping
-#define TSeq RTI_TSFM_JsonTransformation_MemberMappingSeq
-#define T_initialize_w_params \
-    RTI_TSFM_JsonTransformation_MemberMapping_initialize_w_params
-#define T_finalize_w_params \
-    RTI_TSFM_JsonTransformation_MemberMapping_finalize_w_params
-#define T_copy RTI_TSFM_JsonTransformation_MemberMapping_copy
-#include "dds_c/generic/dds_c_sequence_TSeq.gen"
-#undef T_copy
-#undef T_finalize_w_params
-#undef T_initialize_w_params
-#undef TSeq
-#undef T
-
-/**
- * @brief Check that a DDS_TCKind value is of one of the supported types.
- *
- * Currently only primitive type kinds are supported (except for LongDouble,
- * Wstring, and Wchar).
- */
-#define RTI_TSFM_JsonTransformation_validate_member_tckind(tck_) \
-    ((tck_) == DDS_TK_SHORT || (tck_) == DDS_TK_LONG                      \
-     || (tck_) == DDS_TK_USHORT || (tck_) == DDS_TK_ULONG                 \
-     || (tck_) == DDS_TK_FLOAT || (tck_) == DDS_TK_DOUBLE                 \
-     || (tck_) == DDS_TK_BOOLEAN || (tck_) == DDS_TK_CHAR                 \
-     || (tck_) == DDS_TK_OCTET || (tck_) == DDS_TK_ENUM                   \
-     || (tck_) == DDS_TK_STRING || (tck_) == DDS_TK_LONGLONG              \
-     || (tck_) == DDS_TK_ULONGLONG)
-
 #define RTI_TSFM_JsonTransformation_validate_container_tckind(tck_) \
     ((tck_) == DDS_TK_STRUCT || (tck_) == DDS_TK_VALUE)
 
 static DDS_ReturnCode_t
         RTI_TSFM_JsonTransformation_validate_buffer_member(
                 RTI_TSFM_JsonTransformation *self,
-                RTI_TSFM_JsonTransformation_MemberMapping *mapping,
                 struct DDS_TypeCode *base_type,
                 const char *member_name)
 {
@@ -177,8 +99,6 @@ static DDS_ReturnCode_t
         goto done;
     }
 
-    /* As this might be a nested type, we cannot fill out the mapping*/
-
     retcode = DDS_RETCODE_OK;
 
 done:
@@ -192,7 +112,6 @@ static DDS_ReturnCode_t
                 struct DDS_TypeCode *input_type)
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
-    RTI_TSFM_JsonTransformation_MemberMapping *mapping = NULL;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_validate_input_type)
 
@@ -202,24 +121,8 @@ static DDS_ReturnCode_t
         goto done; /* DDS_RETCODE_OK */
     }
 
-    /* Check that output type has the specified buffer member */
-    if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_ensure_length(
-                &self->state->input_mappings,
-                1,
-                1)) {
-        /* TODO Log error */
-        retcode = DDS_RETCODE_ERROR;
-        goto done;
-    }
-
-    mapping =
-            RTI_TSFM_JsonTransformation_MemberMappingSeq_get_reference(
-                    &self->state->input_mappings,
-                    0);
-
     retcode = RTI_TSFM_JsonTransformation_validate_buffer_member(
                 self,
-                mapping,
                 input_type,
                 self->config->buffer_member);
     if (retcode != DDS_RETCODE_OK) {
@@ -228,13 +131,6 @@ static DDS_ReturnCode_t
     }
 
 done:
-    if (retcode != DDS_RETCODE_OK) {
-        if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_set_length(
-                    &self->state->input_mappings,
-                    0)) {
-            /* TODO Log error */
-        }
-    }
     return retcode;
 }
 
@@ -248,29 +144,14 @@ static DDS_ReturnCode_t
     DDS_UnsignedLong members_count = 0, i = 0, buffer_member_id = 0;
     struct DDS_TypeCode *member_type = NULL, *member_content_type = NULL;
     DDS_TCKind tckind = DDS_TK_NULL;
-    RTI_TSFM_JsonTransformation_MemberMapping *mapping = NULL;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_validate_output_type)
 
     if (self->config->parent.type == RTI_TSFM_TransformationKind_SERIALIZER) {
         /* Check that output type has the specified buffer member */
-        if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_ensure_length(
-                &self->state->output_mappings,
-                1,
-                1)) {
-            /* TODO Log error */
-            goto done;
-        }
-
-        mapping =
-                RTI_TSFM_JsonTransformation_MemberMappingSeq_get_reference(
-                        &self->state->output_mappings,
-                        0);
-
         if (DDS_RETCODE_OK
             != RTI_TSFM_JsonTransformation_validate_buffer_member(
                     self,
-                    mapping,
                     output_type,
                     self->config->buffer_member)) {
             /* TODO Log error */
@@ -305,84 +186,9 @@ static DDS_ReturnCode_t
         goto done;
     }
 
-    /* Allocate entries for output_mappings in transformation */
-    if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_ensure_length(
-                &self->state->output_mappings,
-                members_count,
-                members_count)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    for (i = 0; i < members_count; i++) {
-        mapping =
-                RTI_TSFM_JsonTransformation_MemberMappingSeq_get_reference(
-                        &self->state->output_mappings,
-                        i);
-        member_type = DDS_TypeCode_member_type(output_type, i, &ex);
-        if (ex != DDS_NO_EXCEPTION_CODE) {
-            /* TODO Log error */
-            goto done;
-        }
-        tckind = DDS_TypeCode_kind(member_type, &ex);
-        if (ex != DDS_NO_EXCEPTION_CODE) {
-            /* TODO Log error */
-            goto done;
-        }
-
-        if (!RTI_TSFM_JsonTransformation_validate_member_tckind(
-                    tckind)) {
-            /* TODO Log error */
-            goto done;
-        }
-
-        mapping->kind = tckind;
-        mapping->id = DDS_TypeCode_member_id(output_type, i, &ex);
-        if (ex != DDS_NO_EXCEPTION_CODE) {
-            /* TODO Log error */
-            goto done;
-        }
-
-        mapping->name = DDS_TypeCode_member_name(output_type, i, &ex);
-        if (ex != DDS_NO_EXCEPTION_CODE) {
-            /* TODO Log error */
-            goto done;
-        }
-
-        mapping->optional =
-                !DDS_TypeCode_is_member_required(output_type, i, &ex);
-        if (ex != DDS_NO_EXCEPTION_CODE) {
-            /* TODO Log error */
-            goto done;
-        }
-
-        if (mapping->kind == DDS_TK_STRING) {
-            /* Store max_len flag for string values */
-            mapping->max_len = DDS_TypeCode_length(member_type, &ex);
-            if (ex != DDS_NO_EXCEPTION_CODE) {
-                /* TODO Log error */
-                goto done;
-            }
-        }
-        RTI_TSFM_LOG_4(
-                "created MAPPING:",
-                "name=%s, id=%d, kind=%d, max_len=%d",
-                mapping->name,
-                mapping->id,
-                mapping->kind,
-                mapping->max_len)
-    }
-
     retcode = DDS_RETCODE_OK;
 
 done:
-    if (retcode != DDS_RETCODE_OK) {
-        if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_set_length(
-                    &self->state->output_mappings,
-                    0)) {
-            /* TODO Log error */
-        }
-    }
     return retcode;
 }
 
@@ -395,6 +201,7 @@ DDS_Boolean RTI_TSFM_JsonTransformation_preallocate_buffers(
     DDS_TCKind member_kind = DDS_TK_NULL;
     DDS_TypeCode *content_tc = NULL;
     DDS_TCKind content_kind = DDS_TK_NULL;
+    DDS_UnsignedLong length = 0;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_preallocate_buffers)
 
@@ -412,76 +219,64 @@ DDS_Boolean RTI_TSFM_JsonTransformation_preallocate_buffers(
         goto done;
     }
 
-    /* Preallocate serialized_size_min depending on the type that will be used */
+    /*
+     * Preallocate initial serealized size depending on the type that
+     * will be used.
+     * If the member is unbounded, it will use unbounded_initial_serialized_size
+     * If the member is bounded, the maximum size will be allocated.
+     */
     tc = RTI_COMMON_TypeCode_get_member_type(tc, self->config->buffer_member);
     if (tc == NULL) {
         /* TODO Log error */
         goto done;
     }
 
-    member_kind = DDS_TypeCode_kind(tc, &ex);
+    /* Get the length of arrays, or maximum length for strings/sequences */
+    self->state->json_buffer_bound = DDS_TypeCode_length(tc, &ex);
     if (ex != DDS_NO_EXCEPTION_CODE) {
+        /* TODO Log error */
         goto done;
     }
 
-    switch(member_kind) {
-    /*
-     * Currently, this function only preallocates strings.
-     */
-    case DDS_TK_ARRAY:
-        content_tc = DDS_TypeCode_content_type(tc, &ex);
-        if (content_tc == NULL) {
-            /* TODO Log error */
-            goto done;
-        }
+    /* Get the the maximum (bounded) or the initial unbounded size. */
+    if (self->state->json_buffer_bound == RTI_INT32_MAX) {
+        length = self->config->unbounded_initial_serialized_size;
+    } else {
+        /* Bounded string/sequences and arrays */
+        length = self->state->json_buffer_bound;
+        self->config->unbounded_initial_serialized_size = 0;
+    }
 
-        /* Only arrays of DDS_Octet and DDS_Char are supported*/
-        content_kind = DDS_TypeCode_kind(content_tc, &ex);
-        if ((content_kind != DDS_TK_OCTET && content_kind != DDS_TK_CHAR)
-                || ex != DDS_NO_EXCEPTION_CODE) {
-            /* TODO Log error */
-            goto done;
-        }
-        /* For arrays, the serialized_size_min will be the size array. */
-        self->config->serialized_size_min = DDS_TypeCode_length(tc, &ex);
-        if (ex != DDS_NO_EXCEPTION_CODE) {
-            /* TODO Log error */
-            goto done;
-        }
-        self->config->serialized_size_max = self->config->serialized_size_min;
-        self->config->serialized_size_incr = 0;
+    member_kind = DDS_TypeCode_kind(tc, &ex);
+    if (ex != DDS_NO_EXCEPTION_CODE) {
+        /* TODO Log error */
+        goto done;
+    }
 
-        /* Do not break because arrays will use json_buffer as well as strings */
-    case DDS_TK_STRING:
+    /* Preallocate the json_buffer if it is not a sequence in deserialize mode */
+    if (member_kind != DDS_TK_SEQUENCE
+            || self->config->parent.type != RTI_TSFM_TransformationKind_DESERIALIZER) {
         if (self->state->json_buffer == NULL) {
-            self->state->json_buffer = DDS_String_alloc(
-                self->config->serialized_size_min);
+            self->state->json_buffer = DDS_String_alloc(length);
             if (self->state->json_buffer == NULL) {
                 /* TODO Log error */
                 goto done;
             }
-            self->state->json_buffer_size = self->config->serialized_size_min;
+            self->state->json_buffer_size = length;
         }
-        break;
-    case DDS_TK_SEQUENCE:
-        /*
-         * We cannot preallocate sequences because we do a loan_contiguous in
-         * the serialization method and it requires that the sequence has 0 size
-         */
-        break;
-
-    default:
-        /* TODO Log error */
-        goto done;
-        break;
     }
+
+    /*
+     * We cannot preallocate sequences because we do a loan_contiguous in
+     * the serialization method and it requires that the sequence has 0 size.
+     * Also, the deserialize mode will get the sequences from the DynamicData
+     */
 
     ok = DDS_BOOLEAN_TRUE;
 
 done:
     return ok;
 }
-
 
 DDS_ReturnCode_t RTI_TSFM_JsonTransformation_initialize(
         RTI_TSFM_JsonTransformation *self,
@@ -532,7 +327,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_initialize(
         goto done;
     }
 
-    /* Preallocate serialized_size_min depending on the type that will be used */
+    /* Preallocate json_buffer depending on the type that will be used. */
     if (self->config->parent.type == RTI_TSFM_TransformationKind_SERIALIZER) {
         /*
          * If we are serializing from DynamicData to JSON, the TypeCode is
@@ -582,50 +377,41 @@ DDS_ReturnCode_t
         goto done;
     }
 
-    self->serialized_size_min = 255;
-    self->serialized_size_incr = self->serialized_size_min;
-    self->serialized_size_max = -1;
-    self->indent = 0;
+    self->unbounded_initial_serialized_size =
+            RTI_TSFM_JSON_UNBOUNDED_INITIAL_SERIALIZED_SIZE_DEFAULT;
+    self->indent = RTI_TSFM_JSON_INDENT_DEFAULT;
 
     RTI_TSFM_lookup_property(
             properties,
-            RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_BUFFER_MEMBER,
+            RTI_TSFM_JSON_PROPERTY_BUFFER_MEMBER,
             DDS_String_replace(&self->buffer_member, pval);
             if (self->buffer_member == NULL) {
                 /* TODO Log error */
                 goto done;
             })
 
+    /* For backward compatibility */
     RTI_TSFM_lookup_property(
             properties,
-            RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_SERIALIZED_SIZE_MIN,
-            self->serialized_size_min =
-                    RTI_TSFM_String_to_long(pval, NULL, 0);
-            self->serialized_size_incr = self->serialized_size_min;)
-
-    RTI_TSFM_lookup_property(
-            properties,
-            RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_SERIALIZED_SIZE_MAX,
-            self->serialized_size_max =
+            RTI_TSFM_JSON_PROPERTY_SERIALIZED_SIZE_MIN,
+            RTI_TSFM_WARNING_2(
+                    "Property deprecated",
+                    "<%s>, use <%s> instead.",
+                    RTI_TSFM_JSON_PROPERTY_SERIALIZED_SIZE_MIN,
+                    RTI_TSFM_JSON_PROPERTY_UNBOUNDED_INITIAL_SERIALIZED_SIZE)
+            self->unbounded_initial_serialized_size =
                     RTI_TSFM_String_to_long(pval, NULL, 0);)
 
     RTI_TSFM_lookup_property(
             properties,
-            RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_SERIALIZED_SIZE_INCR,
-            self->serialized_size_incr =
-                    RTI_TSFM_String_to_long(
-                            pval,
-                            NULL,
-                            0);)
+            RTI_TSFM_JSON_PROPERTY_UNBOUNDED_INITIAL_SERIALIZED_SIZE,
+            self->unbounded_initial_serialized_size =
+                    RTI_TSFM_String_to_long(pval, NULL, 0);)
 
     RTI_TSFM_lookup_property(
             properties,
-            RTI_TSFM_JSON_PROPERTY_TRANSFORMATION_INDENT,
-            self->indent =
-                    RTI_TSFM_String_to_long(
-                            pval,
-                            NULL,
-                            0);)
+            RTI_TSFM_JSON_PROPERTY_INDENT,
+            self->indent = RTI_TSFM_String_to_long(pval, NULL, 0);)
 
     retcode = DDS_RETCODE_OK;
 done:
@@ -651,46 +437,51 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_serialize(
 
     RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_serialize)
 
-    while (!serialized) {
-        if (failed_serialization || self->state->json_buffer == NULL
-            || self->state->json_buffer_size == 0) {
-            failed_serialization = DDS_BOOLEAN_FALSE;
-            retcode = RTI_TSFM_realloc_buffer(
-                    self->config->serialized_size_min,
-                    self->config->serialized_size_incr,
-                    self->config->serialized_size_max,
-                    &self->state->json_buffer,
-                    &self->state->json_buffer_size);
-            if (retcode != DDS_RETCODE_OK) {
-                RTI_TSFM_ERROR("unable to realloc_buffer")
-                goto done;
-            }
-        }
-
+    do {
+        serialized_size = self->state->json_buffer_size;
         /*
          * Serializing from DynamicData to JSON will always use
-         * self->state->json_buffer because to_json function returns a string
+         * self->state->json_buffer because to_json function returns a string.
+         * serialized_size will contain the actual size of the json_buffer
+         * string
          */
-        serialized_size = self->state->json_buffer_size;
         retcode = DDS_DynamicDataFormatter_to_json(
                 sample_in,
                 self->state->json_buffer,
                 &serialized_size,
                 self->config->indent);
-        if (retcode != DDS_RETCODE_OK) {
-            failed_serialization = DDS_BOOLEAN_TRUE;
-            continue;
-        }
-
-        if (self->config->indent == 0) {
-            /* Replace all '\n' with a space */
-            for (p = self->state->json_buffer; (p = strchr(p, '\n')) != NULL;
-                 p++) {
-                *p = ' ';
+        if (retcode == DDS_RETCODE_OUT_OF_RESOURCES) {
+            /* Error if it is bounded because the buffer is not big enough */
+            if (self->state->json_buffer_bound != RTI_INT32_MAX) {
+                RTI_TSFM_ERROR("not enough space in the json_buffer")
+                goto done;
             }
+            /*
+             * If the datatype is unbounded, realloc the serialized_size + 1/2
+             * of the serialized size to allow to grow the JSON string without
+             * allocating new memory.
+             */
+            DDS_String_free(self->state->json_buffer);
+            self->state->json_buffer = DDS_String_alloc(
+                    RTI_TSFM_JSON_BUFFER_SIZE_INCREMENT(serialized_size));
+            if (self->state->json_buffer == NULL) {
+                RTI_TSFM_ERROR("error allocating json_buffer")
+                goto done;
+            }
+            self->state->json_buffer_size =
+                    RTI_TSFM_JSON_BUFFER_SIZE_INCREMENT(serialized_size);
+        } else if (retcode != DDS_RETCODE_OK) {
+            RTI_TSFM_ERROR("error transforming to JSON")
+            goto done;
         }
+    } while (retcode != DDS_RETCODE_OK);
 
-        serialized = DDS_BOOLEAN_TRUE;
+    if (self->config->indent == 0) {
+        /* Replace all '\n' with a space */
+        for (p = self->state->json_buffer; (p = strchr(p, '\n')) != NULL;
+                p++) {
+            *p = ' ';
+        }
     }
 
     /*
@@ -735,7 +526,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_serialize(
                     &self->state->char_seq,
                     self->config->buffer_member,
                     self->state->json_buffer,
-                    self->state->json_buffer_size);
+                    serialized_size);
             if (retcode != DDS_RETCODE_OK) {
                 RTI_TSFM_ERROR_1(
                         "unable to set_char_seq_from_string for member",
@@ -751,7 +542,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_serialize(
                     &self->state->octet_seq,
                     self->config->buffer_member,
                     self->state->json_buffer,
-                    self->state->json_buffer_size);
+                    serialized_size);
             if (retcode != DDS_RETCODE_OK) {
                 RTI_TSFM_ERROR_1(
                         "unable to set_octet_seq_from_string for member",
@@ -902,8 +693,9 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_deserialize(
 
         if (retcode != DDS_RETCODE_OK) {
             RTI_TSFM_ERROR_1(
-                    "unable to get_array from DynamicData member",
-                    "%s",
+                    "unable to get_array from DynamicData. Check that it has "
+                            "enough space",
+                    "member <%s>",
                     self->config->buffer_member)
             goto done;
         }
@@ -937,16 +729,20 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_deserialize(
              * the size that we need
              */
             if (retcode == DDS_RETCODE_PRECONDITION_NOT_MET) {
-                aux_retcode = RTI_TSFM_realloc_buffer(
-                        self->config->serialized_size_min,
-                        self->config->serialized_size_incr,
-                        self->config->serialized_size_max,
-                        &self->state->json_buffer,
-                        &self->state->json_buffer_size);
+                /* Error if it is bounded because the buffer is not big enough */
+                if (self->state->json_buffer_bound != RTI_INT32_MAX) {
+                    RTI_TSFM_ERROR("not enough space in the json_buffer")
+                    goto done;
+                }
+                DDS_String_free(self->state->json_buffer);
+                self->state->json_buffer = DDS_String_alloc(
+                        RTI_TSFM_JSON_BUFFER_SIZE_INCREMENT(current_len));
                 if (aux_retcode != DDS_RETCODE_OK) {
                     RTI_TSFM_ERROR("unable to realloc_buffer")
                     goto done;
                 }
+                self->state->json_buffer_size =
+                        RTI_TSFM_JSON_BUFFER_SIZE_INCREMENT(current_len);
             } else if (retcode != DDS_RETCODE_OK) {
                 RTI_TSFM_ERROR_1(
                     "unable to get_string from DynamicData member",
@@ -1036,18 +832,9 @@ static RTI_TSFM_JsonTransformationState *
         goto done;
     }
 
-    if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_initialize(
-                &state->output_mappings)) {
-        /* TODO Log error */
-        goto done;
-    }
-    if (!RTI_TSFM_JsonTransformation_MemberMappingSeq_initialize(
-                &state->input_mappings)) {
-        /* TODO Log error */
-        goto done;
-    }
     state->json_buffer = NULL;
     state->json_buffer_size = 0;
+    state->json_buffer_bound = 0;
 
     retval = state;
 
@@ -1065,14 +852,11 @@ static void RTI_TSFM_JsonTransformationState_delete_data(
 {
     RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformationState_delete_data)
 
-    RTI_TSFM_JsonTransformation_MemberMappingSeq_finalize(
-            &data->output_mappings);
-    RTI_TSFM_JsonTransformation_MemberMappingSeq_finalize(
-            &data->input_mappings);
     if (data->json_buffer != NULL) {
         DDS_String_free(data->json_buffer);
     }
     DDS_OctetSeq_finalize(&data->octet_seq);
+    DDS_CharSeq_finalize(&data->char_seq);
     RTI_TSFM_Heap_free(data);
 }
 
@@ -1118,11 +902,7 @@ RTI_TSFM_JsonTransformationConfig *
         goto done;
     }
 
-    sample->serialized_size_max = 0;
-
-    sample->serialized_size_min = 0u;
-
-    sample->serialized_size_incr = 0u;
+    sample->unbounded_initial_serialized_size = 0u;
 
     sample->indent = 0u;
 

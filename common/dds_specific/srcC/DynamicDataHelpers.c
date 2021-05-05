@@ -158,11 +158,15 @@ DDS_Boolean RTI_COMMON_DynamicData_seq_assert_nul_terminatorI(
         return DDS_BOOLEAN_TRUE;
     }
 
-    /* The nul terminator cannot be added without modifying the length */
+    /*
+     * The nul terminator cannot be added without modifying the length. The
+     * set_length function will modify the maximum if needed, but we don't want
+     * to modify the maximum if it is already enough.
+     */
     if (octet_seq != NULL) {
-        ok = DDS_OctetSeq_ensure_length(octet_seq, length + 1, length + 1);
+        ok = DDS_OctetSeq_set_length(octet_seq, length + 1);
     } else {
-        ok = DDS_CharSeq_ensure_length(char_seq, length + 1, length + 1);
+        ok = DDS_CharSeq_set_length(char_seq, length + 1);
     }
     if (!ok ) {
         RTI_TSFM_ERROR("failed to ensure_length of an octet sequence")

@@ -10,7 +10,5 @@
 .. |PROCESSOR_API| replace:: *Processor API*
 .. |PROP_BUFFER_MEMBER| replace:: *buffer_member*
 .. |PROP_INDENT| replace:: *indent*
-.. |PROP_SERIALIZED_SIZE_MIN| replace:: *serialized_size_min*
-.. |PROP_SERIALIZED_SIZE_MAX| replace:: *serialized_size_max*
-.. |PROP_SERIALIZED_SIZE_INCR| replace:: *serialized_size_incr*
+.. |PROP_UNBOUNDED_INITIAL_SERIALIZED_SIZE| replace:: *unbounded_initial_serialized_size*
 .. |PROP_TRANSFORM_TYPE| replace:: *transform_type*
