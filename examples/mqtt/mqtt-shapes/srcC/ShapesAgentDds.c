@@ -792,6 +792,7 @@ DDS_ReturnCode_t ShapesAgent_deserialize_shape(
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
     char *json_buffer_w_eos = NULL;
+    char *buffer = NULL;
 
     /* The json_buffer might not be ended with a '\0' */
     if (json_buffer[json_buffer_size - 1] != '\0') {
@@ -804,10 +805,14 @@ DDS_ReturnCode_t ShapesAgent_deserialize_shape(
 
         memcpy(json_buffer_w_eos, json_buffer, json_buffer_size);
         json_buffer_w_eos[json_buffer_size] = '\0';
+        buffer = json_buffer_w_eos;
+    }
+    else {
+        buffer = json_buffer;
     }
     /* Now the string is well terminated */
 
-    retcode = DDS_DynamicDataFormatter_from_json(shape, json_buffer_w_eos);
+    retcode = DDS_DynamicDataFormatter_from_json(shape, buffer);
     if (retcode != DDS_RETCODE_OK) {
         RTI_MQTT_ERROR("unable to format from json");
         goto done;
