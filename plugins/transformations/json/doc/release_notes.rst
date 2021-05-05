@@ -5,6 +5,37 @@
 Release Notes
 =============
 
+New features
+------------
+
+#. Added support for all DynamicData datatypes when creating a JSON
+   representation of the DynamicData (aka deserialize).
+#. The datatype pointed by the property |PROP_BUFFER_MEMBER| supports the
+   following string-like datatypes:
+
+   * Strings
+   * Sequences of DDS_Octets (``DDS_OctetSeq``)
+   * Sequences of DDS_Chars (``DDS_CharSeq``)
+   * Arrays of ``DDS_Octet``
+   * Arrays of ``DDS_Char``
+
+#. Improved resource management. This implies the deletion of the following
+   properties:
+
+   * *serialized_size_max*
+   * *serialized_size_incr*
+
+   Deprecated:
+
+   * *serialized_size_min*
+
+   And added a new property:
+
+   * |PROP_UNBOUNDED_INITIAL_SERIALIZED_SIZE|
+
+   This new property represents the initial allocated size when using unbounded
+   sequences and strings.
+
 Supported Platforms
 --------------------
 

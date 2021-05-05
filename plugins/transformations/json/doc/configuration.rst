@@ -18,11 +18,11 @@ Supported Data Types
 The |RS_JSON_TSFM| supports the following datatypes to serialize and
 deserialize:
 
-- Strings
-- Sequences of DDS_Octets (`DDS_OctetSeq`)
-- Sequences of DDS_Chars (`DDS_CharSeq`)
-- Arrays of DDS_Octets
-- Arrays of DDS_Chars
+* Strings
+* Sequences of DDS_Octets (``DDS_OctetSeq``)
+* Sequences of DDS_Chars (``DDS_CharSeq``)
+* Arrays of ``DDS_Octet``
+* Arrays of ``DDS_Char``
 
 Therefore, we can serialize a DynamicData object to any of these types, and
 vice versa. In the example shown in the
@@ -44,7 +44,7 @@ The following snippet demonstrates how to register the plugin in the
     <?xml version="1.0"?>
     <dds>
         <plugin_library name="MyPlugins">
-            <transformation_plugin name="PrimitiveField">
+            <transformation_plugin name="JsonTransformation">
             <dll>rtijsontransf</dll>
             <create_function>
                 RTI_TSFM_JsonTransformationPlugin_create
@@ -70,19 +70,32 @@ registered, |RS| will create an instance of the plugin during start-up.
 Configuration Properties
 ------------------------
 
-The |RS_JSON_TSFM| uses the following variables to configure its behavior:
+The |RS_JSON_TSFM| uses the following properties to configure its behavior:
 
 .. csv-table:: JSON Transformation Configuration Properties
    :file: static/csv/json_transformation_properties.csv
-   :widths: 30 15 15 40
+   :widths: 15 15 15 15 40
    :header-rows: 1
 
-The following snippet shows how to configure these properties:
+For example, having the following type:
 
 .. code-block:: xml
 
-    <transformation plugin_name="MqttShapesPlugins::JsonShapes">
-        <input_type_name>RTI::MQTT::Message</input_type_name>
+    <types>
+        <struct name="MessagePayload">
+            <member name="data" type="byte" sequenceMaxLength="-1"/>
+        </struct>
+        <struct name="MyType">
+            <member name="payload" type="nonBasic" nonBasicTypeName="MessagePayload"/>
+        </struct>
+    </types>
+
+We can configure the properties as follow:
+
+.. code-block:: xml
+
+    <transformation plugin_name="MyPlugins::JsonTransformation">
+        <input_type_name>MyType</input_type_name>
         <property>
             <value>
                 <element>
