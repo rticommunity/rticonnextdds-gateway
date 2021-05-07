@@ -35,13 +35,13 @@
 #define RTI_TSFM_JSON_BUFFER_SIZE_INCREMENT(buffer_size__) \
         (size_t) 1.5 * (buffer_size__)
 
-#define RTI_TSFM_JSON_UNBOUNDED_INITIAL_SERIALIZED_SIZE_DEFAULT 255
+#define RTI_TSFM_JSON_INITIAL_SERIALIZED_SIZE_FOR_UNBOUNDED_DEFAULT 255
 #define RTI_TSFM_JSON_INDENT_DEFAULT 0
 
 typedef struct {
     RTI_TSFM_TransformationConfig parent;
     DDS_Char *buffer_member;
-    DDS_UnsignedLong unbounded_initial_serialized_size;
+    DDS_UnsignedLong initial_serialized_size_for_unbounded;
     DDS_UnsignedLong indent;
 
 } RTI_TSFM_JsonTransformationConfig;
@@ -71,8 +71,8 @@ typedef struct {
 #define RTI_TSFM_JSON_PROPERTY_SERIALIZED_SIZE_MIN \
         RTI_TSFM_JSON_PROPERTY_PREFIX "serialized_size_min"
 
-#define RTI_TSFM_JSON_PROPERTY_UNBOUNDED_INITIAL_SERIALIZED_SIZE \
-        RTI_TSFM_JSON_PROPERTY_PREFIX "unbounded_initial_serialized_size"
+#define RTI_TSFM_JSON_PROPERTY_INITIAL_SERIALIZED_SIZE_FOR_UNBOUNDED \
+        RTI_TSFM_JSON_PROPERTY_PREFIX "initial_serialized_size_for_unbounded"
 
 #define RTI_TSFM_JSON_PROPERTY_INDENT \
         RTI_TSFM_JSON_PROPERTY_PREFIX "indent"

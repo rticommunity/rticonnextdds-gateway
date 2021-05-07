@@ -222,7 +222,7 @@ DDS_Boolean RTI_TSFM_JsonTransformation_preallocate_buffers(
     /*
      * Preallocate initial serealized size depending on the type that
      * will be used.
-     * If the member is unbounded, it will use unbounded_initial_serialized_size
+     * If the member is unbounded, it will use initial_serialized_size_for_unbounded
      * If the member is bounded, the maximum size will be allocated.
      */
     tc = RTI_COMMON_TypeCode_get_member_type(tc, self->config->buffer_member);
@@ -240,11 +240,11 @@ DDS_Boolean RTI_TSFM_JsonTransformation_preallocate_buffers(
 
     /* Get the the maximum (bounded) or the initial unbounded size. */
     if (self->state->json_buffer_bound == RTI_INT32_MAX) {
-        length = self->config->unbounded_initial_serialized_size;
+        length = self->config->initial_serialized_size_for_unbounded;
     } else {
         /* Bounded string/sequences and arrays */
         length = self->state->json_buffer_bound;
-        self->config->unbounded_initial_serialized_size = 0;
+        self->config->initial_serialized_size_for_unbounded = 0;
     }
 
     member_kind = DDS_TypeCode_kind(tc, &ex);
@@ -377,8 +377,8 @@ DDS_ReturnCode_t
         goto done;
     }
 
-    self->unbounded_initial_serialized_size =
-            RTI_TSFM_JSON_UNBOUNDED_INITIAL_SERIALIZED_SIZE_DEFAULT;
+    self->initial_serialized_size_for_unbounded =
+            RTI_TSFM_JSON_INITIAL_SERIALIZED_SIZE_FOR_UNBOUNDED_DEFAULT;
     self->indent = RTI_TSFM_JSON_INDENT_DEFAULT;
 
     RTI_TSFM_lookup_property(
@@ -398,14 +398,14 @@ DDS_ReturnCode_t
                     "Property deprecated",
                     "<%s>, use <%s> instead.",
                     RTI_TSFM_JSON_PROPERTY_SERIALIZED_SIZE_MIN,
-                    RTI_TSFM_JSON_PROPERTY_UNBOUNDED_INITIAL_SERIALIZED_SIZE)
-            self->unbounded_initial_serialized_size =
+                    RTI_TSFM_JSON_PROPERTY_INITIAL_SERIALIZED_SIZE_FOR_UNBOUNDED)
+            self->initial_serialized_size_for_unbounded =
                     RTI_TSFM_String_to_long(pval, NULL, 0);)
 
     RTI_TSFM_lookup_property(
             properties,
-            RTI_TSFM_JSON_PROPERTY_UNBOUNDED_INITIAL_SERIALIZED_SIZE,
-            self->unbounded_initial_serialized_size =
+            RTI_TSFM_JSON_PROPERTY_INITIAL_SERIALIZED_SIZE_FOR_UNBOUNDED,
+            self->initial_serialized_size_for_unbounded =
                     RTI_TSFM_String_to_long(pval, NULL, 0);)
 
     RTI_TSFM_lookup_property(
@@ -902,7 +902,7 @@ RTI_TSFM_JsonTransformationConfig *
         goto done;
     }
 
-    sample->unbounded_initial_serialized_size = 0u;
+    sample->initial_serialized_size_for_unbounded = 0u;
 
     sample->indent = 0u;
 

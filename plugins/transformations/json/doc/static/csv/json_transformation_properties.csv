@@ -6,6 +6,6 @@ Property,Required,Default,Accepted Values, Description
 |PROP_INDENT|,No,0,Integer >= 0,"This represents the number of 'tabs' that are
 added to the JSON output. Each 'tab' is represented as 3 whitespaces. |BR|
 A value of 0 will replace the new line characters `\n` by whitespaces."
-|PROP_UNBOUNDED_INITIAL_SERIALIZED_SIZE|,No,255,Integer >= 0,"This property
+|PROP_INITIAL_SERIALIZED_SIZE_FOR_UNBOUNDED|,No,255,Integer >= 0,"This property
 represents the amount of bytes that are preallocated when using unbounded
 sequences and strings in the member identified by |PROP_BUFFER_MEMBER|."
