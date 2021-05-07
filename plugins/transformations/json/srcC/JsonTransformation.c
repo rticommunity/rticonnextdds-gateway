@@ -457,9 +457,8 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_serialize(
                 goto done;
             }
             /*
-             * If the datatype is unbounded, realloc the serialized_size + 1/2
-             * of the serialized size to allow to grow the JSON string without
-             * allocating new memory.
+             * If the datatype is unbounded, realloc the serialized_size
+             * with the serialized_size which already contains the '\0'
              */
             DDS_String_free(self->state->json_buffer);
             self->state->json_buffer = DDS_String_alloc(
@@ -725,8 +724,8 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_deserialize(
 
             /*
              * the DDS_RETCODE_PRECONDITION_NOT_MET means that there is no
-             * enough space to save the string and the json_buffer_size contains
-             * the size that we need
+             * enough space to save the string and the current_len contains
+             * the size that we need (including '\0')
              */
             if (retcode == DDS_RETCODE_PRECONDITION_NOT_MET) {
                 /* Error if it is bounded because the buffer is not big enough */

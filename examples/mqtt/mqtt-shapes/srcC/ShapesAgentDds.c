@@ -806,8 +806,7 @@ DDS_ReturnCode_t ShapesAgent_deserialize_shape(
         memcpy(json_buffer_w_eos, json_buffer, json_buffer_size);
         json_buffer_w_eos[json_buffer_size] = '\0';
         buffer = json_buffer_w_eos;
-    }
-    else {
+    } else {
         buffer = (char *) json_buffer;
     }
     /* Now the string is well terminated */

@@ -33,9 +33,9 @@
 #include "TransformationTypes.h"
 
 #define RTI_TSFM_JSON_BUFFER_SIZE_INCREMENT(buffer_size__) \
-        (size_t) 1.5 * (buffer_size__)
+        ((size_t) (buffer_size__))
 
-#define RTI_TSFM_JSON_INITIAL_SERIALIZED_SIZE_FOR_UNBOUNDED_DEFAULT 255
+#define RTI_TSFM_JSON_INITIAL_SERIALIZED_SIZE_FOR_UNBOUNDED_DEFAULT 10
 #define RTI_TSFM_JSON_INDENT_DEFAULT 0
 
 typedef struct {
