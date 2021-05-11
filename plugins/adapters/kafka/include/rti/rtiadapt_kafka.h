@@ -23,6 +23,7 @@
  *                       RTI Routing Service SDK
  *****************************************************************************/
 #include "routingservice/routingservice_adapter.h"
+#include "routingservice/routingservice_service.h"
 
 
 /*****************************************************************************
