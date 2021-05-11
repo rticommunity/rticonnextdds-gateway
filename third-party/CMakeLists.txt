@@ -36,3 +36,7 @@ if (RTIGATEWAY_ENABLE_MQTT)
 
     add_subdirectory("${PAHO_MQTT_C_DIR}")
 endif()
+
+if (RTIGATEWAY_ENABLE_KAFKA)
+    add_subdirectory("${LIBRD_KAFKA_C_DIR}")
+endif()
