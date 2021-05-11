@@ -8,3 +8,7 @@
 [submodule "third-party/json_parser"]
 	path = third-party/json_parser
 	url = https://github.com/udp/json-parser.git
+[submodule "third-party/librdkafka"]
+	path = third-party/librdkafka
+	url = https://github.com/rticommunity/librdkafka
+	branch = 1.6.1
