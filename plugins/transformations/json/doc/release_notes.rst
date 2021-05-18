@@ -31,7 +31,7 @@ New features
 
    And added a new property:
 
-   * |PROP_INITIAL_SERIALIZED_SIZE_FOR_UNBOUNDED|
+   * |PROP_UNBOUNDED_MEMBER_SERIALIZED_SIZE_INITIAL|
 
    This new property represents the initial allocated size when using unbounded
    sequences and strings.
