@@ -15,19 +15,33 @@ All configuration is specified in |RS|'s XML configuration file.
 Supported Data Types
 ====================
 
-The |RS_JSON_TSFM| supports the following datatypes to serialize and
-deserialize:
+|RS_JSON_TSFM| requires users to specify the name of a member that the
+transformation will either read as a JSON string (when parsing a DDS sample
+from JSON), or set the contents of using a JSON string (obtained by converting
+a DDS sample to JSON).
 
-* Strings
-* Sequences of DDS_Octets (``DDS_OctetSeq``)
-* Sequences of DDS_Chars (``DDS_CharSeq``)
-* Arrays of ``DDS_Octet``
-* Arrays of ``DDS_Char``
+The type of this input/output members can be any of the following "string-like"
+types:
 
-Therefore, we can serialize a DynamicData object to any of these types, and
-vice versa. In the example shown in the
-:ref:`section-processor-configuration-attributes` section, the `payload.data`
-should be either a `DDS_OctetSeq` or a `string`.
+* ``string``
+* ``sequence<octet>``
+* ``sequence<char>``
+* ``octet[N]``
+* ``char[N]``
+
+When going from DDS to JSON, the transformation will always store a
+"well-terminated" string in the output member (i.e. a string which ends with
+a "nul" terminator, '\0').
+
+When parsing DDS samples from JSON, the input string should be
+properly terminated, but it doesn't need to be.
+
+If the value retrieved from the input member does not already
+end with a `\0`, the transformation will add one, possibly by first
+allocating a sufficiently large buffer and then copying the original value into
+it. This reallocation is only performed for ``string`` and ``sequence``
+members, and it will only be performed if the value does not already meet
+the maximum size defined for those members (if not unbounded).
 
 
 Load the JSON Transformation Plugin
