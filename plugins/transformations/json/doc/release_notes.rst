@@ -8,16 +8,16 @@ Release Notes
 New features
 ------------
 
-#. Added support for all DynamicData datatypes when creating a JSON
-   representation of the DynamicData (aka deserialize).
-#. The datatype pointed by the property |PROP_BUFFER_MEMBER| supports the
-   following string-like datatypes:
+#. Introduced support for a wider range of input/output members when converting
+   between JSON and DynamicData representations.
+#. The type of the member specified by property |PROP_BUFFER_MEMBER| can
+   now be any of the following "string-like" types:
 
-   * Strings
-   * Sequences of DDS_Octets (``DDS_OctetSeq``)
-   * Sequences of DDS_Chars (``DDS_CharSeq``)
-   * Arrays of ``DDS_Octet``
-   * Arrays of ``DDS_Char``
+   * ``string``
+   * ``sequence<octet>``
+   * ``sequence<char>``
+   * ``octet[N]``
+   * ``char[N]``
 
 #. Improved resource management. This implies the deletion of the following
    properties:
