@@ -422,7 +422,7 @@ DDS_ReturnCode_t RTI_TSFM_Transformation_transform(
     DDS_DynamicData **out_samples = NULL,
                     **in_samples = (DDS_DynamicData **) in_sample_lst;
     struct DDS_SampleInfo *out_infos = NULL,
-                          *in_infos = (struct DDS_SampleInfo *) in_info_lst;
+                          **in_infos = (struct DDS_SampleInfo **) in_info_lst;
     DDS_UnsignedLong out_samples_initd = 0, read_buffer_max = 0,
                      out_samples_len = 0;
     int i = 0;
@@ -462,6 +462,12 @@ DDS_ReturnCode_t RTI_TSFM_Transformation_transform(
     for (i = 0; i < in_count; i++) {
         DDS_DynamicData *out_sample = out_samples[i],
                         *in_sample = in_samples[i];
+        struct DDS_SampleInfo *in_info = in_infos[i];
+
+        if (!in_info->valid_data) {
+            /* Do nothing if the sample is not a valid content sample */
+            continue;
+        }
 
         if (out_sample == NULL) {
             out_sample = DDS_DynamicDataTypeSupport_create_data(self->tsupport);
