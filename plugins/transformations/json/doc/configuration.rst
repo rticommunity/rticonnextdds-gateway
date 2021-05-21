@@ -39,10 +39,9 @@ properly terminated, but it doesn't need to be.
 If the value retrieved from the input member does not already
 end with a `\0`, the transformation will add one, possibly by first
 allocating a sufficiently large buffer and then copying the original value into
-it. This reallocation is only performed for ``string`` and ``sequence``
-members, and it will only be performed if the value does not already meet
-the maximum size defined for those members (if not unbounded).
-
+it. This reallocation is only performed for ``sequence`` members, and it will
+only be performed if the value does not already meet the maximum size defined
+for those members (if not unbounded).
 
 Load the JSON Transformation Plugin
 ===================================

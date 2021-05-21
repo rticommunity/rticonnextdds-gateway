@@ -27,6 +27,7 @@ add_library(
         "${TRANSFORMATION_COMMON_DIR}/srcC/Transformation.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationPlugin.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationUserPlugin.c"
+        "${DDS_COMMON_DIR}/srcC/SequenceHelpers.c"
         "${DDS_COMMON_DIR}/srcC/DynamicDataHelpers.c"
 )
 

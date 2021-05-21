@@ -50,28 +50,46 @@ static DDS_ReturnCode_t
         goto done;
     }
 
-
+    /*
+     * Validate the member type which must be an array, a sequence or a string.
+     * Further validation of the elements of "container" types will be performed
+     * later if needed.
+     */
     switch (tckind) {
     case DDS_TK_ARRAY: {
         DDS_UnsignedLong array_dimensions = 0;
         /* If the TC is array, check it has only one dimension */
         array_dimensions = DDS_TypeCode_array_dimension_count(member_type, &ex);
         if (ex != DDS_NO_EXCEPTION_CODE) {
-            /* TODO Log error */
+            RTI_TSFM_ERROR_1("Getting dimensions for array ", "<%s>", member_name)
             goto done;
         }
         if (array_dimensions != 1) {
-            /* TODO Log error */
+            RTI_TSFM_ERROR_1(
+                "Container arrays should have one dimension, member ",
+                "<%s>",
+                member_name)
             goto done;
         }
+        break;
+    }
+    case DDS_TK_SEQUENCE:
+    case DDS_TK_STRING:
+        /* No further validation for type */
+        break;
+
+    default:
+        RTI_TSFM_ERROR_1("Incompatible datatype for member ", "<%s>", member_name)
+        goto done;
     }
 
-    /* Do not break because checking the inner datatype is the same for seqs */
+    /*
+     * In case of a Sequence/Array, check that the inner type is DDS_Octet
+     * or DDS_Char
+     */
+    switch (tckind) {
+    case DDS_TK_ARRAY:
     case DDS_TK_SEQUENCE:
-        /*
-         * In case of a Sequence/Array, check that the inner type is DDS_Octet
-         * or DDS_Char
-         */
         member_content_type = DDS_TypeCode_content_type(member_type, &ex);
         if (ex != DDS_NO_EXCEPTION_CODE) {
             /* TODO Log error */
@@ -90,13 +108,9 @@ static DDS_ReturnCode_t
         }
         break;
 
-    case DDS_TK_STRING:
-        /* Do nothing */
-        break;
-
     default:
-        /* TODO Log error */
-        goto done;
+        /* nothing to do */
+        break;
     }
 
     retcode = DDS_RETCODE_OK;
@@ -232,18 +246,18 @@ DDS_Boolean RTI_TSFM_JsonTransformation_preallocate_buffers(
     }
 
     /* Get the length of arrays, or maximum length for strings/sequences */
-    self->state->json_buffer_bound = DDS_TypeCode_length(tc, &ex);
+    self->state->json_buffer_max = DDS_TypeCode_length(tc, &ex);
     if (ex != DDS_NO_EXCEPTION_CODE) {
         /* TODO Log error */
         goto done;
     }
 
     /* Get the the maximum (bounded) or the initial unbounded size. */
-    if (self->state->json_buffer_bound == RTI_INT32_MAX) {
+    if (self->state->json_buffer_max == RTI_INT32_MAX) {
         length = self->config->unbounded_member_serialized_size_initial;
     } else {
         /* Bounded string/sequences and arrays */
-        length = self->state->json_buffer_bound;
+        length = self->state->json_buffer_max;
         self->config->unbounded_member_serialized_size_initial = 0;
     }
 
@@ -452,7 +466,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_serialize(
                 self->config->indent);
         if (retcode == DDS_RETCODE_OUT_OF_RESOURCES) {
             /* Error if it is bounded because the buffer is not big enough */
-            if (self->state->json_buffer_bound != RTI_INT32_MAX) {
+            if (self->state->json_buffer_max != RTI_INT32_MAX) {
                 RTI_TSFM_ERROR("not enough space in the json_buffer")
                 goto done;
             }
@@ -729,7 +743,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_deserialize(
              */
             if (retcode == DDS_RETCODE_PRECONDITION_NOT_MET) {
                 /* Error if it is bounded because the buffer is not big enough */
-                if (self->state->json_buffer_bound != RTI_INT32_MAX) {
+                if (self->state->json_buffer_max != RTI_INT32_MAX) {
                     RTI_TSFM_ERROR("not enough space in the json_buffer")
                     goto done;
                 }
@@ -833,7 +847,7 @@ static RTI_TSFM_JsonTransformationState *
 
     state->json_buffer = NULL;
     state->json_buffer_size = 0;
-    state->json_buffer_bound = 0;
+    state->json_buffer_max = 0;
 
     retval = state;
 

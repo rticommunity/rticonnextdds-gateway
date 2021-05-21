@@ -48,7 +48,7 @@ typedef struct {
 typedef struct {
     char *json_buffer;
     DDS_UnsignedLong json_buffer_size;
-    DDS_Long json_buffer_bound;
+    DDS_Long json_buffer_max;
     struct DDS_OctetSeq octet_seq;
     struct DDS_CharSeq char_seq;
 } RTI_TSFM_JsonTransformationState;
