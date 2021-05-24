@@ -18,8 +18,6 @@ cmake_minimum_required(VERSION 3.7.0)
 # Set variables
 set(RSPLUGIN_LIB_NAME rtifwdprocessor)
 
-set(CMAKE_DEBUG_POSTFIX "d")
-
 # Call codegen
 # Generate codegen files
 set(IDL_NAME "rtiprocess_fwd_types")
@@ -43,6 +41,8 @@ add_library(
         "srcCxx/Properties.cxx"
         "${GENERATED_SRC_IDL_FILES}"
 )
+
+set_target_properties(${RSPLUGIN_LIB_NAME} PROPERTIES DEBUG_POSTFIX "d")
 
 target_include_directories(
     ${RSPLUGIN_LIB_NAME}

@@ -18,8 +18,6 @@ cmake_minimum_required(VERSION 3.7.0)
 # Set variables
 set(RSPLUGIN_LIB_NAME rtijsontransf)
 
-set(CMAKE_DEBUG_POSTFIX "d")
-
 # Create library
 add_library(
     ${RSPLUGIN_LIB_NAME}
@@ -31,6 +29,8 @@ add_library(
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationPlugin.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationUserPlugin.c"
 )
+
+set_target_properties(${RSPLUGIN_LIB_NAME} PROPERTIES DEBUG_POSTFIX "d")
 
 target_include_directories(
     ${RSPLUGIN_LIB_NAME}

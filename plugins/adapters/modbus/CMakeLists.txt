@@ -15,8 +15,6 @@
 
 set(RSPLUGIN_LIB_NAME "rtimodbusadapter")
 
-set(CMAKE_DEBUG_POSTFIX "d")
-
 add_library(${RSPLUGIN_LIB_NAME}
     SHARED
         "${JSON_PARSER_DIR}/json.c"
@@ -28,6 +26,8 @@ add_library(${RSPLUGIN_LIB_NAME}
         "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/ModbusStreamReader.cxx"
         "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/LibModbusClient.cxx"
 )
+
+set_target_properties(${RSPLUGIN_LIB_NAME} PROPERTIES DEBUG_POSTFIX "d")
 
 target_include_directories(${RSPLUGIN_LIB_NAME}
     PRIVATE
