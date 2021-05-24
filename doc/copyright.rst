@@ -26,6 +26,12 @@ The software described in this document is furnished under and subject to the
 RTI software license agreement. The software may be used or copied only under
 the terms of the license agreement.
 
+This is an independent publication and is neither affiliated with, nor
+authorized, sponsored, or approved by, Microsoft Corporation.
+
+The security features of this product include software developed by the OpenSSL
+Project for use in the OpenSSL Toolkit (http://www.openssl.org/).
+
 Technical Support |br|
 Real-Time Innovations, Inc. |br|
 232 E. Java Drive |br|

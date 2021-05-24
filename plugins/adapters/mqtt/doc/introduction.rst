@@ -6,7 +6,7 @@
 Introduction
 ************
 
-|RSMQTT| is a plugin for |RTI_RS_TM| which enables communication between
+|RSMQTT_TM| is a plugin for |RTI_RS| which enables communication between
 *MQTT* and *DDS* applications.
 
 Using |RSMQTT|, |RS| can act as an |MQTT_CLIENT|, connect to an

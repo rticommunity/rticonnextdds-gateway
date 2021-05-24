@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'RTI Gateway'
-copyright = '2020, Real-Time Innovations, Inc.'
+copyright = '2020, Real-Time Innovations, Inc'
 author = 'Real-Time Innovations, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -122,9 +122,11 @@ html_sidebars = {
 # -- links
 LINK_PAHO_C = 'https://www.eclipse.org/paho/clients/c/'
 LINK_LIBMODBUS = 'https://libmodbus.org/'
+LINK_JSON_PARSER = 'https://github.com/udp/json-parser'
 
 extlinks = {'link_paho_c': (LINK_PAHO_C + '%s', 'link_paho_c'),
-            'link_libmodbus': (LINK_LIBMODBUS + '%s', 'link_libmodbus')
+            'link_libmodbus': (LINK_LIBMODBUS + '%s', 'link_libmodbus'),
+            'link_json_parser': (LINK_JSON_PARSER + '%s', 'link_libmodbus')
 }
 
 # -- Options for HTMLHelp output ------------------------------------------

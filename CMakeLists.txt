@@ -13,7 +13,7 @@
 #                                                                             #
 ###############################################################################
 
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required (VERSION 3.10)
 SET(BUILD_SHARED_LIBS ON)
 
 # This project assumes that C code is C99 and C++ code is C++11. If that
@@ -25,7 +25,7 @@ set (CMAKE_C_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project (ConnextGateways VERSION 1.0.0)
+project (RTIGateway VERSION 1.0.0)
 
 # Set common variables
 set (GATEWAY_DOC "${CMAKE_CURRENT_SOURCE_DIR}/doc")

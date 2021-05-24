@@ -282,7 +282,7 @@ DDS_ReturnCode_t
     /* Print out MQTTAsync configuration */
     RTI_MQTT_LOG("MQTTAsync configuration:")
     {
-        DDS_UnsignedLong i = 0;
+        int i = 0;
         RTI_MQTT_LOG_1("  - server URIs:", "%d", conn_opts.cleansession)
         for (i = 0; i < conn_opts.serverURIcount; i++) {
             const char *server_uri = conn_opts.serverURIs[i];

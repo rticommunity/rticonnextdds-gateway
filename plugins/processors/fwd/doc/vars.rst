@@ -3,7 +3,6 @@
 .. |RSFWD| replace:: |RS| *Forwarding Processor*
 .. |RSFWD_TM| replace:: |RTI_RS_TM| *Forwarding Processor*
 .. |RTI_RSFWD| replace:: |RTI_RS| *Forwarding Processor*
-.. |FWD_PROCESSOR_NAME| replace:: *Forwarding Processor*
 .. |FWD_PROCESSOR_LIB_NAME_LINUX| replace:: ``librtifwdprocessor.so``
 .. |FWD_PROCESSOR_LIB_NAME_MAC| replace:: ``librtifwdprocessor.dylib``
 .. |FWD_PROCESSOR_LIB_NAME_WIN| replace:: ``rtifwdprocessor.dll``

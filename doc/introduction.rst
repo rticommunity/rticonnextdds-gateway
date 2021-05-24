@@ -8,29 +8,29 @@ Introduction
 RTI Gateway Architecture
 ------------------------
 
-The |RTI_CONNEXT_GATEWAYS_TM| is a software component that allows integrating
+The |RTI_GATEWAY_TM| is a software component that allows integrating
 different types of connectivity protocols with DDS. Integration in this
 context means that data flows from different protocols are adapted to
 interface with DDS, establishing communication from and to DDS.
 
 .. figure:: _static/img/connext_gateway_arch.svg
-   :alt: |RTI_CONNEXT_GATEWAYS| *architecture*
+   :alt: |RTI_GATEWAY| *architecture*
    :align: center
    :figwidth: 40 %
    :name: ConnextGatewayArchitecture
 
-   |RTI_CONNEXT_GATEWAYS| *Architecture*
+   |RTI_GATEWAY| *Architecture*
 
-Figure above shows the applicability of the |RTI_CONNEXT_GATEWAYS|. Note
+Figure above shows the applicability of the |RTI_GATEWAY|. Note
 that a set of different protocols have been selected for the sake of the
-example, but the key capability of the |RTI_CONNEXT_GATEWAYS| is that it
+example, but the key capability of the |RTI_GATEWAY| is that it
 can *adapt* **any** connectivity protocol.
 
 Routing Service Plugins Architecture
 ------------------------------------
 
 The Adapter SDK included with |RS| (also known as |RS_SDK|) can already be used
-to address the main integration use case targeted by |RTI_CONNEXT_GATEWAYS|. In
+to address the main integration use case targeted by |RTI_GATEWAY|. In
 fact, |RS| adapters have become the de-facto standard solution for integrating
 DDS systems with other technologies.
 
@@ -40,7 +40,7 @@ but little guidance on how to best put it to use. The standard distribution
 also does not include any plugin that users may use either "off-the-shelf"
 in their systems, or as a reference for creating their own plugins.
 
-For this reason, |RTI_CONNEXT_GATEWAYS| includes several examples of
+For this reason, |RTI_GATEWAY| includes several examples of
 ready-to-use protocol integration plugins for DDS. It also exposes a refined
 plugin development framework, which builds on the |RS_SDK| but simplifies
 development and management of this class of plugins.
@@ -71,7 +71,7 @@ composed of the following components:
 RTI Gateway Framework
 ---------------------
 
-|RTI_CONNEXT_GATEWAYS| provides an open framework for users to easily extend
+|RTI_GATEWAY| provides an open framework for users to easily extend
 the included set of plugins with support for additional communication protocols.
 
 The |RS_SDK| has been enhanced with a new set of components that better support
@@ -79,18 +79,18 @@ the development of user-defined plugins. The resulting framework and its
 different modules are shown in figure below:
 
 .. figure:: _static/img/connext_gateway_framework.svg
-   :alt: |RTI_CONNEXT_GATEWAYS| *framework*
+   :alt: |RTI_GATEWAY| *framework*
    :align: center
    :figwidth: 70 %
    :name: CGFramework
 
-   |RTI_CONNEXT_GATEWAYS| *Framework*
+   |RTI_GATEWAY| *Framework*
 
 - **Routing Service**: The Routing Service engine with the pluggable SDK.
 
 - **Plugins**: |RS| plugins that provide integration with external,
   non-DDS communication protocols. Includes both plugins shipped with
-  |RTI_CONNEXT_GATEWAYS|, and those created by users.
+  |RTI_GATEWAY|, and those created by users.
 
 - **App SDK**: Libraries to aid and support the development of user plugins.
   Includes the RTI Connext DDS SDK, and a new AppUtils helper module. These
@@ -107,14 +107,14 @@ different modules are shown in figure below:
 RTI Gateway Plugins
 -------------------
 
-|RTI_CONNEXT_GATEWAYS| ships with a set of ready-to-use plugins. These include
+|RTI_GATEWAY| ships with a set of ready-to-use plugins. These include
 both some examples of protocol integration, and some useful utilities for
 common data processing needs. Please refer to each plugin's user manual for more
 information on its use and configuration:
 
   * Adapters
 
-    * `Modbus <adapters/modbus/index.html>`__ : Integration plugin for the Modbus protocol.
+    * `Modbus® <adapters/modbus/index.html>`__ : Integration plugin for the MODBUS protocol.
     * `MQTT <adapters/mqtt/index.html>`__ : Integration plugin for the MQTT protocol.
 
   * Processors

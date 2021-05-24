@@ -185,11 +185,7 @@ The following additional external dependencies are required to run the demo:
 This section contains instructions on how to configure, build, and run the
 demo on your system.
 
-The demo currently only supports Linux targets.
-
-The instructions assume an Ubuntu Linux 64-bit target host.
-
-1. Follow instructions to clone and build the rtiroutingservice-plugins
+1. Follow instructions to clone and build the rticonnextdds-gateway
     repository. Make sure that the following components are built:
 
     - Adapter: MQTT
@@ -202,10 +198,12 @@ The instructions assume an Ubuntu Linux 64-bit target host.
    security features by specifying `RTIGATEWAY_ENABLE_SSL=ON` in your build.
 
 2. Install the `mosquitto` MQTT Broker, and its companion, command-line
-   client applications, `mosquitto_pub`, and `mosquitto_sub`. On Ubuntu,
-   these are provided by the `mosquitto` and `mosquitto-clients` packages.
+   client applications, `mosquitto_pub`, and `mosquitto_sub`. You can donwload
+   these applications here: https://mosquitto.org/download/
    By default, the broker will be started and added to the services run
    at start up.
+
+   On Linux systems:
 
     ```sh
     sudo apt install mosquitto mosquitto-clients
@@ -214,8 +212,8 @@ The instructions assume an Ubuntu Linux 64-bit target host.
     sudo service mosquitto disable
     ```
 
-3. Optionally, you can also install `tmux` in order to spawn all components in
-   a single window split into multiple panes:
+3. On Linux systems, optionally, you can also install `tmux` in order to spawn
+   all components in a single window split into multiple panes:
 
     ```sh
     apt install tmux
@@ -246,6 +244,15 @@ Configuration steps:
            CONNEXTDDS_ARCH=myOsAndCompiler
     ```
 
+    or
+
+    ```bat
+    # Modify INSTALL_DIR if you installed the repository in a
+    # custom location.
+    set NDDSHOME=/path/to/rti_connext_dds
+    set CONNEXTDDS_ARCH=myOsAndCompiler
+    ```
+
 3. Restart the `mosquitto` MQTT Broker:
 
     ```sh
@@ -253,6 +260,8 @@ Configuration steps:
     sudo service mosquitto disable
     mosquitto -c etc/mosquitto/mosquitto.conf -p 1883 -d
     ```
+    > **NOTE**: the Windows version of `mosquitto` doesn't support the daemon
+    > mode, so we shouldn't add the option `-d`.
 
 4. (Optional) To monitor `mosquitto`'s log:
 
@@ -260,12 +269,28 @@ Configuration steps:
     tail -f mosquitto.log
     ```
 
-The following commands can be run at once using `tmux` and the following script.
-Note that `NDDSHOME` and `CONNEXTDDS_ARCH` should be set as explained above:
+The following commands can be run at once using `tmux` and the following
+script, or `windows_run_all.bat`.
+Note that `NDDSHOME` and `CONNEXTDDS_ARCH` should be set as explained above.
+Also, make sure that `mosquitto_pub`, and `mosquitto_sub` are available from
+the current command prompt, otherwise you should modify the PATH environment
+variable.
 
-```sh
-./scripts/tmux_session.sh
-```
+Linux systems:
+
+    ```sh
+    ./scripts/tmux_session.sh
+    ```
+
+Windows systems:
+
+    ```sh
+    ./scripts/windows_run_all.bat
+    ```
+
+> **NOTE**: In order to close the Windows `windows_run_all.bat` script, all the
+> windows which have been opened should be closed, including the RTI Shape Demo
+> application.
 
 You can run these commands manually in 5 different terminals. This README
 assumes that `NDDSHOME` and `CONNEXTDDS_ARCH` environment variables are set
@@ -277,6 +302,9 @@ for all of the terminals. Also the working directory for them is
     ```sh
     ./scripts/shapes_mqtt_publisher.sh GREEN
     ```
+
+    > **NOTE**: The Linux script will publish `squares`, `circles` and
+    > `triangles`. However, the Windows script will only publish `circles`.
 
 2. In a separate terminal, start the *MQTT Subscriber* application:
 
@@ -303,6 +331,10 @@ for all of the terminals. Also the working directory for them is
         $NDDSHOME/bin/rtiroutingservice -cfgFile  etc/shapes_bridge.xml -cfgName shapes_bridge
     ```
 
+> **NOTE**: The above commands are for Linux systems, there are similar `*.bat`
+> scripts that can be used when using Windows. Also, we need to set the
+> environment variables before running the corresponding command.
+
 In order to see the shapes that are being published, you can subscribe to
 different shapes by clicking in the following menu items in the
 *RTI Shapes Demo* application:
@@ -317,6 +349,9 @@ menu items in the *RTI Shapes Demo* application:
 - "Publish/Square..." and click 'OK' to use the default parameters.
 - "Publish/Circle..." and click 'OK' to use the default parameters.
 - "Publish/Triangle..." and click 'OK' to use the default parameters.
+
+> **NOTE**: The Windows `shapes_mqtt_publisher.bat` only publishes circles if
+> the topic is not specified.
 
 ## Navigating the demo with tmux
 

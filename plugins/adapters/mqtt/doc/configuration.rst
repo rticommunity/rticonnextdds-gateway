@@ -39,13 +39,14 @@ The following snippet demonstrates how to register the plugin in the
         </plugin_library>
     </dds>
 
-.. warning:: The |RSMQTT| dynamic library (|MQTT_ADAPTER_LIB_NAME_LINUX| on
-             Linux systems, |MQTT_ADAPTER_LIB_NAME_MAC| on macOS systems,
-             |MQTT_ADAPTER_LIB_NAME_WIN| on Windows) must be found
-             within |RS|'s dynamic library path. Make sure to include the
-             library's directory in the environment variable appropriate to
-             your system (``LD_LIBRARY_PATH`` on Linux, ``RTI_LD_LIBRARY_PATH``
-             on macOS, ``PATH`` on Windows, etc.).
+.. warning:: |RS| must be able to find the |RSMQTT| dynamic library
+             (|MQTT_ADAPTER_LIB_NAME_LINUX| on Linux® systems,
+             |MQTT_ADAPTER_LIB_NAME_MAC| on macOS® systems,
+             or |MQTT_ADAPTER_LIB_NAME_WIN| on Windows® systems). Make
+             sure to include the library's directory in the library search
+             path environment variable appropriate for your system
+             (``LD_LIBRARY_PATH`` on Linux systems, ``RTI_LD_LIBRARY_PATH`` on
+             macOS systems, ``PATH`` on Windows systems, etc.).
 
 .. _section-adapter-data-types:
 

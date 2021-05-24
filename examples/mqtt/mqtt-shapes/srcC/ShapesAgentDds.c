@@ -363,7 +363,7 @@ int ShapesAgent_initialize(struct ShapesAgent *self)
     }
 
     {
-        DDS_UnsignedLong msg_buf_len =
+        DDS_UnsignedLong msg_buf_len = (DDS_UnsignedLong)
                 RTI_TSFM_String_length(ShapesAgent_fv_message_format) + 20;
 
         self->pub_msg = RTI_MQTT_KeyedMessageTypeSupport_create_data_w_params(
@@ -474,7 +474,7 @@ int ShapesAgent_publish_message(struct ShapesAgent *self)
             y,
             size);
 
-    msg_len = strlen(msg_buf);
+    msg_len = (DDS_UnsignedLong) strlen(msg_buf);
     if (!DDS_OctetSeq_set_length(&self->pub_msg->payload.data, msg_len)) {
         RTI_MQTT_ERROR_1(
                 "failed to set payload length for message",
@@ -557,7 +557,8 @@ void ShapesAgent_print_mqtt_message(
     msg_payload_len = DDS_OctetSeq_get_length(&msg->payload.data);
     if (msg_payload_len == 0) {
         msg_payload = "<none>";
-        msg_payload_len = RTI_TSFM_String_length(msg_payload);
+        msg_payload_len =
+                (DDS_UnsignedLong) RTI_TSFM_String_length(msg_payload);
     } else {
         msg_payload = (char *) DDS_OctetSeq_get_contiguous_buffer(
                 &msg->payload.data);
@@ -865,7 +866,7 @@ DDS_ReturnCode_t ShapesAgent_deserialize_shape(
 
             case json_integer:
 
-                member_val_l = member_value->u.integer;
+                member_val_l = (DDS_Long) member_value->u.integer;
                 break;
 
             default:
@@ -898,7 +899,7 @@ DDS_ReturnCode_t ShapesAgent_deserialize_shape(
 
             case json_integer:
 
-                member_val_l = member_value->u.integer;
+                member_val_l = (DDS_Long) member_value->u.integer;
                 break;
 
             default:
@@ -933,7 +934,7 @@ DDS_ReturnCode_t ShapesAgent_deserialize_shape(
 
             case json_integer:
 
-                member_val_l = member_value->u.integer;
+                member_val_l = (DDS_Long) member_value->u.integer;
                 break;
 
             default:

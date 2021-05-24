@@ -33,3 +33,26 @@ macro (configure_paho_build)
         CACHE INTERNAL "Enable building Paho (C Posix) with OpenSSL support"
         FORCE)
 endmacro()
+
+macro (copy_dll_from_third_party_bin_to_lib LIBNAME)
+    install(
+        CODE "file(COPY \"${ABSOLUTE_INSTALL_PREFIX}/third-party/bin/${LIBNAME}.dll\"
+                DESTINATION \"${ABSOLUTE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}\")")
+endmacro()
+
+macro (install_dependencies_dll)
+    if(WIN32)
+        get_filename_component(ABSOLUTE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} ABSOLUTE)
+        install(CODE "set(ABSOLUTE_INSTALL_PREFIX \"${ABSOLUTE_INSTALL_PREFIX}\")")
+
+        if(RTIGATEWAY_ENABLE_MQTT)
+            if (${RTIGATEWAY_ENABLE_SSL})
+                copy_dll_from_third_party_bin_to_lib("paho-mqtt3as")
+                copy_dll_from_third_party_bin_to_lib("paho-mqtt3cs")
+            else()
+                copy_dll_from_third_party_bin_to_lib("paho-mqtt3a")
+                copy_dll_from_third_party_bin_to_lib("paho-mqtt3c")
+            endif()
+        endif()
+    endif()
+endmacro()

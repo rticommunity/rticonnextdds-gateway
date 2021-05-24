@@ -6,17 +6,17 @@
 Configuration
 *************
 
-This section describes how to configure |RSTSFM|.
+This section describes how to configure |RS_JSON_TSFM|.
 
 All configuration is specified in |RS|'s XML configuration file.
 
 .. _section-how-to-load-plugin:
 
-Load the |JSON_TRANSFORMATION_NAME| Plugin
-===========================================
+Load the JSON Transformation Plugin
+===================================
 
-|RSTSFM| must be registered as a |RS| plugin by using the ``<transformation_plugin>``
-tag.
+|RS_JSON_TSFM| must be registered as a |RS| plugin by using the
+``<transformation_plugin>`` tag.
 
 The following snippet demonstrates how to register the plugin in the
 ``<plugin_library>`` section of |RS|'s XML configuration:
@@ -35,14 +35,14 @@ The following snippet demonstrates how to register the plugin in the
         </plugin_library>
     </dds>
 
-.. warning:: |RS| must be able to find the |RSTSFM| dynamic library
-             (|JSON_TRANSFORMATION_LIB_NAME_LINUX| on Linux systems,
-             |JSON_TRANSFORMATION_LIB_NAME_MAC| on macOS systems,
-             or |JSON_TRANSFORMATION_LIB_NAME_WIN| on Windows systems). Make
+.. warning:: |RS| must be able to find the |RS_JSON_TSFM| dynamic library
+             (|JSON_TRANSFORMATION_LIB_NAME_LINUX| on Linux® systems,
+             |JSON_TRANSFORMATION_LIB_NAME_MAC| on macOS® systems,
+             or |JSON_TRANSFORMATION_LIB_NAME_WIN| on Windows® systems). Make
              sure to include the library's directory in the library search
              path environment variable appropriate for your system
-             (``LD_LIBRARY_PATH`` on Linux systems, ``RTI_LD_LIBRARY_PATH`` on macOS
-             systems, or ``Path`` on Windows systems).
+             (``LD_LIBRARY_PATH`` on Linux systems, ``RTI_LD_LIBRARY_PATH`` on
+             macOS systems, or ``PATH`` on Windows systems, etc.).
 
 Once the dynamic library and constructor function have been
 registered, |RS| will create an instance of the plugin during start-up.
@@ -52,7 +52,7 @@ registered, |RS| will create an instance of the plugin during start-up.
 Configuration Properties
 ------------------------
 
-The |RSTSFM| uses the following variables to configure its behavior:
+The |RS_JSON_TSFM| uses the following variables to configure its behavior:
 
 .. csv-table:: JSON Transformation Configuration Properties
    :file: static/csv/json_transformation_properties.csv

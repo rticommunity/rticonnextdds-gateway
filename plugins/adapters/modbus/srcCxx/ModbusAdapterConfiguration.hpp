@@ -153,7 +153,7 @@ public:
      */
     void check_correct_value(
             long double float_value,
-            int32_t index,
+            size_t index,
             dds::core::xtypes::TypeKind element_kind);
 
     /**
@@ -327,7 +327,7 @@ public:
 
 private:
     // identifies a StreamWriter or StreamReader
-    inline enum RoutingServiceEntityType const kind() const
+    inline RoutingServiceEntityType const kind() const
     {
         return kind_;
     }

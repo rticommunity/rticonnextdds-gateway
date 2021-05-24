@@ -700,7 +700,7 @@ static DDS_ReturnCode_t
         goto done;
     }
     mapping->kind = DDS_TK_SEQUENCE;
-    mapping->optional = 
+    mapping->optional =
         !DDS_TypeCode_is_member_required(base_type, mapping->id, &ex);
     if (ex != DDS_NO_EXCEPTION_CODE)
     {
@@ -1101,7 +1101,7 @@ DDS_ReturnCode_t RTI_TSFM_Json_FlatTypeTransformation_serialize(
             /* TODO log */
             goto done;
         }
-        serialized_size = (p - self->state->json_buffer);
+        serialized_size = (DDS_UnsignedLong) (p - self->state->json_buffer);
         if (serialized_size == 0) {
             /* empty message */
             /* TODO log */

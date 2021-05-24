@@ -41,4 +41,5 @@ rti::config::LibraryVersion ModbusAdapter::get_version() const
     return rti::config::LibraryVersion(1, 0, 0, 'r');
 };
 
-extern "C" RTI_ADAPTER_PLUGIN_CREATE_FUNCTION_DEF(ModbusAdapter);
+extern "C" RTI_USER_DLL_EXPORT
+RTI_ADAPTER_PLUGIN_CREATE_FUNCTION_DEF(ModbusAdapter);
