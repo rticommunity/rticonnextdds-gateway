@@ -18,6 +18,8 @@ cmake_minimum_required(VERSION 3.7.0)
 # Set variables
 set(RSPLUGIN_LIB_NAME rtifwdprocessor)
 
+set(CMAKE_DEBUG_POSTFIX "d")
+
 # Call codegen
 # Generate codegen files
 set(IDL_NAME "rtiprocess_fwd_types")

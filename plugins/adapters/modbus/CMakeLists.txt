@@ -15,6 +15,8 @@
 
 set(RSPLUGIN_LIB_NAME "rtimodbusadapter")
 
+set(CMAKE_DEBUG_POSTFIX "d")
+
 add_library(${RSPLUGIN_LIB_NAME}
     SHARED
         "${JSON_PARSER_DIR}/json.c"

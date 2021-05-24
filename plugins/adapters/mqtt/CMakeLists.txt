@@ -24,6 +24,8 @@ include(${RESOURCE_DIR}/cmake/dds_functions.cmake)
 # Set variables
 set(RSPLUGIN_LIB_NAME rtimqttadapter)
 
+set(CMAKE_DEBUG_POSTFIX "d")
+
 option(RTI_MQTT_ENABLE_STATIC_TYPES "Enable support for statically typed messages" OFF)
 
 if(RTIGATEWAY_ENABLE_SSL)
