@@ -83,11 +83,15 @@ add_library(${RSPLUGIN_LIB_NAME}
         ${RTI_MQTT_SOURCES}
 )
 
+set_target_properties(${RSPLUGIN_LIB_NAME} PROPERTIES DEBUG_POSTFIX "d")
+
 # As this target can be used as a library as well (including functions from the
 # generated code), we need to export those functions. In order to do that, we
 # explort all symbols on Windows.
 if(WIN32)
-    SET_TARGET_PROPERTIES(${RSPLUGIN_LIB_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+    set_target_properties(${RSPLUGIN_LIB_NAME}
+        PROPERTIES
+            WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 endif()
 
 # This variable is used in the tests folder, that's why the include dirs are not

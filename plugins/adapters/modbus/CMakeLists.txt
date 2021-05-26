@@ -27,6 +27,8 @@ add_library(${RSPLUGIN_LIB_NAME}
         "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/LibModbusClient.cxx"
 )
 
+set_target_properties(${RSPLUGIN_LIB_NAME} PROPERTIES DEBUG_POSTFIX "d")
+
 target_include_directories(${RSPLUGIN_LIB_NAME}
     PRIVATE
         ${CONNEXTDDS_INCLUDE_DIRS}
