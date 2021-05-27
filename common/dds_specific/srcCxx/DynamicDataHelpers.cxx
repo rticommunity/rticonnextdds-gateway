@@ -13,7 +13,7 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include "DynamicDataFunc.hpp"
+#include "DynamicDataHelpers.hpp"
 #include "UtilsStrings.hpp"
 
 using namespace dds::core::xtypes;

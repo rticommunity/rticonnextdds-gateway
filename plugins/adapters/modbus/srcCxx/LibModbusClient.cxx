@@ -72,7 +72,7 @@ int LibModbusClient::write_registers(
         const std::vector<uint16_t>& registers)
 {
     int written_registers = 0;
-    
+
     // Differentiate when writing 1 ore more registers
     if (register_count == 1) {
         written_registers = modbus_write_register(
@@ -101,7 +101,7 @@ int LibModbusClient::read_registers(
 {
     int read_registers = 0;
     auto registers_data = reinterpret_cast<uint16_t *>(registers.data());
-    // Diferentiate when reading input registers or holding registers
+    // Differentiate when reading input registers or holding registers
     if (read_input_registers) {
         read_registers = modbus_read_input_registers(
                 modbus_connection(),

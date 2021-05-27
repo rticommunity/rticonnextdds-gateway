@@ -33,7 +33,7 @@ git submodule update --init --recursive
 
 **Requirements**:
 
-- [Connext DDS 6.0.1](https://community.rti.com/content/page/downloads)*
+- [Connext DDS 6.1.0](https://community.rti.com/content/page/downloads)*
 - [cmake 3.10+](https://cmake.org/download/)
 
 In order to build the RTI Gateway components you have to run the following
@@ -96,8 +96,8 @@ https://community.rti.com/static/documentation/gateway/current/index.html
 
 - [doxygen](https://www.doxygen.nl/download.html)
 - [sphinx](https://www.sphinx-doc.org/en/master/usage/installation.html)
-- [graphviz] (http://www.graphviz.org/download/): this might be required in
-Windows systems to run the command `dot`.
+- [graphviz](http://www.graphviz.org/download/): this might be required in
+Windows systems to run the `dot` command.
 - [docutils 0.14+](https://docutils.sourceforge.io/)
 
 > **NOTE**: you may need to install manually `sphinx_rtd_theme`,

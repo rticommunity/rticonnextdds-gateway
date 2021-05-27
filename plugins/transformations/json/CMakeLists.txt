@@ -22,12 +22,13 @@ set(RSPLUGIN_LIB_NAME rtijsontransf)
 add_library(
     ${RSPLUGIN_LIB_NAME}
     SHARED
-        "srcC/FlatTypeTransformation.c"
-        "${JSON_PARSER_DIR}/json.c"
+        "srcC/JsonTransformation.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationInfrastructure.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/Transformation.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationPlugin.c"
         "${TRANSFORMATION_COMMON_DIR}/srcC/TransformationUserPlugin.c"
+        "${DDS_COMMON_DIR}/srcC/SequenceHelpers.c"
+        "${DDS_COMMON_DIR}/srcC/DynamicDataHelpers.c"
 )
 
 set_target_properties(${RSPLUGIN_LIB_NAME} PROPERTIES DEBUG_POSTFIX "d")
@@ -38,7 +39,7 @@ target_include_directories(
         ${CONNEXTDDS_INCLUDE_DIRS}
         "srcC/"
         "${TRANSFORMATION_COMMON_DIR}/srcC/"
-        "${JSON_PARSER_DIR}/"
+        "${DDS_COMMON_DIR}/srcC/"
 )
 
 target_link_libraries(

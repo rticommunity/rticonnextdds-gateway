@@ -5,6 +5,37 @@
 Release Notes
 =============
 
+New features
+------------
+
+#. Introduced support for a wider range of input/output members when converting
+   between JSON and DynamicData representations.
+#. The type of the member specified by property |PROP_BUFFER_MEMBER| can
+   now be any of the following "string-like" types:
+
+   * ``string``
+   * ``sequence<octet>``
+   * ``sequence<char>``
+   * ``octet[N]``
+   * ``char[N]``
+
+#. Improved resource management. This implies the deletion of the following
+   properties:
+
+   * *serialized_size_max*
+   * *serialized_size_incr*
+
+   Deprecated:
+
+   * *serialized_size_min*
+
+   And added a new property:
+
+   * |PROP_UNBOUNDED_MEMBER_SERIALIZED_SIZE_INITIAL|
+
+   This new property represents the initial allocated size when using unbounded
+   sequences and strings.
+
 Supported Platforms
 --------------------
 
