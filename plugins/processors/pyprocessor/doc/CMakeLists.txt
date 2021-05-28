@@ -1,5 +1,5 @@
 ###############################################################################
-#  (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. #
+#  (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. #
 #                                                                             #
 #  RTI grants Licensee a license to use, modify, compile, and create          #
 #  derivative works of the software solely for use with RTI Connext DDS.      #
@@ -33,5 +33,5 @@ generate_doc(
 # staging documentation
 install(
     DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html/"
-    DESTINATION "${STAGING_DOC_DIR}/adapters/${STAGING_PLUGIN_DIR}"
+    DESTINATION "${STAGING_DOC_DIR}/processors/${STAGING_PLUGIN_DIR}"
 )

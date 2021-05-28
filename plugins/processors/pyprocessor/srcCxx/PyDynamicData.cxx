@@ -1,14 +1,17 @@
-/*
- * (c) 2019 Copyright, Real-Time Innovations, Inc.  All rights reserved.
- *
- * RTI grants Licensee a license to use, modify, compile, and create derivative
- * works of the Software.  Licensee has the right to distribute object form
- * only for use with RTI products.  The Software is provided "as is", with no
- * warranty of any type, including any warranty for fitness for any purpose.
- * RTI is under no obligation to maintain or support the Software.  RTI shall
- * not be liable for any incidental or consequential damages arising out of the
- * use or inability to use the software.
- */
+/******************************************************************************/
+/* (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/*                                                                            */
+/* RTI grants Licensee a license to use, modify, compile, and create          */
+/* derivative works of the software solely for use with RTI Connext DDS.      */
+/* Licensee may redistribute copies of the software provided that all such    */
+/* copies are subject to this license.                                        */
+/* The software is provided "as is", with no warranty of any type, including  */
+/* any warranty for fitness for any purpose. RTI is under no obligation to    */
+/* maintain or support the software.  RTI shall not be liable for any         */
+/* incidental or consequential damages arising out of the use or inability to */
+/* use the software.                                                          */
+/*                                                                            */
+/******************************************************************************/
 
 #include "Python.h"
 
@@ -42,7 +45,7 @@ DynamicDataConverter::DynamicDataConverter(const dds::core::xtypes::DynamicData&
     context_stack_.push(PyDict_New());
     dds::core::xtypes::DynamicData& casted_data =
             const_cast<dds::core::xtypes::DynamicData&>(data);
-    for (int i = 0; i < data.member_count(); i++) {
+    for (uint32_t i = 0; i < data.member_count(); i++) {
         if (data.member_exists(i+1)) {
             build_dictionary(casted_data, data.member_info(i + 1));
         }
@@ -200,7 +203,7 @@ void DynamicDataConverter::build_dictionary(
 
         LoanedDynamicData loaned_member =
                 data.loan_value(member_info.member_index());
-        for (int i = 0; i < loaned_member.get().member_count(); i++) {
+        for (uint32_t i = 0; i < loaned_member.get().member_count(); i++) {
             build_dictionary(
                     loaned_member.get(),
                     loaned_member.get().member_info(i + 1));
@@ -414,7 +417,7 @@ void DynamicDataConverter::build_dictionary(
         from_native_primitive<uint64_t, DDS_UnsignedLongLong>(
                 data,
                 member_info,
-                PyLong_FromUnsignedLong);
+                PyLong_FromUnsignedLongLong);
 
         break;
 
@@ -630,7 +633,7 @@ uint32_t find_member_id_and_type(
         }
     }
 
-    for (int i = 0; i < struct_type.member_count(); i++) {
+    for (uint32_t i = 0; i < struct_type.member_count(); i++) {
         ++info.native().member_id;
         if (struct_type.member(i).name() == member_name) {
             info.native().member_kind =
@@ -656,7 +659,7 @@ void DynamicDataConverter::build_dynamic_data(
     PyObjectGuard top = PySequence_Fast(
             (PyObject*) context_stack_.top(),
             "");
-    for (uint64_t i = 0; i < PySequence_Fast_GET_SIZE(top.get());  i++) {
+    for (int i = 0; i < PySequence_Fast_GET_SIZE(top.get());  i++) {
         PyObject *entry = PySequence_Fast_GET_ITEM(top.get(), i);
         PyObject *value = NULL;
 
@@ -695,7 +698,8 @@ void DynamicDataConverter::build_dynamic_data(
             aux_minfo.native().member_kind = DDS_TypeCode_kind(
                     &collection_type.content_type().native(),
                     NULL);
-            aux_minfo.native().member_id = context_stack_.top().index  + i + 1;
+            aux_minfo.native().member_id = static_cast<DDS_DynamicDataMemberId>(
+                    context_stack_.top().index  + i + 1);
         }
 
         if (PyDict_Check(value)) {
@@ -710,9 +714,9 @@ void DynamicDataConverter::build_dynamic_data(
              * of int16 but in DynamicData this is not an array
              */
             to_native_wstring(data, aux_minfo, value);
-        } else if (PyList_Check(value)) {
-            bool top_is_list = PyList_Check(context_stack_.top());
-            uint32_t index_offset = 0;
+        } else if (PyList_Check(value) != 0) {
+            bool top_is_list = PyList_Check(context_stack_.top()) != 0;
+            uint64_t index_offset = 0;
 
             /* One of the issues with the DynamicData API is that a
              * multidimensional array is accessed with a single loaned member

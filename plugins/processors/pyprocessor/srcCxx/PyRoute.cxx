@@ -1,13 +1,17 @@
-/* $Id$
-
- (c) Copyright, Real-Time Innovations, 2014-2016.
- All rights reserved.
- No duplications, whole or partial, manual or electronic, may be made
- without express written permission.  Any such copies, or
- revisions thereof, must display this notice unaltered.
- This code contains trade secrets of Real-Time Innovations, Inc.
-=========================================================================*/
-
+/******************************************************************************/
+/* (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/*                                                                            */
+/* RTI grants Licensee a license to use, modify, compile, and create          */
+/* derivative works of the software solely for use with RTI Connext DDS.      */
+/* Licensee may redistribute copies of the software provided that all such    */
+/* copies are subject to this license.                                        */
+/* The software is provided "as is", with no warranty of any type, including  */
+/* any warranty for fitness for any purpose. RTI is under no obligation to    */
+/* maintain or support the software.  RTI shall not be liable for any         */
+/* incidental or consequential damages arising out of the use or inability to */
+/* use the software.                                                          */
+/*                                                                            */
+/******************************************************************************/
 
 #include "Python.h"
 
@@ -82,8 +86,9 @@ PyObject* PyInputAccessor::iterator_next(PyInputAccessor *self)
 }
 
 static PyMappingMethods PyInputAccessor_g_mapping = {
-    .mp_length = (lenfunc) PyInputAccessor::count,
-    .mp_subscript = (binaryfunc) PyInputAccessor::binary
+    (lenfunc) PyInputAccessor::count,
+    (binaryfunc) PyInputAccessor::binary,
+    NULL
 };
 
 
@@ -179,8 +184,9 @@ PyObject* PyOutputAccessor::iterator_next(PyOutputAccessor *self)
 }
 
 static PyMappingMethods PyOutputAccessor_g_mapping = {
-    .mp_length = (lenfunc) PyOutputAccessor::count,
-    .mp_subscript = (binaryfunc) PyOutputAccessor::binary
+    (lenfunc) PyOutputAccessor::count,
+    (binaryfunc) PyOutputAccessor::binary,
+    NULL
 };
 
 PyTypeObject* PyOutputAccessorType::type()

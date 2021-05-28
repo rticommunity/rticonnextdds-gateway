@@ -1,3 +1,18 @@
+###############################################################################
+#  (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. #
+#                                                                             #
+#  RTI grants Licensee a license to use, modify, compile, and create          #
+#  derivative works of the software solely for use with RTI Connext DDS.      #
+#  Licensee may redistribute copies of the software provided that all such    #
+#  copies are subject to this license.                                        #
+#  The software is provided "as is", with no warranty of any type, including  #
+#  any warranty for fitness for any purpose. RTI is under no obligation to    #
+#  maintain or support the software.  RTI shall not be liable for any         #
+#  incidental or consequential damages arising out of the use or inability to #
+#  use the software.                                                          #
+#                                                                             #
+###############################################################################
+
 from abc import ABC, abstractmethod
 from enum import IntEnum
 
@@ -5,7 +20,7 @@ from enum import IntEnum
 class Processor(ABC):
     """ Processor interface definition.
 
-    Provides a way to process Route events and  control the data forwarding
+    Provides a way to process Route events and control the data forwarding
     process.
 
     A Processor receives event notifications from its Route owner in the form
@@ -313,7 +328,7 @@ class Input:
                 - ``expression``: An expression selection a subset of data based
                   on its content.
 
-        :param dict selector: Ooptional. A dictionary that represents a selector of a
+        :param dict selector: Optional. A dictionary that represents a selector of a
          a subset of the data to be read.
 
         :returns: A LoanedSamples object.
@@ -388,7 +403,7 @@ class LoanedSamples:
     """ Representation of a list of  samples loaned from an Input after
         a read or take operation.
 
-        This class abstracts a list of Sample objects. The loane is returned
+        This class abstracts a list of Sample objects. The loan is returned
         once the object is collected by the Python GC.
 
         Note that this object must outlive any of its contained Sample objects.

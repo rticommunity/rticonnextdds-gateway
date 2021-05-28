@@ -47,6 +47,10 @@
                         <value>$(PWD)</value>
                     </element>-->
                     <element>
+                        <name>rti.routing.proc.py.create_function</name>
+                        <value>create_processor</value>
+                    </element>
+                    <element>
                         <name>rti.routing.proc.py.class_name</name>
                         <value>ShapesProcessor</value>
                     </element>

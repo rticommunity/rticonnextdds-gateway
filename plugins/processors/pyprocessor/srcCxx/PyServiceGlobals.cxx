@@ -1,15 +1,18 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * File:   PyServiceGlobals.cxx
- * Author: asanchez
- *
- * Created on January 11, 2020, 4:53 PM
- */
+/******************************************************************************/
+/* (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/*                                                                            */
+/* RTI grants Licensee a license to use, modify, compile, and create          */
+/* derivative works of the software solely for use with RTI Connext DDS.      */
+/* Licensee may redistribute copies of the software provided that all such    */
+/* copies are subject to this license.                                        */
+/* The software is provided "as is", with no warranty of any type, including  */
+/* any warranty for fitness for any purpose. RTI is under no obligation to    */
+/* maintain or support the software.  RTI shall not be liable for any         */
+/* incidental or consequential damages arising out of the use or inability to */
+/* use the software.                                                          */
+/*                                                                            */
+/******************************************************************************/
+#include <csignal>
 
 #include "Python.h"
 
@@ -53,12 +56,13 @@ PyServiceGlobals::PyServiceGlobals()
     RTIOsapiThread_setTss(state_key_, main_thread_state_);
     if (release_thread) {
         PyEval_SaveThread();
-    }    
+    }
+    this->set_signals();
 }
 
 
 PyServiceGlobals::~PyServiceGlobals()
-{    
+{
     if (!service_initd_) {
         PyThreadState *current_state = PyServiceGlobals::instance().assert_state();
         PyEval_RestoreThread(current_state);
@@ -73,11 +77,11 @@ PyServiceGlobals::~PyServiceGlobals()
          * TODO: review the memory management of the python objects. It appears
          * that this will run the GC and delete unexpected objects that were
          * cycle referenced after an uncaught exception.
-         * 
+         *
          * Py_Finalize();
-         */        
+         */
     }
-    
+
     if (tss_factory_ != NULL) {
         RTIOsapiThread_deleteKey(tss_factory_, state_key_);
         RTIOsapiThread_deleteTssFactory(tss_factory_);
@@ -85,7 +89,7 @@ PyServiceGlobals::~PyServiceGlobals()
 }
 
 PyThreadState * PyServiceGlobals::assert_state()
-{   
+{
     PyThreadState *state = reinterpret_cast<PyThreadState *>(
             RTIOsapiThread_getTss(state_key_));
     if (state == NULL) {
@@ -105,13 +109,22 @@ void PyServiceGlobals::cleanup_states()
     }
 }
 
+void PyServiceGlobals::set_signals() {
+#if RTI_WIN32
+    /* We need to register the signal interruptions to get handled by RS */
+    signal(SIGINT, NULL);
+    signal(SIGINT, NULL);
+    signal(SIGABRT, NULL);
+#endif
+}
+
 bool PyServiceGlobals::is_main()
 {
     return (RTIOsapiThread_getCurrentThreadID()  == main_thread_id_);
 }
 
 PyServiceGlobals& PyServiceGlobals::instance()
-{    
+{
     static PyServiceGlobals _instance;
 
     return _instance;

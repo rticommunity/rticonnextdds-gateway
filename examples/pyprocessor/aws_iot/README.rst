@@ -107,7 +107,7 @@ values for the following properties:
     * - **<base_name>.endpoint_url**
       - ``<string>``
       - Endpoint URL of the registered *Thing*. You can find URLs in the AWS
-        IoT console, under ``Things -> (your thing) -> interact``. 
+        IoT console, under ``Things -> (your thing) -> interact``.
         Required.
         Default: ``a28hekebdxkvd3-ats.iot.us-west-2.amazonaws.com``
     * - **<base_name>.client_id**

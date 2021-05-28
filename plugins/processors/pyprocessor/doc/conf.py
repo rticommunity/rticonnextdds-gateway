@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../modules/rti/routing/'))
 # -- Project information -----------------------------------------------------
 
 project = 'RTI Routing Service Processor Python API'
-copyright = '2020, Real-Time Innovations, Inc. asdf'
+copyright = '2021, Real-Time Innovations, Inc.'
 author = 'Real-Time Innovations, Inc.'
 release = '1.0.0'
 version = release

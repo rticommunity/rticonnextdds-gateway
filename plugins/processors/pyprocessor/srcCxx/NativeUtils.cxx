@@ -1,3 +1,18 @@
+/******************************************************************************/
+/* (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/*                                                                            */
+/* RTI grants Licensee a license to use, modify, compile, and create          */
+/* derivative works of the software solely for use with RTI Connext DDS.      */
+/* Licensee may redistribute copies of the software provided that all such    */
+/* copies are subject to this license.                                        */
+/* The software is provided "as is", with no warranty of any type, including  */
+/* any warranty for fitness for any purpose. RTI is under no obligation to    */
+/* maintain or support the software.  RTI shall not be liable for any         */
+/* incidental or consequential damages arising out of the use or inability to */
+/* use the software.                                                          */
+/*                                                                            */
+/******************************************************************************/
+
 #include "Python.h"
 
 #include "dds_c/dds_c_string.h"
@@ -59,7 +74,7 @@ PyObject* from_native(
         throw dds::core::Error("error creating Python dictionary");
     }
 
-    for (int i = 0; i < properties->count; i++) {
+    for (size_t i = 0; i < properties->count; i++) {
         PyObjectGuard value = Py_BuildValue("s", properties->properties[i].value);
         if (value.get() == NULL) {
             PyErr_Print();
@@ -443,9 +458,9 @@ RTI_RoutingServiceProperties& to_native(
             RTI_RoutingServiceNameValue)) {
         throw dds::core::Error("to_native: error allocating name-value array");
     }
-    dest.count = PyList_Size(keys.get());
+    dest.count = static_cast<int>(PyList_Size(keys.get()));
 
-    for (int32_t i = 0; i <  dest.count; i++) {
+    for (size_t i = 0; i < dest.count; i++) {
         PyObject *name = PyList_GetItem(keys.get(), i);
         if (PyUnicode_Check(name)) {
             throw dds::core::Error("to_native: keys are not string");

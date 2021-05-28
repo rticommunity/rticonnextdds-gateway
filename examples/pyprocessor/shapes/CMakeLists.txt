@@ -13,10 +13,9 @@
 #                                                                             #
 ###############################################################################
 
-include(${RESOURCE_DIR}/cmake/common_functions.cmake)
+include("${RESOURCE_DIR}/cmake/common_functions.cmake")
 
 set(EXAMPLE_NAME shapes)
-
 
 # staging files
 
@@ -24,7 +23,6 @@ install(
     FILES "RsShapesProcessor.xml"
     DESTINATION "${STAGING_EXAMPLES_DIR}/${STAGING_PLUGIN_DIR}/${EXAMPLE_NAME}"
 )
-
 
 install(
     FILES "shapes_proc.py"

@@ -1,14 +1,17 @@
-/*
- * (c) 2018 Copyright, Real-Time Innovations, Inc.  All rights reserved.
- *
- * RTI grants Licensee a license to use, modify, compile, and create derivative
- * works of the Software.  Licensee has the right to distribute object form
- * only for use with RTI products.  The Software is provided "as is", with no
- * warranty of any type, including any warranty for fitness for any purpose.
- * RTI is under no obligation to maintain or support the Software.  RTI shall
- * not be liable for any incidental or consequential damages arising out of the
- * use or inability to use the software.
- */
+/******************************************************************************/
+/* (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/*                                                                            */
+/* RTI grants Licensee a license to use, modify, compile, and create          */
+/* derivative works of the software solely for use with RTI Connext DDS.      */
+/* Licensee may redistribute copies of the software provided that all such    */
+/* copies are subject to this license.                                        */
+/* The software is provided "as is", with no warranty of any type, including  */
+/* any warranty for fitness for any purpose. RTI is under no obligation to    */
+/* maintain or support the software.  RTI shall not be liable for any         */
+/* incidental or consequential damages arising out of the use or inability to */
+/* use the software.                                                          */
+/*                                                                            */
+/******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <iterator>
@@ -54,7 +57,6 @@ const char *PyProcessor_METHOD_NAMES[] = {
     "on_periodic_action" /* ROUTE_PAUSED */
 };
 
-
 PyProcessor::PyProcessor(
         PyProcessorPlugin *plugin,
         PyObject *py_processor,
@@ -88,7 +90,7 @@ PyProcessor::create_native(
 
     PyProcessor *forwarder = NULL;
     try {
-        PyRoute *py_route = new PyRoute(native_route);        
+        PyRoute *py_route = new PyRoute(native_route);
         PyObjectGuard py_properties = from_native(native_properties);
 
         forwarder = new PyProcessor(
@@ -106,7 +108,6 @@ PyProcessor::create_native(
                 "unexpected exception");
     }
 
-
     return (forwarder != NULL) ? forwarder->native() : NULL;
 }
 
@@ -116,7 +117,7 @@ void PyProcessor::delete_native(
         RTI_RoutingServiceEnvironment *environment)
 {
     PyGilScopedHandler gil_handler;
-    
+
     PyProcessor *processor_forwarder =
             static_cast<PyProcessor*> (native_processor->processor_data);
     try {
@@ -146,7 +147,7 @@ void PyProcessor::forward_on_route_event(
 {
     PyGilScopedHandler gil_handler;
     bool ok = false;
-    
+
     PyProcessor *forwarder =
             static_cast<PyProcessor*> (native_processor_data);
 
@@ -169,7 +170,7 @@ void PyProcessor::forward_on_route_event(
                     "unexpected exception");
             goto done;
         }
-    }    
+    }
 
     // build up wrapper objects based on the event
     switch (event_kind) {
@@ -180,13 +181,12 @@ void PyProcessor::forward_on_route_event(
         if (PyObject_CallMethod(
                 forwarder->py_processor_,
                 PyProcessor_METHOD_NAMES[event_kind],
-                "O",
+                "O", /* indicates that it has one element of type PyObject* */
                 forwarder->py_route_) == NULL) {
             PyErr_Print();
-            
+
             goto done;
         }
-        
     }
         break;
 
@@ -238,7 +238,6 @@ void PyProcessor::forward_on_route_event(
         RTI_RoutingServiceInput_set_user_data(native_input, NULL);
     }
         break;
-
 
     case RTI_ROUTING_SERVICE_ROUTE_EVENT_OUTPUT_ENABLED:
     {
@@ -316,11 +315,20 @@ void PyProcessor::forward_on_route_event(
     default:
         // nothing to do
         break;
-    }   
+    }
+    bool pending_signals = false;
+
+    if (PyErr_CheckSignals()) {
+        pending_signals = true;
+    }
+
+    if (pending_signals) {
+        throw dds::core::Error("received signal");
+    }
 
     ok = true;
+
 done:
-            
     if (!ok) {
         RTI_RoutingServiceEnvironment_set_error(
                 environment,
@@ -328,7 +336,6 @@ done:
                 PyProcessor_METHOD_NAMES[event_kind]);
     }
 }
-
 
 /*
  * --- PyProcessorPlugin --------------------------------------------------
@@ -597,7 +604,7 @@ PyProcessorPlugin::~PyProcessorPlugin()
 PyObject* PyProcessorPlugin::create_processor(
         PyRoute *py_route,
         PyObject *py_properties)
-{   
+{
     PyObject *py_proc = PyObject_CallFunctionObjArgs(
             create_function_,
             py_route,
@@ -685,14 +692,14 @@ struct RTI_RoutingServiceProcessorPlugin * PyProcessorPlugin_create_processor_pl
         RTI_RoutingServiceEnvironment *environment)
 {
     RTI_RoutingServiceProcessorPlugin *plugin = NULL;
-    bool py_init = Py_IsInitialized();
+    bool py_init = Py_IsInitialized() != 0;
 
     if (PyServiceGlobals::instance().from_service()) {
         PyGILState_Ensure();
     } else {
         PyEval_RestoreThread(PyServiceGlobals::instance().assert_state());
     }
-    
+
     try {
         plugin = PyProcessorPlugin::create_plugin(
                 new PyProcessorPlugin(native_properties));
@@ -707,7 +714,7 @@ struct RTI_RoutingServiceProcessorPlugin * PyProcessorPlugin_create_processor_pl
      * IMPORTANT: When running RS executable we need to relinquish the control
      * of this thread of the GIL. The thread that instantiates the
      * PyProcessorPlugin will be the 'main' thread and hence the one currently
-     * onwing the GIL.
+     * owning the GIL.
      */
     if (PyServiceGlobals::instance().from_service()) {
         PyGILState_Release(PyGILState_LOCKED);

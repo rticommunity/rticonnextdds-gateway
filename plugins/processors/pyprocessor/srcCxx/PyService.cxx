@@ -1,26 +1,32 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/******************************************************************************/
+/* (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/*                                                                            */
+/* RTI grants Licensee a license to use, modify, compile, and create          */
+/* derivative works of the software solely for use with RTI Connext DDS.      */
+/* Licensee may redistribute copies of the software provided that all such    */
+/* copies are subject to this license.                                        */
+/* The software is provided "as is", with no warranty of any type, including  */
+/* any warranty for fitness for any purpose. RTI is under no obligation to    */
+/* maintain or support the software.  RTI shall not be liable for any         */
+/* incidental or consequential damages arising out of the use or inability to */
+/* use the software.                                                          */
+/*                                                                            */
+/******************************************************************************/
 
-/*
- * File:   PyService.cxx
- * Author: asanchez
- *
- * Created on January 9, 2020, 10:11 PM
- */
+#ifndef RTI_routingservice_DLL_VARIABLE
+  #define RTI_routingservice_DLL_VARIABLE
+#endif
 
 #include "Python.h"
 
+#include "routingservice/routingservice_service.h"
 #include "NativeUtils.hpp"
 #include "PyService.hpp"
 #include "PyServiceGlobals.hpp"
 
-
 namespace rti { namespace routing { namespace py {
 /*
- * --- PyService Python methods -------------------------------------------------
+ * --- PyService Python methods ------------------------------------------------
  */
 
 RTI_RoutingServiceProperty& to_native(
@@ -39,13 +45,15 @@ RTI_RoutingServiceProperty& to_native(
     case 0:
         dest.service_verbosity = RTI_ROUTING_SERVICE_LOG_VERBOSITY_SILENT;
         break;
+
     case 1:
         dest.service_verbosity = RTI_ROUTING_SERVICE_LOG_VERBOSITY_EXCEPTIONS;
         break;
+
     case 2:
         dest.service_verbosity = RTI_ROUTING_SERVICE_LOG_VERBOSITY_WARNINGS;
         break;
-    
+
     default:
         dest.service_verbosity = RTI_ROUTING_SERVICE_LOG_VERBOSITY_ALL;
     }
@@ -55,22 +63,26 @@ RTI_RoutingServiceProperty& to_native(
     case 0:
         dest.dds_verbosity = NDDS_CONFIG_LOG_VERBOSITY_SILENT;
         break;
+
     case 1:
         dest.dds_verbosity = NDDS_CONFIG_LOG_VERBOSITY_ERROR;
         break;
+
     case 2:
         dest.dds_verbosity = NDDS_CONFIG_LOG_VERBOSITY_WARNING;
         break;
+
     case 3:
         dest.dds_verbosity =
                 NDDS_CONFIG_LOG_VERBOSITY_STATUS_LOCAL
                 | NDDS_CONFIG_LOG_VERBOSITY_STATUS_REMOTE;
         break;
+
     default:
         dest.dds_verbosity =
                 NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL;
     }
-    
+
     RTI_PY_TO_NATIVE_MEMBER(py_dict, dest, domain_id_base, Long);
     RTI_PY_TO_NATIVE_MEMBER(py_dict, dest, plugin_search_path, Unicode);
     RTI_PY_TO_NATIVE_MEMBER(py_dict, dest, dont_start_service, Bool);
@@ -92,7 +104,7 @@ PyObject* PyService::start(PyService *self, PyObject *Py_UNUSED(ignored))
         PyErr_SetString(PyExc_RuntimeError, "error starting service");
         return NULL;
     }
-    
+
     Py_RETURN_NONE;
 }
 

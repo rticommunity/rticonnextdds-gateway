@@ -1,15 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * File:   LoanedSamples.cpp
- * Author: asanchez
- *
- * Created on December 26, 2019, 9:49 AM
- */
+/******************************************************************************/
+/* (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/*                                                                            */
+/* RTI grants Licensee a license to use, modify, compile, and create          */
+/* derivative works of the software solely for use with RTI Connext DDS.      */
+/* Licensee may redistribute copies of the software provided that all such    */
+/* copies are subject to this license.                                        */
+/* The software is provided "as is", with no warranty of any type, including  */
+/* any warranty for fitness for any purpose. RTI is under no obligation to    */
+/* maintain or support the software.  RTI shall not be liable for any         */
+/* incidental or consequential damages arising out of the use or inability to */
+/* use the software.                                                          */
+/*                                                                            */
+/******************************************************************************/
 
 #include "PySamples.hpp"
 
@@ -248,14 +250,14 @@ PyObject* PyLoanedSamples::__exit__(
         PyObject *tb)
 {
     PyLoanedSamples::return_loan(self);
-    
+
     return PyBool_FromLong(0);
 }
 
 static PyMappingMethods PyLoanedSamples_g_mapping = {
-    .mp_length = (lenfunc) PyLoanedSamples::count,
-    .mp_subscript = (binaryfunc) PyLoanedSamples::binary,
-    .mp_ass_subscript = NULL
+    (lenfunc) PyLoanedSamples::count,
+    (binaryfunc) PyLoanedSamples::binary,
+    NULL
 };
 
 static PyMethodDef PyLoanedSamples_g_methods[] = {
