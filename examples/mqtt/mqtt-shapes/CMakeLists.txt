@@ -34,7 +34,6 @@ add_executable(${EXAMPLE_NAME}
     "${CMAKE_CURRENT_SOURCE_DIR}/srcC/ShapesAgentDds.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/srcC/ShapesAgentDdsSubscriber.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/srcC/ShapesAgentDdsPublisher.c"
-    "${JSON_PARSER_DIR}/json.c"
     ${GENERATED_SRC_FILES}
 )
 
@@ -47,7 +46,6 @@ target_link_libraries(${EXAMPLE_NAME}
 target_include_directories(${EXAMPLE_NAME}
     PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/srcC"
-        "${JSON_PARSER_DIR}"
         "${CMAKE_CURRENT_BINARY_DIR}/idl"
         "${TRANSFORMATION_COMMON_DIR}/srcC"
 )

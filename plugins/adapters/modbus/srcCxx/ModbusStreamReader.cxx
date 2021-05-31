@@ -23,7 +23,7 @@
 
 #include <dds/dds.hpp>
 
-#include "DynamicDataFunc.hpp"
+#include "DynamicDataHelpers.hpp"
 #include "ModbusAdapterConfiguration.hpp"
 #include "ModbusStreamReader.hpp"
 

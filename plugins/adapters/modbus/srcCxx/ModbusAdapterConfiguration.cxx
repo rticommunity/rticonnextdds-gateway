@@ -19,7 +19,7 @@
 
 #include <dds/dds.hpp>
 
-#include "DynamicDataFunc.hpp"
+#include "DynamicDataHelpers.hpp"
 #include "LibModbusClient.hpp"
 #include "ModbusAdapterConfiguration.hpp"
 #include "json.hpp"

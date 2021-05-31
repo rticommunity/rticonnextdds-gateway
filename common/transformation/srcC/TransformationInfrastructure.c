@@ -17,54 +17,6 @@
 
 #define RTI_TSFM_LOG_ARGS "rtitransform::simple::infrastructure"
 
-DDS_ReturnCode_t RTI_TSFM_realloc_buffer(
-        DDS_UnsignedLong size_min,
-        DDS_UnsignedLong size_incr,
-        DDS_Long size_max,
-        char **buffer_str,
-        DDS_UnsignedLong *buffer_str_size)
-{
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_UnsignedLong cur_len = 0;
-
-    if (*buffer_str != NULL) {
-        cur_len = *buffer_str_size;
-        DDS_String_free(*buffer_str);
-        *buffer_str = NULL;
-    }
-
-    if (cur_len == 0) {
-        cur_len = size_min;
-    } else {
-        cur_len += size_incr;
-    }
-
-    if (size_max > 0 && cur_len > (DDS_UnsignedLong) size_max) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    *buffer_str = DDS_String_alloc(cur_len);
-    if (*buffer_str == NULL) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    (*buffer_str)[0] = '\0';
-    *buffer_str_size = cur_len;
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-    if (retcode != DDS_RETCODE_OK) {
-        if (*buffer_str != NULL) {
-            DDS_String_free(*buffer_str);
-            *buffer_str = NULL;
-        }
-    }
-    return retcode;
-}
-
 RTIBool RTI_TSFM_DDS_DynamicDataPtr_initialize_w_params(
         DDS_DynamicData **self,
         const struct DDS_TypeAllocationParams_t *allocParams)
