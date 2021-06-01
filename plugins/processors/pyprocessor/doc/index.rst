@@ -1,11 +1,18 @@
-***************************
-Processor API Documentation
-***************************
+Welcome to |project|
+*********************
 
+.. include:: vars.rst
 
+.. _section-index:
 .. toctree::
+    :maxdepth: 2
+    :numbered:
+    :glob:
+    :caption: Contents
 
-    concept
-    api
+    introduction
+    configuration
+    modules
+    additional_resources
+    release_notes
     copyright
-

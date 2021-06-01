@@ -34,7 +34,8 @@ git submodule update --init --recursive
 **Requirements**:
 
 - [Connext DDS 6.1.0](https://community.rti.com/content/page/downloads)*
-- [cmake 3.10+](https://cmake.org/download/)
+- [cmake 3.12+](https://cmake.org/download/)
+- For the Python Processor [Python 3.8+](https://www.python.org/downloads/)
 
 In order to build the RTI Gateway components you have to run the following
 command:
@@ -60,9 +61,9 @@ Windows® systems
 ```bat
 mkdir build
 cd build
-cmake .. -DCONNEXTDDS_DIR=/path/to/connextdds/installation/dir \
-    -DCMAKE_INSTALL_PREFIX=../install \
-    -DCMAKE_BUILD_TYPE=Debug|Release \
+cmake .. -DCONNEXTDDS_DIR=/path/to/connextdds/installation/dir ^
+    -DCMAKE_INSTALL_PREFIX=../install ^
+    -DCMAKE_BUILD_TYPE=Debug|Release ^
     -G <generator name>
 cmake --build . --config Debug|Release --target install
 ```

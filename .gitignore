@@ -1,7 +1,10 @@
-build
-build-*
+build/
+build-*/
+build_*/
 dist
-install
+install/
+install-*/
+install_*/
 .vscode
 compile_commands.json
 nb

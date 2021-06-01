@@ -1,8 +1,8 @@
 .. _section-api-reference:
 
-*************
-API Reference
-*************
+********************
+Python Processor API
+********************
 
 .. automodule:: proc
     :members:
@@ -11,5 +11,3 @@ API Reference
     :exclude-members: __dict__,__weakref__
 
     * :ref:`genindex`
-    * :ref:`modindex`
-    * :ref:`search`

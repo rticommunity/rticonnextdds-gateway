@@ -1,18 +1,15 @@
 .. include:: ../../../../doc/vars.rst
 
-.. |MODBUS_ADAPTER_LIB_NAME_LINUX| replace:: ``librtimodbusadapter.so``
-.. |MODBUS_ADAPTER_LIB_NAME_MAC| replace:: ``librtimodbusadapter.dylib``
-.. |MODBUS_ADAPTER_LIB_NAME_WIN| replace:: ``rtimodbusadapter.dll``
-.. |CONF_FIELD| replace:: *field*
-.. |CONF_VALUE| replace:: *value*
-.. |CONF_MODBUS_REGISTER_ADDRESS| replace:: *modbus_register_address*
-.. |CONF_MODBUS_REGISTER_COUNT| replace:: *modbus_register_count*
-.. |CONF_MODBUS_DATATYPE| replace:: *modbus_datatype*
-.. |CONF_MODBUS_MIN_VALUE| replace:: *modbus_min_value*
-.. |CONF_MODBUS_MAX_VALUE| replace:: *modbus_max_value*
-.. |CONF_MODBUS_VALID_VALUES| replace:: *modbus_valid_values*
-.. |CONF_INPUT_DATA_FACTOR| replace:: *input_data_factor*
-.. |CONF_INPUT_DATA_OFFSET| replace:: *input_data_offset*
-.. |CONF_OUTPUT_DATA_FACTOR| replace:: *ouput_data_factor*
-.. |CONF_OUTPUT_DATA_OFFSET| replace:: *output_data_offset*
-.. |CONF_POLLING_PERIOD_MSEC| replace:: *polling_period_msec*
+.. |PYTHON_PROCESSOR_NAME_PLAIN| replace:: Python Processor API
+.. |RSPYTHON_TM| replace:: |RTI_RS_TM| *Python Processor*
+.. |RTI_RSPYTHON| replace:: |RTI_RS| *Python Processor*
+.. |PYTHON_API| replace:: *Python API*
+.. |PYTHON_ADAPTER_LIB_NAME_LINUX| replace:: ``librtipyprocessor.so``
+.. |PYTHON_ADAPTER_LIB_NAME_MAC| replace:: ``librtipyprocessor.dylib``
+.. |PYTHON_ADAPTER_LIB_NAME_WIN| replace:: ``rtipyprocessor.dll``
+.. |PYTHON_PROCESSOR| replace:: *Python Processor*
+.. |CONF_BASE_NAME| replace:: *rti.routing.proc.py*
+.. |CONF_CREATE_FUNCTION| replace:: |CONF_BASE_NAME|*.create_function*
+.. |CONF_MODULE_NAME| replace:: |CONF_BASE_NAME|*.module.name*
+.. |CONF_MODULE_PATH| replace:: |CONF_BASE_NAME|*.module.path*
+.. |CONF_MODULE_AUTORELOAD| replace:: |CONF_BASE_NAME|*.module.autoreload*

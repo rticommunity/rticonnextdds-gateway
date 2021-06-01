@@ -109,7 +109,8 @@ void PyServiceGlobals::cleanup_states()
     }
 }
 
-void PyServiceGlobals::set_signals() {
+void PyServiceGlobals::set_signals()
+{
 #if RTI_WIN32
     /* We need to register the signal interruptions to get handled by RS */
     signal(SIGINT, NULL);

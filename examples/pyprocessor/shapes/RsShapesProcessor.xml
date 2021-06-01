@@ -32,7 +32,7 @@
 
     <plugin_library name="ShapesPluginLib">
         <processor_plugin name="ShapesProcessor">
-            <dll>rtirspyprocessor</dll>
+            <dll>rtipyprocessor</dll>
             <create_function>
                 PyProcessorPlugin_create_processor_plugin
             </create_function>

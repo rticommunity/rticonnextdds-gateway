@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('../modules/rti/routing/'))
 project = 'RTI Routing Service Processor Python API'
 copyright = '2021, Real-Time Innovations, Inc.'
 author = 'Real-Time Innovations, Inc.'
-release = '1.0.0'
+release = '6.1.0'
 version = release
 
 # -- General configuration ---------------------------------------------------

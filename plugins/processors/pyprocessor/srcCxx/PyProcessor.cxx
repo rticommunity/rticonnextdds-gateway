@@ -316,15 +316,6 @@ void PyProcessor::forward_on_route_event(
         // nothing to do
         break;
     }
-    bool pending_signals = false;
-
-    if (PyErr_CheckSignals()) {
-        pending_signals = true;
-    }
-
-    if (pending_signals) {
-        throw dds::core::Error("received signal");
-    }
 
     ok = true;
 

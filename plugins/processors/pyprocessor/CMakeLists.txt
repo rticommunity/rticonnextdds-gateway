@@ -16,9 +16,9 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Set variables
-set(RSPLUGIN_LIB_NAME rtirspyprocessor)
+set(RSPLUGIN_LIB_NAME rtipyprocessor)
 
-find_package(PythonLibs 3.9 REQUIRED)
+find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
 
 # Define the library that will provide the  Processor plugin
 add_library(${RSPLUGIN_LIB_NAME}
@@ -41,13 +41,13 @@ target_link_libraries(${RSPLUGIN_LIB_NAME}
     PUBLIC
         ${ROUTING_SERVICE_C_LIBRARIES}
         ${ROUTING_SERVICE_CXX_LIBRARIES}
-        ${PYTHON_LIBRARIES}
+        ${Python_LIBRARIES}
 )
 
 target_include_directories(${RSPLUGIN_LIB_NAME}
     PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx"
-        "${PYTHON_INCLUDE_DIRS}"
+        ${Python_INCLUDE_DIRS}
 )
 
 configure_plugin_defines()

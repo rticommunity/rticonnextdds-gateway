@@ -41,7 +41,7 @@
 
     <plugin_library name="AwsIotPluginLib">
         <processor_plugin name="IotConnector">
-            <dll>rtirspyprocessor</dll>
+            <dll>rtipyprocessor</dll>
             <create_function>
                 PyProcessorPlugin_create_processor_plugin
             </create_function>

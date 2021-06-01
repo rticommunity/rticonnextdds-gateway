@@ -6,8 +6,6 @@
 .. |JSON_TRANSFORMATION_LIB_NAME_LINUX| replace:: ``librtijsontransf.so``
 .. |JSON_TRANSFORMATION_LIB_NAME_MAC| replace:: ``librtijsontransf.dylib``
 .. |JSON_TRANSFORMATION_LIB_NAME_WIN| replace:: ``rtijsontransf.dll``
-.. |TRANSFORMATION_API| replace:: *Transformation API*
-.. |PROCESSOR_API| replace:: *Processor API*
 .. |PROP_BUFFER_MEMBER| replace:: *buffer_member*
 .. |PROP_INDENT| replace:: *indent*
 .. |PROP_UNBOUNDED_MEMBER_SERIALIZED_SIZE_INITIAL| replace:: *unbounded_member_serialized_size_initial*
