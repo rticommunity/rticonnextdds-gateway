@@ -161,9 +161,10 @@ install the *RTI Connext Gateway*.
 
 Additionally, the Python processor script requires knowing the location of
 the Python binding modules for the Processor API. By default it assumes that
-these modules are under ``<RTI_GW_INSTALL_DIR>/modules``. To specify a different
-location, you can set the environment variable ``RTI_PROC_MODULE_PATH`` to
-contain the location of the Python binding modules. For example:
+these modules are under ``<RTI_GW_INSTALL_DIR>/resource/pyprocessor/modules``.
+To specify a different location, you can set the environment variable
+``RTI_PROC_MODULE_PATH`` to contain the location of the Python binding modules.
+For example:
 
 .. code-block:: bash
 
@@ -192,7 +193,7 @@ contain the location of the Python binding modules. For example:
 
     .. code-block::
 
-        Circle               <TIMESTAMP>                           Export  Hide        
+        Circle               <TIMESTAMP>                           Export  Hide
         {
             "data": {
                 "color": "BLUE",

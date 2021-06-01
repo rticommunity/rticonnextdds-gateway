@@ -58,13 +58,8 @@ install(
     DESTINATION "${STAGING_LIB_DIR}"
 )
 
-install(
-    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/modules"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}/"
-)
-
 ###############################################################################
-# Build documentation if they are enabled
+# Build documentation if it is enabled
 
 if (RTIGATEWAY_ENABLE_DOCS)
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/doc")

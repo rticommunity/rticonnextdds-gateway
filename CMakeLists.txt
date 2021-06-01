@@ -143,7 +143,9 @@ endif()
 if (RTIGATEWAY_ENABLE_PYPROC)
     set (RSPLUGIN_PREFIX "RTI_PRCS_PY")
     set (STAGING_PLUGIN_DIR "pyprocessor")
+
     add_subdirectory("${PROCESSORS_DIR}/pyprocessor")
+    add_subdirectory("${RESOURCE_DIR}/pyprocessor")
 
     if (RTIGATEWAY_ENABLE_EXAMPLES)
         add_subdirectory("${EXAMPLES_DIR}/pyprocessor")

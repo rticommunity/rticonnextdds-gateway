@@ -3,7 +3,7 @@ import sys
 import time
 from typing import Dict
 
-sys.path.insert(0, os.path.abspath('../../../modules'))
+sys.path.insert(0, os.path.abspath('../../../resource/pyprocessor/modules'))
 
 from rti.routing import proc
 
