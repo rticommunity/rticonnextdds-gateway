@@ -87,7 +87,7 @@ DDS_Boolean check_received_parameters(TestType_sub *sample) {
          */
         ASSERT_COND((DDS_Octet) (sample->test_type.int8_array_field[i])
                 == (DDS_Octet) (SIGNED_ARRAY_VALUE(i)));
-        ASSERT_COND(DDS_OctetSeq_get(
+        ASSERT_COND(DDS_UInt8Seq_get(
                 &sample->test_type.uint8_seq_field, i) == (DDS_Octet)UNSIGNED_ARRAY_VALUE(i));
         ASSERT_COND(sample->test_type.int16_array_field[i] == SIGNED_ARRAY_VALUE(i));
         ASSERT_COND(DDS_UnsignedShortSeq_get(
@@ -133,7 +133,7 @@ DDS_Boolean check_received_parameters(TestType_sub *sample) {
         ASSERT_COND(DDS_BooleanSeq_get(
                 &sample->input_bool_seq_field, i) == BOOLEAN_ARRAY_VALUE(value));
         ASSERT_COND(sample->input_int8_array_field[i] == UNSIGNED_ARRAY_VALUE(value));
-        ASSERT_COND(DDS_OctetSeq_get(
+        ASSERT_COND(DDS_UInt8Seq_get(
                 &sample->input_uint8_seq_field, i)
                         == VALUE_WITH_OFFSET_DATA_FACTOR(UNSIGNED_ARRAY_VALUE(value)));
         ASSERT_COND(sample->input_int16_array_field[i] == UNSIGNED_ARRAY_VALUE(value));
@@ -297,8 +297,8 @@ int publish_data_test(DDS_DomainParticipant *participant) {
         *DDS_BooleanSeq_get_reference(&instance->bool_seq_field, i) =
                 BOOLEAN_ARRAY_VALUE(i);
         instance->int8_array_field[i] = SIGNED_ARRAY_VALUE(i);
-        DDS_OctetSeq_set_length(&instance->uint8_seq_field, 2);
-        *DDS_OctetSeq_get_reference(&instance->uint8_seq_field, i) =
+        DDS_UInt8Seq_set_length(&instance->uint8_seq_field, 2);
+        *DDS_UInt8Seq_get_reference(&instance->uint8_seq_field, i) =
                 UNSIGNED_ARRAY_VALUE(i);
         instance->int16_array_field[i] = SIGNED_ARRAY_VALUE(i);
         DDS_UnsignedShortSeq_set_length(&instance->uint16_seq_field, 2);
