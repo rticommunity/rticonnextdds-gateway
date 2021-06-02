@@ -142,7 +142,5 @@ install(
 ###############################################################################
 # Build tests and documentation if they are enabled
 ###############################################################################
-if(RTIGATEWAY_ENABLE_DOCS)
-    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/doc")
-endif()
-
+add_doc_if_exist()
+add_test_if_exist()
