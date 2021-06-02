@@ -22,10 +22,9 @@ init_project_configuration()
 
 # Only check RTI Connext DDS dependencies if at least one plugin will be built.
 if (RTIGATEWAY_CONFIGURE_CONNEXT)
-message(FATAL_ERROR "inside if")
     configure_connext_dds(6.0.1)
 endif()
-message(FATAL_ERROR "outside if")
+
 # Configure third-party
 add_subdirectory("${THIRD_PARTY_DIR}")
 
