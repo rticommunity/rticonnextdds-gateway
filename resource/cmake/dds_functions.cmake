@@ -25,17 +25,17 @@ function(connextdds_run_codegen)
         ${ARGN}
     )
 
-    if(NOT _CONNEXTDDS_IDL_FILE)
+    if (NOT _CONNEXTDDS_IDL_FILE)
         message(FATAL_ERROR "No IDL_FILE variable when calling codegen.")
     endif()
-    if(NOT _CONNEXTDDS_LANGUAGE)
+    if (NOT _CONNEXTDDS_LANGUAGE)
         message(FATAL_ERROR "No LANGUAGE variable when calling codegen.")
     endif()
-    if(NOT _CONNEXTDDS_OUTPUT_DIR)
+    if (NOT _CONNEXTDDS_OUTPUT_DIR)
         message(FATAL_ERROR "No OUTPUT_DIR variable when calling codegen.")
     endif()
 
-    if(NOT ${_CONNEXTDDS_LANGUAGE} MATCHES "^C(\\+\\+|$)(11|$)")
+    if (NOT ${_CONNEXTDDS_LANGUAGE} MATCHES "^C(\\+\\+|$)(11|$)")
         message(FATAL_ERROR "Calling rtiddsgen with language <${_CONNEXTDDS_LANGUAGE}>."
             "This language is unsupported, only C, C++ and C++11 are available")
     endif()
@@ -66,7 +66,7 @@ function(connextdds_run_codegen)
         "${_CONNEXTDDS_OUTPUT_DIR}/${IDL_NAME}Plugin.hpp"
     )
 
-    if(${_CONNEXTDDS_LANGUAGE} MATCHES "^C$")
+    if (${_CONNEXTDDS_LANGUAGE} MATCHES "^C$")
         set(GENERATED_SRC_FILES ${GENERATED_C_FILES})
         set(GENERATED_FILES
             ${GENERATED_C_FILES}

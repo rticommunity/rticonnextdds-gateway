@@ -20,9 +20,9 @@
 # the third-party/ folder because the plugins do have a direct dependency
 # with them.
 if (CMAKE_INSTALL_PREFIX)
-    set (CMAKE_INSTALL_BINDIR "third-party/bin")
-    set (CMAKE_INSTALL_INCLUDEDIR "third-party/include")
-    set (CMAKE_INSTALL_DOCDIR "third-party/share/doc")
+    set(CMAKE_INSTALL_BINDIR "third-party/bin")
+    set(CMAKE_INSTALL_INCLUDEDIR "third-party/include")
+    set(CMAKE_INSTALL_DOCDIR "third-party/share/doc")
 endif()
 
 if (RTIGATEWAY_ENABLE_MODBUS)

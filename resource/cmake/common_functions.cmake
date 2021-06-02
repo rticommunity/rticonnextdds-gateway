@@ -131,7 +131,7 @@ function(generate_doc)
 endfunction()
 
 macro(configure_plugin_defines)
-    if(RTIGATEWAY_ENABLE_LOG
+    if (RTIGATEWAY_ENABLE_LOG
             OR CMAKE_BUILD_TYPE STREQUAL "Debug"
             OR NOT CMAKE_BUILD_TYPE)
         list(APPEND ${RSPLUGIN_PREFIX}_DEFINES ${RSPLUGIN_PREFIX}_ENABLE_LOG)
@@ -139,11 +139,11 @@ macro(configure_plugin_defines)
         list(APPEND ${RSPLUGIN_PREFIX}_DEFINES ${RSPLUGIN_PREFIX}_DISABLE_LOG)
     endif()
 
-    if(RTIGATEWAY_ENABLE_TRACE)
+    if (RTIGATEWAY_ENABLE_TRACE)
         list(APPEND ${RSPLUGIN_PREFIX}_DEFINES ${RSPLUGIN_PREFIX}_ENABLE_TRACE)
     endif()
 
-    if(RTIGATEWAY_ENABLE_SSL)
+    if (RTIGATEWAY_ENABLE_SSL)
         list(APPEND ${RSPLUGIN_PREFIX}_DEFINES ${RSPLUGIN_PREFIX}_ENABLE_SSL)
     endif()
 
@@ -155,7 +155,7 @@ function(set_required_variable out_variable)
     set(candidate_vars ${ARGN})
     foreach(v ${candidate_vars})
         # Give preference to variables passed directly to cmake
-        if(DEFINED ${v})
+        if (DEFINED ${v})
             message(STATUS "${out_variable} = ${${v}}")
             set(${out_variable} ${${v}} PARENT_SCOPE)
             return()
@@ -172,7 +172,7 @@ function(set_required_variable out_variable)
 endfunction()
 
 macro(init_install_path)
-    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX        "${CMAKE_CURRENT_BINARY_DIR}/install")
         message(STATUS "Using default CMAKE_INSTALL_PREFIX = '${CMAKE_INSTALL_PREFIX}'")
     endif()
@@ -200,35 +200,35 @@ macro(init_project_configuration)
     # shouldn't be the behavior for any target, it might be changed per target.
     #   set_property(TARGET target_name PROPERTY CXX_STANDARD 11)
     #   set_property(TARGET target_name PROPERTY CXX_STANDARD_REQUIRED ON)
-    set (CMAKE_C_STANDARD 99)
-    set (CMAKE_C_STANDARD_REQUIRED ON)
-    set (CMAKE_CXX_STANDARD 11)
-    set (CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_C_STANDARD 99)
+    set(CMAKE_C_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
     # Set common variables
-    set (GATEWAY_DOC "${CMAKE_CURRENT_SOURCE_DIR}/doc")
-    set (COMMON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/common")
-    set (JSON_PARSER_WRAPPER_DIR "${COMMON_DIR}/json_parser")
-    set (DDS_COMMON_DIR "${COMMON_DIR}/dds_specific")
-    set (TRANSFORMATION_COMMON_DIR "${COMMON_DIR}/transformation")
-    set (THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third-party")
-    set (LIBMODBUS_DIR "${THIRD_PARTY_DIR}/libmodbus")
-    set (PAHO_MQTT_C_DIR "${THIRD_PARTY_DIR}/paho.mqtt.c")
-    set (RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resource")
-    set (UTILS_COMMON_DIR "${COMMON_DIR}/utils")
-    set (JSON_PARSER_DIR "${THIRD_PARTY_DIR}/json_parser")
-    set (ADAPTERS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins/adapters")
-    set (PROCESSORS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins/processors")
-    set (TRANSFORMATIONS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins/transformations")
-    set (EXAMPLES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/examples")
+    set(GATEWAY_DOC "${CMAKE_CURRENT_SOURCE_DIR}/doc")
+    set(COMMON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/common")
+    set(JSON_PARSER_WRAPPER_DIR "${COMMON_DIR}/json_parser")
+    set(DDS_COMMON_DIR "${COMMON_DIR}/dds_specific")
+    set(TRANSFORMATION_COMMON_DIR "${COMMON_DIR}/transformation")
+    set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third-party")
+    set(LIBMODBUS_DIR "${THIRD_PARTY_DIR}/libmodbus")
+    set(PAHO_MQTT_C_DIR "${THIRD_PARTY_DIR}/paho.mqtt.c")
+    set(RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resource")
+    set(UTILS_COMMON_DIR "${COMMON_DIR}/utils")
+    set(JSON_PARSER_DIR "${THIRD_PARTY_DIR}/json_parser")
+    set(ADAPTERS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins/adapters")
+    set(PROCESSORS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins/processors")
+    set(TRANSFORMATIONS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins/transformations")
+    set(EXAMPLES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/examples")
 
-    set (STAGING_LIB_DIR "lib")
-    set (STAGING_BIN_DIR "bin")
-    set (STAGING_DOC_DIR "doc")
-    set (STAGING_TEST_DIR "test")
-    set (STAGING_EXAMPLES_DIR "examples")
-    set (STAGING_RESOURCE_DIR "resource")
-    set (STAGING_INCLUDE_DIR "include")
+    set(STAGING_LIB_DIR "lib")
+    set(STAGING_BIN_DIR "bin")
+    set(STAGING_DOC_DIR "doc")
+    set(STAGING_TEST_DIR "test")
+    set(STAGING_EXAMPLES_DIR "examples")
+    set(STAGING_RESOURCE_DIR "resource")
+    set(STAGING_INCLUDE_DIR "include")
 
     # If the RTIGATEWAY_ENABLE_${PluginName} is not specified, it will take the
     # value of the RTIGATEWAY_ENABLE_ALL that is ON by default
@@ -250,7 +250,7 @@ macro(init_project_configuration)
     # Set RTIGATEWAY_CONFIGURE_CONNEXT to check whether we need to configure
     # RTI Connext DDS.
     set(RTIGATEWAY_CONFIGURE_CONNEXT OFF)
-    if(RTIGATEWAY_ENABLE_MODBUS
+    if (RTIGATEWAY_ENABLE_MODBUS
             OR RTIGATEWAY_ENABLE_MQTT
             OR RTIGATEWAY_ENABLE_FWD
             OR RTIGATEWAY_ENABLE_TSFM_FIELD
@@ -322,7 +322,7 @@ add_subdirectory_if_exists
     add_subdirectory_if_exists("${CMAKE_CURRENT_SOURCE_DIR}/mySubdirectory")
 ]]
 macro(add_subdirectory_if_exists _SUBDIRECTORY_DIR)
-    if(IS_DIRECTORY "${_SUBDIRECTORY_DIR}")
+    if (IS_DIRECTORY "${_SUBDIRECTORY_DIR}")
         add_subdirectory("${_SUBDIRECTORY_DIR}")
     endif()
 endmacro()
@@ -405,7 +405,7 @@ function(add_plugin)
     )
 
     set(PLUGIN_TYPE_DIR "")
-    if(${_COMMON_FUNCTIONS_PLUGIN_TYPE} STREQUAL "ADAPTER")
+    if (${_COMMON_FUNCTIONS_PLUGIN_TYPE} STREQUAL "ADAPTER")
         set(PLUGIN_TYPE_DIR ${ADAPTERS_DIR})
     elseif(${_COMMON_FUNCTIONS_PLUGIN_TYPE} STREQUAL "PROCESSOR")
         set(PLUGIN_TYPE_DIR ${PROCESSORS_DIR})
@@ -419,8 +419,8 @@ function(add_plugin)
     endif()
 
     if (${_COMMON_FUNCTIONS_ENABLE_PLUGIN})
-        set (RSPLUGIN_PREFIX ${_COMMON_FUNCTIONS_PREFIX})
-        set (STAGING_PLUGIN_DIR ${_COMMON_FUNCTIONS_STAGING_DIR})
+        set(RSPLUGIN_PREFIX ${_COMMON_FUNCTIONS_PREFIX})
+        set(STAGING_PLUGIN_DIR ${_COMMON_FUNCTIONS_STAGING_DIR})
 
         # Add plugin
         add_subdirectory_if_exists(
