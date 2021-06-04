@@ -13,7 +13,7 @@
 #                                                                             #
 ###############################################################################
 
-include(${RESOURCE_DIR}/cmake/common_functions.cmake)
+include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
 set(EXAMPLE_NAME MBus_WTH_CO2_LCD_ETH)
 

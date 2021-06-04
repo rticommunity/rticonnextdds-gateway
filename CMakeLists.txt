@@ -16,13 +16,13 @@
 cmake_minimum_required (VERSION 3.10)
 project (RTIGateway VERSION 6.1.0)
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/resource/cmake/common_functions.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/resource/cmake/CommonFunctions.cmake")
 
-init_project_configuration()
+m_init_project_configuration()
 
 # Only check RTI Connext DDS dependencies if at least one plugin will be built.
 if (RTIGATEWAY_CONFIGURE_CONNEXT)
-    configure_connext_dds(6.0.1)
+    m_configure_connext_dds(6.0.1)
 endif()
 
 # Configure third-party
@@ -72,4 +72,4 @@ add_plugin(
 )
 
 # Add doc if exists
-add_doc_if_exist()
+m_add_doc_if_exist()

@@ -13,7 +13,7 @@
 #                                                                             #
 ###############################################################################
 
-include(${RESOURCE_DIR}/cmake/common_functions.cmake)
+include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
 generate_doc(
     DOXYGEN_ENABLED ON

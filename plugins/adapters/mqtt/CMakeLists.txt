@@ -18,7 +18,7 @@
 ###############################################################################
 cmake_minimum_required(VERSION 3.7.0)
 
-include(${RESOURCE_DIR}/cmake/dds_functions.cmake)
+include("${RESOURCE_DIR}/cmake/DdsFunctions.cmake")
 
 ###############################################################################
 # Set variables
@@ -117,7 +117,7 @@ target_link_libraries(${RSPLUGIN_LIB_NAME}
         ${PAHO_LIBRARY}
 )
 
-configure_plugin_defines()
+m_configure_plugin_defines()
 
 if(RTI_MQTT_ENABLE_STATIC_TYPES)
     list(APPEND ${RSPLUGIN_PREFIX}_DEFINES RTI_MQTT_ENABLE_STATIC_TYPES)
@@ -140,7 +140,7 @@ install(
 )
 
 ###############################################################################
-# Build tests and documentation if they are enabled
+# Build documentation and tests if they are enabled
 ###############################################################################
-add_doc_if_exist()
-add_test_if_exist()
+m_add_doc_if_exist()
+m_add_test_if_exist()

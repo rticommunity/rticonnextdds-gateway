@@ -55,7 +55,7 @@ install(
 )
 
 ###############################################################################
-# Build tests and documentation if they are enabled
+# Build documentation and tests if they are enabled
 ###############################################################################
-add_doc_if_exist()
-add_test_if_exist()
+m_add_doc_if_exist()
+m_add_test_if_exist()

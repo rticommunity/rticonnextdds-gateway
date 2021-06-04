@@ -13,8 +13,8 @@
 #                                                                             #
 ###############################################################################
 
-include(${RESOURCE_DIR}/cmake/dds_functions.cmake)
-include(${RESOURCE_DIR}/cmake/common_functions.cmake)
+include("${RESOURCE_DIR}/cmake/DdsFunctions.cmake")
+include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
 # Copy the USER_QOS_PROFILES before generating the code
 # List of the files to copy

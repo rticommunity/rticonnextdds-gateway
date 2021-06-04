@@ -13,8 +13,8 @@
 #                                                                             #
 ###############################################################################
 
-include("${RESOURCE_DIR}/cmake/common_functions.cmake")
-include("${RESOURCE_DIR}/cmake/dds_functions.cmake")
+include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
+include("${RESOURCE_DIR}/cmake/DdsFunctions.cmake")
 
 set(TEST_NAME integration_test1)
 

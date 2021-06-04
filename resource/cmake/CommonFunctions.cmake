@@ -1,5 +1,5 @@
 ###############################################################################
-#  (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. #
+#  (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. #
 #                                                                             #
 #  RTI grants Licensee a license to use, modify, compile, and create          #
 #  derivative works of the software solely for use with RTI Connext DDS.      #
@@ -130,7 +130,7 @@ function(generate_doc)
 
 endfunction()
 
-macro(configure_plugin_defines)
+macro(m_configure_plugin_defines)
     if (RTIGATEWAY_ENABLE_LOG
             OR CMAKE_BUILD_TYPE STREQUAL "Debug"
             OR NOT CMAKE_BUILD_TYPE)
@@ -151,27 +151,27 @@ macro(configure_plugin_defines)
             CACHE INTERNAL "List compiler defines")
 endmacro()
 
-function(set_required_variable out_variable)
+function(set_required_variable _OUT_VARIABLE)
     set(candidate_vars ${ARGN})
     foreach(v ${candidate_vars})
         # Give preference to variables passed directly to cmake
         if (DEFINED ${v})
-            message(STATUS "${out_variable} = ${${v}}")
-            set(${out_variable} ${${v}} PARENT_SCOPE)
+            message(STATUS "${_OUT_VARIABLE} = ${${v}}")
+            set(${_OUT_VARIABLE} ${${v}} PARENT_SCOPE)
             return()
         elseif (DEFINED ENV{${v}})
-            message(STATUS "${out_variable} = $ENV{${v}}")
-            set(${out_variable} $ENV{${v}} PARENT_SCOPE)
+            message(STATUS "${_OUT_VARIABLE} = $ENV{${v}}")
+            set(${_OUT_VARIABLE} $ENV{${v}} PARENT_SCOPE)
             return()
         endif()
     endforeach()
     message(FATAL_ERROR
-        "Failed to determine value for ${out_variable}. "
+        "Failed to determine value for ${_OUT_VARIABLE}. "
         "Please specify one of '${candidate_vars}' either in your "
         "environment, or as an argument to cmake.")
 endfunction()
 
-macro(init_install_path)
+macro(m_init_install_path)
     if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX        "${CMAKE_CURRENT_BINARY_DIR}/install")
         message(STATUS "Using default CMAKE_INSTALL_PREFIX = '${CMAKE_INSTALL_PREFIX}'")
@@ -180,7 +180,7 @@ endmacro()
 
 #[[
 
-init_project_configuration
+m_init_project_configuration
 --------------------------
 
  * Type: macro
@@ -189,10 +189,10 @@ init_project_configuration
  * Restrictions: this should only be used in the main CMakeLists.txt
  * How to use it:
 
-    init_project_configuration()
+    m_init_project_configuration()
 ]]
 
-macro(init_project_configuration)
+macro(m_init_project_configuration)
 
     SET(BUILD_SHARED_LIBS ON)
 
@@ -245,7 +245,7 @@ macro(init_project_configuration)
     option(RTIGATEWAY_ENABLE_LOG "Enable logging to stdout" OFF)
     option(RTIGATEWAY_ENABLE_TRACE "Enable support for trace-level logging" OFF)
 
-    init_install_path()
+    m_init_install_path()
 
     # Set RTIGATEWAY_CONFIGURE_CONNEXT to check whether we need to configure
     # RTI Connext DDS.
@@ -265,7 +265,7 @@ macro(init_project_configuration)
 endmacro()
 
 #[[
-configure_connext_dds
+m_configure_connext_dds
 ---------------------
 
  * Type: macro
@@ -275,10 +275,10 @@ configure_connext_dds
  * Restrictions: CONNEXTDDS_DIR should be set
  * How to use it:
 
-    configure_connext_dds(6.1.0)
+    m_configure_connext_dds(6.1.0)
 ]]
 
-macro(configure_connext_dds _CONNEXTDDS_VERSION)
+macro(m_configure_connext_dds _CONNEXTDDS_VERSION)
     # Configure Connext DDS dependencies
     set_required_variable(CONNEXTDDS_DIR NDDSHOME CONNEXTDDS_DIR)
 
@@ -310,7 +310,7 @@ endmacro()
 
 #[[
 
-add_subdirectory_if_exists
+m_add_subdirectory_if_exists
 --------------------------
 
  * Type: macro
@@ -319,9 +319,9 @@ add_subdirectory_if_exists
  ** _SUBDIRECTORY_DIR: path to the subdirectory to add
  * How to use it:
 
-    add_subdirectory_if_exists("${CMAKE_CURRENT_SOURCE_DIR}/mySubdirectory")
+    m_add_subdirectory_if_exists("${CMAKE_CURRENT_SOURCE_DIR}/mySubdirectory")
 ]]
-macro(add_subdirectory_if_exists _SUBDIRECTORY_DIR)
+macro(m_add_subdirectory_if_exists _SUBDIRECTORY_DIR)
     if (IS_DIRECTORY "${_SUBDIRECTORY_DIR}")
         add_subdirectory("${_SUBDIRECTORY_DIR}")
     endif()
@@ -329,7 +329,7 @@ endmacro()
 
 #[[
 
-add_doc_if_exist
+m_add_doc_if_exist
 ----------------
 
  * Type: macro
@@ -338,17 +338,17 @@ add_doc_if_exist
  * Params: no parameters
  * How to use it:
 
-    add_doc_if_exist()
+    m_add_doc_if_exist()
 ]]
-macro(add_doc_if_exist)
+macro(m_add_doc_if_exist)
     if (RTIGATEWAY_ENABLE_DOCS)
-        add_subdirectory_if_exists("${CMAKE_CURRENT_SOURCE_DIR}/doc")
+        m_add_subdirectory_if_exists("${CMAKE_CURRENT_SOURCE_DIR}/doc")
     endif()
 endmacro()
 
 #[[
 
-add_test_if_exist
+m_add_test_if_exist
 -----------------
 
  * Type: macro
@@ -357,11 +357,11 @@ add_test_if_exist
  * Params: no parameters
  * How to use it:
 
-    add_test_if_exist()
+    m_add_test_if_exist()
 ]]
-macro(add_test_if_exist)
+macro(m_add_test_if_exist)
     if (RTIGATEWAY_ENABLE_TESTS)
-        add_subdirectory_if_exists("${CMAKE_CURRENT_SOURCE_DIR}/test")
+        m_add_subdirectory_if_exists("${CMAKE_CURRENT_SOURCE_DIR}/test")
     endif()
 endmacro()
 
@@ -423,17 +423,17 @@ function(add_plugin)
         set(STAGING_PLUGIN_DIR ${_COMMON_FUNCTIONS_STAGING_DIR})
 
         # Add plugin
-        add_subdirectory_if_exists(
+        m_add_subdirectory_if_exists(
             "${PLUGIN_TYPE_DIR}/${_COMMON_FUNCTIONS_PLUGIN_DIR_NAME}"
         )
         # Add resources
-        add_subdirectory_if_exists(
+        m_add_subdirectory_if_exists(
             "${RESOURCE_DIR}/${_COMMON_FUNCTIONS_PLUGIN_DIR_NAME}"
         )
 
         # Add examples if they are enabled
         if (RTIGATEWAY_ENABLE_EXAMPLES)
-            add_subdirectory_if_exists(
+            m_add_subdirectory_if_exists(
                 "${EXAMPLES_DIR}/${_COMMON_FUNCTIONS_PLUGIN_DIR_NAME}"
             )
         endif()

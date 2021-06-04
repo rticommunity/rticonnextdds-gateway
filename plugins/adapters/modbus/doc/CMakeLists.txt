@@ -15,7 +15,7 @@
 
 cmake_minimum_required (VERSION 3.5)
 
-include(${RESOURCE_DIR}/cmake/common_functions.cmake)
+include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
 generate_doc(
     PLUGIN_NAME ${RSPLUGIN_PREFIX}

@@ -47,7 +47,7 @@ target_link_libraries(
     ${ROUTING_SERVICE_CXX_LIBRARIES}
 )
 
-configure_plugin_defines()
+m_configure_plugin_defines()
 
 target_compile_definitions(
     ${RSPLUGIN_LIB_NAME}
@@ -62,6 +62,7 @@ install(
 )
 
 ###############################################################################
-# Build documentation and testes if they are enabled
-add_doc_if_exist()
-add_test_if_exist()
+# Build documentation and tests if they are enabled
+###############################################################################
+m_add_doc_if_exist()
+m_add_test_if_exist()

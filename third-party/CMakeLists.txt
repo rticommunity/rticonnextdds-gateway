@@ -19,6 +19,7 @@
 # The third-party libraries are 'installed' in the lib directory, outside
 # the third-party/ folder because the plugins do have a direct dependency
 # with them.
+
 if (CMAKE_INSTALL_PREFIX)
     set(CMAKE_INSTALL_BINDIR "third-party/bin")
     set(CMAKE_INSTALL_INCLUDEDIR "third-party/include")
@@ -31,8 +32,8 @@ endif()
 
 
 if (RTIGATEWAY_ENABLE_MQTT)
-    include("${RESOURCE_DIR}/cmake/configure_third_party_builds.cmake")
-    configure_paho_build()
+    include("${RESOURCE_DIR}/cmake/ConfigureThirdPartyBuilds.cmake")
+    m_configure_paho_build()
 
     add_subdirectory("${PAHO_MQTT_C_DIR}")
 endif()
