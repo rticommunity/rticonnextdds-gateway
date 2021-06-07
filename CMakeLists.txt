@@ -146,7 +146,9 @@ endif()
 if (RTIGATEWAY_ENABLE_TSFM_JSON)
     set (RSPLUGIN_PREFIX "RTI_TSFM_JSON")
     set (STAGING_PLUGIN_DIR "tsfm_json")
+    set (RSPLUGIN_LIB_NAME rtijsontransf)
     add_subdirectory("${TRANSFORMATIONS_DIR}/json")
+    add_subdirectory("${EXAMPLES_DIR}/json")
 endif()
 
 # Shapes example

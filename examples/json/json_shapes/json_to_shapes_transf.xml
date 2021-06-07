@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<!--
+  (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved.
+
+  RTI grants Licensee a license to use, modify, compile, and create
+  derivative works of the software solely for use with RTI Connext DDS.
+  Licensee may redistribute copies of the software provided that all such
+  copies are subject to this license.
+  The software is provided "as is", with no warranty of any type, including
+  any warranty for fitness for any purpose. RTI is under no obligation to
+  maintain or support the software.  RTI shall not be liable for any
+  incidental or consequential damages arising out of the use or inability to
+  use the software.
+-->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/6.0.1/rti_routing_service.xsd">
+
+    <!-- Here we're loading the json transformation class -->
+    <plugin_library name="Transformations">
+        <!--
+        This transformation is implemented in that shared library. It allows
+        translating samples from DynamicData to DDS-JSON and viceversa.
+        -->
+        <transformation_plugin name="Json">
+            <!--
+            By specifying this value, RTI Router will search for
+            librtijsontransf.so in Linux systems and rtijsontransf.dll in Windows
+            systems.
+            -->
+            <dll>rtijsontransf</dll>
+            <create_function>RTI_TSFM_JsonTransformationPlugin_create</create_function>
+        </transformation_plugin>
+    </plugin_library>
+
+    <!--
+    The DDS-JSON is stored in a "Content Container". This is a "string-like"
+    DynamicData:
+      * string
+      * sequence<octet>
+      * sequence<char>
+      * octet[N]
+      * char[N]
+    In case that you want to use other types, comment this <types> tag and
+    uncomment the corresponding one. Note that the "type" for sequences or
+    arrays can use either "byte" or "char". Also, sequences and strings can use
+    a specific length or unbounded (-1).
+    -->
+    <!-- String -->
+    <types>
+        <struct name= "MessagePayload" nested="true">
+            <member name="data" type="string" stringMaxLength="-1"/>
+        </struct>
+    </types>
+
+    <!-- Sequence -->
+    <!--
+    <types>
+        <struct name= "MessagePayload" nested="true">
+            <member name="data" type="byte" sequenceMaxLength="-1"/>
+        </struct>
+    </types>
+    -->
+
+    <!-- Array -->
+    <!--
+    <types>
+        <struct name= "MessagePayload" nested="true">
+            <member name="data" type="char" arrayDimensions="100"/>
+        </struct>
+    </types>
+    -->
+
+    <routing_service name="JsonTransformationExample">
+
+        <annotation>
+            <documentation>
+                Transforms DDS-JSON samples to DynamicData.
+            </documentation>
+        </annotation>
+
+        <domain_route name="DomainRoute" enabled="true">
+            <participant name="1">
+                <domain_id>1</domain_id>
+                <registered_type name="MessagePayload" type_name="MessagePayload"/>
+            </participant>
+            <participant name="2">
+                <domain_id>2</domain_id>
+                <registered_type name="MessagePayload" type_name="MessagePayload"/>
+            </participant>
+
+            <session name="Session" enabled="true">
+
+                <topic_route name="SquareJSON2">
+                    <!-- Reading data from participant 1 -->
+                    <input participant="1">
+                        <!-- Reading topic SquareJSON -->
+                        <topic_name>SquareJSON</topic_name>
+                        <registered_type_name>MessagePayload</registered_type_name>
+                    </input>
+                    <output participant="2">
+                        <!-- The output is ShapeType but in the Circle Topic -->
+                        <topic_name>Circle</topic_name>
+                        <registered_type_name>ShapeType</registered_type_name>
+                        <!--
+                        In order to transform the JSON to DynamicData, we should
+                        configure the transformation.
+                        We need to identify the transform type:
+                          * serialize: from DynamicData sample to DDS-JSON
+                          * deserialize: from DDS-JSON to DynamicData
+                        We also need to specify the "string-like" field in the
+                        Content Container. In this case is "data".
+                        -->
+                        <transformation plugin_name="Transformations::Json">
+                            <property>
+                                <value>
+                                    <element>
+                                        <name>transform_type</name>
+                                        <value>deserialize</value>
+                                    </element>
+                                    <element>
+                                        <name>buffer_member</name>
+                                        <value>data</value>
+                                    </element>
+                                </value>
+                            </property>
+                        </transformation>
+                    </output>
+                </topic_route>
+            </session>
+        </domain_route>
+    </routing_service>
+</dds>
