@@ -1,7 +1,11 @@
-Property,Required,Default,Accepted Values
-|PROP_BUFFER_MEMBER|,YES,\-,An identifier for a member of a type (e.g. 'foo.bar')
-|PROP_TRANSFORM_TYPE|, YES,\-, 'serialize' transforms the buffer from DDS to JSON. 'deserialize' transforms the buffer from JSON to DDS.
-|PROP_INDENT|,No,false,A boolean value
-|PROP_SERIALIZED_SIZE_MIN|,No,255,An integer value greater or equal to 0
-|PROP_SERIALIZED_SIZE_MAX|,No,-1,"An integer value greater than 0, or -1"
-|PROP_SERIALIZED_SIZE_INCR|,No,255,An integer value greater or equal to 0
+Property,Required,Default,Accepted Values, Description
+|PROP_BUFFER_MEMBER|,YES,\-,String, An identifier for a member of a type (e.g. 'foo.bar')
+|PROP_TRANSFORM_TYPE|, YES,\-, 'serialize' or 'deserialize',"
+* 'serialize' transforms the buffer from DDS to JSON
+* 'deserialize' transforms the buffer from JSON to DDS."
+|PROP_INDENT|,No,0,Integer >= 0,"This represents the number of 'tabs' that are
+added to the JSON output. Each 'tab' is represented as 3 whitespaces. |BR|
+A value of 0 will replace the new line characters `\n` by whitespaces."
+|PROP_UNBOUNDED_MEMBER_SERIALIZED_SIZE_INITIAL|,No,255,Integer >= 0,"This property
+represents the amount of bytes that are preallocated when using unbounded
+sequences and strings in the member identified by |PROP_BUFFER_MEMBER|."

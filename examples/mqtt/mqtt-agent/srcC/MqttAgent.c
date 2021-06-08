@@ -398,8 +398,8 @@ int MqttAgent_publish_message(struct MqttAgent *self)
     self->pub_msg->info->qos_level = MQTT_AGENT_WRITER_QOS;
     self->pub_msg->info->retained = MQTT_AGENT_WRITER_RETAINED;
 
-    msg_fmt_len = strlen(msg_fmt) + 10;
-    msg_buf = (char *) malloc(sizeof(char) * msg_fmt_len + 1);
+    msg_fmt_len = (DDS_UnsignedLong) strlen(msg_fmt) + 10;
+    msg_buf = (char *) malloc(sizeof(char) * (msg_fmt_len + 1));
     if (msg_buf == NULL) {
         RTI_MQTT_ERROR_1(
                 "failed to allocate message",
@@ -407,13 +407,17 @@ int MqttAgent_publish_message(struct MqttAgent *self)
                 self->msg_sent_tot)
         goto done;
     }
-    sprintf(msg_buf, msg_fmt, self->msg_sent_tot);
+    snprintf(
+            msg_buf,
+            sizeof(char) * (msg_fmt_len + 1),
+            msg_fmt,
+            self->msg_sent_tot);
 
-    msg_len = strlen(msg_buf);
+    msg_len = (DDS_UnsignedLong) strlen(msg_buf);
     if (!DDS_OctetSeq_ensure_length(
-                &self->pub_msg->payload.data,
-                msg_len,
-                msg_fmt_len)) {
+            &self->pub_msg->payload.data,
+            msg_len,
+            msg_fmt_len)) {
         RTI_MQTT_ERROR_1(
                 "failed to set payload length for message",
                 "(%d)",

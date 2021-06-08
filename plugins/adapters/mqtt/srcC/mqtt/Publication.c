@@ -294,7 +294,7 @@ static DDS_Boolean RTI_MQTT_Publication_is_configuration_valid(
         const char *topic)
 {
     DDS_Boolean retval = DDS_BOOLEAN_FALSE;
-    DDS_UnsignedLong topic_len = 0;
+    size_t topic_len = 0;
 
     if (!RTI_MQTT_QosLevel_is_valid(qos)) {
         RTI_MQTT_LOG_PUBLICATION_INVALID_QOS_DETECTED(pub, qos)
@@ -402,7 +402,7 @@ static DDS_ReturnCode_t
     *self = def_self;
 
     retval = DDS_RETCODE_OK;
-done:
+
     return retval;
 }
 
@@ -475,9 +475,11 @@ static DDS_ReturnCode_t RTI_MQTT_Publication_store_topic(
             /* TODO Log error */
             goto done;
         }
-        self->req_ctx.topic_len = RTI_MQTT_String_length(self->req_ctx.topic);
+        self->req_ctx.topic_len =
+                (DDS_UnsignedLong) RTI_MQTT_String_length(self->req_ctx.topic);
     } else {
-        topic_len = RTI_MQTT_String_length(topic);
+        topic_len =
+                (DDS_UnsignedLong) RTI_MQTT_String_length(topic);
 
         if (topic_len <= self->req_ctx.topic_len) {
             RTI_MQTT_Memory_copy(
@@ -495,7 +497,7 @@ static DDS_ReturnCode_t RTI_MQTT_Publication_store_topic(
                 /* TODO Log error */
                 goto done;
             }
-            self->req_ctx.topic_len =
+            self->req_ctx.topic_len = (DDS_UnsignedLong)
                     RTI_MQTT_String_length(self->req_ctx.topic);
         }
     }

@@ -61,7 +61,7 @@ target_include_directories(${TEST_NAME}
         "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
 )
 
-target_link_libraries(${TEST_NAME} 
+target_link_libraries(${TEST_NAME}
     RTIConnextDDS::c_api
 )
 

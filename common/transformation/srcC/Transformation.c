@@ -422,9 +422,10 @@ DDS_ReturnCode_t RTI_TSFM_Transformation_transform(
     DDS_DynamicData **out_samples = NULL,
                     **in_samples = (DDS_DynamicData **) in_sample_lst;
     struct DDS_SampleInfo *out_infos = NULL,
-                          *in_infos = (struct DDS_SampleInfo *) in_info_lst;
-    DDS_UnsignedLong i = 0, out_samples_initd = 0, read_buffer_max = 0,
+                          **in_infos = (struct DDS_SampleInfo **) in_info_lst;
+    DDS_UnsignedLong out_samples_initd = 0, read_buffer_max = 0,
                      out_samples_len = 0;
+    int i = 0;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_Transformation_transform)
 
@@ -439,7 +440,9 @@ DDS_ReturnCode_t RTI_TSFM_Transformation_transform(
     read_buffer_max =
             RTI_TSFM_DDS_DynamicDataPtrSeq_get_maximum(&self->read_buffer);
 
-    out_samples_len = (read_buffer_max > in_count) ? read_buffer_max : in_count;
+    out_samples_len = (read_buffer_max > (DDS_UnsignedLong) in_count)
+            ? read_buffer_max
+            : in_count;
 
     if (!RTI_TSFM_DDS_DynamicDataPtrSeq_ensure_length(
                 &self->read_buffer,
@@ -459,6 +462,12 @@ DDS_ReturnCode_t RTI_TSFM_Transformation_transform(
     for (i = 0; i < in_count; i++) {
         DDS_DynamicData *out_sample = out_samples[i],
                         *in_sample = in_samples[i];
+        struct DDS_SampleInfo *in_info = in_infos[i];
+
+        if (!in_info->valid_data) {
+            /* Do nothing if the sample is not a valid content sample */
+            continue;
+        }
 
         if (out_sample == NULL) {
             out_sample = DDS_DynamicDataTypeSupport_create_data(self->tsupport);
@@ -515,30 +524,26 @@ done:
 
     if (retcode != DDS_RETCODE_OK) {
         if (out_samples == NULL && out_samples_initd > 0) {
-            if (DDS_RETCODE_OK
-                != RTI_TSFM_Transformation_return_loan(
-                        self,
-                        (RTI_RoutingServiceSample *) out_samples,
-                        NULL,
-                        out_samples_initd,
-                        env)) {
-                /* TODO Log error */
-            }
+            RTI_TSFM_Transformation_return_loan(
+                    self,
+                    (RTI_RoutingServiceSample *) out_samples,
+                    NULL,
+                    out_samples_initd,
+                    env);
         }
     }
 
     return retcode;
 }
 
-DDS_ReturnCode_t RTI_TSFM_Transformation_return_loan(
+void RTI_TSFM_Transformation_return_loan(
         RTI_TSFM_Transformation *self,
         RTI_RoutingServiceSample *sample_lst,
         RTI_RoutingServiceSampleInfo *info_lst,
         int count,
         RTI_RoutingServiceEnvironment *env)
 {
-    DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    DDS_UnsignedLong i = 0;
+    int i = 0;
     DDS_DynamicData **out_samples = (DDS_DynamicData **) sample_lst;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_Transformation_return_loan)
@@ -556,12 +561,6 @@ DDS_ReturnCode_t RTI_TSFM_Transformation_return_loan(
     }
 
     self->read_buffer_loaned = DDS_BOOLEAN_FALSE;
-
-    retcode = DDS_RETCODE_OK;
-
-done:
-
-    return retcode;
 }
 
 DDS_ReturnCode_t RTI_TSFM_Transformation_update(

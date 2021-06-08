@@ -13,8 +13,8 @@
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef rtitransform_simple_log_h
-#define rtitransform_simple_log_h
+#ifndef TransformationLog_h
+#define TransformationLog_h
 
 #ifndef RTI_TSFM_ENABLE_LOG
 #define RTI_TSFM_USE_LOG                    0
@@ -127,6 +127,9 @@
 #define RTI_TSFM_WARNING(msg_) \
     fprintf(stdout,RTI_TSFM_LOG_HEAD_WARNING "%s\n", RTI_TSFM_LOG_ARGS, (msg_));
 
+#define RTI_TSFM_WARNING_2(msg_,fmt_,a1_,a2_) \
+    fprintf(stdout,RTI_TSFM_LOG_HEAD_WARNING "%s:" fmt_ "\n", RTI_TSFM_LOG_ARGS, (msg_), (a1_), (a2_));
+
 #define RTI_TSFM_ERROR(msg_) \
     fprintf(stdout,RTI_TSFM_LOG_HEAD_ERROR "%s\n", RTI_TSFM_LOG_ARGS, (msg_));
 
@@ -167,6 +170,7 @@
                    a9_,a10_,a11_,a12_,\
                    a13_,a14_,a15_,a16_)
 #define RTI_TSFM_WARNING(msg_)
+#define RTI_TSFM_WARNING_2(msg_,fmt_,a1_,a2_)
 #define RTI_TSFM_ERROR(msg_)
 #define RTI_TSFM_ERROR_1(msg_,fmt_,a1_)
 #define RTI_TSFM_ERROR_2(msg_,fmt_,a1_,a2_)
@@ -298,4 +302,4 @@
         RTI_TSFM_LOG_GUID_BIT(g_,11), RTI_TSFM_LOG_GUID_BIT(g_,10), RTI_TSFM_LOG_GUID_BIT(g_,9), RTI_TSFM_LOG_GUID_BIT(g_,8), \
         RTI_TSFM_LOG_GUID_BIT(g_,15), RTI_TSFM_LOG_GUID_BIT(g_,14), RTI_TSFM_LOG_GUID_BIT(g_,13), RTI_TSFM_LOG_GUID_BIT(g_,12))
 
-#endif /* rtitransform_simple_log_h */
+#endif /* TransformationLog_h */

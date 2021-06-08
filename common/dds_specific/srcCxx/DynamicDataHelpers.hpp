@@ -17,7 +17,7 @@
 
 #include <dds/dds.hpp>
 
-namespace rti { namespace adapter { namespace common { namespace dynamic_data {
+namespace rti { namespace common { namespace dynamic_data {
 long double get_dds_primitive_or_enum_type_value(
         const dds::core::xtypes::DynamicData& data,
         const std::string& field);
@@ -43,4 +43,4 @@ dds::core::xtypes::DynamicType get_member_type(
         const std::string& field_name);
 
 bool is_signed_kind(const dds::core::xtypes::TypeKind kind);
-}}}}  // namespace rti::adapter::common::dynamic_data
+}}}  // namespace rti::common::dynamic_data

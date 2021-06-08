@@ -664,7 +664,7 @@ DDS_ReturnCode_t RTI_MQTT_Subscription_set_data_available_listener(
  *
  * If @ref RTI_MQTT_SUBSCRIPTION_READ_LENGTH_UNLIMITED is used (and a buffer
  * is loaned by the `RTI_MQTT_Subscription`), no other read may be performed
- * until @ref RTI_MQTT_Subscription_return_loan_dynamic is called.
+ * until @ref RTI_MQTT_Subscription_return_loan is called.
  *
  * @param self The `RTI_MQTT_Subscription` from which to read messages.
  * @param max_messages Maximum number of new messages to read.

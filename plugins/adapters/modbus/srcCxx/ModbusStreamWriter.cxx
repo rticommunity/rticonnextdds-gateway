@@ -21,13 +21,13 @@
 
 #include <dds/dds.hpp>
 
-#include "DynamicDataFunc.hpp"
+#include "DynamicDataHelpers.hpp"
 #include "ModbusStreamWriter.hpp"
 
 using namespace dds::core::xtypes;
 using namespace dds::domain;
 
-using namespace rti::adapter::common;
+using namespace rti::common;
 using namespace rti::adapter::modbus;
 
 ModbusStreamWriter::ModbusStreamWriter(
@@ -113,7 +113,7 @@ int ModbusStreamWriter::write(
                     std::vector<uint8_t> values(mace.modbus_register_count());
 
                     for (int i = 0; i < float_vector.size(); ++i) {
-                        values[i] = float_vector[i];
+                        values[i] = static_cast<uint8_t>(float_vector[i]);
                     }
                     // write coils to a modbus server
                     try {

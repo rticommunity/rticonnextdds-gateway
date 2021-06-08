@@ -13,12 +13,12 @@
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef Transformation_UserPlugin_h
-#define Transformation_UserPlugin_h
+#ifndef TransformationUserPlugin_h
+#define TransformationUserPlugin_h
 
 RTI_TSFM_UserTypePlugin *RTI_TSFM_UserTypePlugin_create_dynamic(
         RTI_TSFM_TransformationPlugin *transform_plugin,
         const char *plugin_lib,
         const char *plugin_create_fn);
 
-#endif /* Transformation_UserPlugin_h */
+#endif /* TransformationUserPlugin_h */

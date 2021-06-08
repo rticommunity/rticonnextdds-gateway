@@ -71,7 +71,7 @@ extern const struct RTI_RoutingServiceVersion RTI_RS_MQTT_AdapterPlugin_VERSION;
  * @brief Constructor function used to load the MQTT Adapter on RTI Routing
  * Service.
  */
-extern struct RTI_RoutingServiceAdapterPlugin *RTI_RS_MQTT_AdapterPlugin_create(
+struct RTI_RoutingServiceAdapterPlugin *RTI_RS_MQTT_AdapterPlugin_create(
         const struct RTI_RoutingServiceProperties *properties,
         RTI_RoutingServiceEnvironment *env);
 

@@ -275,10 +275,6 @@
     RTI_MQTT_ERROR_1("failed to finalize RTI_MQTT_MessageReceiveQueue:",\
         "%p",(q_))
 
-#define RTI_MQTT_LOG_MSG_RECV_QUEUE_RECEIVE_CIRCULAR_FAILED(q_) \
-    RTI_MQTT_ERROR_1("failed to receive in circular " \
-                     "RTI_MQTT_MessageReceiveQueue:","%p",(q_))
-
 #define RTI_MQTT_LOG_MSG_RECV_QUEUE_RECEIVE_UNBOUNDED_FAILED(q_) \
     RTI_MQTT_ERROR_1("failed to receive in unbounded " \
                      "RTI_MQTT_MessageReceiveQueue:","%p",(q_))

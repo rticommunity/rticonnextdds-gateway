@@ -42,6 +42,8 @@ add_library(
         "${GENERATED_SRC_IDL_FILES}"
 )
 
+set_target_properties(${RSPLUGIN_LIB_NAME} PROPERTIES DEBUG_POSTFIX "d")
+
 target_include_directories(
     ${RSPLUGIN_LIB_NAME}
     PRIVATE

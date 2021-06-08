@@ -94,7 +94,7 @@ static void parse_from_json(
             "%d entries",
             table_json_value->u.array.length)
 
-    for (int i = 0; i < table_json_value->u.array.length; i++) {
+    for (unsigned int i = 0; i < table_json_value->u.array.length; i++) {
         // json_value& entry_json_value = table_json_value[i];
         json_value &entry_json_value = *table_json_value->u.array.values[i];
 

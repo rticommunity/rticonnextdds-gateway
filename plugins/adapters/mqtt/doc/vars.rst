@@ -1,5 +1,6 @@
 .. include:: ../../../../doc/vars.rst
 
+.. |RSMQTT_TM| replace:: |RTI_RS_TM| *MQTT Adapter*
 .. |RTI_RSMQTT| replace:: *RTI* |RSMQTT|
 .. |MQTT_CLIENT| replace:: *MQTT Client*
 .. |MQTT_CLIENTS| replace:: *MQTT Clients*

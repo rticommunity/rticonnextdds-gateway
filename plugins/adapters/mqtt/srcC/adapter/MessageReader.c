@@ -256,12 +256,13 @@ void RTI_RS_MQTT_MessageReader_read(
     /* Check if stream_reader is a discovery reader owned by the
        connection, in which case, call the appropriate read method */
     if (RTI_RS_MQTT_MessageReader_is_discovery(self)) {
-        return RTI_RS_MQTT_MessageReader_read_discovery(
+        RTI_RS_MQTT_MessageReader_read_discovery(
                 self,
                 samples_list_out,
                 info_list_out,
                 count,
                 env);
+        return;
     }
 
     *samples_list_out = NULL;

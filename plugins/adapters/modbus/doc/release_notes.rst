@@ -19,5 +19,9 @@ Supported Platforms
     * - Platform
       - Operating System
 
-    * - Linux®
+    * - Linux systems
       - All Linux platforms supported by |RTI_RS|.
+    * - macOS systems
+      - All macOS platforms supported by |RTI_RS|.
+    * - Windows systems
+      - All Windows platforms supported by |RTI_RS|.

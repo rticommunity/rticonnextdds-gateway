@@ -5,24 +5,22 @@
  */
 
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <arpa/inet.h>
+#include <signal.h>
+
 #ifdef _WIN32
-#include <winsock2.h>
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
 #else
-#include <sys/socket.h>
-#include <sys/select.h>
+  #include <unistd.h>
+  #include <arpa/inet.h>
+  #include <sys/socket.h>
+  #include <sys/select.h>
 #endif
 
 #include "modbus.h"
-
-/* For MinGW */
-#ifndef MSG_NOSIGNAL
-#define MSG_NOSIGNAL 0
-#endif
 
 #define SERVER_ID 17
 
@@ -68,12 +66,12 @@ static void fill_out_input_registers(uint16_t *register_inputs) {
     uint64_t i = 0;
     /* The number of iterations is 3 because we have 3 elements of the same type */
     for (i = 0; i < 3; ++i) {
-        int accumulator = i;
+        uint64_t accumulator = i;
         /* INT8 */
-        register_inputs[i] = i + 1;
+        register_inputs[i] = (int8_t) i + 1;
         accumulator += NEXT_MODBUS_REGISTER(i, uint16_t, uint16_t);
         /* INT16 */
-        register_inputs[accumulator] = i + 1; //3
+        register_inputs[accumulator] = (int16_t) i + 1; //3
         accumulator += NEXT_MODBUS_REGISTER(i, uint16_t, uint32_t);
         /* INT32 */
         MODBUS_SET_INT32_TO_INT16(register_inputs, accumulator, i + 1); //6
@@ -82,25 +80,47 @@ static void fill_out_input_registers(uint16_t *register_inputs) {
         MODBUS_SET_INT64_TO_INT16(register_inputs, accumulator, i + 1); //12
         accumulator += NEXT_MODBUS_REGISTER(i, uint64_t, float);
         /* FLOAT_ABCD */
-        modbus_set_float_abcd(i + 1.5, &register_inputs[accumulator]); // 24
+        modbus_set_float_abcd(
+                (float) i + 1.5f,
+                &register_inputs[accumulator]); // 24
         accumulator += NEXT_MODBUS_REGISTER(i, float, float);
         /* FLOAT_BADC */
-        modbus_set_float_badc(i + 1.5, &register_inputs[accumulator]); //30
+        modbus_set_float_badc(
+                (float) i + 1.5f,
+                &register_inputs[accumulator]); //30
         accumulator += NEXT_MODBUS_REGISTER(i, float, float);
         /* FLOAT_CDAB */
-        modbus_set_float_cdab(i + 1.5, &register_inputs[accumulator]); //36
+        modbus_set_float_cdab(
+                (float)i + 1.5f,
+                &register_inputs[accumulator]); //36
         accumulator += NEXT_MODBUS_REGISTER(i, float, float);
         /* FLOAT_DCBA */
-        modbus_set_float_dcba(i + 1.5, &register_inputs[accumulator]); //42
+        modbus_set_float_dcba(
+                (float)i + 1.5f,
+                &register_inputs[accumulator]); //42
     }
+}
+
+static void close_socket(int num) {
+#ifdef _WIN32
+    closesocket(num);
+#else
+    close(num);
+#endif
 }
 
 static void close_sigint(int dummy) {
     if (s != -1) {
-        close(s);
+        close_socket(s);
     }
-    modbus_free(ctx);
-    modbus_mapping_free(mb_mapping);
+    if (ctx != NULL) {
+        modbus_free(ctx);
+        ctx = NULL;
+    }
+    if (mb_mapping != NULL) {
+        modbus_mapping_free(mb_mapping);
+        mb_mapping = NULL;
+    }
 
     exit(dummy);
 }
@@ -166,25 +186,19 @@ int main(int argc, char *argv[]) {
     /* Initialize values of INPUT REGISTERS */
     fill_out_input_registers(mb_mapping->tab_input_registers);
 
-    if (use_backend == TCP)
-    {
+    if (use_backend == TCP) {
         s = modbus_tcp_listen(ctx, 20);
+    } else if (use_backend == TCP_PI) {
+        s = modbus_tcp_pi_listen(ctx, 1);
+        modbus_tcp_pi_accept(ctx, &s);
+    } else {
+        rc = modbus_connect(ctx);
+        if (rc == -1) {
+            fprintf(stderr, "Unable to connect %s\n", modbus_strerror(errno));
+            modbus_free(ctx);
+            return -1;
         }
-        else if (use_backend == TCP_PI)
-        {
-            s = modbus_tcp_pi_listen(ctx, 1);
-            modbus_tcp_pi_accept(ctx, &s);
-        }
-        else
-        {
-            rc = modbus_connect(ctx);
-            if (rc == -1)
-            {
-                fprintf(stderr, "Unable to connect %s\n", modbus_strerror(errno));
-                modbus_free(ctx);
-                return -1;
-            }
-        }
+    }
 
     signal(SIGINT, close_sigint);
 
@@ -219,14 +233,13 @@ int main(int argc, char *argv[]) {
                 /* Handle new connections */
                 addrlen = sizeof(clientaddr);
                 memset(&clientaddr, 0, sizeof(clientaddr));
-                newfd = accept(s, (struct sockaddr *)&clientaddr, &addrlen);
+                newfd = (int) accept(s, (struct sockaddr *)&clientaddr, &addrlen);
                 if (newfd == -1) {
                     perror("Server accept() error");
                 } else {
                     FD_SET(newfd, &refset);
 
-                    if (newfd > fdmax)
-                    {
+                    if (newfd > fdmax) {
                         /* Keep track of the maximum */
                         fdmax = newfd;
                     }
@@ -243,7 +256,7 @@ int main(int argc, char *argv[]) {
                     /* This example server in ended on connection closing or
                      * any errors. */
                     printf("Connection closed on socket %d\n", master_socket);
-                    close(master_socket);
+                    close_socket(master_socket);
 
                     /* Remove from reference set */
                     FD_CLR(master_socket, &refset);
@@ -260,7 +273,7 @@ int main(int argc, char *argv[]) {
 
     if (use_backend == TCP) {
         if (s != -1) {
-            close(s);
+            close_socket(s);
         }
     }
     modbus_mapping_free(mb_mapping);

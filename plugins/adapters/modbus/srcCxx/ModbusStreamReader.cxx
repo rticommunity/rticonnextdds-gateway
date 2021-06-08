@@ -23,7 +23,7 @@
 
 #include <dds/dds.hpp>
 
-#include "DynamicDataFunc.hpp"
+#include "DynamicDataHelpers.hpp"
 #include "ModbusAdapterConfiguration.hpp"
 #include "ModbusStreamReader.hpp"
 
@@ -31,7 +31,7 @@
 using namespace dds::core::xtypes;
 using namespace dds::domain;
 
-using namespace rti::adapter::common;
+using namespace rti::common;
 using namespace rti::adapter::modbus;
 
 void ModbusStreamReader::on_data_available_thread()
@@ -292,6 +292,7 @@ void ModbusStreamReader::read(
     std::unique_ptr<DynamicData> sample(new DynamicData(*internal_instance_));
 
     samples[0] = sample.release();
+
     return;
 }
 

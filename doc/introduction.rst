@@ -114,7 +114,7 @@ information on its use and configuration:
 
   * Adapters
 
-    * `Modbus <adapters/modbus/index.html>`__ : Integration plugin for the Modbus protocol.
+    * `Modbus® <adapters/modbus/index.html>`__ : Integration plugin for the MODBUS protocol.
     * `MQTT <adapters/mqtt/index.html>`__ : Integration plugin for the MQTT protocol.
 
   * Processors

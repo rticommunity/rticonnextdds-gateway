@@ -2,7 +2,7 @@
 
    <br />
 
-.. |CONNEXT_VERSION_600| replace:: 6.0.0
+.. |CONNEXT_VERSION_601| replace:: 6.0.1
 .. |RS| replace:: *Routing Service*
 .. |RS_SDK| replace:: |RS| *SDK*
 .. |RSs| replace:: *Routing Services*
