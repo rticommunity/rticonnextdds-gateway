@@ -37,6 +37,11 @@ if (RTIGATEWAY_ENABLE_MQTT)
     add_subdirectory("${PAHO_MQTT_C_DIR}")
 endif()
 
+
+if (RTIGATEWAY_ENABLE_KAFKA)
+    add_subdirectory("${LIBRD_KAFKA_C_DIR}")
+endif()
+
 # The following subdirectory should copy dlls that are in the bin directory to
 # lib folder, that is where the dlls should be. This has to be the last thing
 # we do in this CMakeLists.txt file, because it needs the dlls to be created

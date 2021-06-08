@@ -36,6 +36,7 @@ set (TRANSFORMATION_COMMON_DIR "${COMMON_DIR}/transformation")
 set (THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third-party")
 set (LIBMODBUS_DIR "${THIRD_PARTY_DIR}/libmodbus")
 set (PAHO_MQTT_C_DIR "${THIRD_PARTY_DIR}/paho.mqtt.c")
+set (LIBRD_KAFKA_C_DIR "${THIRD_PARTY_DIR}/librdkafka")
 set (RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resource")
 set (UTILS_COMMON_DIR "${COMMON_DIR}/utils")
 set (JSON_PARSER_DIR "${THIRD_PARTY_DIR}/json_parser")
@@ -57,6 +58,7 @@ set (STAGING_INCLUDE_DIR "include")
 option(RTIGATEWAY_ENABLE_ALL "Build everything" ON)
 option(RTIGATEWAY_ENABLE_MODBUS "Build Modbus Adapter" ${RTIGATEWAY_ENABLE_ALL})
 option(RTIGATEWAY_ENABLE_MQTT "Build MQTT Adapter" ${RTIGATEWAY_ENABLE_ALL})
+option(RTIGATEWAY_ENABLE_KAFKA "Build KAFKA Adapter" ${RTIGATEWAY_ENABLE_ALL})
 option(RTIGATEWAY_ENABLE_FWD "Build Forwarder Processor" ${RTIGATEWAY_ENABLE_ALL})
 option(RTIGATEWAY_ENABLE_TSFM_FIELD "Build Field Transformation" ${RTIGATEWAY_ENABLE_ALL})
 option(RTIGATEWAY_ENABLE_TSFM_JSON "Build JSON Transformation" ${RTIGATEWAY_ENABLE_ALL})
@@ -75,6 +77,7 @@ init_install_path()
 # will be build.
 if (RTIGATEWAY_ENABLE_MODBUS
         OR RTIGATEWAY_ENABLE_MQTT
+        OR RTIGATEWAY_ENABLE_KAFKA
         OR RTIGATEWAY_ENABLE_FWD
         OR RTIGATEWAY_ENABLE_TSFM_FIELD
         OR RTIGATEWAY_ENABLE_TSFM_JSON)
@@ -129,6 +132,17 @@ if (RTIGATEWAY_ENABLE_MQTT)
     if (RTIGATEWAY_ENABLE_EXAMPLES)
         add_subdirectory("${EXAMPLES_DIR}/mqtt/mqtt-agent")
     endif()
+endif()
+
+if (RTIGATEWAY_ENABLE_KAFKA)
+    set (RSPLUGIN_PREFIX "RTI_KAFKA")
+    set (STAGING_PLUGIN_DIR "kafka")
+
+    add_subdirectory("${ADAPTERS_DIR}/kafka")
+
+    #if (RTIGATEWAY_ENABLE_EXAMPLES)
+    #    add_subdirectory("${EXAMPLES_DIR}/kafka")
+    #endif()
 endif()
 
 if (RTIGATEWAY_ENABLE_FWD)
