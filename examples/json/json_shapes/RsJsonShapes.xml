@@ -70,6 +70,74 @@
     </types>
     -->
 
+
+    <routing_service name="ShapeToJson">
+
+        <annotation>
+            <documentation>
+                Transforms DynamicData samples to DDS-JSON.
+            </documentation>
+        </annotation>
+
+        <domain_route name="DomainRoute" enabled="true">
+            <participant name="0">
+                <domain_id>0</domain_id>
+            </participant>
+            <participant name="1">
+                <domain_id>1</domain_id>
+                <registered_type name="MessagePayload" type_name="MessagePayload"/>
+            </participant>
+
+            <session name="Session" enabled="true">
+
+                <topic_route name="SquareToSquareJson">
+                    <!-- Reading data from participant 0 -->
+                    <input participant="0">
+                        <topic_name>Square</topic_name>
+                        <!--
+                        Reading a type whose registered name is ShapeType.
+                        As we don't register ourselves on participant 0, its actual
+                        type code will have to be discovered when the router runs
+                        -->
+                        <registered_type_name>ShapeType</registered_type_name>
+                    </input>
+                    <output participant="1">
+                        <!--
+                        The output (DDS-JSON) is a topic called SquareJson
+                        in the participant 1
+                        -->
+                        <topic_name>SquareJson</topic_name>
+                        <registered_type_name>MessagePayload</registered_type_name>
+
+                        <!--
+                        In order to transform the DynamicData to JSON, we should
+                        configure the transformation.
+                        We need to identify the transform type:
+                          * serialize: from DynamicData sample to DDS-JSON
+                          * deserialize: from DDS-JSON to DynamicData
+                        We also need to specify the "string-like" field in the
+                        Content Container. In this case is "data".
+                        -->
+                        <transformation plugin_name="Transformations::Json">
+                            <property>
+                                <value>
+                                    <element>
+                                        <name>transform_type</name>
+                                        <value>serialize</value>
+                                    </element>
+                                    <element>
+                                        <name>buffer_member</name>
+                                        <value>data</value>
+                                    </element>
+                                </value>
+                            </property>
+                        </transformation>
+                    </output>
+                </topic_route>
+            </session>
+        </domain_route>
+    </routing_service>
+
     <routing_service name="JsonToShape">
 
         <annotation>
@@ -93,8 +161,8 @@
                 <topic_route name="SquareJsonToCircle">
                     <!-- Reading data from participant 1 -->
                     <input participant="1">
-                        <!-- Reading topic SquareJSON -->
-                        <topic_name>SquareJson<topic_name>
+                        <!-- Reading topic SquareJson -->
+                        <topic_name>SquareJson</topic_name>
                         <registered_type_name>MessagePayload</registered_type_name>
                     </input>
                     <output participant="2">

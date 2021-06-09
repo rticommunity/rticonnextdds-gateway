@@ -2,8 +2,9 @@
 
 ## Description of the Example
 
-This example shows how to translate a Dynamic Data object of type `ShapeTypeExtended` to
-a string containing its DDS-JSON representation and vice versa.
+This example shows how to translate a Dynamic Data object of type
+`ShapeTypeExtended` to a string containing its DDS-JSON representation and vice
+versa.
 
 The IDL definition for `ShapeTypeExtended` is:
 
@@ -30,7 +31,9 @@ struct ShapeTypeExtended : ShapeType {
 
 ```
 
-The JSON plugin can use any _string-like_ field of a Dynamic Data object to store and read a DDS-JSON representation. The target field can be any of the following types:
+The JSON plugin can use any _string-like_ field of a Dynamic Data object to
+store and read a DDS-JSON representation. The target field can be any of the
+following types:
 
 * `string`
 * `sequence<octet>`
@@ -49,12 +52,18 @@ struct MessagePayload {
 
 ### Routing Service Configuration
 
-The example provides two Routing Service configurations in file [json_shapes.xml](examples/json/json_shapes/json_shapes.xml) which demonstrate the use of the JSON plugin in both directions:
+The example provides two Routing Service configurations in file
+[json_shapes.xml](examples/json/json_shapes/json_shapes.xml) which demonstrate
+the use of the JSON plugin in both directions:
 
 - `ShapeToJson`
-  - Read `ShapeTypeExtended` samples from topic `Square` on domain `0`, convert them to DDS-JSON, store the result in `MessagePayload::data`, and publish `MessagePayload` to topic `SquareJson` on domain `1`.
+  - Read `ShapeTypeExtended` samples from topic `Square` on domain `0`, convert
+    them to DDS-JSON, store the result in `MessagePayload::data`, and publish
+    `MessagePayload` to topic `SquareJson` on domain `1`.
 - `JsonToShape`
-  - Read `MessagePayload` samples from topic `SquareJson` on domain `1`, convert `MessagePayload::data` to `ShapeTypeExtended`, publish `ShapeTypeExtended` to topic `Circle` on domain `2`.
+  - Read `MessagePayload` samples from topic `SquareJson` on domain `1`, convert
+    `MessagePayload::data` to `ShapeTypeExtended`, publish `ShapeTypeExtended`
+    to topic `Circle` on domain `2`.
 
 
 ## Running the Example
@@ -67,27 +76,27 @@ Start two instances of RTI Shapes Demo:
   - Go to *Controls > Configuration*, and change the domain ID to `2`.
   - Subscribe to topic `Circle` with default options.
 
-In two separate command prompt windows for Routing Service instances that will
-run both scenarios described above, we run the following commands from the
-example directory (this is necessary to ensure the application find the
-configuration files):
+In two separate terminals, start two Routing Service instances:
 
-* ShapeTypeExtended to Content Container
+- `ShapeToJson`:
 
-```sh
-rtiroutingservice -cfgFile shapes_to_json_transf.xml -cfgName JsonTransformationExample
-```
+  ```sh
+  cd examples/json/json_shapes
+  rtiroutingservice -cfgFile RsJsonShapes.xml -cfgName ShapeToJson
+  ```
 
-* Content Container to ShapeTypeExtended
+- `JsonToShape`:
 
-```sh
-rtiroutingservice -cfgFile json_to_shapes_transf.xml -cfgName JsonTransformationExample
-```
+  ```sh
+  cd examples/json/json_shapes
+  rtiroutingservice -cfgFile RsJsonShapes.xml -cfgName JsonToShape
+  ```
 
 > **NOTE**: the `rtijsontransf` library should be reachable by the OS. Add the
 > corresponding folders to your `LD_LIBRARY_PATH`, `PATH` or
 > `RTI_LD_LIBRARY_PATH` environment variable (depending on your OS). If you
-> follow these instructions, the folder is: `.../rticonnextdds-gateway/install/lib`.
+> follow these instructions, the folder is:
+> `<path to rticonnextdds-gateway>/install/lib`.
 
 At this time, you should see a BLUE circle in the _Shape Demo 2_.
 
@@ -98,7 +107,10 @@ RTI DDS Spy you will see an output similar to:
 > 1623083351.947987  d +M  0A3200CA    SquareJSON          MessagePayload
 > data: "{ "color":"BLUE", "x":92, "y":25, "shapesize":30, "fillKind":"SOLID_FILL", "angle":0 } "
 
-The `json_shapes.xml` configuration file contains alternative data types which show the use of other _string-like_ types as containers for DDS-JSON representations.
+The `json_shapes.xml` configuration file contains alternative data types which
+show the use of other _string-like_ types as containers for DDS-JSON
+representations.
 
-If you want to test these different data types, you can comment the
-`<types>` tag in the XML file, and enable one of the alternative definitions which are commented out by default.
+If you want to test these different data types, you can comment the `<types>`
+tag in the XML file, and enable one of the alternative definitions which are
+commented out by default.

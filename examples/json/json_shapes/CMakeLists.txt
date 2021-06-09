@@ -20,8 +20,7 @@ set(EXAMPLE_NAME json_shapes)
 # Copy the configuration files to the binary diractory
 # List of the files to copy
 set(JSON_SHAPES_EXAMPLE_CONFIG_FILES
-    "json_to_shapes_transf.xml"
-    "shapes_to_json_transf.xml"
+    "RsJsonShapes.xml"
 )
 
 copy_files(
