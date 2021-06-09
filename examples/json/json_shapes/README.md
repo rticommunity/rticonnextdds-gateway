@@ -2,10 +2,10 @@
 
 ## Description of the Example
 
-This example shows to translate a Dynamic Data object (`ShapeTypeExtended`) to a
-DDS-JSON representation of it and viceversa.
+This example shows how to translate a Dynamic Data object of type `ShapeTypeExtended` to
+a string containing its DDS-JSON representation and vice versa.
 
-The IDL representation of the `ShapeTypeExtended` is:
+The IDL definition for `ShapeTypeExtended` is:
 
 ```idl
 enum ShapeFillKind {
@@ -30,8 +30,7 @@ struct ShapeTypeExtended : ShapeType {
 
 ```
 
-The DDS-JSON representation is contained in a Dynamic Data object with a
-_string-like_ field:
+The JSON plugin can use any _string-like_ field of a Dynamic Data object to store and read a DDS-JSON representation. The target field can be any of the following types:
 
 * `string`
 * `sequence<octet>`
@@ -39,11 +38,7 @@ _string-like_ field:
 * `octet[N]`
 * `char[N]`
 
-From now on, the Dynamic Data which contains the DDS-JSON representation is
-called `Content Container` since it contains the DDS-JSON content.
-
-This example uses the following datatype as `Content Container` to store
-DDS-JSON samples:
+The example uses type `MessagePayload` to store DDS-JSON representations:
 
 ```idl
 struct MessagePayload {
@@ -52,28 +47,25 @@ struct MessagePayload {
 //@Extensibility EXTENSIBLE_EXTENSIBILITY
 ```
 
-### ShapeTypeExtended to Content Container
+### Routing Service Configuration
 
-This example reads samples in the topic `Square` of type `ShapeTypeExtended` in
-the domain ID 0 and publishes a DDS-JSON representation of them in the topic
-`SquareJSON` in the domain ID 1.
+The example provides two Routing Service configurations in file [json_shapes.xml](examples/json/json_shapes/json_shapes.xml) which demonstrate the use of the JSON plugin in both directions:
 
-### Content Container to ShapeTypeExtended
-
-In order to show how to transform a DDS-JSON sample to Dynamic Data, this
-example will read `Content Container` samples from the domain ID 1 and topic
-`SquareJSON` and will publish them in the domain ID 2 in the topic `Circle`.
+- `ShapeToJson`
+  - Read `ShapeTypeExtended` samples from topic `Square` on domain `0`, convert them to DDS-JSON, store the result in `MessagePayload::data`, and publish `MessagePayload` to topic `SquareJson` on domain `1`.
+- `JsonToShape`
+  - Read `MessagePayload` samples from topic `SquareJson` on domain `1`, convert `MessagePayload::data` to `ShapeTypeExtended`, publish `ShapeTypeExtended` to topic `Circle` on domain `2`.
 
 
 ## Running the Example
 
-Open two separate RTI Shape Demo applications and:
-* Shape Demo 1:
-  * Change domain ID to 0 in Controls/Configuration.
-  * Publish a `Square` with the default options (BLUE color).
-* Shape Demo 2
-  * Change domain ID to 2 in Controls/Configuration.
-  * Subscribe to the `Circle` topic with the default options.
+Start two instances of RTI Shapes Demo:
+- Shapes Demo 1:
+  - Go to *Controls > Configuration*, and make sure the domain ID is `0`.
+  - Start publishing a `Square` with default options ("BLUE" color).
+- Shapes Demo 2:
+  - Go to *Controls > Configuration*, and change the domain ID to `2`.
+  - Subscribe to topic `Circle` with default options.
 
 In two separate command prompt windows for Routing Service instances that will
 run both scenarios described above, we run the following commands from the
@@ -106,6 +98,7 @@ RTI DDS Spy you will see an output similar to:
 > 1623083351.947987  d +M  0A3200CA    SquareJSON          MessagePayload
 > data: "{ "color":"BLUE", "x":92, "y":25, "shapesize":30, "fillKind":"SOLID_FILL", "angle":0 } "
 
-If you want to test different _string-like_ datatypes, you can comment the
-`<types>` tag in both XML files (`shapes_to_json_transf.xml` and
-`json_to_shapes_transf.xml`) and uncomment a different datatype definition.
+The `json_shapes.xml` configuration file contains alternative data types which show the use of other _string-like_ types as containers for DDS-JSON representations.
+
+If you want to test these different data types, you can comment the
+`<types>` tag in the XML file, and enable one of the alternative definitions which are commented out by default.

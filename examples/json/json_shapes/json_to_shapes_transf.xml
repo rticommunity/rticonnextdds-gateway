@@ -70,7 +70,7 @@
     </types>
     -->
 
-    <routing_service name="JsonTransformationExample">
+    <routing_service name="JsonToShape">
 
         <annotation>
             <documentation>
@@ -94,7 +94,7 @@
                     <!-- Reading data from participant 1 -->
                     <input participant="1">
                         <!-- Reading topic SquareJSON -->
-                        <topic_name>SquareJSON</topic_name>
+                        <topic_name>SquareJson<topic_name>
                         <registered_type_name>MessagePayload</registered_type_name>
                     </input>
                     <output participant="2">
@@ -108,7 +108,8 @@
                           * serialize: from DynamicData sample to DDS-JSON
                           * deserialize: from DDS-JSON to DynamicData
                         We also need to specify the "string-like" field in the
-                        Content Container. In this case is "data".
+                        input samples.
+                        In this case, the field is "data" from `MessagePayload`.
                         -->
                         <transformation plugin_name="Transformations::Json">
                             <property>
