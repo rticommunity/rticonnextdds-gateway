@@ -90,7 +90,7 @@
 
             <session name="Session" enabled="true">
 
-                <topic_route name="SquareJSON2">
+                <topic_route name="SquareJsonToCircle">
                     <!-- Reading data from participant 1 -->
                     <input participant="1">
                         <!-- Reading topic SquareJSON -->
