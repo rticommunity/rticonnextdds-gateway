@@ -53,7 +53,7 @@ struct MessagePayload {
 ### Routing Service Configuration
 
 The example provides two Routing Service configurations in file
-[json_shapes.xml](examples/json/json_shapes/json_shapes.xml) which demonstrate
+[RsJsonShapes.xml](examples/json/json_shapes/RsJsonShapes.xml) which demonstrate
 the use of the JSON plugin in both directions:
 
 - `ShapeToJson`
@@ -95,7 +95,7 @@ In two separate terminals, start two Routing Service instances:
 > **NOTE**: the `rtijsontransf` library should be reachable by the OS. Add the
 > corresponding folders to your `LD_LIBRARY_PATH`, `PATH` or
 > `RTI_LD_LIBRARY_PATH` environment variable (depending on your OS). If you
-> follow these instructions, the folder is:
+> followed the default building instructions, the folder to include is:
 > `<path to rticonnextdds-gateway>/install/lib`.
 
 At this time, you should see a BLUE circle in the _Shape Demo 2_.
@@ -107,7 +107,7 @@ RTI DDS Spy you will see an output similar to:
 > 1623083351.947987  d +M  0A3200CA    SquareJSON          MessagePayload
 > data: "{ "color":"BLUE", "x":92, "y":25, "shapesize":30, "fillKind":"SOLID_FILL", "angle":0 } "
 
-The `json_shapes.xml` configuration file contains alternative data types which
+The `RsJsonShapes.xml` configuration file contains alternative data types which
 show the use of other _string-like_ types as containers for DDS-JSON
 representations.
 
