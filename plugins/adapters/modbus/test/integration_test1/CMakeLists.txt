@@ -19,10 +19,11 @@ include("${RESOURCE_DIR}/cmake/DdsFunctions.cmake")
 set(TEST_NAME integration_test1)
 
 # Copy the USER_QOS_PROFILES before generating the code
-# This is not neede since we could install that file directly. However, for
+# This is not needed since we could install that file directly. However, for
 # consistency between the 'build' and 'install' directories, this is copied
-# to the binary directory so codegen doesn't generate this file in the binary
-# directory.
+# to the binary directory so codegen doesn't generate 'USER_QOS_PROFILES.xml' in
+# the binary directory.
+
 copy_files(
     CUSTOM_TARGET_NAME integration-test1-copy-qos
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/dds_type"

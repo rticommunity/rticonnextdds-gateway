@@ -22,10 +22,10 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dds_reader")
 
 # Copy the USER_QOS_PROFILES before generating the code
 # List of the files to copy
-# This is not neede since we could install that file directly. However, for
+# This is not needed since we could install that file directly. However, for
 # consistency between the 'build' and 'install' directories, this is copied
-# to the binary directory so codegen doesn't generate this file in the binary
-# directory.
+# to the binary directory so codegen doesn't generate 'USER_QOS_PROFILES.xml' in
+# the binary directory.
 
 copy_files(
     CUSTOM_TARGET_NAME co2-lcd-eth-example-config
