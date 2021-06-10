@@ -17,30 +17,15 @@ include("${RESOURCE_DIR}/cmake/common_functions.cmake")
 
 set(EXAMPLE_NAME json_shapes)
 
-# Copy the configuration files to the binary diractory
-# List of the files to copy
-set(JSON_SHAPES_EXAMPLE_CONFIG_FILES
-    "RsJsonShapes.xml"
-)
-
-copy_files(
-    CUSTOM_TARGET_NAME JSON_SHAPES_EXAMPLE_CONFIG
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}"
-    LIST_OF_FILES_RELATIVE_PATH ${JSON_SHAPES_EXAMPLE_CONFIG_FILES}
-)
-
-add_dependencies(${RSPLUGIN_LIB_NAME} JSON_SHAPES_EXAMPLE_CONFIG)
-
 # staging files
 # Config files
-foreach(FILE ${JSON_SHAPES_EXAMPLE_CONFIG_FILES})
-    install(
-        FILES "${CMAKE_CURRENT_BINARY_DIR}/${FILE}"
-        DESTINATION "${STAGING_EXAMPLES_DIR}/${STAGING_PLUGIN_DIR}/${EXAMPLE_NAME}"
-    )
-endforeach()
+
+set(JSON_TRANSFORMATION_INSTALL_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/RsJsonShapes.xml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+)
 
 install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+    FILES ${JSON_TRANSFORMATION_INSTALL_FILES}
     DESTINATION "${STAGING_EXAMPLES_DIR}/${STAGING_PLUGIN_DIR}/${EXAMPLE_NAME}"
 )
