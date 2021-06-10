@@ -19,7 +19,7 @@ include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
 generate_doc(
     PLUGIN_NAME "FWD Processor"
-    CUSTOM_TARGET_NAME "FWD_PROCESSOR_DOC"
+    CUSTOM_TARGET_NAME forwarding-processor-doc
     INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/html"
     DEPENDENCIES

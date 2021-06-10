@@ -26,7 +26,7 @@ include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
 generate_doc(
     PLUGIN_NAME "GENERAL"
-    CUSTOM_TARGET_NAME "GENERAL_DOC"
+    CUSTOM_TARGET_NAME "general-doc"
     INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/html"
     DEPENDENCIES

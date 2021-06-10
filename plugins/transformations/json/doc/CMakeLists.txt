@@ -19,7 +19,7 @@ include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
 generate_doc(
     PLUGIN_NAME "JSON Transformation"
-    CUSTOM_TARGET_NAME "JSON_TRANSFORMATION_DOC"
+    CUSTOM_TARGET_NAME json-transformation-doc
     INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/html"
     DEPENDENCIES

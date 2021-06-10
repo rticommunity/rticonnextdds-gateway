@@ -19,7 +19,7 @@ include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
 generate_doc(
     PLUGIN_NAME "Field Transformation"
-    CUSTOM_TARGET_NAME "FIELD_TRANSFORMATION_DOC"
+    CUSTOM_TARGET_NAME field-transformation-doc
     INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/html"
     DEPENDENCIES

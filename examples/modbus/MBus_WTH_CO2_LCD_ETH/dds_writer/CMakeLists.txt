@@ -16,17 +16,6 @@
 include("${RESOURCE_DIR}/cmake/DdsFunctions.cmake")
 include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
-# Copy the USER_QOS_PROFILES before generating the code
-# List of the files to copy
-set(CO2_LCD_ETH_EXAMPLE_WRITER_QOS_FILE
-    "USER_QOS_PROFILES.xml"
-)
-
-copy_files(
-    CUSTOM_TARGET_NAME CO2_LCD_ETH_EXAMPLE_WRITER
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}"
-    LIST_OF_FILES_RELATIVE_PATH ${CO2_LCD_ETH_EXAMPLE_WRITER_QOS_FILE})
-
 set(IDL_NAME "MBus_WTH_CO2_LCD_ETH_WRITE")
 
 # Generate codegen files
@@ -50,10 +39,6 @@ target_link_libraries(MBus_WTH_CO2_LCD_ETH_WRITE
     PRIVATE
         RTIConnextDDS::c_api
 )
-
-# add the dependency of the copying step to the current target
-add_dependencies(MBus_WTH_CO2_LCD_ETH_WRITE
-    CO2_LCD_ETH_EXAMPLE_WRITER)
 
 # staging files
 install(
