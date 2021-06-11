@@ -13,15 +13,15 @@
 #                                                                             #
 ###############################################################################
 
-function(connextdds_run_codegen)
-    set(BOOLEANS)
-    set(SINGLE_VALUE_ARGS IDL_FILE LANGUAGE OUTPUT_DIR)
-    set(MULTI_VALUE_ARGS INPUT_PARAMS)
+function(rtigw_connextdds_run_codegen)
+    set(_BOOLEANS)
+    set(_SINGLE_VALUE_ARGS IDL_FILE LANGUAGE OUTPUT_DIR)
+    set(_MULTI_VALUE_ARGS INPUT_PARAMS)
 
     cmake_parse_arguments(_CONNEXTDDS
-        "${BOOLEANS}"
-        "${SINGLE_VALUE_ARGS}"
-        "${MULTI_VALUE_ARGS}"
+        "${_BOOLEANS}"
+        "${_SINGLE_VALUE_ARGS}"
+        "${_MULTI_VALUE_ARGS}"
         ${ARGN}
     )
 

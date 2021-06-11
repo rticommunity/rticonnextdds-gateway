@@ -42,7 +42,7 @@ target_include_directories(${RSPLUGIN_LIB_NAME}
 
 target_link_libraries(${RSPLUGIN_LIB_NAME}
     PRIVATE
-        ${ROUTING_SERVICE_CXX_LIBRARIES}
+        RTIConnextDDS::routing_service_cpp2
         modbus
 )
 
@@ -57,5 +57,5 @@ install(
 ###############################################################################
 # Build documentation and tests if they are enabled
 ###############################################################################
-m_add_doc_if_exist()
-m_add_test_if_exist()
+rtigw_add_doc()
+rtigw_add_tests()

@@ -24,7 +24,7 @@ set(DOC_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
 include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
-generate_doc(
+rtigw_generate_doc(
     PLUGIN_NAME "GENERAL"
     CUSTOM_TARGET_NAME "general-doc"
     INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}"

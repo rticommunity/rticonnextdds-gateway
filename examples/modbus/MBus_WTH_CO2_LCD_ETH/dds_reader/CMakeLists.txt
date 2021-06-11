@@ -19,7 +19,7 @@ include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 set(IDL_NAME "MBus_WTH_CO2_LCD_ETH_INPUT")
 
 # Generate codegen files
-connextdds_run_codegen(
+rtigw_connextdds_run_codegen(
     IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../idl/${IDL_NAME}.idl"
     LANGUAGE "C"
     OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}

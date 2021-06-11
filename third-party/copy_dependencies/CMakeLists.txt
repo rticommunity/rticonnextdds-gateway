@@ -27,4 +27,4 @@
 
 include("${RESOURCE_DIR}/cmake/ConfigureThirdPartyBuilds.cmake")
 
-m_install_dependencies_dll()
+rtigw_install_dependencies_dll()

@@ -24,7 +24,7 @@ set(TEST_NAME integration_test1)
 # to the binary directory so codegen doesn't generate 'USER_QOS_PROFILES.xml' in
 # the binary directory.
 
-copy_files(
+rtigw_copy_files(
     CUSTOM_TARGET_NAME integration-test1-copy-qos
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
     LIST_OF_FILES_RELATIVE_PATH "dds_type/USER_QOS_PROFILES.xml")
@@ -33,7 +33,7 @@ copy_files(
 set(IDL_NAME "TestType")
 
 # Generate codegen files
-connextdds_run_codegen(
+rtigw_connextdds_run_codegen(
     IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/dds_type/${IDL_NAME}.idl"
     LANGUAGE "C"
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/dds_type"

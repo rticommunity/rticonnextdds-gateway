@@ -13,6 +13,8 @@
 #                                                                             #
 ###############################################################################
 
+include("${RESOURCE_DIR}/cmake/ConfigureThirdPartyBuilds.cmake")
+
 # Change the CMAKE_INSTALL variables to install those files under third-party
 # directory. In this way, the third-party object are differentiated from the
 # RTI Gateway objects.
@@ -32,8 +34,7 @@ endif()
 
 
 if (RTIGATEWAY_ENABLE_MQTT)
-    include("${RESOURCE_DIR}/cmake/ConfigureThirdPartyBuilds.cmake")
-    m_configure_paho_build()
+    rtigw_configure_paho_build()
 
     add_subdirectory("${PAHO_MQTT_C_DIR}")
 endif()

@@ -27,7 +27,7 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dds_reader")
 # to the binary directory so codegen doesn't generate 'USER_QOS_PROFILES.xml' in
 # the binary directory.
 
-copy_files(
+rtigw_copy_files(
     CUSTOM_TARGET_NAME co2-lcd-eth-example-config
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}"
     LIST_OF_FILES_RELATIVE_PATH "USER_QOS_PROFILES.xml")

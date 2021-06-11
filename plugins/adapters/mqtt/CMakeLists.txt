@@ -47,7 +47,7 @@ set(GENERATED_SRC_IDL_FILES)
 foreach(IDL_NAME ${ADAPTER_MQTT_IDL})
     # Generate codegen files
     set(CODEGEN_OPTIONS "-unboundedSupport" "-qualifiedEnumerator")
-    connextdds_run_codegen(
+    rtigw_connextdds_run_codegen(
         IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/idl/${IDL_NAME}.idl"
         LANGUAGE "C"
         OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/idl"
@@ -113,11 +113,11 @@ target_include_directories(${RSPLUGIN_LIB_NAME}
 
 target_link_libraries(${RSPLUGIN_LIB_NAME}
     PUBLIC
-        ${ROUTING_SERVICE_C_LIBRARIES}
+        RTIConnextDDS::routing_service_c
         ${PAHO_LIBRARY}
 )
 
-m_configure_plugin_defines()
+rtigw_configure_plugin_defines()
 
 if(RTI_MQTT_ENABLE_STATIC_TYPES)
     list(APPEND ${RSPLUGIN_PREFIX}_DEFINES RTI_MQTT_ENABLE_STATIC_TYPES)
@@ -142,5 +142,5 @@ install(
 ###############################################################################
 # Build documentation and tests if they are enabled
 ###############################################################################
-m_add_doc_if_exist()
-m_add_test_if_exist()
+rtigw_add_doc()
+rtigw_add_tests()

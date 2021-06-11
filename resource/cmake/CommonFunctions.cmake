@@ -13,69 +13,103 @@
 #                                                                             #
 ###############################################################################
 
-function(copy_files)
-    set(BOOLEANS)
-    set(SINGLE_VALUE_ARGS CUSTOM_TARGET_NAME OUTPUT_DIR)
-    set(MULTI_VALUE_ARGS LIST_OF_FILES_RELATIVE_PATH)
+#[[
+rtigw_list_prefix
+-----------------
 
-    cmake_parse_arguments(_COMMON_FUNCTIONS
-        "${BOOLEANS}"
-        "${SINGLE_VALUE_ARGS}"
-        "${MULTI_VALUE_ARGS}"
+ * Brief: prepend a prefix to all the elements of a list
+ * Params:
+ ** LIST: list to add the prefix to all its elements
+ ** PREFIX: prefix to add
+ ** _OUT_VARIABLE: output list that will contain the list with the prefix
+
+ * How to use it:
+
+    rtigw_list_prefix(MY_OUT_VAR
+        INPUT_LIST my_list
+        PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/"
+    )
+]]
+
+function(rtigw_list_prefix _OUT_VARIABLE)
+    set(_BOOLEANS)
+    set(_SINGLE_VALUE_ARGS INPUT_LIST PREFIX)
+    set(_MULTI_VALUE_ARGS)
+
+    cmake_parse_arguments(_args
+        "${_BOOLEANS}"
+        "${_SINGLE_VALUE_ARGS}"
+        "${_MULTI_VALUE_ARGS}"
         ${ARGN}
     )
 
-    # Create the list of files to copy in the origin
-    foreach(FILE ${_COMMON_FUNCTIONS_LIST_OF_FILES_RELATIVE_PATH})
-        list(APPEND FILES_TO_COPY_ORIGIN "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}")
-    endforeach(FILE ${_COMMON_FUNCTIONS_LIST_OF_FILES_RELATIVE_PATH})
+    set(_result)
+    foreach(_val ${_args_INPUT_LIST})
+        list(APPEND _result "${_args_PREFIX}${_val}")
+    endforeach()
+    set(${_OUT_VARIABLE} ${_result} PARENT_SCOPE)
+endfunction()
 
-    # Create the list of files to copy in the output
-    foreach(FILE ${_COMMON_FUNCTIONS_LIST_OF_FILES_RELATIVE_PATH})
-        list(APPEND FILES_TO_COPY_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FILE}")
-    endforeach(FILE ${_COMMON_FUNCTIONS_LIST_OF_FILES_RELATIVE_PATH})
+function(rtigw_copy_files)
+    set(_BOOLEANS)
+    set(_SINGLE_VALUE_ARGS CUSTOM_TARGET_NAME OUTPUT_DIR)
+    set(_MULTI_VALUE_ARGS LIST_OF_FILES_RELATIVE_PATH)
 
+    cmake_parse_arguments(_args
+        "${_BOOLEANS}"
+        "${_SINGLE_VALUE_ARGS}"
+        "${_MULTI_VALUE_ARGS}"
+        ${ARGN}
+    )
+
+    # Create the list of the input and output files to copy
+    rtigw_list_prefix(_files_input
+        INPUT_LIST ${_args_LIST_OF_FILES_RELATIVE_PATH}
+        PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/"
+    )
+
+    rtigw_list_prefix(_files_output
+        INPUT_LIST ${_args_LIST_OF_FILES_RELATIVE_PATH}
+        PREFIX "${CMAKE_CURRENT_BINARY_DIR}/"
+    )
 
     # Create the custom command
     add_custom_command(
         # Indicate what files are generated if this command is executed
         OUTPUT
-            ${FILES_TO_COPY_OUTPUT}
+            ${_files_output}
         # Comment to show while building
         COMMENT
-            "Copying ${_COMMON_FUNCTIONS_CUSTOM_TARGET_NAME} files to binary dir"
+            "Copying ${_args_CUSTOM_TARGET_NAME} files to binary dir"
         # Create the config directory if it doesn't exist
         COMMAND
-            ${CMAKE_COMMAND} -E make_directory
-                "${_COMMON_FUNCTIONS_OUTPUT_DIR}"
+            ${CMAKE_COMMAND} -E make_directory "${_args_OUTPUT_DIR}"
         # Copy the files (only if they are different)
         COMMAND
-            ${CMAKE_COMMAND} -E copy_if_different
-                ${FILES_TO_COPY_ORIGIN}
-                "${_COMMON_FUNCTIONS_OUTPUT_DIR}"
+            ${CMAKE_COMMAND} -E copy_if_different ${_files_input} "${_args_OUTPUT_DIR}"
     )
     # Create the custom target
-    add_custom_target(${_COMMON_FUNCTIONS_CUSTOM_TARGET_NAME}
+    add_custom_target(${_args_CUSTOM_TARGET_NAME}
         # To execute this custom target (that will do nothing), we need first to
         # generate these files. This triggers the custom command from the previous
         # statement
         DEPENDS
-            ${FILES_TO_COPY_OUTPUT}
+            ${_files_output}
     )
 endfunction()
 
 
 ###############################################################################
 
-function(generate_doc)
-    set(BOOLEANS DOXYGEN_ENABLED)
-    set(SINGLE_VALUE_ARGS PLUGIN_NAME CUSTOM_TARGET_NAME INPUT_DIR OUTPUT_DIR)
-    set(MULTI_VALUE_ARGS DEPENDENCIES)
+function(rtigw_generate_doc)
+    set(_BOOLEANS DOXYGEN_ENABLED)
+    set(_SINGLE_VALUE_ARGS PLUGIN_NAME CUSTOM_TARGET_NAME INPUT_DIR OUTPUT_DIR)
+    set(_MULTI_VALUE_ARGS DEPENDENCIES)
 
-    cmake_parse_arguments(_COMMON_FUNCTIONS
-        "${BOOLEANS}"
-        "${SINGLE_VALUE_ARGS}"
-        "${MULTI_VALUE_ARGS}"
+    cmake_parse_arguments(_args
+        "${_BOOLEANS}"
+        "${_SINGLE_VALUE_ARGS}"
+        "${_MULTI_VALUE_ARGS}"
         ${ARGN}
     )
 
@@ -85,52 +119,49 @@ function(generate_doc)
 
     add_custom_command(
         OUTPUT
-            ${_COMMON_FUNCTIONS_OUTPUT_DIR}
+            ${_args_OUTPUT_DIR}
         COMMENT
-            "Generating ${_COMMON_FUNCTIONS_PLUGIN_NAME} Documentation"
+            "Generating ${_args_PLUGIN_NAME} Documentation"
         COMMAND
-            ${SPHINX_BIN}
-                ${_COMMON_FUNCTIONS_INPUT_DIR}
-                ${_COMMON_FUNCTIONS_OUTPUT_DIR}
-                ${SPHINX_OPTS}
+            ${SPHINX_BIN} ${_args_INPUT_DIR} ${_args_OUTPUT_DIR} ${SPHINX_OPTS}
         DEPENDS
-            ${_COMMON_FUNCTIONS_DEPENDENCIES}
+            ${_args_DEPENDENCIES}
         VERBATIM
     )
 
-    add_custom_target(${_COMMON_FUNCTIONS_CUSTOM_TARGET_NAME} ALL
+    add_custom_target(${_args_CUSTOM_TARGET_NAME} ALL
         DEPENDS
-            "${_COMMON_FUNCTIONS_OUTPUT_DIR}"
+            "${_args_OUTPUT_DIR}"
     )
 
-    if (${_COMMON_FUNCTIONS_DOXYGEN_ENABLED})
+    if (${_args_DOXYGEN_ENABLED})
         if (NOT DOXYGEN_BIN)
             set(DOXYGEN_BIN "doxygen")
         endif()
 
         add_custom_command(
             OUTPUT
-                "${_COMMON_FUNCTIONS_INPUT_DIR}/doxyoutput"
+                "${_args_INPUT_DIR}/doxyoutput"
             COMMAND
-                ${DOXYGEN_BIN} "${_COMMON_FUNCTIONS_INPUT_DIR}/Doxyfile"
+                ${DOXYGEN_BIN} "${_args_INPUT_DIR}/Doxyfile"
             WORKING_DIRECTORY
-                "${_COMMON_FUNCTIONS_INPUT_DIR}"
+                "${_args_INPUT_DIR}"
             DEPENDS
-                "${_COMMON_FUNCTIONS_INPUT_DIR}/Doxyfile"
+                "${_args_INPUT_DIR}/Doxyfile"
             VERBATIM
         )
-        add_custom_target("${_COMMON_FUNCTIONS_CUSTOM_TARGET_NAME}_DOXYGEN"
+        add_custom_target("${_args_CUSTOM_TARGET_NAME}_DOXYGEN"
             DEPENDS
-                "${_COMMON_FUNCTIONS_INPUT_DIR}/doxyoutput"
+                "${_args_INPUT_DIR}/doxyoutput"
         )
 
-        add_dependencies(${_COMMON_FUNCTIONS_CUSTOM_TARGET_NAME}
-            ${_COMMON_FUNCTIONS_CUSTOM_TARGET_NAME}_DOXYGEN)
+        add_dependencies(${_args_CUSTOM_TARGET_NAME}
+            ${_args_CUSTOM_TARGET_NAME}_DOXYGEN)
     endif()
 
 endfunction()
 
-macro(m_configure_plugin_defines)
+function(rtigw_configure_plugin_defines)
     if (RTIGATEWAY_ENABLE_LOG
             OR CMAKE_BUILD_TYPE STREQUAL "Debug"
             OR NOT CMAKE_BUILD_TYPE)
@@ -149,9 +180,9 @@ macro(m_configure_plugin_defines)
 
     set(${RSPLUGIN_PREFIX}_DEFINES     "${${RSPLUGIN_PREFIX}_DEFINES}"
             CACHE INTERNAL "List compiler defines")
-endmacro()
+endfunction()
 
-function(set_required_variable _OUT_VARIABLE)
+function(rtigw_set_required_variable _OUT_VARIABLE)
     set(candidate_vars ${ARGN})
     foreach(v ${candidate_vars})
         # Give preference to variables passed directly to cmake
@@ -171,28 +202,65 @@ function(set_required_variable _OUT_VARIABLE)
         "environment, or as an argument to cmake.")
 endfunction()
 
-macro(m_init_install_path)
+function(rtigw_init_install_path)
     if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX        "${CMAKE_CURRENT_BINARY_DIR}/install")
         message(STATUS "Using default CMAKE_INSTALL_PREFIX = '${CMAKE_INSTALL_PREFIX}'")
     endif()
-endmacro()
+endfunction()
+
+#[[
+rtigw_configure_connextdds
+--------------------------
+
+ * Brief: configures RTI Connext DDS by using its FindPackage
+ * Params:
+ ** _CONNEXTDDS_VERSION: version of RTI Connext DDS to configure
+ * Restrictions: CONNEXTDDS_DIR should be set
+ * How to use it:
+
+    rtigw_configure_connextdds(6.1.0)
+]]
+
+function(rtigw_configure_connextdds _CONNEXTDDS_VERSION)
+    # Configure Connext DDS dependencies
+    rtigw_set_required_variable(CONNEXTDDS_DIR NDDSHOME CONNEXTDDS_DIR)
+
+    # CONNEXTDDS_ARCH is not required, but recommended
+    # eg -DCONNEXTDDS_ARCH=x64Linux4gcc7.3.0
+    if (NOT DEFINED CONNEXTDDS_ARCH AND DEFINED ENV{CONNEXTDDS_ARCH})
+        set(CONNEXTDDS_ARCH "$ENV{CONNEXTDDS_ARCH}")
+    endif()
+
+    if (DEFINED CONNEXTDDS_ARCH)
+        message(STATUS "CONNEXTDDS_ARCH set to <${CONNEXTDDS_ARCH}>")
+    endif()
+
+    list(APPEND CMAKE_MODULE_PATH "${CONNEXTDDS_DIR}/resource/cmake")
+
+    find_package(
+        RTIConnextDDS
+            ${_CONNEXTDDS_VERSION}
+        COMPONENTS
+            routing_service core
+        REQUIRED)
+
+endfunction()
 
 #[[
 
-m_init_project_configuration
---------------------------
+rtigw_init_globals
+------------------
 
- * Type: macro
  * Brief: configures all the global parameters used by the RTI Gateway
  * Params: no parameters
  * Restrictions: this should only be used in the main CMakeLists.txt
  * How to use it:
 
-    m_init_project_configuration()
+    rtigw_init_globals()
 ]]
 
-macro(m_init_project_configuration)
+macro(rtigw_init_globals)
 
     SET(BUILD_SHARED_LIBS ON)
 
@@ -206,7 +274,6 @@ macro(m_init_project_configuration)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
     # Set common variables
-    set(GATEWAY_DOC "${CMAKE_CURRENT_SOURCE_DIR}/doc")
     set(COMMON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/common")
     set(JSON_PARSER_WRAPPER_DIR "${COMMON_DIR}/json_parser")
     set(DDS_COMMON_DIR "${COMMON_DIR}/dds_specific")
@@ -245,18 +312,10 @@ macro(m_init_project_configuration)
     option(RTIGATEWAY_ENABLE_LOG "Enable logging to stdout" OFF)
     option(RTIGATEWAY_ENABLE_TRACE "Enable support for trace-level logging" OFF)
 
-    m_init_install_path()
+    rtigw_init_install_path()
 
-    # Set RTIGATEWAY_CONFIGURE_CONNEXT to check whether we need to configure
-    # RTI Connext DDS.
-    set(RTIGATEWAY_CONFIGURE_CONNEXT OFF)
-    if (RTIGATEWAY_ENABLE_MODBUS
-            OR RTIGATEWAY_ENABLE_MQTT
-            OR RTIGATEWAY_ENABLE_FWD
-            OR RTIGATEWAY_ENABLE_TSFM_FIELD
-            OR RTIGATEWAY_ENABLE_TSFM_JSON)
-        set(RTIGATEWAY_CONFIGURE_CONNEXT ON)
-    endif()
+    # Only check RTI Connext DDS dependencies if at least one plugin will be built.
+    rtigw_configure_connextdds(6.0.1)
 
     if (RTIGATEWAY_ENABLE_TESTS)
         enable_testing()
@@ -265,112 +324,77 @@ macro(m_init_project_configuration)
 endmacro()
 
 #[[
-m_configure_connext_dds
----------------------
 
- * Type: macro
- * Brief: configures RTI Connext DDS by using its FindPackage
- * Params:
- ** _CONNEXTDDS_VERSION: version of RTI Connext DDS to configure
- * Restrictions: CONNEXTDDS_DIR should be set
- * How to use it:
+rtigw_add_subdirectory_if
+-------------------------
 
-    m_configure_connext_dds(6.1.0)
-]]
-
-macro(m_configure_connext_dds _CONNEXTDDS_VERSION)
-    # Configure Connext DDS dependencies
-    set_required_variable(CONNEXTDDS_DIR NDDSHOME CONNEXTDDS_DIR)
-
-    # CONNEXTDDS_ARCH is not required, but recommended
-    # eg -DCONNEXTDDS_ARCH=x64Linux4gcc7.3.0
-    if (DEFINED CONNEXTDDS_ARCH)
-        message(STATUS "CONNEXTDDS_ARCH set to <${CONNEXTDDS_ARCH}>")
-    endif()
-
-    list(APPEND CMAKE_MODULE_PATH "${CONNEXTDDS_DIR}/resource/cmake")
-
-    find_package(
-        RTIConnextDDS
-            ${_CONNEXTDDS_VERSION}
-        COMPONENTS
-            routing_service core
-        REQUIRED)
-
-    message(STATUS "definition added ${CONNEXTDDS_DEFINITIONS}")
-
-    # Configure Connext DDS libraries variables
-    set(ROUTING_SERVICE_CXX_LIBRARIES
-        RTIConnextDDS::routing_service_cpp2
-    )
-    set(ROUTING_SERVICE_C_LIBRARIES
-        RTIConnextDDS::routing_service_c
-    )
-endmacro()
-
-#[[
-
-m_add_subdirectory_if_exists
---------------------------
-
- * Type: macro
  * Brief: adds a subdirectory if it exists
  * Params:
  ** _SUBDIRECTORY_DIR: path to the subdirectory to add
  * How to use it:
 
-    m_add_subdirectory_if_exists("${CMAKE_CURRENT_SOURCE_DIR}/mySubdirectory")
+    rtigw_add_subdirectory_if("${CMAKE_CURRENT_SOURCE_DIR}/mySubdirectory"
+        IF RTIGATEWAY_ENABLE_DOCS)
 ]]
-macro(m_add_subdirectory_if_exists _SUBDIRECTORY_DIR)
-    if (IS_DIRECTORY "${_SUBDIRECTORY_DIR}")
-        add_subdirectory("${_SUBDIRECTORY_DIR}")
+function(rtigw_add_subdirectory_if _dir)
+    set(_BOOLEANS)
+    set(_SINGLE_VALUE_ARGS IF)
+    set(_MULTI_VALUE_ARGS)
+
+    cmake_parse_arguments(_args
+        "${_BOOLEANS}"
+        "${_SINGLE_VALUE_ARGS}"
+        "${_MULTI_VALUE_ARGS}"
+        ${ARGN}
+    )
+
+    if (NOT DEFINED _args_IF)
+        set(_args_IF OFF)
     endif()
-endmacro()
+
+    if (IS_DIRECTORY "${_dir}" AND ${_args_IF})
+        add_subdirectory("${_dir}")
+    endif()
+
+endfunction()
 
 #[[
 
-m_add_doc_if_exist
-----------------
+rtigw_add_doc
+-------------
 
- * Type: macro
  * Brief: adds the "doc" directory if it exists in the current source
           directory. This folder is only added if "building doc" is enabled.
  * Params: no parameters
  * How to use it:
 
-    m_add_doc_if_exist()
+    rtigw_add_doc()
 ]]
-macro(m_add_doc_if_exist)
-    if (RTIGATEWAY_ENABLE_DOCS)
-        m_add_subdirectory_if_exists("${CMAKE_CURRENT_SOURCE_DIR}/doc")
-    endif()
-endmacro()
+function(rtigw_add_doc)
+    rtigw_add_subdirectory_if("${CMAKE_CURRENT_SOURCE_DIR}/doc" IF RTIGATEWAY_ENABLE_DOCS)
+endfunction()
 
 #[[
 
-m_add_test_if_exist
------------------
+rtigw_add_tests
+---------------
 
- * Type: macro
  * Brief: adds the "test" directory if it exists in the current source
           directory. This folder is only added if testing is enabled.
  * Params: no parameters
  * How to use it:
 
-    m_add_test_if_exist()
+    rtigw_add_tests()
 ]]
-macro(m_add_test_if_exist)
-    if (RTIGATEWAY_ENABLE_TESTS)
-        m_add_subdirectory_if_exists("${CMAKE_CURRENT_SOURCE_DIR}/test")
-    endif()
-endmacro()
+function(rtigw_add_tests)
+    rtigw_add_subdirectory_if("${CMAKE_CURRENT_SOURCE_DIR}/test" IF RTIGATEWAY_ENABLE_TESTS)
+endfunction()
 
 #[[
 
-add_plugin
-----------
+rtigw_add_plugin
+----------------
 
- * Type: function
  * Brief: adds the corresponding plugin directories if they are added. These
           directories are: the main plugin directory, related resources and
           related examples for that plugin.
@@ -384,7 +408,7 @@ add_plugin
  * Restrictions: CONNEXTDDS_DIR should be set
  * How to use it:
 
-    add_plugin(
+    rtigw_add_plugin(
         ENABLE_PLUGIN RTIGATEWAY_ENABLE_MODBUS
         PREFIX "RTI_MODBUS"
         STAGING_DIR "modbus"
@@ -392,51 +416,46 @@ add_plugin
         PLUGIN_TYPE "ADAPTER"
     )
 ]]
-function(add_plugin)
-    set(BOOLEANS ENABLE_PLUGIN)
-    set(SINGLE_VALUE_ARGS PREFIX STAGING_DIR PLUGIN_DIR_NAME PLUGIN_TYPE)
-    set(MULTI_VALUE_ARGS)
+function(rtigw_add_plugin)
+    set(_BOOLEANS)
+    set(_SINGLE_VALUE_ARGS PREFIX STAGING_DIR PLUGIN_DIR_NAME PLUGIN_TYPE ENABLE_PLUGIN)
+    set(_MULTI_VALUE_ARGS)
 
-    cmake_parse_arguments(_COMMON_FUNCTIONS
-        "${BOOLEANS}"
-        "${SINGLE_VALUE_ARGS}"
-        "${MULTI_VALUE_ARGS}"
+    cmake_parse_arguments(_args
+        "${_BOOLEANS}"
+        "${_SINGLE_VALUE_ARGS}"
+        "${_MULTI_VALUE_ARGS}"
         ${ARGN}
     )
 
     set(PLUGIN_TYPE_DIR "")
-    if (${_COMMON_FUNCTIONS_PLUGIN_TYPE} STREQUAL "ADAPTER")
+    if (${_args_PLUGIN_TYPE} STREQUAL "ADAPTER")
         set(PLUGIN_TYPE_DIR ${ADAPTERS_DIR})
-    elseif(${_COMMON_FUNCTIONS_PLUGIN_TYPE} STREQUAL "PROCESSOR")
+    elseif(${_args_PLUGIN_TYPE} STREQUAL "PROCESSOR")
         set(PLUGIN_TYPE_DIR ${PROCESSORS_DIR})
-    elseif(${_COMMON_FUNCTIONS_PLUGIN_TYPE} STREQUAL "TRANSFORMATION")
+    elseif(${_args_PLUGIN_TYPE} STREQUAL "TRANSFORMATION")
         set(PLUGIN_TYPE_DIR ${TRANSFORMATIONS_DIR})
     else()
         mesasge(FATAL_ERROR
-            "The plugin ${_COMMON_FUNCTIONS_PLUGIN_DIR_NAME} is not identified
+            "The plugin ${_args_PLUGIN_DIR_NAME} is not identified
             as ADAPTER, PROCESSOR nor TRANSFORMATION"
         )
     endif()
 
-    if (${_COMMON_FUNCTIONS_ENABLE_PLUGIN})
-        set(RSPLUGIN_PREFIX ${_COMMON_FUNCTIONS_PREFIX})
-        set(STAGING_PLUGIN_DIR ${_COMMON_FUNCTIONS_STAGING_DIR})
-
+    if (${_args_ENABLE_PLUGIN})
+        set(RSPLUGIN_PREFIX ${_args_PREFIX})
+        set(STAGING_PLUGIN_DIR ${_args_STAGING_DIR})
         # Add plugin
-        m_add_subdirectory_if_exists(
-            "${PLUGIN_TYPE_DIR}/${_COMMON_FUNCTIONS_PLUGIN_DIR_NAME}"
-        )
+        add_subdirectory("${PLUGIN_TYPE_DIR}/${_args_PLUGIN_DIR_NAME}")
+
         # Add resources
-        m_add_subdirectory_if_exists(
-            "${RESOURCE_DIR}/${_COMMON_FUNCTIONS_PLUGIN_DIR_NAME}"
+        rtigw_add_subdirectory_if(
+            "${RESOURCE_DIR}/${_args_PLUGIN_DIR_NAME}"
         )
 
         # Add examples if they are enabled
-        if (RTIGATEWAY_ENABLE_EXAMPLES)
-            m_add_subdirectory_if_exists(
-                "${EXAMPLES_DIR}/${_COMMON_FUNCTIONS_PLUGIN_DIR_NAME}"
-            )
-        endif()
+        rtigw_add_subdirectory_if(
+            "${EXAMPLES_DIR}/${_args_PLUGIN_DIR_NAME}" IF RTIGATEWAY_ENABLE_EXAMPLES)
 
     endif()
 

@@ -16,20 +16,15 @@
 cmake_minimum_required (VERSION 3.10)
 project (RTIGateway VERSION 6.1.0)
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/resource/cmake/CommonFunctions.cmake")
+include(resource/cmake/CommonFunctions.cmake)
 
-m_init_project_configuration()
-
-# Only check RTI Connext DDS dependencies if at least one plugin will be built.
-if (RTIGATEWAY_CONFIGURE_CONNEXT)
-    m_configure_connext_dds(6.0.1)
-endif()
+rtigw_init_globals()
 
 # Configure third-party
 add_subdirectory("${THIRD_PARTY_DIR}")
 
 # Adding adapters
-add_plugin(
+rtigw_add_plugin(
     ENABLE_PLUGIN RTIGATEWAY_ENABLE_MODBUS
     PREFIX "RTI_MODBUS"
     STAGING_DIR "modbus"
@@ -37,7 +32,7 @@ add_plugin(
     PLUGIN_TYPE "ADAPTER"
 )
 
-add_plugin(
+rtigw_add_plugin(
     ENABLE_PLUGIN RTIGATEWAY_ENABLE_MQTT
     PREFIX "RTI_MQTT"
     STAGING_DIR "mqtt"
@@ -46,7 +41,7 @@ add_plugin(
 )
 
 # Adding processors
-add_plugin(
+rtigw_add_plugin(
     ENABLE_PLUGIN RTIGATEWAY_ENABLE_FWD
     PREFIX "RTI_PRCS_FWD"
     STAGING_DIR "fwd"
@@ -55,7 +50,7 @@ add_plugin(
 )
 
 # Adding transformations
-add_plugin(
+rtigw_add_plugin(
     ENABLE_PLUGIN RTIGATEWAY_ENABLE_FWD
     PREFIX "RTI_TSFM_FIELD"
     STAGING_DIR "tsfm_field"
@@ -63,7 +58,7 @@ add_plugin(
     PLUGIN_TYPE "TRANSFORMATION"
 )
 
-add_plugin(
+rtigw_add_plugin(
     ENABLE_PLUGIN RTIGATEWAY_ENABLE_FWD
     PREFIX "RTI_TSFM_JSON"
     STAGING_DIR "tsfm_json"
@@ -72,4 +67,4 @@ add_plugin(
 )
 
 # Add doc if exists
-m_add_doc_if_exist()
+rtigw_add_doc()

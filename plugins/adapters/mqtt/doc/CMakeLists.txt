@@ -15,7 +15,7 @@
 
 include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
-generate_doc(
+rtigw_generate_doc(
     DOXYGEN_ENABLED ON
     PLUGIN_NAME "MQTT Adapter"
     CUSTOM_TARGET_NAME mqtt-adapter-doc

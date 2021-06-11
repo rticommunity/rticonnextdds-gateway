@@ -17,7 +17,7 @@ cmake_minimum_required (VERSION 3.5)
 
 include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
-generate_doc(
+rtigw_generate_doc(
     PLUGIN_NAME "Modbus Adapter"
     CUSTOM_TARGET_NAME modbus-adapter-doc
     INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
