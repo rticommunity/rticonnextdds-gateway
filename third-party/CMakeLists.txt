@@ -15,7 +15,7 @@
 
 # Change the CMAKE_INSTALL variables to install those files under third-party
 # directory. In this way, the third-party object are differentiated from the
-# RTI Gateway objects.
+# RTI Connext Gateway objects.
 # The third-party libraries are 'installed' in the lib directory, outside
 # the third-party/ folder because the plugins do have a direct dependency
 # with them.
