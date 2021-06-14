@@ -18,11 +18,11 @@ cmake_minimum_required (VERSION 3.5)
 include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
 rtigw_generate_doc(
-    PLUGIN_NAME "FWD Processor"
-    CUSTOM_TARGET_NAME forwarding-processor-doc
-    INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/html"
-    DEPENDENCIES
+    PLUGIN "FWD Processor"
+    TARGET forwarding-processor-doc
+    INPUT "${CMAKE_CURRENT_SOURCE_DIR}"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html"
+    DEPENDS
         "${CMAKE_CURRENT_SOURCE_DIR}/conf.py"
         "${CMAKE_CURRENT_SOURCE_DIR}/additional_resources.rst"
         "${CMAKE_CURRENT_SOURCE_DIR}/configuration.rst"

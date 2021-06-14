@@ -99,12 +99,35 @@ function(rtigw_copy_files)
 endfunction()
 
 
-###############################################################################
+#[[
+rtigw_generate_doc
+------------------
 
+ * Brief: generate Sphinx doc form source
+ * Params:
+ ** PLUGIN: name of the plugin that is generating documentation.
+ ** TARGET: custom target name that will be created to generate doc.
+ ** INPUT: input directory where the Sphinx source files are located.
+ ** OUTPUT: output directory to the generated doc.
+ ** DEPENDS: dependencies that will be added. These will be the Sphinx files.
+ ** DOXYGEN: boolean to indicate that it requires to generate doxygen doc.
+
+ * How to use it:
+
+    rtigw_generate_doc(
+        PLUGIN "GENERAL"
+        TARGET "general-doc"
+        INPUT "${CMAKE_CURRENT_SOURCE_DIR}"
+        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html"
+        DEPENDS
+            "${CMAKE_CURRENT_SOURCE_DIR}/conf.py"
+            "${CMAKE_CURRENT_SOURCE_DIR}/building.rst"
+    )
+]]
 function(rtigw_generate_doc)
-    set(_BOOLEANS DOXYGEN_ENABLED)
-    set(_SINGLE_VALUE_ARGS PLUGIN_NAME CUSTOM_TARGET_NAME INPUT_DIR OUTPUT_DIR)
-    set(_MULTI_VALUE_ARGS DEPENDENCIES)
+    set(_BOOLEANS DOXYGEN)
+    set(_SINGLE_VALUE_ARGS PLUGIN TARGET INPUT OUTPUT)
+    set(_MULTI_VALUE_ARGS DEPENDS)
 
     cmake_parse_arguments(_args
         "${_BOOLEANS}"
@@ -119,44 +142,43 @@ function(rtigw_generate_doc)
 
     add_custom_command(
         OUTPUT
-            ${_args_OUTPUT_DIR}
+            ${_args_OUTPUT}
         COMMENT
             "Generating ${_args_PLUGIN_NAME} Documentation"
         COMMAND
-            ${SPHINX_BIN} ${_args_INPUT_DIR} ${_args_OUTPUT_DIR} ${SPHINX_OPTS}
+            ${SPHINX_BIN} ${_args_INPUT} ${_args_OUTPUT} ${SPHINX_OPTS}
         DEPENDS
-            ${_args_DEPENDENCIES}
+            ${_args_DEPENDS}
         VERBATIM
     )
 
-    add_custom_target(${_args_CUSTOM_TARGET_NAME} ALL
+    add_custom_target(${_args_TARGET} ALL
         DEPENDS
-            "${_args_OUTPUT_DIR}"
+            "${_args_OUTPUT}"
     )
 
-    if (${_args_DOXYGEN_ENABLED})
-        if (NOT DOXYGEN_BIN)
-            set(DOXYGEN_BIN "doxygen")
+    if (${_args_DOXYGEN})
+        if (NOT doxygen_bin)
+            set(doxygen_bin "doxygen")
         endif()
 
         add_custom_command(
             OUTPUT
                 "${_args_INPUT_DIR}/doxyoutput"
             COMMAND
-                ${DOXYGEN_BIN} "${_args_INPUT_DIR}/Doxyfile"
+                ${doxygen_bin} "${_args_INPUT_DIR}/Doxyfile"
             WORKING_DIRECTORY
-                "${_args_INPUT_DIR}"
+                "${_args_INPUT}"
             DEPENDS
-                "${_args_INPUT_DIR}/Doxyfile"
+                "${_args_INPUT}/Doxyfile"
             VERBATIM
         )
-        add_custom_target("${_args_CUSTOM_TARGET_NAME}_DOXYGEN"
+        add_custom_target("${_args_TARGET}-doxygen"
             DEPENDS
-                "${_args_INPUT_DIR}/doxyoutput"
+                "${_args_INPUT}/doxyoutput"
         )
 
-        add_dependencies(${_args_CUSTOM_TARGET_NAME}
-            ${_args_CUSTOM_TARGET_NAME}_DOXYGEN)
+        add_dependencies(${_args_TARGET} ${_args_TARGET}-doxygen)
     endif()
 
 endfunction()
