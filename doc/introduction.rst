@@ -5,7 +5,7 @@
 Introduction
 ============
 
-RTI Connext Gateway Architecture
+|RTI_GATEWAY_PLAIN| Architecture
 --------------------------------
 
 The |RTI_GATEWAY_TM| is a software component that allows integrating
@@ -68,7 +68,7 @@ composed of the following components:
 
    |RS| *Plugins Architecture*
 
-RTI Connext Gateway Framework
+|RTI_GATEWAY_PLAIN| Framework
 -----------------------------
 
 |RTI_GATEWAY| provides an open framework for users to easily extend
@@ -104,7 +104,7 @@ different modules are shown in figure below:
   consists of a build system, a unit test framework, and
   documentation generation infrastructure.
 
-RTI Connext Gateway Plugins
+|RTI_GATEWAY_PLAIN| Plugins
 ---------------------------
 
 |RTI_GATEWAY| ships with a set of ready-to-use plugins. These include

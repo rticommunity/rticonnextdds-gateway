@@ -5,8 +5,8 @@
 
 .. include:: vars.rst
 
-Welcome to |RTI_GATEWAY|
-************************
+Welcome to |RTI_GATEWAY_PLAIN|
+******************************
 
 
 .. toctree::
