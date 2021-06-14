@@ -350,9 +350,11 @@ endmacro()
 rtigw_add_subdirectory_if
 -------------------------
 
- * Brief: adds a subdirectory if it exists
+ * Brief: adds a subdirectory if it exists depending of the variable value of
+          `IF`. If IF is OFF, it won't be added. If IF is not defined or ON,
+          the directory will be added.
  * Params:
- ** _SUBDIRECTORY_DIR: path to the subdirectory to add
+ ** _dir: path to the subdirectory to add
  * How to use it:
 
     rtigw_add_subdirectory_if("${CMAKE_CURRENT_SOURCE_DIR}/mySubdirectory"
@@ -371,7 +373,7 @@ function(rtigw_add_subdirectory_if _dir)
     )
 
     if (NOT DEFINED _args_IF)
-        set(_args_IF OFF)
+        set(_args_IF ON)
     endif()
 
     if (IS_DIRECTORY "${_dir}" AND ${_args_IF})
@@ -477,7 +479,8 @@ function(rtigw_add_plugin)
 
         # Add examples if they are enabled
         rtigw_add_subdirectory_if(
-            "${EXAMPLES_DIR}/${_args_PLUGIN_DIR_NAME}" IF RTIGATEWAY_ENABLE_EXAMPLES)
+            "${EXAMPLES_DIR}/${_args_PLUGIN_DIR_NAME}" IF RTIGATEWAY_ENABLE_EXAMPLES
+        )
 
     endif()
 
