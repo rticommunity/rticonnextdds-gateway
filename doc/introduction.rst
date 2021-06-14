@@ -5,8 +5,8 @@
 Introduction
 ============
 
-RTI Gateway Architecture
-------------------------
+|RTI_GATEWAY_PLAIN| Architecture
+--------------------------------
 
 The |RTI_GATEWAY_TM| is a software component that allows integrating
 different types of connectivity protocols with DDS. Integration in this
@@ -68,8 +68,8 @@ composed of the following components:
 
    |RS| *Plugins Architecture*
 
-RTI Gateway Framework
----------------------
+|RTI_GATEWAY_PLAIN| Framework
+-----------------------------
 
 |RTI_GATEWAY| provides an open framework for users to easily extend
 the included set of plugins with support for additional communication protocols.
@@ -104,8 +104,8 @@ different modules are shown in figure below:
   consists of a build system, a unit test framework, and
   documentation generation infrastructure.
 
-RTI Gateway Plugins
--------------------
+|RTI_GATEWAY_PLAIN| Plugins
+---------------------------
 
 |RTI_GATEWAY| ships with a set of ready-to-use plugins. These include
 both some examples of protocol integration, and some useful utilities for

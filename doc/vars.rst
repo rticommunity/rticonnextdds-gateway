@@ -11,8 +11,9 @@
 .. |CMAKE| replace:: *CMake*
 .. |CONNEXT| replace:: *Connext DDS*
 .. |RTI_CONNEXT| replace:: *RTI* |CONNEXT|
-.. |RTI_GATEWAY| replace:: *RTI* *Gateway*
-.. |RTI_GATEWAY_TM| replace:: *RTI®* *Gateway*
+.. |RTI_GATEWAY| replace:: *RTI Connext Gateway*
+.. |RTI_GATEWAY_PLAIN| replace:: RTI Connext Gateway
+.. |RTI_GATEWAY_TM| replace:: *RTI Connext® Gateway*
 .. |DDS_SAMPLES| replace:: *DDS Samples*
 .. |DDS_TYPE| replace:: *DDS Type*
 .. |DDS_TYPES| replace:: *DDS Types*

@@ -25,7 +25,7 @@ set (CMAKE_C_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project (RTIGateway VERSION 1.0.0)
+project (RTIConnextGateway VERSION 1.0.0)
 
 # Set common variables
 set (GATEWAY_DOC "${CMAKE_CURRENT_SOURCE_DIR}/doc")

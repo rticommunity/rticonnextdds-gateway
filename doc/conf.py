@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'RTI Gateway'
+project = 'RTI Connext Gateway'
 copyright = '2020, Real-Time Innovations, Inc'
 author = 'Real-Time Innovations, Inc.'
 
