@@ -274,7 +274,7 @@ endfunction()
 rtigw_init_globals
 ------------------
 
- * Brief: configures all the global parameters used by the RTI Gateway
+ * Brief: configures all the global parameters used by the RTI Connext Gateway
  * Params: no parameters
  * Restrictions: this should only be used in the main CMakeLists.txt
  * How to use it:
