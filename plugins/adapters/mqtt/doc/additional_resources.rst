@@ -13,7 +13,7 @@ they contain their own README file.
 Examples
 ^^^^^^^^
 
-Examples are located under ``<RTI Gateway main folder>/examples/mqtt``.
+Examples are located under ``<RTI Connext Gateway main folder>/examples/mqtt``.
 If you have provided CMake with an installation directory, they will be under
 ``<CMake Installation directory>/examples/mqtt``.
 
@@ -21,7 +21,7 @@ If you have provided CMake with an installation directory, they will be under
 Tests
 ^^^^^
 
-Tests are located under ``<RTI Gateway main folder>/plugins/adapters/mqtt/test``
+Tests are located under ``<RTI Connext Gateway main folder>/plugins/adapters/mqtt/test``
 If you have provided CMake with an installation directory, they will be under
 ``<CMake Installation directory>/test/mqtt``.
 
