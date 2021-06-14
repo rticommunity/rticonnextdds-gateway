@@ -18,7 +18,7 @@
 ###############################################################################
 cmake_minimum_required(VERSION 3.7.0)
 
-include(${RESOURCE_DIR}/cmake/dds_functions.cmake)
+include("${RESOURCE_DIR}/cmake/DdsFunctions.cmake")
 
 ###############################################################################
 # Set variables
@@ -47,7 +47,7 @@ set(GENERATED_SRC_IDL_FILES)
 foreach(IDL_NAME ${ADAPTER_MQTT_IDL})
     # Generate codegen files
     set(CODEGEN_OPTIONS "-unboundedSupport" "-qualifiedEnumerator")
-    connextdds_run_codegen(
+    rtigw_connextdds_run_codegen(
         IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/idl/${IDL_NAME}.idl"
         LANGUAGE "C"
         OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/idl"
@@ -113,11 +113,11 @@ target_include_directories(${RSPLUGIN_LIB_NAME}
 
 target_link_libraries(${RSPLUGIN_LIB_NAME}
     PUBLIC
-        ${ROUTING_SERVICE_C_LIBRARIES}
+        RTIConnextDDS::routing_service_c
         ${PAHO_LIBRARY}
 )
 
-configure_plugin_defines()
+rtigw_configure_plugin_defines()
 
 if(RTI_MQTT_ENABLE_STATIC_TYPES)
     list(APPEND ${RSPLUGIN_PREFIX}_DEFINES RTI_MQTT_ENABLE_STATIC_TYPES)
@@ -140,9 +140,7 @@ install(
 )
 
 ###############################################################################
-# Build tests and documentation if they are enabled
+# Build documentation and tests if they are enabled
 ###############################################################################
-if(RTIGATEWAY_ENABLE_DOCS)
-    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/doc")
-endif()
-
+rtigw_add_doc()
+rtigw_add_tests()

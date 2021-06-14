@@ -13,17 +13,13 @@
 #                                                                             #
 ###############################################################################
 
-install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/modbus_adapter_definitions.schema.json"
-    DESTINATION "${STAGING_RESOURCE_DIR}/${STAGING_PLUGIN_DIR}"
+set(MODBUS_RESOURCES_INSTALL_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/modbus_adapter_definitions.schema.json"
+    "${CMAKE_CURRENT_SOURCE_DIR}/modbus_adapter_input.schema.json"
+    "${CMAKE_CURRENT_SOURCE_DIR}/modbus_adapter_output.schema.json"
 )
 
 install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/modbus_adapter_input.schema.json"
-    DESTINATION "${STAGING_RESOURCE_DIR}/${STAGING_PLUGIN_DIR}"
-)
-
-install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/modbus_adapter_output.schema.json"
+    FILES ${MODBUS_RESOURCES_INSTALL_FILES}
     DESTINATION "${STAGING_RESOURCE_DIR}/${STAGING_PLUGIN_DIR}"
 )

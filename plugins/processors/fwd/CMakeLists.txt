@@ -22,7 +22,7 @@ set(RSPLUGIN_LIB_NAME rtifwdprocessor)
 # Generate codegen files
 set(IDL_NAME "rtiprocess_fwd_types")
 set(CODEGEN_OPTIONS "-unboundedSupport" "-qualifiedEnumerator")
-connextdds_run_codegen(
+rtigw_connextdds_run_codegen(
     IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/idl/${IDL_NAME}.idl"
     LANGUAGE "C++11"
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/idl"
@@ -55,10 +55,10 @@ target_include_directories(
 
 target_link_libraries(
     ${RSPLUGIN_LIB_NAME}
-    ${ROUTING_SERVICE_CXX_LIBRARIES}
+    RTIConnextDDS::routing_service_cpp2
 )
 
-configure_plugin_defines()
+rtigw_configure_plugin_defines()
 
 target_compile_definitions(
     ${RSPLUGIN_LIB_NAME}
@@ -78,8 +78,7 @@ install(
 )
 
 ###############################################################################
-# Build documentation if they are enabled
-if (RTIGATEWAY_ENABLE_DOCS)
-    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/doc")
-endif()
-
+# Build documentation and tests if they are enabled
+###############################################################################
+rtigw_add_doc()
+rtigw_add_tests()

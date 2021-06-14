@@ -48,7 +48,7 @@ enum class ModbusDataType {
 };
 
 static std::string modbus_datatype_to_string(ModbusDataType type) {
-    if(type == ModbusDataType::coil_boolean) {
+    if (type == ModbusDataType::coil_boolean) {
         return "coil_boolean";
     } else if (type == ModbusDataType::holding_register_int8) {
         return "holding_register_int8";

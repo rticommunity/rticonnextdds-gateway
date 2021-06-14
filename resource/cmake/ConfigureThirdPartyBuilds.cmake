@@ -13,7 +13,7 @@
 #                                                                             #
 ###############################################################################
 
-macro (configure_paho_build)
+macro (rtigw_configure_paho_build)
     set(PAHO_BUILD_DOCUMENTATION        FALSE
         CACHE INTERNAL "Enable building Paho (C Posix)'s documentation"
         FORCE)
@@ -34,24 +34,24 @@ macro (configure_paho_build)
         FORCE)
 endmacro()
 
-macro (copy_dll_from_third_party_bin_to_lib LIBNAME)
+macro (rtigw_copy_dll_from_third_party_bin_to_lib _LIBNAME)
     install(
-        CODE "file(COPY \"${ABSOLUTE_INSTALL_PREFIX}/third-party/bin/${LIBNAME}.dll\"
+        CODE "file(COPY \"${ABSOLUTE_INSTALL_PREFIX}/third-party/bin/${_LIBNAME}.dll\"
                 DESTINATION \"${ABSOLUTE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}\")")
 endmacro()
 
-macro (install_dependencies_dll)
+macro (rtigw_install_dependencies_dll)
     if(WIN32)
         get_filename_component(ABSOLUTE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} ABSOLUTE)
         install(CODE "set(ABSOLUTE_INSTALL_PREFIX \"${ABSOLUTE_INSTALL_PREFIX}\")")
 
         if(RTIGATEWAY_ENABLE_MQTT)
             if (${RTIGATEWAY_ENABLE_SSL})
-                copy_dll_from_third_party_bin_to_lib("paho-mqtt3as")
-                copy_dll_from_third_party_bin_to_lib("paho-mqtt3cs")
+                rtigw_copy_dll_from_third_party_bin_to_lib("paho-mqtt3as")
+                rtigw_copy_dll_from_third_party_bin_to_lib("paho-mqtt3cs")
             else()
-                copy_dll_from_third_party_bin_to_lib("paho-mqtt3a")
-                copy_dll_from_third_party_bin_to_lib("paho-mqtt3c")
+                rtigw_copy_dll_from_third_party_bin_to_lib("paho-mqtt3a")
+                rtigw_copy_dll_from_third_party_bin_to_lib("paho-mqtt3c")
             endif()
         endif()
     endif()

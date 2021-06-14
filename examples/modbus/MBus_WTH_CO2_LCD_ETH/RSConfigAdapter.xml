@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!--
-  (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. 
+  (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved.
 
   RTI grants Licensee a license to use, modify, compile, and create
   derivative works of the software solely for use with RTI Connext DDS.
@@ -48,7 +48,7 @@
             </documentation>
         </annotation>
 
-        <!-- The administration tag enables remote administration, and is 
+        <!-- The administration tag enables remote administration, and is
         required when using Admin Console. -->
         <administration>
             <domain_id>1</domain_id>
@@ -66,7 +66,7 @@
             </participant_qos>
         </administration>
 
-        <!-- This is the Monitoring configuration for all the entities in 
+        <!-- This is the Monitoring configuration for all the entities in
         this routing service, and is required when using Admin Console. -->
         <monitoring>
             <enabled>true</enabled>
@@ -147,7 +147,7 @@
                         <topic_name>Example StreamReader</topic_name>
                         <registered_type_name>MBus_WTH_CO2_LCD_ETH_INPUT</registered_type_name>
                     </dds_output>
-                    
+
                     <input connection="CO2_Device_1">
                         <registered_type_name>MBus_WTH_CO2_LCD_ETH_INPUT</registered_type_name>
                         <stream_name>MBus_WTH_CO2_LCD_ETH_input</stream_name>

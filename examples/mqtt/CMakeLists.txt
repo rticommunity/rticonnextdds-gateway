@@ -1,5 +1,5 @@
 ###############################################################################
-#  (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. #
+#  (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. #
 #                                                                             #
 #  RTI grants Licensee a license to use, modify, compile, and create          #
 #  derivative works of the software solely for use with RTI Connext DDS.      #
@@ -13,36 +13,12 @@
 #                                                                             #
 ###############################################################################
 
-include("${RESOURCE_DIR}/cmake/DdsFunctions.cmake")
-include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/mqtt-agent")
 
-set(IDL_NAME "MBus_WTH_CO2_LCD_ETH_INPUT")
-
-# Generate codegen files
-rtigw_connextdds_run_codegen(
-    IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../idl/${IDL_NAME}.idl"
-    LANGUAGE "C"
-    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
-)
-
-add_executable(MBus_WTH_CO2_LCD_ETH_INPUT
-    "${CMAKE_CURRENT_SOURCE_DIR}/${IDL_NAME}_subscriber.c"
-    ${GENERATED_SRC_FILES}
-)
-
-target_include_directories(MBus_WTH_CO2_LCD_ETH_INPUT
-    PRIVATE
-        ${CMAKE_CURRENT_BINARY_DIR}
-)
-
-target_link_libraries(MBus_WTH_CO2_LCD_ETH_INPUT
-    PRIVATE
-        RTIConnextDDS::c_api
-)
-
-# staging files
-install(
-    TARGETS MBus_WTH_CO2_LCD_ETH_INPUT
-    DESTINATION "${STAGING_EXAMPLES_DIR}/${STAGING_PLUGIN_DIR}/${EXAMPLE_NAME}"
-    PERMISSIONS OWNER_EXECUTE
-)
+# Shapes example uses other plugins different to the MQTT adapter and all of
+# them should be enabled to add this example
+if (RTIGATEWAY_ENABLE_MQTT
+        AND RTIGATEWAY_ENABLE_TSFM_FIELD
+        AND RTIGATEWAY_ENABLE_TSFM_JSON)
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/mqtt-shapes")
+endif()

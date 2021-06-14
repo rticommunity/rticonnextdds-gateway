@@ -313,7 +313,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_initialize(
             output_type_info,
             properties,
             env);
-    if(retcode != DDS_RETCODE_OK) {
+    if (retcode != DDS_RETCODE_OK) {
         /* TODO log error */
         goto done;
     }

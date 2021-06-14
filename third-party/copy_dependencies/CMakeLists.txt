@@ -25,6 +25,6 @@
 # This is required because in Windows, libraries (.lib) and runtimes (.dll) may
 # have different installation folders.
 
-include("${RESOURCE_DIR}/cmake/configure_third_party_builds.cmake")
+include("${RESOURCE_DIR}/cmake/ConfigureThirdPartyBuilds.cmake")
 
-install_dependencies_dll()
+rtigw_install_dependencies_dll()
