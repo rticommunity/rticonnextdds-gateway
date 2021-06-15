@@ -41,6 +41,8 @@ function(copy_files)
         # Indicate what files are generated if this command is executed
         OUTPUT
             ${FILES_TO_COPY_OUTPUT}
+        DEPENDS
+            ${FILES_TO_COPY_ORIGIN}
         # Comment to show while building
         COMMENT
             "Copying ${_COMMON_FUNCTIONS_CUSTOM_TARGET_NAME} files to binary dir"
