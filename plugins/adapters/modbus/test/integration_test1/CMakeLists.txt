@@ -16,7 +16,7 @@
 include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 include("${RESOURCE_DIR}/cmake/DdsFunctions.cmake")
 
-set(TEST_NAME integration_test1)
+set(TEST_NAME modbus_integration_test1)
 
 # Copy the USER_QOS_PROFILES before generating the code
 # This is not needed since we could install that file directly. However, for
@@ -25,22 +25,23 @@ set(TEST_NAME integration_test1)
 # the binary directory.
 
 rtigw_copy_files(
-    CUSTOM_TARGET_NAME integration-test1-copy-qos
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
-    LIST_OF_FILES_RELATIVE_PATH "dds_type/USER_QOS_PROFILES.xml")
-
+    TARGET modbus-integration-test1-copy-qos
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
+    FILES "dds_type/USER_QOS_PROFILES.xml"
+)
 
 set(IDL_NAME "TestType")
+set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dds_type")
 
 # Generate codegen files
-rtigw_connextdds_run_codegen(
-    IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/dds_type/${IDL_NAME}.idl"
-    LANGUAGE "C"
+connextdds_rtiddsgen_run(
+    IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
+    LANG "C"
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
 )
 
 add_executable(${TEST_NAME}
-    "${CMAKE_CURRENT_SOURCE_DIR}/dds_type/${IDL_NAME}_main.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/dds_type/TestType_main.c"
     ${GENERATED_SRC_FILES}
 )
 
@@ -54,7 +55,7 @@ target_link_libraries(${TEST_NAME}
 )
 
 # add the dependency of the copying step to the current target
-add_dependencies(${TEST_NAME} integration-test1-copy-qos)
+add_dependencies(${TEST_NAME} modbus-integration-test1-copy-qos)
 
 # staging rules
 # Config files

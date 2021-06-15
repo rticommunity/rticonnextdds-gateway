@@ -21,12 +21,15 @@ set(RSPLUGIN_LIB_NAME rtifwdprocessor)
 # Call codegen
 # Generate codegen files
 set(IDL_NAME "rtiprocess_fwd_types")
-set(CODEGEN_OPTIONS "-unboundedSupport" "-qualifiedEnumerator")
-rtigw_connextdds_run_codegen(
-    IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/idl/${IDL_NAME}.idl"
-    LANGUAGE "C++11"
+set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/idl")
+
+connextdds_rtiddsgen_run(
+    IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
+    LANG "C++11"
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/idl"
-    INPUT_PARAMS ${CODEGEN_OPTIONS}
+    EXTRA_ARGS
+        "-unboundedSupport"
+        "-qualifiedEnumerator"
 )
 list(APPEND GENERATED_SRC_IDL_FILES ${GENERATED_SRC_FILES})
 

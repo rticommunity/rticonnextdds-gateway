@@ -21,11 +21,12 @@ cmake_minimum_required(VERSION 3.7.0)
 set(EXAMPLE_NAME mqtt-shapes)
 
 set(IDL_NAME "ShapeType")
+set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/idl")
 
 # Generate codegen files
-rtigw_connextdds_run_codegen(
-    IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/idl/${IDL_NAME}.idl"
-    LANGUAGE "C"
+connextdds_rtiddsgen_run(
+    IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
+    LANG "C"
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/idl"
 )
 
@@ -51,7 +52,7 @@ target_include_directories(${EXAMPLE_NAME}
 )
 
 if(DEFINED ENV{RTI_MQTTSHAPES_SHAPES_RATE} OR DEFINED RTI_MQTTSHAPES_SHAPES_RATE)
-    rtigw_set_required_variable(RTI_MQTTSHAPES_SHAPES_RATE RTI_MQTTSHAPES_SHAPES_RATE)
+    rtigw_set_required(RTI_MQTTSHAPES_SHAPES_RATE RTI_MQTTSHAPES_SHAPES_RATE)
     append_to_list(SHAPESAGENT_DEFINES "-DSHAPES_AGENT_WRITER_LOOP_SEC=${RTI_MQTTSHAPES_SHAPES_RATE}")
 endif()
 

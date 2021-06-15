@@ -28,9 +28,10 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dds_reader")
 # the binary directory.
 
 rtigw_copy_files(
-    CUSTOM_TARGET_NAME co2-lcd-eth-example-config
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}"
-    LIST_OF_FILES_RELATIVE_PATH "USER_QOS_PROFILES.xml")
+    TARGET co2-lcd-eth-example-config
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}"
+    FILES "USER_QOS_PROFILES.xml"
+)
 
 # add the dependency of the copying step to the current target
 add_dependencies(MBus_WTH_CO2_LCD_ETH_INPUT co2-lcd-eth-example-config)

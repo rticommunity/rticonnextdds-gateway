@@ -19,41 +19,51 @@ rtigw_list_prefix
 
  * Brief: prepend a prefix to all the elements of a list
  * Params:
- ** LIST: list to add the prefix to all its elements
+ ** INPUT_LIST: list to add the prefix to all its elements
  ** PREFIX: prefix to add
  ** _OUT_VARIABLE: output list that will contain the list with the prefix
 
  * How to use it:
 
-    rtigw_list_prefix(MY_OUT_VAR
-        INPUT_LIST my_list
-        PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/"
+    rtigw_list_prefix(
+        ${INPUT_LIST}
+        "${CMAKE_CURRENT_SOURCE_DIR}/"
+        _files_input
     )
 ]]
 
-function(rtigw_list_prefix _OUT_VARIABLE)
-    set(_BOOLEANS)
-    set(_SINGLE_VALUE_ARGS INPUT_LIST PREFIX)
-    set(_MULTI_VALUE_ARGS)
-
-    cmake_parse_arguments(_args
-        "${_BOOLEANS}"
-        "${_SINGLE_VALUE_ARGS}"
-        "${_MULTI_VALUE_ARGS}"
-        ${ARGN}
-    )
-
+function(rtigw_list_prefix INPUT_LIST PREFIX _OUT_VARIABLE)
     set(_result)
-    foreach(_val ${_args_INPUT_LIST})
-        list(APPEND _result "${_args_PREFIX}${_val}")
+    foreach(_val ${INPUT_LIST})
+        list(APPEND _result "${PREFIX}${_val}")
     endforeach()
     set(${_OUT_VARIABLE} ${_result} PARENT_SCOPE)
 endfunction()
 
+
+#[[
+rtigw_copy_files
+----------------
+
+ * Brief: copy files from the source directory to the output directory
+ * Params:
+ ** TARGET: custom target name that will be created to copy the files.
+ ** OUTPUT: output directory where files will be copied in.
+ ** FILES: list of files to be copied with relative path form
+           ${CMAKE_CURRENT_SOURCE_DIR}.
+
+ * How to use it:
+
+    rtigw_copy_files(
+        TARGET integration-test1-copy-qos
+        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
+        FILES "dds_type/USER_QOS_PROFILES.xml"
+    )
+]]
 function(rtigw_copy_files)
     set(_BOOLEANS)
-    set(_SINGLE_VALUE_ARGS CUSTOM_TARGET_NAME OUTPUT_DIR)
-    set(_MULTI_VALUE_ARGS LIST_OF_FILES_RELATIVE_PATH)
+    set(_SINGLE_VALUE_ARGS TARGET OUTPUT)
+    set(_MULTI_VALUE_ARGS FILES)
 
     cmake_parse_arguments(_args
         "${_BOOLEANS}"
@@ -63,14 +73,16 @@ function(rtigw_copy_files)
     )
 
     # Create the list of the input and output files to copy
-    rtigw_list_prefix(_files_input
-        INPUT_LIST ${_args_LIST_OF_FILES_RELATIVE_PATH}
-        PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/"
+    rtigw_list_prefix(
+        ${_args_FILES}
+        "${CMAKE_CURRENT_SOURCE_DIR}/"
+        _files_input
     )
 
-    rtigw_list_prefix(_files_output
-        INPUT_LIST ${_args_LIST_OF_FILES_RELATIVE_PATH}
-        PREFIX "${CMAKE_CURRENT_BINARY_DIR}/"
+    rtigw_list_prefix(
+        ${_args_FILES}
+        "${CMAKE_CURRENT_BINARY_DIR}/"
+        _files_output
     )
 
     # Create the custom command
@@ -80,16 +92,16 @@ function(rtigw_copy_files)
             ${_files_output}
         # Comment to show while building
         COMMENT
-            "Copying ${_args_CUSTOM_TARGET_NAME} files to binary dir"
+            "Copying ${_args_TARGET} files to binary dir"
         # Create the config directory if it doesn't exist
         COMMAND
-            ${CMAKE_COMMAND} -E make_directory "${_args_OUTPUT_DIR}"
+            ${CMAKE_COMMAND} -E make_directory "${_args_OUTPUT}"
         # Copy the files (only if they are different)
         COMMAND
-            ${CMAKE_COMMAND} -E copy_if_different ${_files_input} "${_args_OUTPUT_DIR}"
+            ${CMAKE_COMMAND} -E copy_if_different ${_files_input} "${_args_OUTPUT}"
     )
     # Create the custom target
-    add_custom_target(${_args_CUSTOM_TARGET_NAME}
+    add_custom_target(${_args_TARGET}
         # To execute this custom target (that will do nothing), we need first to
         # generate these files. This triggers the custom command from the previous
         # statement
@@ -144,7 +156,7 @@ function(rtigw_generate_doc)
         OUTPUT
             ${_args_OUTPUT}
         COMMENT
-            "Generating ${_args_PLUGIN_NAME} Documentation"
+            "Generating ${_args_PLUGIN} Documentation"
         COMMAND
             ${SPHINX_BIN} ${_args_INPUT} ${_args_OUTPUT} ${SPHINX_OPTS}
         DEPENDS
@@ -164,9 +176,9 @@ function(rtigw_generate_doc)
 
         add_custom_command(
             OUTPUT
-                "${_args_INPUT_DIR}/doxyoutput"
+                "${_args_INPUT}/doxyoutput"
             COMMAND
-                ${doxygen_bin} "${_args_INPUT_DIR}/Doxyfile"
+                ${doxygen_bin} "${_args_INPUT}/Doxyfile"
             WORKING_DIRECTORY
                 "${_args_INPUT}"
             DEPENDS
@@ -204,7 +216,7 @@ function(rtigw_configure_plugin_defines)
             CACHE INTERNAL "List compiler defines")
 endfunction()
 
-function(rtigw_set_required_variable _OUT_VARIABLE)
+function(rtigw_set_required _OUT_VARIABLE)
     set(candidate_vars ${ARGN})
     foreach(v ${candidate_vars})
         # Give preference to variables passed directly to cmake
@@ -246,7 +258,7 @@ rtigw_configure_connextdds
 
 function(rtigw_configure_connextdds _CONNEXTDDS_VERSION)
     # Configure Connext DDS dependencies
-    rtigw_set_required_variable(CONNEXTDDS_DIR NDDSHOME CONNEXTDDS_DIR)
+    rtigw_set_required(CONNEXTDDS_DIR NDDSHOME CONNEXTDDS_DIR)
 
     # CONNEXTDDS_ARCH is not required, but recommended
     # eg -DCONNEXTDDS_ARCH=x64Linux4gcc7.3.0

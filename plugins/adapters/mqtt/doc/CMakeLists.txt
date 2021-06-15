@@ -16,7 +16,7 @@
 include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
 
 rtigw_generate_doc(
-    DOXYGEN ON
+    DOXYGEN
     PLUGIN "MQTT Adapter"
     TARGET mqtt-adapter-doc
     INPUT "${CMAKE_CURRENT_SOURCE_DIR}"
