@@ -5,7 +5,7 @@ from typing import Dict
 
 sys.path.insert(0, os.path.abspath('../../../resource/pyprocessor/modules'))
 
-from rti.routing import proc
+from rti.gateway import proc
 
 
 class ShapesProcessor(proc.Processor):

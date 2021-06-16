@@ -139,7 +139,7 @@ PyTypeObject* PySampleType::type()
 
     if (!_init) {
         RTIOsapiMemory_zero(&_sample_type, sizeof (_sample_type));
-        _sample_type.tp_name = "rti.routing.proc.Sample";
+        _sample_type.tp_name = "rti.gateway.proc.Sample";
         _sample_type.tp_basicsize = sizeof (PySample);
         _sample_type.tp_itemsize = 0;
         _sample_type.tp_dealloc = PyAllocatorGeneric<PySampleType, PySample>::delete_object;
@@ -290,7 +290,7 @@ PyTypeObject* PyLoanedSamplesType::type()
 
     if (!_init) {
         RTIOsapiMemory_zero(&__loaned_samples_type, sizeof (__loaned_samples_type));
-        __loaned_samples_type.tp_name = "rti.routing.proc.LoanedSamples";
+        __loaned_samples_type.tp_name = "rti.gateway.proc.LoanedSamples";
         __loaned_samples_type.tp_basicsize = sizeof (PyLoanedSamples);
         __loaned_samples_type.tp_itemsize = 0;
         __loaned_samples_type.tp_dealloc =

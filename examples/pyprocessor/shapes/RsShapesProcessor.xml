@@ -39,19 +39,19 @@
             <property>
                 <value>
                     <element>
-                        <name>rti.routing.proc.py.module.name</name>
+                        <name>py_module_name</name>
                         <value>shapes_proc</value>
                     </element>
 <!--                    <element>
-                        <name>rti.routing.proc.py.module.path</name>
+                        <name>py_module_path</name>
                         <value>$(PWD)</value>
                     </element>-->
                     <element>
-                        <name>rti.routing.proc.py.create_function</name>
+                        <name>py_create_function</name>
                         <value>create_processor</value>
                     </element>
                     <element>
-                        <name>rti.routing.proc.py.class_name</name>
+                        <name>py_class_name</name>
                         <value>ShapesProcessor</value>
                     </element>
                 </value>

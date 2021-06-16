@@ -22,8 +22,8 @@ import time
 
 sys.path.insert(0, os.path.abspath('..'))
 
-from rti.routing import proc
-from rti.routing import service
+from rti.gateway import proc
+from rti.gateway import service
 
 port_info_map = {
     'Input1': {
@@ -75,8 +75,8 @@ class TestProcessor(proc.Processor):
             'on_periodic_action': 0
         }
         assert len(properties) == 2
-        assert properties['rti.routing.proc.py.test.prop1'] == 'value1'
-        assert properties['rti.routing.proc.py.test.prop2'] == 'value2'
+        assert properties['py_test_prop1'] == 'value1'
+        assert properties['py_test_prop2'] == 'value2'
 
     def __del__(self):
         for event in self.event_counts:

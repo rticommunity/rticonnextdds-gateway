@@ -36,8 +36,8 @@ private:
     }
 };
 
-const std::string PyServiceGlobals::SERVICE_MODULE_NAME = "rti.routing.service";
-const std::string PyServiceGlobals::PROCESSOR_MODULE_NAME = "rti.routing.proc";
+const std::string PyServiceGlobals::SERVICE_MODULE_NAME = "rti.gateway.service";
+const std::string PyServiceGlobals::PROCESSOR_MODULE_NAME = "rti.gateway.proc";
 
 PyServiceGlobals::PyServiceGlobals()
         :service_initd_(false),
@@ -175,7 +175,7 @@ void PyServiceGlobals::init_service()
 void PyServiceGlobals::init_processor()
 {
     SafeInitializer::safe_init([]() {
-        // Obtain rti.routing.proc
+        // Obtain rti.gateway.proc
         PyObjectGuard py_module_name = PyUnicode_FromString(
                 PROCESSOR_MODULE_NAME.c_str());
         PyObject* proc_module = PyImport_GetModule(py_module_name.get());

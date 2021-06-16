@@ -224,7 +224,7 @@ PyTypeObject* PyServiceType::type()
 
     if (!_init) {
         RTIOsapiMemory_zero(&_service_type, sizeof (_service_type));
-        _service_type.tp_name = "rti.routing.service.RoutingService";
+        _service_type.tp_name = "rti.gateway.service.RoutingService";
         _service_type.tp_doc = "RoutingService object";
         _service_type.tp_basicsize = sizeof (PyService);
         _service_type.tp_itemsize = 0;

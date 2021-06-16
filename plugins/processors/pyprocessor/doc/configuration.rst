@@ -107,7 +107,7 @@ For example:
 
 .. code-block:: Python
 
-    import proc
+    from rti.gateway import proc
 
     class MyProcessor(proc.Processor):
         def on_data_available(self, route):

@@ -394,18 +394,18 @@ const std::string PyProcessorPlugin::BASE_PROCESSOR_TYPE_NAME =
         "Processor";
 
 const std::string PyProcessorPlugin::MODULE_PROPERTY_NAME =
-        "rti.routing.proc.py.module.name";
+        "py_module_name";
 
 const std::string PyProcessorPlugin::MODULE_PATH_PROPERTY_NAME =
-        "rti.routing.proc.py.module.path";
+        "py_module.path";
 
 const std::string PyProcessorPlugin::MODULE_PATH_VALUE_DEFAULT = ".";
 
 const std::string PyProcessorPlugin::CREATE_FUNCTION_PROPERTY_NAME =
-        "rti.routing.proc.py.create_function";
+        "py_create_function";
 
 const std::string PyProcessorPlugin::MODULE_AUTORELOAD_PROPERTY_NAME =
-        "rti.routing.proc.py.module.autoreload";
+        "py_module.autoreload";
 
 
 PyProcessorPlugin::PyProcessorPlugin(

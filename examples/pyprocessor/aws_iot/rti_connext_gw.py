@@ -21,8 +21,8 @@ from enum import Enum
 from typing import Dict
 import AWSIoTPythonSDK.MQTTLib as AWSIoTPyMQTT
 
-# Obtain the location of the rti.routing module so can configure the
-# path for Python to find it. This is useful if rti.routing is not
+# Obtain the location of the rti.gateway module so can configure the
+# path for Python to find it. This is useful if rti.gateway is not
 # installed as Python package
 PROC_MODULE_PATH = os.getenv("RTI_PROC_MODULE_PATH")
 if PROC_MODULE_PATH:
@@ -31,8 +31,8 @@ else:
     # consider default location within the install dir <root_dir>/dist
     sys.path.append(os.path.abspath("../../../dist/modules"))
 
-from rti.routing import proc
-from rti.routing import service
+from rti.gateway import proc
+from rti.gateway import service
 
 class ConfigProperty(Enum):
     ENDPOINT = "rti.aws_iot_connector.endpoint_url"

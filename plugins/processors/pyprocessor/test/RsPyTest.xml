@@ -42,19 +42,19 @@
             <property>
                 <value>
                     <element>
-                        <name>rti.routing.proc.py.module.name</name>
+                        <name>py_module_name</name>
                         <value>pyproctest</value>
                     </element>
                     <element>
-                        <name>rti.routing.proc.py.module.path</name>
+                        <name>py_module_path</name>
                         <value>$(PWD)/../test</value>
                     </element>
                     <element>
-                        <name>rti.routing.proc.py.class_name</name>
+                        <name>py_class_name</name>
                         <value>TestProcessor</value>
                     </element>
                     <element>
-                        <name>rti.routing.proc.py.module.autoreload</name>
+                        <name>py_module_autoreload</name>
                         <value>true</value>
                     </element>
                 </value>
@@ -82,11 +82,11 @@
                         <property>
                             <value>
                                 <element>
-                                    <name>rti.routing.proc.py.test.prop1</name>
+                                    <name>py_test_prop1</name>
                                     <value>value1</value>
                                 </element>
                                 <element>
-                                    <name>rti.routing.proc.py.test.prop2</name>
+                                    <name>py_test_prop2</name>
                                     <value>value2</value>
                                 </element>
                             </value>

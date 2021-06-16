@@ -8,8 +8,7 @@
 .. |PYTHON_ADAPTER_LIB_NAME_MAC| replace:: ``librtipyprocessor.dylib``
 .. |PYTHON_ADAPTER_LIB_NAME_WIN| replace:: ``rtipyprocessor.dll``
 .. |PYTHON_PROCESSOR| replace:: *Python Processor*
-.. |CONF_BASE_NAME| replace:: *rti.routing.proc.py*
-.. |CONF_CREATE_FUNCTION| replace:: |CONF_BASE_NAME|*.create_function*
-.. |CONF_MODULE_NAME| replace:: |CONF_BASE_NAME|*.module.name*
-.. |CONF_MODULE_PATH| replace:: |CONF_BASE_NAME|*.module.path*
-.. |CONF_MODULE_AUTORELOAD| replace:: |CONF_BASE_NAME|*.module.autoreload*
+.. |CONF_CREATE_FUNCTION| replace:: *py_create_function*
+.. |CONF_MODULE_NAME| replace:: *py_module_name*
+.. |CONF_MODULE_PATH| replace:: *py_module_path*
+.. |CONF_MODULE_AUTORELOAD| replace:: *py_module_autoreload*

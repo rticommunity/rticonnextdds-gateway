@@ -48,15 +48,15 @@
             <property>
                 <value>
                     <element>
-                        <name>rti.routing.proc.py.module.name</name>
+                        <name>py_module_name</name>
                         <value>rti_connext_gw</value>
                     </element>
 <!--                    <element>
-                        <name>rti.routing.proc.py.module.path</name>
+                        <name>py_module_path</name>
                         <value>$(PWD)</value>
                     </element>-->
                     <element>
-                        <name>rti.routing.proc.py.create_function</name>
+                        <name>py_create_function</name>
                         <value>create_processor</value>
                     </element>
                 </value>

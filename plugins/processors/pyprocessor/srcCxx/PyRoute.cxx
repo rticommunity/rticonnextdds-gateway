@@ -99,7 +99,7 @@ PyTypeObject* PyInputAccessorType::type()
 
     if (!_init) {
         RTIOsapiMemory_zero(&_input_ac_type, sizeof (_input_ac_type));
-        _input_ac_type.tp_name = "rti.routing.proc.InputAccessor";
+        _input_ac_type.tp_name = "rti.gateway.proc.InputAccessor";
         _input_ac_type.tp_doc = "InputAccessor object";
         _input_ac_type.tp_basicsize = sizeof (PyInputAccessor);
         _input_ac_type.tp_itemsize = 0;
@@ -196,7 +196,7 @@ PyTypeObject* PyOutputAccessorType::type()
 
     if (!_init) {
         RTIOsapiMemory_zero(&_output_ac_type, sizeof (_output_ac_type));
-        _output_ac_type.tp_name = "rti.routing.proc.OutputAccessor";
+        _output_ac_type.tp_name = "rti.gateway.proc.OutputAccessor";
         _output_ac_type.tp_doc = "OutputAccessor object";
         _output_ac_type.tp_basicsize = sizeof (PyOutputAccessor);
         _output_ac_type.tp_itemsize = 0;
@@ -363,7 +363,7 @@ PyTypeObject* PyRouteType::type()
 
     if (!_init) {
         RTIOsapiMemory_zero(&_route_type, sizeof (_route_type));
-        _route_type.tp_name = "rti.routing.proc.Route";
+        _route_type.tp_name = "rti.gateway.proc.Route";
         _route_type.tp_doc = "Route object";
         _route_type.tp_basicsize = sizeof (PyRoute);
         _route_type.tp_itemsize = 0;

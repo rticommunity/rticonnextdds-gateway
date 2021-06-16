@@ -269,7 +269,7 @@ PyTypeObject* PyInputType::type()
 
     if (!_init) {
         RTIOsapiMemory_zero(&_input_type, sizeof (_input_type));
-        _input_type.tp_name = "rti.routing.proc.Input";
+        _input_type.tp_name = "rti.gateway.proc.Input";
         _input_type.tp_doc = "Input object";
         _input_type.tp_basicsize = sizeof (PyInput);
         _input_type.tp_itemsize = 0;

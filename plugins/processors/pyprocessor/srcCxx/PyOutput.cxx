@@ -161,7 +161,7 @@ PyTypeObject* PyOutputType::type()
 
     if (!_init) {
         RTIOsapiMemory_zero(&_output_type, sizeof (_output_type));
-        _output_type.tp_name = "rti.routing.proc.Output";
+        _output_type.tp_name = "rti.gateway.proc.Output";
         _output_type.tp_doc = "Output object";
         _output_type.tp_basicsize = sizeof (PyOutput);
         _output_type.tp_itemsize = 0;
