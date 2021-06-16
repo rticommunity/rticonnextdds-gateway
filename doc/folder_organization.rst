@@ -15,7 +15,7 @@ Repository Organization
 - **CMakeLists.txt**:
 
   - Top-level build script.
-  
+
   - This file is designed to be easily extended by users who would like to
     include new plugins, thanks to its simple, repetitive structure.
 
@@ -26,7 +26,7 @@ Repository Organization
 - **README**:
 
   - Top-level documentation file.
-  
+
   - Includes minimal documentation stating the project description
     and how to build it.
 
