@@ -24,9 +24,13 @@ generate_doc(
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/html"
     DEPENDENCIES
         "${CMAKE_CURRENT_SOURCE_DIR}/conf.py"
+        "${CMAKE_CURRENT_SOURCE_DIR}/additional_resources.rst"
+        "${CMAKE_CURRENT_SOURCE_DIR}/configuration.rst"
         "${CMAKE_CURRENT_SOURCE_DIR}/copyright.rst"
         "${CMAKE_CURRENT_SOURCE_DIR}/index.rst"
-        "${CMAKE_CURRENT_SOURCE_DIR}/concept.rst"
+        "${CMAKE_CURRENT_SOURCE_DIR}/introduction.rst"
+        "${CMAKE_CURRENT_SOURCE_DIR}/modules.rst"
+        "${CMAKE_CURRENT_SOURCE_DIR}/release_notes.rst"
         "${CMAKE_CURRENT_SOURCE_DIR}/_static/"
 )
 
