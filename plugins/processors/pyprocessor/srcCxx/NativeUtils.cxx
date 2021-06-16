@@ -44,8 +44,7 @@ PyObject* from_native(
     return PyLong_FromLong(boolean_value ? 1 : 0);
 }
 
-PyObject* from_native(
-        DDS_Long long_value)
+PyObject* from_native(DDS_Long long_value)
 {
     return PyLong_FromLong(long_value);
 }
@@ -54,9 +53,7 @@ PyObject* from_native(
         const RTICdrOctet *byte_array,
         int32_t size)
 {
-    PyObject* py_hex = _Py_strhex(
-            (const char *) byte_array,
-            size);
+    PyObject* py_hex = PyBytes_FromStringAndSize((const char *) byte_array, size);
     if (py_hex == NULL) {
         PyErr_Print();
         throw dds::core::Error("from_native: error creating byte array");
@@ -65,8 +62,7 @@ PyObject* from_native(
     return py_hex;
 }
 
-PyObject* from_native(
-        const struct RTI_RoutingServiceProperties *properties)
+PyObject* from_native(const struct RTI_RoutingServiceProperties *properties)
 {
     PyObjectGuard py_dict = PyDict_New();
     if (py_dict.get() == NULL) {
@@ -142,11 +138,8 @@ PyObject* from_native(const DDS_SequenceNumber_t& sn)
         PyErr_Print();
         throw dds::core::Error("from_native: error setting 'low' element");
     }
-    PyObjectGuard py_high = PyLong_FromLong(sn.high);
-    if (PyDict_SetItemString(
-            py_dict.get(),
-            "high",
-            py_high.get()) == -1) {
+    PyObjectGuard py_high = PyLong_FromLongLong(sn.high);
+    if (PyDict_SetItemString(py_dict.get(), "high", py_high.get()) == -1) {
         PyErr_Print();
         throw dds::core::Error("from_native: error setting 'high' element");
     }
@@ -160,8 +153,7 @@ PyObject* from_native(const DDS_GUID_t& guid)
     return from_native(guid.value, DDS_GUID_LENGTH);
 }
 
-PyObject* from_native(
-        const DDS_SampleIdentity_t& identity)
+PyObject* from_native(const DDS_SampleIdentity_t& identity)
 {
     PyObjectGuard py_dict = PyDict_New();
     if (py_dict.get() == NULL) {
@@ -294,7 +286,7 @@ DDS_UnsignedLong to_native(
         throw dds::core::Error("to_native: object is not a Long");
     }
 
-    dest = (DDS_UnsignedLong) PyLong_AsLong(py_value);
+    dest = PyLong_AsUnsignedLong(py_value);
     return dest;
 }
 

@@ -472,16 +472,16 @@ void DynamicDataConverter::to_dynamic_data(
 }
 
 template <>
-void DynamicDataConverter::to_native_primitive<uint64_t>(
+void DynamicDataConverter::to_native_primitive<int64_t>(
         dds::core::xtypes::DynamicData& data,
         const rti::core::xtypes::DynamicDataMemberInfo& member_info,
         PyObject* py_value,
-        std::function<uint64_t(PyObject*) > as_primitve)
+        std::function<int64_t(PyObject*)> as_primitve)
 
 {
     using dds::core::xtypes::TypeKind;
 
-    uint64_t primitive_value = as_primitve(py_value);
+    int64_t primitive_value = as_primitve(py_value);
 
     switch (member_info.member_kind().underlying()) {
 
@@ -490,27 +490,32 @@ void DynamicDataConverter::to_native_primitive<uint64_t>(
                 member_info.member_index(),
                 (DDS_Char) primitive_value);
         break;
+
     case TypeKind::UINT_8_TYPE:
         data.value<uint8_t>(
                 member_info.member_index(),
                 (uint8_t) primitive_value);
         break;
+
     case TypeKind::INT_16_TYPE:
         data.value<int16_t>(
                 member_info.member_index(),
                 (int16_t) primitive_value);
         break;
+
     case TypeKind::UINT_16_TYPE:
         data.value<uint16_t>(
                 member_info.member_index(),
                 (uint16_t) primitive_value);
         break;
+
     case TypeKind::INT_32_TYPE:
     case TypeKind::ENUMERATION_TYPE:
         data.value<int32_t>(
                 member_info.member_index(),
                 (int32_t) primitive_value);
         break;
+
     case TypeKind::UINT_32_TYPE:
         data.value<uint32_t>(
                 member_info.member_index(),
@@ -522,6 +527,32 @@ void DynamicDataConverter::to_native_primitive<uint64_t>(
                 member_info.member_index(),
                 (int64_t) primitive_value);
         break;
+
+    default:
+        throw dds::core::InvalidArgumentError(
+                "inconsistent input value for member id="
+                + std::to_string(member_info.member_index()));
+    }
+}
+
+template <>
+void DynamicDataConverter::to_native_primitive<uint64_t>(
+        dds::core::xtypes::DynamicData& data,
+        const rti::core::xtypes::DynamicDataMemberInfo& member_info,
+        PyObject* py_value,
+        std::function<uint64_t(PyObject*) > as_primitve)
+
+{
+    using dds::core::xtypes::TypeKind;
+
+    uint64_t primitive_value = as_primitve(py_value);
+
+    /*
+     * This function only handles the UINT64 type, because it doesn't fit into
+     * a INT64.
+     */
+    switch (member_info.member_kind().underlying()) {
+
     case TypeKind::UINT_64_TYPE:
         data.value<uint64_t>(
                 member_info.member_index(),
@@ -743,11 +774,21 @@ void DynamicDataConverter::build_dynamic_data(
 
             context_stack_.pop();
         } else if (PyLong_Check(value)) {
-            to_native_primitive<uint64_t>(
-                    data,
-                    aux_minfo,
-                    value,
-                    PyLong_AsUnsignedLongLong);
+            int overflow = 0;
+            PyLong_AsLongLongAndOverflow(value, &overflow);
+            if (overflow == 1) {
+                to_native_primitive<uint64_t>(
+                        data,
+                        aux_minfo,
+                        value,
+                        PyLong_AsUnsignedLongLong);
+            } else {
+                to_native_primitive<int64_t>(
+                        data,
+                        aux_minfo,
+                        value,
+                        PyLong_AsLongLong);
+            }
         } else if (PyFloat_Check(value)) {
             to_native_primitive<double>(
                     data,
