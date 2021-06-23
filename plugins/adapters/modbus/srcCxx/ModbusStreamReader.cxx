@@ -62,7 +62,7 @@ ModbusStreamReader::ModbusStreamReader(
     reader_listener_ = listener;
     adapter_type_ = static_cast<DynamicType *>(
             stream_info.type_info().type_representation());
-    internal_instance_ = new DynamicData(*adapter_type_);
+    cached_data_ = new DynamicData(*adapter_type_);
 
     if (adapter_type_->kind() != TypeKind::STRUCTURE_TYPE) {
         std::string error("Error: the main element is not a struct.");
@@ -99,8 +99,8 @@ ModbusStreamReader::ModbusStreamReader(
 
 ModbusStreamReader::~ModbusStreamReader()
 {
-    std::lock_guard<std::mutex> guard(buffer_mutex_);
-    delete internal_instance_;
+    std::lock_guard<std::mutex> guard(cached_data_mutex_);
+    delete cached_data_;
 
     // To delete the threads we enable stop_thread and then join to them
     stop_thread_ = true;
@@ -117,7 +117,7 @@ void ModbusStreamReader::read_data_from_modbus()
     // This protection is required since take() executes on a different
     // Routing Service thread.
 
-    std::lock_guard<std::mutex> guard(buffer_mutex_);
+    std::lock_guard<std::mutex> guard(cached_data_mutex_);
 
     const StructType &struct_type =
             static_cast<const StructType &>(*adapter_type_);
@@ -152,7 +152,7 @@ void ModbusStreamReader::read_data_from_modbus()
             // If the type is an string, check that the content fits into
             // the DDS String
             if (string_type.bounds() >= mace.value().length()) {
-                internal_instance_->value<std::string>(
+                cached_data_->value<std::string>(
                         mace.field(),
                         mace.value());
             } else {
@@ -182,12 +182,12 @@ void ModbusStreamReader::read_data_from_modbus()
             } catch (const std::exception &ex) {
                 std::cerr << ex.what() << std::endl;
                 // if the value is not correct, we don't store it in
-                // the interal_instance_
+                // the cached_data_
                 continue;
             }
             if (size == 0 && struct_type.member(mace.field()).is_optional()) {
                 // unset the field as it is optional and couldn't be read
-                internal_instance_->clear_optional_member(mace.field());
+                cached_data_->clear_optional_member(mace.field());
             }
             if (size > 0) {
                 // set the read value into float_vector
@@ -229,7 +229,7 @@ void ModbusStreamReader::read_data_from_modbus()
                 if (size < 1
                         && struct_type.member(mace.field()).is_optional()) {
                     // unset the field as it is optional and couldn't be read
-                    internal_instance_->clear_optional_member(mace.field());
+                    cached_data_->clear_optional_member(mace.field());
                 }
                 if (size > 0) {
                     // set the read value into float_vector
@@ -239,7 +239,7 @@ void ModbusStreamReader::read_data_from_modbus()
             } catch (const std::exception &ex) {
                 std::cerr << ex.what() << std::endl;
                 // if the value is not correct, we don't store it in
-                // the interal_instance_
+                // the cached_data_
                 continue;
             }
         }
@@ -247,13 +247,13 @@ void ModbusStreamReader::read_data_from_modbus()
         if (float_vector.size() == 1) {
             // an array with one element means that it's a simple value
             dynamic_data::set_dds_primitive_or_enum_type_value(
-                    *internal_instance_,
+                    *cached_data_,
                     element_kind,
                     mace.field(),
                     float_vector[0]);
         } else if (float_vector.size() > 1) {
             dynamic_data::set_vector_values(
-                    *internal_instance_,
+                    *cached_data_,
                     element_kind,
                     mace.field(),
                     float_vector);
@@ -279,7 +279,7 @@ void ModbusStreamReader::read(
      * This protection is required since take() executes on a different
      * Routing Service thread.
      */
-    std::lock_guard<std::mutex> guard(buffer_mutex_);
+    std::lock_guard<std::mutex> guard(cached_data_mutex_);
 
     /**
      * Note that we read one sample at a time from modbus in the
@@ -289,7 +289,7 @@ void ModbusStreamReader::read(
     infos.resize(1);
 
     // copy internal instance into the samples
-    std::unique_ptr<DynamicData> sample(new DynamicData(*internal_instance_));
+    std::unique_ptr<DynamicData> sample(new DynamicData(*cached_data_));
 
     samples[0] = sample.release();
 

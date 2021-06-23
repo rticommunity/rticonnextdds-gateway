@@ -57,7 +57,7 @@ public:
     ~ModbusStreamReader();
 
     /**
-     * @brief Copy the content of the internal_instance_ into the DynamicData
+     * @brief Copy the content of the cached_data_ into the DynamicData
      * samples[1]
      */
     void read(
@@ -65,7 +65,7 @@ public:
             std::vector<dds::sub::SampleInfo *>& infos) final;
 
     /**
-     * @brief Copy the content of the internal_instance_ into the DynamicData
+     * @brief Copy the content of the cached_data_ into the DynamicData
      * samples[1]
      *
      * @see read
@@ -97,7 +97,7 @@ private:
      * @brief Calls LibModbusClient functions to read data from the modbus
      * device specified in the connection. This function will read modbus
      * registers depending on the ModbusAdapterConfiguration and store these
-     * values in internal_instance_
+     * values in cached_data_
      */
     void read_data_from_modbus();
 
@@ -107,10 +107,10 @@ private:
     LibModbusClient& connection_;
     StreamReaderListener *reader_listener_;
     dds::core::xtypes::DynamicType *adapter_type_;
-    dds::core::xtypes::DynamicData *internal_instance_;
+    dds::core::xtypes::DynamicData *cached_data_;
     std::thread modbus_thread_;
     std::thread on_data_available_thread_;
-    std::mutex buffer_mutex_;
+    std::mutex cached_data_mutex_;
 
     int timeout_msecs_ = -1;
     bool stop_thread_ = false;
