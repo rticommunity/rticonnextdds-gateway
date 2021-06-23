@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include <mutex>
+
 #include <modbus.h>
 
 #include "ModbusClient.hpp"
@@ -89,7 +91,7 @@ public:
      *
      * @return the number of registers written
      *
-     * @see read_registers
+     * @see read_registers write_coils read_coils
      */
     int write_registers(
             uint32_t address,
@@ -109,7 +111,7 @@ public:
      *
      * @return the number of registers read
      *
-     * @see write_registers
+     * @see write_registers write_coils read_coils
      */
     int read_registers(
             std::vector<uint16_t>& registers,
@@ -128,7 +130,7 @@ public:
      *
      * @return the number of coils written
      *
-     * @see read_coils
+     * @see write_registers read_registers read_coils
      */
     int write_coils(
             uint32_t address,
@@ -148,13 +150,20 @@ public:
      *
      * @return the number of coils read
      *
-     * @see write_coils
+     * @see write_registers read_registers write_coils
      */
     int read_coils(
             std::vector<uint8_t>& values,
             uint32_t address,
             uint32_t register_count,
             bool read_discrete_inputs);
+
+    /**
+     * @brief Sets the response timeout for write/read in libmodbus.
+     * @param sec Seconds of the response timout.
+     * @param usec Microseconds of the response timout.
+     */
+    void set_response_timeout(uint32_t sec, uint32_t usec);
 
     /**
      * @brief Translate a uint32 into an array of uint16
@@ -268,6 +277,9 @@ public:
 
 private:
     modbus_t *modbus_connection_;
+    std::mutex connection_mutex_;
+    std::string ip_address_ = "";
+    unsigned int port_number_ = 0;
 };
 
 }}}  // namespace rti::adapter::modbus
