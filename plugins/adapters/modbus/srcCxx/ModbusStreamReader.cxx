@@ -288,7 +288,7 @@ void ModbusStreamReader::read(
     samples.resize(1);
     infos.resize(1);
 
-    // copy internal instance into the samples
+    // copy cached data into the samples
     std::unique_ptr<DynamicData> sample(new DynamicData(*cached_data_));
 
     samples[0] = sample.release();

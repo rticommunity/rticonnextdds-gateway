@@ -54,7 +54,7 @@ public:
 
 private:
     std::string ip_address_ = "";
-    unsigned int port_number_ = 0;
+    uint16_t port_number_ = 0;
     LibModbusClient *mbw_;
 };
 

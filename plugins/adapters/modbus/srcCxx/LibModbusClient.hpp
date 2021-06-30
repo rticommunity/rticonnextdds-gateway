@@ -50,7 +50,7 @@ public:
      *
      * @see connect
      */
-    LibModbusClient(const std::string& ip, unsigned int port);
+    LibModbusClient(const std::string& ip, uint16_t port);
 
     ~LibModbusClient();
 
@@ -62,7 +62,7 @@ public:
      *
      * @see disconnect
      */
-    void connect(const std::string& ip, unsigned int port);
+    void connect(const std::string& ip, uint16_t port);
 
 
     /**
@@ -279,7 +279,7 @@ private:
     modbus_t *modbus_connection_;
     std::mutex connection_mutex_;
     std::string ip_address_ = "";
-    unsigned int port_number_ = 0;
+    uint16_t port_number_ = 0;
 };
 
 }}}  // namespace rti::adapter::modbus

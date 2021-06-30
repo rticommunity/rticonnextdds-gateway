@@ -27,7 +27,7 @@ LibModbusClient::LibModbusClient()
     modbus_connection_ = nullptr;
 }
 
-LibModbusClient::LibModbusClient(const std::string& ip, unsigned int port)
+LibModbusClient::LibModbusClient(const std::string& ip, uint16_t port)
 {
     connect(ip, port);
 }
@@ -36,7 +36,7 @@ LibModbusClient::~LibModbusClient()
     disconnect();
 }
 
-void LibModbusClient::connect(const std::string& ip, unsigned int port)
+void LibModbusClient::connect(const std::string& ip, uint16_t port)
 {
     // Try to open a new TCP connection to the Modbus device
     modbus_connection_ = modbus_new_tcp(ip.c_str(), (int) port);
@@ -47,7 +47,7 @@ void LibModbusClient::connect(const std::string& ip, unsigned int port)
         throw std::runtime_error(error);
     }
     std::string ip_address_ = ip;
-    unsigned int port_number_ = port;
+    uint16_t port_number_ = port;
 
     // If the connection was successfull, connect to it
     if (modbus_connect(modbus_connection()) != 0) {
