@@ -58,6 +58,7 @@ option(RTIGATEWAY_ENABLE_ALL "Build everything" ON)
 option(RTIGATEWAY_ENABLE_MODBUS "Build Modbus Adapter" ${RTIGATEWAY_ENABLE_ALL})
 option(RTIGATEWAY_ENABLE_MQTT "Build MQTT Adapter" ${RTIGATEWAY_ENABLE_ALL})
 option(RTIGATEWAY_ENABLE_FWD "Build Forwarder Processor" ${RTIGATEWAY_ENABLE_ALL})
+option(RTIGATEWAY_ENABLE_PYPROC "Enable support for Processor Python API" ${RTIGATEWAY_ENABLE_ALL})
 option(RTIGATEWAY_ENABLE_TSFM_FIELD "Build Field Transformation" ${RTIGATEWAY_ENABLE_ALL})
 option(RTIGATEWAY_ENABLE_TSFM_JSON "Build JSON Transformation" ${RTIGATEWAY_ENABLE_ALL})
 option(RTIGATEWAY_ENABLE_TESTS "Build tester applications for enabled plugins" ${RTIGATEWAY_ENABLE_ALL})
@@ -77,7 +78,8 @@ if (RTIGATEWAY_ENABLE_MODBUS
         OR RTIGATEWAY_ENABLE_MQTT
         OR RTIGATEWAY_ENABLE_FWD
         OR RTIGATEWAY_ENABLE_TSFM_FIELD
-        OR RTIGATEWAY_ENABLE_TSFM_JSON)
+        OR RTIGATEWAY_ENABLE_TSFM_JSON
+        OR RTIGATEWAY_ENABLE_PYPROC)
     # Configure Connext DDS dependencies
     set_required_variable(CONNEXTDDS_DIR NDDSHOME CONNEXTDDS_DIR)
 
@@ -136,6 +138,20 @@ if (RTIGATEWAY_ENABLE_FWD)
     set (STAGING_PLUGIN_DIR "fwd")
     add_subdirectory("${PROCESSORS_DIR}/fwd")
 endif()
+
+
+if (RTIGATEWAY_ENABLE_PYPROC)
+    set (RSPLUGIN_PREFIX "RTI_PRCS_PY")
+    set (STAGING_PLUGIN_DIR "pyprocessor")
+
+    add_subdirectory("${PROCESSORS_DIR}/pyprocessor")
+    add_subdirectory("${RESOURCE_DIR}/pyprocessor")
+
+    if (RTIGATEWAY_ENABLE_EXAMPLES)
+        add_subdirectory("${EXAMPLES_DIR}/pyprocessor")
+    endif()
+endif()
+
 
 if (RTIGATEWAY_ENABLE_TSFM_FIELD)
     set (RSPLUGIN_PREFIX "RTI_TSFM_FIELD")

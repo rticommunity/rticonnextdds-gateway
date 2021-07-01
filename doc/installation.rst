@@ -56,6 +56,12 @@ Other Dependencies
               files.
 :License: `BSD with no dependencies <https://github.com/udp/json-parser/blob/master/LICENSE>`__
 
+|RSPYTHON|
+~~~~~~~~~~
+:python: :link_python:`Python <>` is used to bind the python code with Routing
+         Service.
+:License: `PSF License Agreement for Python 3.8 <https://docs.python.org/3.8/license.html>`__
+
 Documentation
 -------------
 The repository requires ``doxygen`` and ``sphinx``. You may also need to

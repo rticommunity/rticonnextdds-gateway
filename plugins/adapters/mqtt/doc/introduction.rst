@@ -32,11 +32,11 @@ shown in figure :numref:`FigureSystemArchitecture`.
 an |MQTT_MESSAGE|.
 
 *DDS* applications can use these types to exchange data with *MQTT*
-applications. Optionally, |RS|'s |TRANSFORMATION_API| can be used to implement
+applications. Optionally, |RS|'s |RS_TRANSFORMATION_API| can be used to implement
 custom transformations between the *MQTT* payload, and |DDS_TYPES| used by
 the system.
 
-|RS|'s |PROCESSOR_API| can also be used to implement custom mappings between
+|RS_PROCESSOR_API| can also be used to implement custom mappings between
 *DDS* and *MQTT* data streams, for example, to automatically map different
 |MQTT_TOPICS| into *Instances* of the same |DDS_TOPIC|.
 

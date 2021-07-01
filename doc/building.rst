@@ -70,6 +70,28 @@ directories.
              -DCMAKE_BUILD_TYPE=Debug|Release           \
              -DCMAKE_INSTALL_PREFIX=../install
 
+Depending on the build system that you want to generate, you may need to select
+the generator whose name is defined in CMake. In the case of using Visual
+Studio®, you can find the generator names here:
+https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html#id13
+
+```bat
+mkdir build
+cd build
+cmake .. -DCONNEXTDDS_DIR=/path/to/connextdds/installation/dir ^
+    -DCMAKE_INSTALL_PREFIX=../install ^
+    -DCMAKE_BUILD_TYPE=Debug|Release ^
+    -G <generator name>
+```
+
+In case the architecture is 64 bits, you should also add `-A x64`. For
+example, the following option will generate a solution for Visual Studio 2015
+64 bits:
+
+```sh
+-G "Visual Studio 14 2015" -A x64
+```
+
 Compilation
 -----------
 
@@ -81,6 +103,13 @@ Linux® and macOS® systems:
 .. code-block:: sh
 
     cmake --build .
+
+For multi-configuration generator, such as Visual Studio solutions, you need to
+specify the configuration mode when building it:
+
+```sh
+--config Debug|Release
+```
 
 Windows® systems:
 
@@ -195,6 +224,16 @@ RTIGATEWAY_ENABLE_FWD
               components are enabled unless they are specifically disabled
               (tests, examples, docs...).
 
+RTIGATEWAY_ENABLE_PYPROC
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+:Required: No
+:Default: ``ON``
+:Description: If this variable is enabled, the Python processor and all its
+              components are enabled unless they are specifically disabled
+              (tests, examples, docs...).
+
+
 RTIGATEWAY_ENABLE_TSFM_FIELD
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -223,7 +262,7 @@ RTIGATEWAY_ENABLE_LOG
               mode, or if ``RTIGATEWAY_ENABLE_LOG`` is enabled, plugins will
               print informational and error messages to standard output. These
               messages cannot be disabled at run-time.
-:Note: This doesn't apply to the Modbus Adapter.
+:Note: This doesn't apply to the Modbus Adapter nor Python Processor.
 
 RTIGATEWAY_ENABLE_TRACE
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -233,7 +272,7 @@ RTIGATEWAY_ENABLE_TRACE
 :Description: If enabled, this option will cause plugins to produce a much
               more verbose logging output, which can be used to trace all
               function calls within the adapter code.
-:Note: This doesn't apply to the Modbus Adapter.
+:Note: This doesn't apply to the Modbus Adapter nor Python Processor.
 
 MQTT Adapter CMake Options
 --------------------------
@@ -257,4 +296,3 @@ RTIGATEWAY_ENABLE_SSL
               specified to provide the required |OPENSSL| dependencies. You can
               specify ``OPENSSLHOME`` when calling |CMAKE| by adding
               ``-DOPENSSLHOME=/path/to/openssl``.
-

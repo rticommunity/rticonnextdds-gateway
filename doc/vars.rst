@@ -3,7 +3,12 @@
    <br />
 
 .. |CONNEXT_VERSION_601| replace:: 6.0.1
+.. |CONNEXT_VERSION_610| replace:: 6.1.0
 .. |RS| replace:: *Routing Service*
+.. |RS_PROCESSOR| replace:: |RS| *Processor*
+.. |RS_PROCESSOR_API| replace:: |RS_PROCESSOR| *API*
+.. |RS_TRANSFORMATION| replace:: |RS| *Transformation*
+.. |RS_TRANSFORMATION_API| replace:: |RS_TRANSFORMATION| *API*
 .. |RS_SDK| replace:: |RS| *SDK*
 .. |RSs| replace:: *Routing Services*
 .. |RTI_RS| replace:: *RTI* |RS|
@@ -20,9 +25,13 @@
 .. |DDS_TOPIC| replace:: *DDS Topic*
 .. |DDS_DOMAIN| replace:: *DDS Domain*
 .. |DDS_DOMAINS| replace:: *DDS Domains*
-.. |COPYRIGHT_YEAR| replace:: 2020
+.. |ROUTE| replace:: *Route*
+.. |ROUTES| replace:: *Routes*
+.. |PROCESSOR| replace:: *Processor*
+.. |COPYRIGHT_YEAR| replace:: 2021
 .. |COPYRIGHT_HEADER| replace:: © |COPYRIGHT_YEAR| Real-Time Innovations, Inc.
 .. |PAHO_ASYNC| replace:: *Paho C Client Async MQTT Library*
 .. |RSMQTT| replace:: |RS| *MQTT Adapter*
 .. |RSMODBUS| replace:: |RS| *Modbus Adapter*
+.. |RSPYTHON| replace:: |RS| *Python Processor API*
 .. |OPENSSL| replace:: *OpenSSL*

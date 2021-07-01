@@ -15,8 +15,6 @@
 .. |MQTT_ADAPTER_LIB_NAME_LINUX| replace:: ``librtimqttadapter.so``
 .. |MQTT_ADAPTER_LIB_NAME_MAC| replace:: ``librtimqttadapter.dylib``
 .. |MQTT_ADAPTER_LIB_NAME_WIN| replace:: ``rtimqttadapter.dll``
-.. |TRANSFORMATION_API| replace:: *Transformation API*
-.. |PROCESSOR_API| replace:: *Processor API*
 .. |PARTICIPANTS| replace:: *DomainParticipants*
 .. |MOSQUITTO| replace:: *Mosquitto*
 .. |SERVICE| replace:: *RoutingService*
