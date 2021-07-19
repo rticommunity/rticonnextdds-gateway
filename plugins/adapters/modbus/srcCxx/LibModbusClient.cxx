@@ -46,8 +46,8 @@ void LibModbusClient::connect(const std::string& ip, uint16_t port)
                 + "> " + modbus_strerror(errno));
         throw std::runtime_error(error);
     }
-    std::string ip_address_ = ip;
-    uint16_t port_number_ = port;
+    ip_address_ = ip;
+    port_number_ = port;
 
     // If the connection was successfull, connect to it
     if (modbus_connect(modbus_connection()) != 0) {
