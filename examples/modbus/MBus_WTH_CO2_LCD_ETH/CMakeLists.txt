@@ -13,7 +13,7 @@
 #                                                                             #
 ###############################################################################
 
-include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
+include(ConnextDdsGenerateFiles)
 
 set(EXAMPLE_NAME MBus_WTH_CO2_LCD_ETH)
 
@@ -27,14 +27,12 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dds_reader")
 # to the binary directory so codegen doesn't generate 'USER_QOS_PROFILES.xml' in
 # the binary directory.
 
-rtigw_copy_files(
-    TARGET co2-lcd-eth-example-config
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}"
-    FILES "USER_QOS_PROFILES.xml"
+connextdds_copy_files(
+    INPUT_FILES
+        "USER_QOS_PROFILES.xml"
+    OUTPUT_DIR
+        "${CMAKE_CURRENT_BINARY_DIR}"
 )
-
-# add the dependency of the copying step to the current target
-add_dependencies(MBus_WTH_CO2_LCD_ETH_INPUT co2-lcd-eth-example-config)
 
 # staging files
 # Config files

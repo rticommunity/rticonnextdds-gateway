@@ -13,7 +13,7 @@
 #                                                                             #
 ###############################################################################
 
-include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
+include("${CMAKE_COMMON_DIR}/CommonFunctions.cmake")
 
 rtigw_generate_doc(
     DOXYGEN

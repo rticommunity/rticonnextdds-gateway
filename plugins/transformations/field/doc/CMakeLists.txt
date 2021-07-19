@@ -15,7 +15,7 @@
 
 cmake_minimum_required (VERSION 3.5)
 
-include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
+include("${CMAKE_COMMON_DIR}/CommonFunctions.cmake")
 
 rtigw_generate_doc(
     PLUGIN "Field Transformation"

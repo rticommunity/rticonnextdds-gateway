@@ -18,7 +18,7 @@
 ###############################################################################
 cmake_minimum_required(VERSION 3.7.0)
 
-include("${RESOURCE_DIR}/cmake/DdsFunctions.cmake")
+include(ConnextDdsCodegen)
 
 ###############################################################################
 # Set variables
@@ -50,12 +50,12 @@ foreach(IDL_NAME ${ADAPTER_MQTT_IDL})
     connextdds_rtiddsgen_run(
         IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
         LANG "C"
-        OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/idl"
+        OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/idl"
         EXTRA_ARGS
             "-unboundedSupport"
             "-qualifiedEnumerator"
     )
-    list(APPEND GENERATED_SRC_IDL_FILES ${GENERATED_SRC_FILES})
+    list(APPEND GENERATED_SRC_IDL_FILES ${${IDL_NAME}_C_SOURCES})
 endforeach()
 
 

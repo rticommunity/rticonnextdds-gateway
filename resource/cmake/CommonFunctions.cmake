@@ -40,77 +40,6 @@ function(rtigw_list_prefix INPUT_LIST PREFIX _OUT_VARIABLE)
     set(${_OUT_VARIABLE} ${_result} PARENT_SCOPE)
 endfunction()
 
-
-#[[
-rtigw_copy_files
-----------------
-
- * Brief: copy files from the source directory to the output directory
- * Params:
- ** TARGET: custom target name that will be created to copy the files.
- ** OUTPUT: output directory where files will be copied in.
- ** FILES: list of files to be copied with relative path form
-           ${CMAKE_CURRENT_SOURCE_DIR}.
-
- * How to use it:
-
-    rtigw_copy_files(
-        TARGET integration-test1-copy-qos
-        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
-        FILES "dds_type/USER_QOS_PROFILES.xml"
-    )
-]]
-function(rtigw_copy_files)
-    set(_BOOLEANS)
-    set(_SINGLE_VALUE_ARGS TARGET OUTPUT)
-    set(_MULTI_VALUE_ARGS FILES)
-
-    cmake_parse_arguments(_args
-        "${_BOOLEANS}"
-        "${_SINGLE_VALUE_ARGS}"
-        "${_MULTI_VALUE_ARGS}"
-        ${ARGN}
-    )
-
-    # Create the list of the input and output files to copy
-    rtigw_list_prefix(
-        ${_args_FILES}
-        "${CMAKE_CURRENT_SOURCE_DIR}/"
-        _files_input
-    )
-
-    rtigw_list_prefix(
-        ${_args_FILES}
-        "${CMAKE_CURRENT_BINARY_DIR}/"
-        _files_output
-    )
-
-    # Create the custom command
-    add_custom_command(
-        # Indicate what files are generated if this command is executed
-        OUTPUT
-            ${_files_output}
-        # Comment to show while building
-        COMMENT
-            "Copying ${_args_TARGET} files to binary dir"
-        # Create the config directory if it doesn't exist
-        COMMAND
-            ${CMAKE_COMMAND} -E make_directory "${_args_OUTPUT}"
-        # Copy the files (only if they are different)
-        COMMAND
-            ${CMAKE_COMMAND} -E copy_if_different ${_files_input} "${_args_OUTPUT}"
-    )
-    # Create the custom target
-    add_custom_target(${_args_TARGET}
-        # To execute this custom target (that will do nothing), we need first to
-        # generate these files. This triggers the custom command from the previous
-        # statement
-        DEPENDS
-            ${_files_output}
-    )
-endfunction()
-
-
 #[[
 rtigw_generate_doc
 ------------------
@@ -216,32 +145,12 @@ function(rtigw_configure_plugin_defines)
             CACHE INTERNAL "List compiler defines")
 endfunction()
 
-function(rtigw_set_required _OUT_VARIABLE)
-    set(candidate_vars ${ARGN})
-    foreach(v ${candidate_vars})
-        # Give preference to variables passed directly to cmake
-        if (DEFINED ${v})
-            message(STATUS "${_OUT_VARIABLE} = ${${v}}")
-            set(${_OUT_VARIABLE} ${${v}} PARENT_SCOPE)
-            return()
-        elseif (DEFINED ENV{${v}})
-            message(STATUS "${_OUT_VARIABLE} = $ENV{${v}}")
-            set(${_OUT_VARIABLE} $ENV{${v}} PARENT_SCOPE)
-            return()
-        endif()
-    endforeach()
-    message(FATAL_ERROR
-        "Failed to determine value for ${_OUT_VARIABLE}. "
-        "Please specify one of '${candidate_vars}' either in your "
-        "environment, or as an argument to cmake.")
-endfunction()
-
-function(rtigw_init_install_path)
+macro(rtigw_init_install_path)
     if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX        "${CMAKE_CURRENT_BINARY_DIR}/install")
         message(STATUS "Using default CMAKE_INSTALL_PREFIX = '${CMAKE_INSTALL_PREFIX}'")
     endif()
-endfunction()
+endmacro()
 
 #[[
 rtigw_configure_connextdds
@@ -250,16 +159,13 @@ rtigw_configure_connextdds
  * Brief: configures RTI Connext DDS by using its FindPackage
  * Params:
  ** _CONNEXTDDS_VERSION: version of RTI Connext DDS to configure
- * Restrictions: CONNEXTDDS_DIR should be set
+ * Preconditions: FindRTIConnextDDS.cmake should be added to CMAKE_MODULE_PATH
  * How to use it:
 
     rtigw_configure_connextdds(6.1.0)
 ]]
 
 function(rtigw_configure_connextdds _CONNEXTDDS_VERSION)
-    # Configure Connext DDS dependencies
-    rtigw_set_required(CONNEXTDDS_DIR NDDSHOME CONNEXTDDS_DIR)
-
     # CONNEXTDDS_ARCH is not required, but recommended
     # eg -DCONNEXTDDS_ARCH=x64Linux4gcc7.3.0
     if (NOT DEFINED CONNEXTDDS_ARCH AND DEFINED ENV{CONNEXTDDS_ARCH})
@@ -269,8 +175,6 @@ function(rtigw_configure_connextdds _CONNEXTDDS_VERSION)
     if (DEFINED CONNEXTDDS_ARCH)
         message(STATUS "CONNEXTDDS_ARCH set to <${CONNEXTDDS_ARCH}>")
     endif()
-
-    list(APPEND CMAKE_MODULE_PATH "${CONNEXTDDS_DIR}/resource/cmake")
 
     find_package(
         RTIConnextDDS
@@ -309,19 +213,22 @@ macro(rtigw_init_globals)
 
     # Set common variables
     set(COMMON_DIR "${CMAKE_CURRENT_SOURCE_DIR}/common")
-    set(JSON_PARSER_WRAPPER_DIR "${COMMON_DIR}/json_parser")
-    set(DDS_COMMON_DIR "${COMMON_DIR}/dds_specific")
-    set(TRANSFORMATION_COMMON_DIR "${COMMON_DIR}/transformation")
-    set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third-party")
-    set(LIBMODBUS_DIR "${THIRD_PARTY_DIR}/libmodbus")
-    set(PAHO_MQTT_C_DIR "${THIRD_PARTY_DIR}/paho.mqtt.c")
     set(RESOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resource")
-    set(UTILS_COMMON_DIR "${COMMON_DIR}/utils")
-    set(JSON_PARSER_DIR "${THIRD_PARTY_DIR}/json_parser")
+    set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third-party")
     set(ADAPTERS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins/adapters")
     set(PROCESSORS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins/processors")
     set(TRANSFORMATIONS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/plugins/transformations")
     set(EXAMPLES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/examples")
+
+    set(LIBMODBUS_DIR "${THIRD_PARTY_DIR}/libmodbus")
+    set(PAHO_MQTT_C_DIR "${THIRD_PARTY_DIR}/paho.mqtt.c")
+    set(JSON_PARSER_DIR "${THIRD_PARTY_DIR}/json_parser")
+    set(UTILS_COMMON_DIR "${COMMON_DIR}/utils")
+    set(JSON_PARSER_WRAPPER_DIR "${COMMON_DIR}/json_parser")
+    set(TRANSFORMATION_COMMON_DIR "${COMMON_DIR}/transformation")
+    set(DDS_COMMON_DIR "${COMMON_DIR}/dds_specific")
+    set(CMAKE_COMMON_DIR "${RESOURCE_DIR}/cmake")
+    set(CMAKE_UTILS_MODULES_DIR "${THIRD_PARTY_DIR}/rticonnextdds-cmake-utils/cmake/Modules")
 
     set(STAGING_LIB_DIR "lib")
     set(STAGING_BIN_DIR "bin")
@@ -349,6 +256,8 @@ macro(rtigw_init_globals)
     rtigw_init_install_path()
 
     # Only check RTI Connext DDS dependencies if at least one plugin will be built.
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_UTILS_MODULES_DIR}")
+
     rtigw_configure_connextdds(6.0.1)
 
     if (RTIGATEWAY_ENABLE_TESTS)
@@ -441,7 +350,7 @@ rtigw_add_plugin
  ** PLUGIN_DIR_NAME: name that identifies the folder of that plugin
  ** PLUGIN_TYPE: indicates whether a plugin is an "ADAPTER", a "PROCESSOR" or a
                  "TRANSFORMATION"
- * Restrictions: CONNEXTDDS_DIR should be set
+ * Preconditions: CONNEXTDDS_DIR or NDDSHOME environment variable should be set
  * How to use it:
 
     rtigw_add_plugin(

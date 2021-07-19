@@ -15,6 +15,8 @@
 
 cmake_minimum_required(VERSION 3.7.0)
 
+include(ConnextDdsCodegen)
+
 ###############################################################################
 ###############################################################################
 
@@ -27,7 +29,7 @@ set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/idl")
 connextdds_rtiddsgen_run(
     IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
     LANG "C"
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/idl"
+    OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/idl"
 )
 
 add_executable(${EXAMPLE_NAME}
@@ -35,7 +37,7 @@ add_executable(${EXAMPLE_NAME}
     "${CMAKE_CURRENT_SOURCE_DIR}/srcC/ShapesAgentDds.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/srcC/ShapesAgentDdsSubscriber.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/srcC/ShapesAgentDdsPublisher.c"
-    ${GENERATED_SRC_FILES}
+    ${${IDL_NAME}_C_SOURCES}
 )
 
 target_link_libraries(${EXAMPLE_NAME}

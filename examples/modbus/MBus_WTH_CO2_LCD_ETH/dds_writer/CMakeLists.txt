@@ -13,8 +13,7 @@
 #                                                                             #
 ###############################################################################
 
-include("${RESOURCE_DIR}/cmake/DdsFunctions.cmake")
-include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
+include(ConnextDdsCodegen)
 
 set(IDL_NAME "MBus_WTH_CO2_LCD_ETH_WRITE")
 set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../idl")
@@ -23,12 +22,12 @@ set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../idl")
 connextdds_rtiddsgen_run(
     IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
     LANG "C"
-    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 add_executable(MBus_WTH_CO2_LCD_ETH_WRITE
     "${CMAKE_CURRENT_SOURCE_DIR}/${IDL_NAME}_publisher.c"
-    ${GENERATED_SRC_FILES}
+    ${${IDL_NAME}_C_SOURCES}
 )
 
 target_include_directories(MBus_WTH_CO2_LCD_ETH_WRITE

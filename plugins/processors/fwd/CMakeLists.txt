@@ -15,6 +15,8 @@
 
 cmake_minimum_required(VERSION 3.7.0)
 
+include(ConnextDdsCodegen)
+
 # Set variables
 set(RSPLUGIN_LIB_NAME rtifwdprocessor)
 
@@ -26,12 +28,11 @@ set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/idl")
 connextdds_rtiddsgen_run(
     IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
     LANG "C++11"
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/idl"
+    OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/idl"
     EXTRA_ARGS
         "-unboundedSupport"
         "-qualifiedEnumerator"
 )
-list(APPEND GENERATED_SRC_IDL_FILES ${GENERATED_SRC_FILES})
 
 # Create library
 add_library(
@@ -42,7 +43,7 @@ add_library(
         "srcCxx/ByInputValueForwardingEngine.cxx"
         "srcCxx/ForwardingEngine.cxx"
         "srcCxx/Properties.cxx"
-        "${GENERATED_SRC_IDL_FILES}"
+        "${${IDL_NAME}_CXX11_SOURCES}"
 )
 
 set_target_properties(${RSPLUGIN_LIB_NAME} PROPERTIES DEBUG_POSTFIX "d")

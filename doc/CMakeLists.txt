@@ -22,7 +22,7 @@ endif()
 set(DOC_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
 set(DOC_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
-include("${RESOURCE_DIR}/cmake/CommonFunctions.cmake")
+include("${CMAKE_COMMON_DIR}/CommonFunctions.cmake")
 
 rtigw_generate_doc(
     PLUGIN "GENERAL"
