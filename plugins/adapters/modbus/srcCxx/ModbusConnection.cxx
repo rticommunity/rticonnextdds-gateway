@@ -34,6 +34,14 @@ ModbusConnection::ModbusConnection(const PropertySet& properties)
     }
 
     mbw_ = new LibModbusClient(ip_address_, port_number_);
+
+    if (properties.find("modbus_response_timeout_msec") != properties.end()) {
+        uint32_t msec = std::stoi(properties.at("modbus_response_timeout_msec"));
+        uint32_t sec = static_cast<uint32_t>(msec / 1000);
+        uint32_t usec = (msec - sec * 1000) * 1000;
+
+        mbw_->set_response_timeout(sec, usec);
+    }
 }
 
 ModbusConnection::~ModbusConnection()

@@ -20,7 +20,7 @@
 namespace rti { namespace adapter { namespace modbus {
 class ModbusClient {
 public:
-    virtual void connect(const std::string& ip, unsigned int port) = 0;
+    virtual void connect(const std::string& ip, uint16_t port) = 0;
     virtual void disconnect() = 0;
 
     /**
@@ -99,6 +99,14 @@ public:
             uint32_t address,
             uint32_t size,
             bool read_discrete_inputs) = 0;
+
+    /**
+     * @brief Sets the response timeout for write/read operations.
+     * @param sec Seconds of the response timout.
+     * @param usec Microseconds of the response timout.
+     */
+    virtual void set_response_timeout(uint32_t sec, uint32_t usec) = 0;
+
 };
 
 }}}  // namespace rti::adapter::modbus

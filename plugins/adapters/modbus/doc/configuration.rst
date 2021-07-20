@@ -64,6 +64,10 @@ A Connection identifies a |MODBUS_DEVICE|, therefore you have to specify the
 configuration must include the properties ``modbus_server_ip`` and
 ``modbus_server_port`` to configure the associated |MODBUS_DEVICE|.
 
+Optionally, you can also set a response timeout for a specific Modbus connection
+by setting the property ``modbus_response_timeout_msec``. If not set, it will use
+the default value of libmodbus.
+
 The following snippet shows an example ``<connection>`` that connects
 the adapter to a local |MODBUS_DEVICE|:
 
@@ -83,6 +87,10 @@ the adapter to a local |MODBUS_DEVICE|:
                         <element>
                             <name>modbus_server_port</name>
                             <value>1502</value>
+                        </element>
+                        <element>
+                            <name>modbus_response_timeout_msec</name>
+                            <value>5000</value>
                         </element>
                     </value>
                 </property>

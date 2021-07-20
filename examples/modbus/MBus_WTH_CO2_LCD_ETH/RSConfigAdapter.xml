@@ -114,6 +114,10 @@
                             <name>modbus_server_port</name>
                             <value>1502</value>
                         </element>
+                        <element>
+                            <name>modbus_response_timeout_msec</name>
+                            <value>5000</value>
+                        </element>
                     </value>
                 </property>
                 <registered_type name="MBus_WTH_CO2_LCD_ETH_WRITE" type_name="MBus_WTH_CO2_LCD_ETH_WRITE" />
