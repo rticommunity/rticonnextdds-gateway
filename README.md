@@ -48,8 +48,15 @@ cmake .. -DCONNEXTDDS_DIR=/path/to/connextdds/installation/dir \
 cmake --build . -- install
 ```
 
-By default CMake builds debug artifacts, if you want to build them as 'release',
-you should add the following flag when calling CMake:
+By default CMake builds debug artifacts. Debug libraries should be loaded and
+run with Routing Service debug, which is located in:
+
+```
+$NDDSHOME/resource/app/bin/<architecture>/rtiroutingserviceappd
+```
+
+If you want to build them as 'release', you should add the following flag when
+calling CMake:
 
 ```sh
 -DCMAKE_BUILD_TYPE=Release
