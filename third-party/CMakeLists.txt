@@ -13,7 +13,7 @@
 #                                                                             #
 ###############################################################################
 
-include("${CMAKE_COMMON_DIR}/ConfigureThirdPartyBuilds.cmake")
+include("${RTICMAKE_COMMON_DIR}/ConfigureThirdPartyBuilds.cmake")
 
 # Change the CMAKE_INSTALL variables to install those files under third-party
 # directory. In this way, the third-party object are differentiated from the

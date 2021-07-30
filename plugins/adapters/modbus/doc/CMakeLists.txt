@@ -15,7 +15,7 @@
 
 cmake_minimum_required (VERSION 3.5)
 
-include("${CMAKE_COMMON_DIR}/CommonFunctions.cmake")
+include("${RTICMAKE_COMMON_DIR}/CommonFunctions.cmake")
 
 rtigw_generate_doc(
     PLUGIN "Modbus Adapter"

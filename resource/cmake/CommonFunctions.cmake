@@ -227,8 +227,8 @@ macro(rtigw_init_globals)
     set(JSON_PARSER_WRAPPER_DIR "${COMMON_DIR}/json_parser")
     set(TRANSFORMATION_COMMON_DIR "${COMMON_DIR}/transformation")
     set(DDS_COMMON_DIR "${COMMON_DIR}/dds_specific")
-    set(CMAKE_COMMON_DIR "${RESOURCE_DIR}/cmake")
-    set(CMAKE_UTILS_MODULES_DIR "${THIRD_PARTY_DIR}/rticonnextdds-cmake-utils/cmake/Modules")
+    set(RTICMAKE_COMMON_DIR "${RESOURCE_DIR}/cmake")
+    set(RTICMAKE_UTILS_MODULES_DIR "${THIRD_PARTY_DIR}/rticonnextdds-cmake-utils/cmake/Modules")
 
     set(STAGING_LIB_DIR "lib")
     set(STAGING_BIN_DIR "bin")
@@ -255,8 +255,7 @@ macro(rtigw_init_globals)
 
     rtigw_init_install_path()
 
-    # Only check RTI Connext DDS dependencies if at least one plugin will be built.
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_UTILS_MODULES_DIR}")
+    list(APPEND CMAKE_MODULE_PATH "${RTICMAKE_UTILS_MODULES_DIR}")
 
     rtigw_configure_connextdds(6.0.1)
 
