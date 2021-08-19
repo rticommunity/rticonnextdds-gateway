@@ -24,4 +24,5 @@
 .. |PAHO_ASYNC| replace:: *Paho C Client Async MQTT Library*
 .. |RSMQTT| replace:: |RS| *MQTT Adapter*
 .. |RSMODBUS| replace:: |RS| *Modbus Adapter*
+.. |RSKAFKA| replace:: |RS| *Kafka Adapter*
 .. |OPENSSL| replace:: *OpenSSL*
