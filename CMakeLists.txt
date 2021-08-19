@@ -25,7 +25,7 @@ set (CMAKE_C_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project (RTIGateway VERSION 1.0.0)
+project (RTIConnextGateway VERSION 1.0.0)
 
 # Set common variables
 set (GATEWAY_DOC "${CMAKE_CURRENT_SOURCE_DIR}/doc")
@@ -160,7 +160,9 @@ endif()
 if (RTIGATEWAY_ENABLE_TSFM_JSON)
     set (RSPLUGIN_PREFIX "RTI_TSFM_JSON")
     set (STAGING_PLUGIN_DIR "tsfm_json")
+    set (RSPLUGIN_LIB_NAME rtijsontransf)
     add_subdirectory("${TRANSFORMATIONS_DIR}/json")
+    add_subdirectory("${EXAMPLES_DIR}/json")
 endif()
 
 # Shapes example

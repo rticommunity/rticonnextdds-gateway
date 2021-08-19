@@ -39,7 +39,15 @@ At a minimum, you will need to specify:
     |RTI_CONNEXT| installation.
 
 Optionally, you can use ``CMAKE_BUILD_TYPE`` to select the type of libraries to
-build (either ``Release``, or ``Debug``, default: ``Debug``).
+build (either ``Release``, or ``Debug``, default: ``Debug``). This documentation
+and README files assume that you are using ``Release`` building configuration,
+in case you build the libraries using ``Debug`` configuration, you must run
+the RTI Routing Service for debug mode located in:
+
+.. code-block:: sh
+
+    $NDDSHOME/resource/app/bin/<architecture>/rtiroutingserviceappd
+
 
 It is also strongly recommended (albeit not required for building) that you
 also change the value of variable ``CMAKE_PREFIX_INSTALL``, to specify a custom

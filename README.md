@@ -1,18 +1,18 @@
 # RTI Connext Gateway
 
-The RTI® Gateway is a software component that allows integrating
+The RTI Connext® Gateway is a software component that allows integrating
 different types of connectivity protocols with DDS. Integration in this
 context means that data flows from different protocols are adapted to
 interface with DDS, establishing communication from and to DDS.
 
-RTI Gateway provides an open framework based on the RTI Routing Service SDK
+RTI Connext Gateway provides an open framework based on the RTI Routing Service SDK
 that enables users to easily add communication protocols as needed, in addition
 to any other protocol implementations that may be included as part of the
 framework.
 
 ## Installation
 
-RTI Gateway is distributed in source format. You can clone the
+RTI Connext Gateway is distributed in source format. You can clone the
 source repository using git:
 
 ```sh
@@ -36,7 +36,7 @@ git submodule update --init --recursive
 - [Connext DDS 6.1.0](https://community.rti.com/content/page/downloads)*
 - [cmake 3.10+](https://cmake.org/download/)
 
-In order to build the RTI Gateway components you have to run the following
+In order to build the RTI Connext Gateway components you have to run the following
 command:
 
 Linux® and macOS® systems
@@ -48,8 +48,15 @@ cmake .. -DCONNEXTDDS_DIR=/path/to/connextdds/installation/dir \
 cmake --build . -- install
 ```
 
-By default CMake builds debug artifacts, if you want to build them as 'release',
-you should add the following flag when calling CMake:
+By default CMake builds debug artifacts. Debug libraries should be loaded and
+run with Routing Service debug, which is located in:
+
+```
+$NDDSHOME/resource/app/bin/<architecture>/rtiroutingserviceappd
+```
+
+If you want to build them as 'release', you should add the following flag when
+calling CMake:
 
 ```sh
 -DCMAKE_BUILD_TYPE=Release
@@ -121,7 +128,7 @@ Windows systems to run the `dot` command.
     pip install docutils
     ```
 
-In order to build the RTI Gateway documentation, you have to add the
+In order to build the RTI Connext Gateway documentation, you have to add the
 `RTIGATEWAY_ENABLE_DOCS` flag when calling CMake:
 
 ```sh
@@ -133,12 +140,12 @@ cmake .. -DCONNEXTDDS_DIR=/path/to/connextdds/installation/dir \
 ```
 
 The documentation will be generated under the install directory. The following
-file contains the RTI Gateway documentation:
+file contains the RTI Connext Gateway documentation:
 
-- &lt;RTI Gateway folder&gt;/install/doc/index.html
+- &lt;RTI Connext Gateway folder&gt;/install/doc/index.html
 
 Specific documentation for the plugins can be found in the section
-`1.4. RTI Gateway Plugins`.
+`1.4. RTI Connext Gateway Plugins`.
 
 Further information about how to customize the build can be found in the
 section `4. Building from source`.

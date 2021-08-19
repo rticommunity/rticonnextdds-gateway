@@ -75,7 +75,7 @@ In order to run the integration_test1 three elements are required:
 1. Add the folders which contains `libmodbus` and `rtimodbusadapter` libraries to
 your `LD_LIBRARY_PATH`, `PATH` or `RTI_LD_LIBRARY_PATH` environment variable
 (depending on your OS). If you follow these instructions, the folder is:
-`.../rticonnextdds-gateway/install`.
+`<path to rticonnextdds-gateway>/install/lib`.
 
 1. Modbus server (`bin` directory)
 
