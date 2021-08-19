@@ -49,7 +49,7 @@ cmake --build . -- install
 ```
 
 By default CMake builds debug artifacts. Debug libraries should be loaded and
-run with Routing Service debug, which is located in:
+run with the debug version of Routing Service debug, which is located at:
 
 ```
 $NDDSHOME/resource/app/bin/<architecture>/rtiroutingserviceappd
