@@ -1,4 +1,11 @@
-build
-install
+build/
+build-*/
+build_*/
+dist
+install/
+install-*/
+install_*/
 .vscode
 compile_commands.json
+nb
+__pycache__

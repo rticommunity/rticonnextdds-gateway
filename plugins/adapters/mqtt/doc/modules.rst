@@ -227,7 +227,7 @@ MQTT Subscription Configuration
 
 .. doxygengroup:: RtiMqtt_Properties_Subscription
    :members:
-   
+
 .. _section-modules-properties-pub:
 
 MQTT Publication Configuration

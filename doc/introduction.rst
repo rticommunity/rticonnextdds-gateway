@@ -120,6 +120,7 @@ information on its use and configuration:
   * Processors
 
     * `Forwarder <processors/fwd/index.html>`__ : Custom forwarding of data within a route.
+    * `Python Processor <processors/pyprocessor/index.html>`__ : Python forwarding processor.
 
   * Transformations
 
