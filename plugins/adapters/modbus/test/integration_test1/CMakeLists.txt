@@ -13,47 +13,37 @@
 #                                                                             #
 ###############################################################################
 
-include("${RESOURCE_DIR}/cmake/common_functions.cmake")
-include("${RESOURCE_DIR}/cmake/dds_functions.cmake")
+include(ConnextDdsGenerateFiles)
+include(ConnextDdsCodegen)
 
-set(TEST_NAME integration_test1)
-
-# Copy config files to the build directory
-set(INTEGRATION_TEST1_COPY_CONFIG_FILES
-    "config/test_pub_config.json"
-    "config/test_sub_config.json")
-
-copy_files(
-    CUSTOM_TARGET_NAME INTEGRATION_TEST1_COPY_CONFIG
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/config"
-    LIST_OF_FILES_RELATIVE_PATH ${INTEGRATION_TEST1_COPY_CONFIG_FILES}
-)
-
-copy_files(
-    CUSTOM_TARGET_NAME INTEGRATION_TEST1_COPY_RS_CONF
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}"
-    LIST_OF_FILES_RELATIVE_PATH "RSConfigTest.xml"
-)
+set(TEST_NAME modbus_integration_test1)
 
 # Copy the USER_QOS_PROFILES before generating the code
-copy_files(
-    CUSTOM_TARGET_NAME INTEGRATION_TEST1_COPY_QOS
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
-    LIST_OF_FILES_RELATIVE_PATH "dds_type/USER_QOS_PROFILES.xml")
+# This is not needed since we could install that file directly. However, for
+# consistency between the 'build' and 'install' directories, this is copied
+# to the binary directory so codegen doesn't generate 'USER_QOS_PROFILES.xml' in
+# the binary directory.
 
+connextdds_copy_files(
+    INPUT_FILES
+        "dds_type/USER_QOS_PROFILES.xml"
+    OUTPUT_DIR
+        "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
+)
 
 set(IDL_NAME "TestType")
+set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dds_type")
 
 # Generate codegen files
-connextdds_run_codegen(
-    IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/dds_type/${IDL_NAME}.idl"
-    LANGUAGE "C"
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
+connextdds_rtiddsgen_run(
+    IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
+    LANG "C"
+    OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
 )
 
 add_executable(${TEST_NAME}
-    "${CMAKE_CURRENT_SOURCE_DIR}/dds_type/${IDL_NAME}_main.c"
-    ${GENERATED_SRC_FILES}
+    "${CMAKE_CURRENT_SOURCE_DIR}/dds_type/TestType_main.c"
+    ${${IDL_NAME}_C_SOURCES}
 )
 
 target_include_directories(${TEST_NAME}
@@ -65,29 +55,15 @@ target_link_libraries(${TEST_NAME}
     RTIConnextDDS::c_api
 )
 
-
-# add the dependency of the copying step to the current target
-add_dependencies(${TEST_NAME} INTEGRATION_TEST1_COPY_CONFIG)
-add_dependencies(${TEST_NAME} INTEGRATION_TEST1_COPY_RS_CONF)
-add_dependencies(${TEST_NAME} INTEGRATION_TEST1_COPY_QOS)
-
 # staging rules
 # Config files
-foreach(FILE ${INTEGRATION_TEST1_COPY_CONFIG_FILES})
-    install(
-        FILES "${CMAKE_CURRENT_BINARY_DIR}/${FILE}"
-        DESTINATION "${STAGING_TEST_DIR}/${STAGING_PLUGIN_DIR}/${TEST_NAME}"
-    )
-endforeach()
 
-install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
-    DESTINATION "${STAGING_TEST_DIR}/${STAGING_PLUGIN_DIR}/${TEST_NAME}"
-)
-
-install(
-    FILES "${CMAKE_CURRENT_BINARY_DIR}/RSConfigTest.xml"
-    DESTINATION "${STAGING_TEST_DIR}/${STAGING_PLUGIN_DIR}/${TEST_NAME}"
+set(CO2_LCD_ETH_EXAMPLE_INSTALL_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/config/test_pub_config.json"
+        "${CMAKE_CURRENT_SOURCE_DIR}/config/test_sub_config.json"
+        "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+        "${CMAKE_CURRENT_SOURCE_DIR}/RSConfigTest.xml"
+        "${CMAKE_CURRENT_BINARY_DIR}/dds_type/USER_QOS_PROFILES.xml"
 )
 
 install(
@@ -97,7 +73,7 @@ install(
 )
 
 install(
-    FILES "${CMAKE_CURRENT_BINARY_DIR}/dds_type/USER_QOS_PROFILES.xml"
+    FILES ${CO2_LCD_ETH_EXAMPLE_INSTALL_FILES}
     DESTINATION "${STAGING_TEST_DIR}/${STAGING_PLUGIN_DIR}/${TEST_NAME}"
 )
 

@@ -22,14 +22,14 @@ endif()
 set(DOC_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/html")
 set(DOC_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
-include(${RESOURCE_DIR}/cmake/common_functions.cmake)
+include("${RTICMAKE_COMMON_DIR}/CommonFunctions.cmake")
 
-generate_doc(
-    PLUGIN_NAME "GENERAL"
-    CUSTOM_TARGET_NAME "GENERAL_DOC"
-    INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/html"
-    DEPENDENCIES
+rtigw_generate_doc(
+    PLUGIN "GENERAL"
+    TARGET "general-doc"
+    INPUT "${CMAKE_CURRENT_SOURCE_DIR}"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html"
+    DEPENDS
         "${CMAKE_CURRENT_SOURCE_DIR}/conf.py"
         "${CMAKE_CURRENT_SOURCE_DIR}/building.rst"
         "${CMAKE_CURRENT_SOURCE_DIR}/copyright.rst"

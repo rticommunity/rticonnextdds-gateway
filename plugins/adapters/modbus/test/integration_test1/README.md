@@ -4,9 +4,9 @@
 
 ### Description
 
-The `integration_test1` is an application that writes data from DDS to a Modbus
-server, and vice versa, it also reads data from a Modbus server and publishes
-it as a DDS Sample.
+The `modbus_integration_test1` is an application that writes data from DDS to a
+Modbus server, and vice versa, it also reads data from a Modbus server and
+publishes it as a DDS Sample.
 
 After that, the application tests that the data written/read to/from the Modbus
 server is the same that the DDS application has published.
@@ -31,7 +31,7 @@ The `RSConfigTest.xml` file configures the following elements:
 
 > **_NOTE:_**  the QoS of the DDS entities is set to use `RELIABILITY`,
 > `KEEP_LAST` with `depth` 1 and `TRANSIENT_LOCAL`. These QoS settings are
-> required to run `integration_test1`.
+> required to run `modbus_integration_test1`.
 
 The JSON configuration of these routes indicates the matching between DDS
 fields and Modbus registers, as well as other parameters that the Modbus
@@ -53,24 +53,24 @@ optional configuration attributes:
 
 ### Behavior
 
-The integration_test1 will write one sample of the type *TestType_pub* using the
-topic *Modbus Adapter Test Pub*. As this test only publishes one sample, it has
-to be reliable to ensure that the Modbus Adapter has received it.
+The `modbus_integration_test1` will write one sample of the type *TestType_pub*
+using the topic *Modbus Adapter Test Pub*. As this test only publishes one
+sample, it has to be reliable to ensure that the Modbus Adapter has received it.
 
 The Modbus Adapter will read the data from the DDS sample and forward it to
 a Modbus server according to the configuration `test_pub_config.json`.
 
-Later, the integration_test1 will subscribe to the Modbus Adapter and will read
-the data that comes from the Modbus server, including a set of input registers.
-As the DataReader is created after publishing the data, `TRANSIENT_LOCAL` is
-the mandatory durability policy.
+Later, the `modbus_integration_test1` will subscribe to the Modbus Adapter and
+will read the data that comes from the Modbus server, including a set of input
+registers. As the DataReader is created after publishing the data,
+`TRANSIENT_LOCAL` is the mandatory durability policy.
 
-Finally, integration_test1 checks whether the received data is the expected one
-and shows an "OK" message or an error otherwise.
+Finally, `modbus_integration_test1` checks whether the received data is the
+expected one and shows an "OK" message or an error otherwise.
 
-### How to run Integration Test 1
+### How to run Modbus Integration Test 1
 
-In order to run the integration_test1 three elements are required:
+In order to run the `modbus_integration_test1` three elements are required:
 
 1. Add the folders which contains `libmodbus` and `rtimodbusadapter` libraries to
 your `LD_LIBRARY_PATH`, `PATH` or `RTI_LD_LIBRARY_PATH` environment variable
@@ -89,10 +89,10 @@ your `LD_LIBRARY_PATH`, `PATH` or `RTI_LD_LIBRARY_PATH` environment variable
     rtiroutingservice -cfgFile RSConfigTest.xml -cfgName RSModbusAdapterTest
     ```
 
-1. The integration test 1 application (`test/modbus/integration_test1/` directory)
+1. The Modbus integration test 1 application (`test/modbus/integration_test1/` directory)
 
     ```sh
-    ./integration_test1
+    ./modbus_integration_test1
     ```
 
 If the test has passed correctly, the following message will be printed:

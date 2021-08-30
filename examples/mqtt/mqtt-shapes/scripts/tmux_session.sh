@@ -121,7 +121,7 @@ function send_tmux_commands {
     #######################################################################
 
     tmux send-keys -t "$session_name:1.0" \
-        "LD_LIBRARY_PATH=$NDDSHOME/lib/$CONNEXTDDS_ARCH ./mqtt-shapes" C-m
+        "LD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH ./mqtt-shapes" C-m
     tmux send-keys -t "$session_name:1.1" \
         "sleep 4 && LD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH " \
             "$NDDSHOME/bin/rtiroutingservice -cfgFile ${DEMO_DIR}/etc/shapes_bridge.xml -cfgName shapes_bridge" C-m

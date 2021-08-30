@@ -13,16 +13,19 @@
 #                                                                             #
 ###############################################################################
 
+include("${RTICMAKE_COMMON_DIR}/ConfigureThirdPartyBuilds.cmake")
+
 # Change the CMAKE_INSTALL variables to install those files under third-party
 # directory. In this way, the third-party object are differentiated from the
 # RTI Connext Gateway objects.
 # The third-party libraries are 'installed' in the lib directory, outside
 # the third-party/ folder because the plugins do have a direct dependency
 # with them.
+
 if (CMAKE_INSTALL_PREFIX)
-    set (CMAKE_INSTALL_BINDIR "third-party/bin")
-    set (CMAKE_INSTALL_INCLUDEDIR "third-party/include")
-    set (CMAKE_INSTALL_DOCDIR "third-party/share/doc")
+    set(CMAKE_INSTALL_BINDIR "third-party/bin")
+    set(CMAKE_INSTALL_INCLUDEDIR "third-party/include")
+    set(CMAKE_INSTALL_DOCDIR "third-party/share/doc")
 endif()
 
 if (RTIGATEWAY_ENABLE_MODBUS)
@@ -31,8 +34,7 @@ endif()
 
 
 if (RTIGATEWAY_ENABLE_MQTT)
-    include("${RESOURCE_DIR}/cmake/configure_third_party_builds.cmake")
-    configure_paho_build()
+    rtigw_configure_paho_build()
 
     add_subdirectory("${PAHO_MQTT_C_DIR}")
 endif()

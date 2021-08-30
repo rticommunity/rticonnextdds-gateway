@@ -18,7 +18,7 @@ cmake_minimum_required(VERSION 3.7.0)
 
 ###############################################################################
 
-set(MQTTAGENT_SOURCE_C 
+set(MQTTAGENT_SOURCE_C
     "${CMAKE_CURRENT_SOURCE_DIR}/srcC/main.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/srcC/MqttAgent.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/srcC/MqttAgentSubscriber.c"

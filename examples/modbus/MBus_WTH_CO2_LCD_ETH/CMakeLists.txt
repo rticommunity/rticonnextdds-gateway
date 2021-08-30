@@ -13,7 +13,7 @@
 #                                                                             #
 ###############################################################################
 
-include(${RESOURCE_DIR}/cmake/common_functions.cmake)
+include(ConnextDdsGenerateFiles)
 
 set(EXAMPLE_NAME MBus_WTH_CO2_LCD_ETH)
 
@@ -22,42 +22,36 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dds_reader")
 
 # Copy the USER_QOS_PROFILES before generating the code
 # List of the files to copy
-set(CO2_LCD_ETH_EXAMPLE_CONFIG_FILES
-    "USER_QOS_PROFILES.xml"
-    "RSConfigAdapter.xml"
-    "MBus_WTH_CO2_LCD_ETH_input_config.json"
-    "MBus_WTH_CO2_LCD_ETH_output_config.json"
+# This is not needed since we could install that file directly. However, for
+# consistency between the 'build' and 'install' directories, this is copied
+# to the binary directory so codegen doesn't generate 'USER_QOS_PROFILES.xml' in
+# the binary directory.
+
+connextdds_copy_files(
+    INPUT_FILES
+        "USER_QOS_PROFILES.xml"
+    OUTPUT_DIR
+        "${CMAKE_CURRENT_BINARY_DIR}"
 )
-
-copy_files(
-    CUSTOM_TARGET_NAME CO2_LCD_ETH_EXAMPLE_CONFIG
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}"
-    LIST_OF_FILES_RELATIVE_PATH ${CO2_LCD_ETH_EXAMPLE_CONFIG_FILES})
-
-# add the dependency of the copying step to the current target
-add_dependencies(MBus_WTH_CO2_LCD_ETH_INPUT
-    CO2_LCD_ETH_EXAMPLE_CONFIG)
 
 # staging files
 # Config files
-foreach(FILE ${CO2_LCD_ETH_EXAMPLE_CONFIG_FILES})
-    install(
-        FILES "${CMAKE_CURRENT_BINARY_DIR}/${FILE}"
-        DESTINATION "${STAGING_EXAMPLES_DIR}/${STAGING_PLUGIN_DIR}/${EXAMPLE_NAME}"
-    )
-endforeach()
+
+set(CO2_LCD_ETH_EXAMPLE_INSTALL_FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/USER_QOS_PROFILES.xml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/RSConfigAdapter.xml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/MBus_WTH_CO2_LCD_ETH_input_config.json"
+        "${CMAKE_CURRENT_SOURCE_DIR}/MBus_WTH_CO2_LCD_ETH_output_config.json"
+        "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+        "${CMAKE_CURRENT_SOURCE_DIR}/MBus_xTH_CO2_LCD_ETH_datasheet.pdf"
+)
 
 install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+    FILES ${CO2_LCD_ETH_EXAMPLE_INSTALL_FILES}
     DESTINATION "${STAGING_EXAMPLES_DIR}/${STAGING_PLUGIN_DIR}/${EXAMPLE_NAME}"
 )
 
 install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/idl"
-    DESTINATION "${STAGING_EXAMPLES_DIR}/${STAGING_PLUGIN_DIR}/${EXAMPLE_NAME}"
-)
-
-install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/MBus_xTH_CO2_LCD_ETH_datasheet.pdf"
     DESTINATION "${STAGING_EXAMPLES_DIR}/${STAGING_PLUGIN_DIR}/${EXAMPLE_NAME}"
 )
