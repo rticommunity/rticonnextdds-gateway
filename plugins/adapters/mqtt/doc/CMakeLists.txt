@@ -13,15 +13,15 @@
 #                                                                             #
 ###############################################################################
 
-include(${RESOURCE_DIR}/cmake/common_functions.cmake)
+include("${RTICMAKE_COMMON_DIR}/CommonFunctions.cmake")
 
-generate_doc(
-    DOXYGEN_ENABLED ON
-    PLUGIN_NAME ${RSPLUGIN_PREFIX}
-    CUSTOM_TARGET_NAME ${RSPLUGIN_PREFIX}_DOC
-    INPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/html"
-    DEPENDENCIES
+rtigw_generate_doc(
+    DOXYGEN
+    PLUGIN "MQTT Adapter"
+    TARGET mqtt-adapter-doc
+    INPUT "${CMAKE_CURRENT_SOURCE_DIR}"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html"
+    DEPENDS
         "${CMAKE_CURRENT_SOURCE_DIR}/conf.py"
         "${CMAKE_CURRENT_SOURCE_DIR}/additional_resources.rst"
         "${CMAKE_CURRENT_SOURCE_DIR}/configuration.rst"

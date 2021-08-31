@@ -33,7 +33,7 @@ git submodule update --init --recursive
 
 **Requirements**:
 
-- [Connext DDS 6.1.0](https://community.rti.com/content/page/downloads)*
+- [Connext DDS 6.1.0](https://community.rti.com/content/page/downloads)
 - [cmake 3.10+](https://cmake.org/download/)
 
 In order to build the RTI Connext Gateway components you have to run the following
@@ -49,7 +49,7 @@ cmake --build . -- install
 ```
 
 By default CMake builds debug artifacts. Debug libraries should be loaded and
-run with Routing Service debug, which is located in:
+run with the debug version of Routing Service debug, which is located at:
 
 ```
 $NDDSHOME/resource/app/bin/<architecture>/rtiroutingserviceappd

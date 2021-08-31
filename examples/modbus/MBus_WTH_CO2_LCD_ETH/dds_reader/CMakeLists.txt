@@ -13,32 +13,21 @@
 #                                                                             #
 ###############################################################################
 
-include(${RESOURCE_DIR}/cmake/dds_functions.cmake)
-include(${RESOURCE_DIR}/cmake/common_functions.cmake)
-
-# Copy the USER_QOS_PROFILES before generating the code
-# List of the files to copy
-set(CO2_LCD_ETH_EXAMPLE_READER_QOS_FILE
-    "USER_QOS_PROFILES.xml"
-)
-
-copy_files(
-    CUSTOM_TARGET_NAME CO2_LCD_ETH_EXAMPLE_READER
-    OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}"
-    LIST_OF_FILES_RELATIVE_PATH ${CO2_LCD_ETH_EXAMPLE_READER_QOS_FILE})
+include(ConnextDdsCodegen)
 
 set(IDL_NAME "MBus_WTH_CO2_LCD_ETH_INPUT")
+set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../idl")
 
 # Generate codegen files
-connextdds_run_codegen(
-    IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../idl/${IDL_NAME}.idl"
-    LANGUAGE "C"
-    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
+connextdds_rtiddsgen_run(
+    IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
+    LANG "C"
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 add_executable(MBus_WTH_CO2_LCD_ETH_INPUT
     "${CMAKE_CURRENT_SOURCE_DIR}/${IDL_NAME}_subscriber.c"
-    ${GENERATED_SRC_FILES}
+    ${${IDL_NAME}_C_SOURCES}
 )
 
 target_include_directories(MBus_WTH_CO2_LCD_ETH_INPUT
@@ -50,10 +39,6 @@ target_link_libraries(MBus_WTH_CO2_LCD_ETH_INPUT
     PRIVATE
         RTIConnextDDS::c_api
 )
-
-# add the dependency of the copying step to the current target
-add_dependencies(MBus_WTH_CO2_LCD_ETH_INPUT
-    CO2_LCD_ETH_EXAMPLE_READER)
 
 # staging files
 install(

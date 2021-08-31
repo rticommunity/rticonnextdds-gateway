@@ -42,7 +42,7 @@ target_include_directories(${RSPLUGIN_LIB_NAME}
 
 target_link_libraries(${RSPLUGIN_LIB_NAME}
     PRIVATE
-        ${ROUTING_SERVICE_CXX_LIBRARIES}
+        RTIConnextDDS::routing_service_cpp2
         modbus
 )
 
@@ -55,12 +55,7 @@ install(
 )
 
 ###############################################################################
-# Build tests and documentation if they are enabled
+# Build documentation and tests if they are enabled
 ###############################################################################
-if (RTIGATEWAY_ENABLE_DOCS)
-    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/doc")
-endif()
-
-if (RTIGATEWAY_ENABLE_TESTS)
-    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/test")
-endif()
+rtigw_add_doc()
+rtigw_add_tests()

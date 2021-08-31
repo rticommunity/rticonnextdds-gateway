@@ -39,10 +39,11 @@ At a minimum, you will need to specify:
     |RTI_CONNEXT| installation.
 
 Optionally, you can use ``CMAKE_BUILD_TYPE`` to select the type of libraries to
-build (either ``Release``, or ``Debug``, default: ``Debug``). This documentation
-and README files assume that you are using ``Release`` building configuration,
-in case you build the libraries using ``Debug`` configuration, you must run
-the RTI Routing Service for debug mode located in:
+build (for example ``Release``, or ``Debug``, see CMake's own documentation for
+`CMAKE_BUILD_TYPE <https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html>`_).
+This documentation and README files assume that you are using the ``Release``
+build configuration. If you build the libraries using ``Debug``
+configuration, you must run the debug version of Routing Service located at:
 
 .. code-block:: sh
 

@@ -12,3 +12,6 @@
 	path = third-party/librdkafka
 	url = https://github.com/rticommunity/librdkafka
 	branch = 1.6.1
+[submodule "third-party/rticonnextdds-cmake-utils"]
+	path = third-party/rticonnextdds-cmake-utils
+	url = https://github.com/rticommunity/rticonnextdds-cmake-utils

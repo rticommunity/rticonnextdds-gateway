@@ -56,7 +56,7 @@ target_link_libraries(${RSPLUGIN_LIB_NAME}
         ${KAFKA_LIBRARY}
 )
 
-configure_plugin_defines()
+rtigw_configure_plugin_defines()
 
 target_compile_definitions(${RSPLUGIN_LIB_NAME}
     PUBLIC
@@ -77,6 +77,5 @@ install(
 ###############################################################################
 # Build tests and documentation if they are enabled
 ###############################################################################
-if(RTIGATEWAY_ENABLE_DOCS)
-   add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/doc")
-endif()
+rtigw_add_doc()
+rtigw_add_tests()
