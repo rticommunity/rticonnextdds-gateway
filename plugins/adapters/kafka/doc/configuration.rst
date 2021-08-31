@@ -323,7 +323,7 @@ Each ``<connection>`` created by the |RSKAFKA| plugin is associated with a
       - Type
       - Description
     * - ``bootstrap.servers``
-      - ?
+      - Yes
       - None
       - string
       - Initial list of brokers as a CSV list of broker host or host:port.
@@ -344,7 +344,7 @@ which can be configured using the ``<properties>`` tag.
       - Type
       - Description
     * - ``topic``
-      - ?
+      - Yes
       - None
       - string
       - A topic name used by a Kafka Consumer.
@@ -365,7 +365,7 @@ which can be configured using the ``<properties>`` tag.
       - Type
       - Description
     * - ``topic``
-      - ?
+      - Yes
       - None
       - string
       - A topic name used by a Kafka Producer.
