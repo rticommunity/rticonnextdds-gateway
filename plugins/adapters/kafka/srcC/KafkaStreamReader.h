@@ -29,13 +29,13 @@
   #define DllExport
   #include <sys/select.h>
   #include <semaphore.h>
-  #include <pthread.h> 
+  #include <pthread.h>
 #endif
 
 struct RTI_RS_KafkaStreamReader
 {
     rd_kafka_t *rk;  /* rdkafka consumer instance handle */
-    rd_kafka_conf_t *conf;  /* rdkafka ponfiguration object */
+    rd_kafka_conf_t *conf;  /* rdkafka configuration object */
     const char *topic;  /* Topic to consume */
     pthread_t thread;
     int run;

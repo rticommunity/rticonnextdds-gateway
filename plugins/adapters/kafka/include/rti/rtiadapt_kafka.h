@@ -46,7 +46,7 @@
  * @brief Constructor function used to load the File Adapter on RTI Routing
  * Service.
  */
-extern struct RTI_RoutingServiceAdapterPlugin * 
+extern struct RTI_RoutingServiceAdapterPlugin *
 RTI_RS_Kafka_AdapterPlugin_create(
     const struct RTI_RoutingServiceProperties * properties,
     RTI_RoutingServiceEnvironment * env);

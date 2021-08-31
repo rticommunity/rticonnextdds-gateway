@@ -31,7 +31,7 @@
   #define DllExport
   #include <sys/select.h>
   #include <semaphore.h>
-  #include <pthread.h> 
+  #include <pthread.h>
 #endif
 
 struct RTI_RS_KafkaAdapterPlugin {
