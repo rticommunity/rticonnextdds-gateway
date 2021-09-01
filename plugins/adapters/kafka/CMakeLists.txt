@@ -52,7 +52,7 @@ target_include_directories(${RSPLUGIN_LIB_NAME}
 
 target_link_libraries(${RSPLUGIN_LIB_NAME}
     PUBLIC
-        ${ROUTING_SERVICE_C_LIBRARIES}
+        RTIConnextDDS::routing_service_c
         ${KAFKA_LIBRARY}
 )
 
