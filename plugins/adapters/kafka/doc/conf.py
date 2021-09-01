@@ -119,6 +119,18 @@ html_sidebars = {
     ]
 }
 
+# -- Custom roles
+from docutils import nodes
+
+def role_litrep(name, rawtext, text, lineno, inliner,
+            options={}, content=[]):
+
+    node = nodes.Text(text)
+    node.source, node.line = inliner.reporter.get_source_and_line(lineno)
+    return [node],[]
+
+from docutils.parsers.rst import roles
+roles.register_local_role('litrep', role_litrep)
 
 # -- Options for HTMLHelp output ------------------------------------------
 

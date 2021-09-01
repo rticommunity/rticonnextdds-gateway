@@ -46,7 +46,7 @@ The following snippet demonstrates how to register the plugin in the
              (``LD_LIBRARY_PATH`` on Linux systems, ``RTI_LD_LIBRARY_PATH`` on
              macOS systems, or ``PATH`` on Windows systems, etc.).
 
-.. _section-how-to-config-connection:
+.. _section-register-kafka-datatypes:
 
 Register KAFKA Data Types
 =========================
@@ -125,7 +125,7 @@ The following QoS parameters must be configured in order to enable use of
     </dds>
 
 
-.. _section-how-to-config-connection:
+.. _section-connect-kafka-broker:
 
 Connect to a |KAFKA_BROKER|
 ===========================
@@ -376,4 +376,4 @@ librdkafka Producer/Consumer Properties
 Librdkafka supports several configuration properties for Kafka producers and
 consumers that can be used as |RS| ``<output>`` and ``<input>`` properties. The
 full list of these ``librdkafka`` properties can be found
-`in this table <https://github.com/rticommunity/librdkafka/blob/1.6.1/CONFIGURATION.md >`_.
+`in this table <https://github.com/rticommunity/librdkafka/blob/1.6.1/CONFIGURATION.md>`_.
