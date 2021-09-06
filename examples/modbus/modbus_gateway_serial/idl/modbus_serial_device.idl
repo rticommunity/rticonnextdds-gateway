@@ -1,0 +1,25 @@
+/******************************************************************************/
+/* (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/*                                                                            */
+/* RTI grants Licensee a license to use, modify, compile, and create          */
+/* derivative works of the software solely for use with RTI Connext DDS.      */
+/* Licensee may redistribute copies of the software provided that all such    */
+/* copies are subject to this license.                                        */
+/* The software is provided "as is", with no warranty of any type, including  */
+/* any warranty for fitness for any purpose. RTI is under no obligation to    */
+/* maintain or support the software.  RTI shall not be liable for any         */
+/* incidental or consequential damages arising out of the use or inability to */
+/* use the software.                                                          */
+/*                                                                            */
+/******************************************************************************/
+
+@mutable
+struct modbus_serial_device {
+    @key      string<64>  device_name; // Configured in the input
+    @optional float temperatureC;
+    @optional float humidity;
+    @optional uint8 device_address;
+    @optional uint16 baud_rate;
+    @optional uint16 temperature_correction;
+    @optional uint16 humidity_correction;
+};

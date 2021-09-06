@@ -68,6 +68,29 @@ void LibModbusClient::disconnect()
     }
 }
 
+void LibModbusClient::set_slave_id(uint8_t slave_id) {
+    if (modbus_set_slave(modbus_connection(), slave_id) != 0) {
+        std::string error(
+                "Error setting the slave ID <" + std::to_string(slave_id)
+                + "> to Modbus server <" + ip_address_ + ":"
+                + std::to_string(port_number_) + "> "
+                + modbus_strerror(errno));
+        throw std::runtime_error(error);
+    }
+}
+
+int LibModbusClient::get_slave_id() {
+    int slave_id = modbus_get_slave(modbus_connection());
+    if (slave_id == -1) {
+        std::string error(
+                "Error getting the slave ID <" + std::to_string(slave_id)
+                + "> to Modbus server <" + ip_address_ + ":"
+                + std::to_string(port_number_) + "> "
+                + modbus_strerror(errno));
+        throw std::runtime_error(error);
+    }
+}
+
 int LibModbusClient::write_registers(
         uint32_t address,
         uint32_t register_count,
