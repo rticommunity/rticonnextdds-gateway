@@ -89,6 +89,7 @@ int LibModbusClient::get_slave_id() {
                 + modbus_strerror(errno));
         throw std::runtime_error(error);
     }
+    return slave_id;
 }
 
 int LibModbusClient::write_registers(
