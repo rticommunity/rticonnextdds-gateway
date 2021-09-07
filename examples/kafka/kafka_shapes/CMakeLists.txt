@@ -13,4 +13,14 @@
 #                                                                             #
 ###############################################################################
 
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/kafka_shapes")
+set(EXAMPLE_NAME kafka_shapes)
+
+set(KAFKA_SHAPES_EXAMPLE_INSTALL_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/kafka_adapter_simple.xml"
+)
+
+install(
+    FILES ${KAFKA_SHAPES_EXAMPLE_INSTALL_FILES}
+    DESTINATION "${STAGING_EXAMPLES_DIR}/${STAGING_PLUGIN_DIR}/${EXAMPLE_NAME}"
+)
+
