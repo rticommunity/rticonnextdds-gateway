@@ -14,12 +14,7 @@
 /******************************************************************************/
 
 @mutable
-struct modbus_serial_device {
+struct temperature_correction {
     @key      string<64>  device_name; // Configured in the input
-    @optional float temperatureC;
-    @optional float humidity;
-    @optional uint8 device_address;
-    @optional uint16 baud_rate;
     @optional int16 temperature_correction;
-    @optional int16 humidity_correction;
 };

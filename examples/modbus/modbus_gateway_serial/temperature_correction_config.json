@@ -1,0 +1,10 @@
+[
+    {
+        "field": "temperature_correction",
+        "modbus_register_address": 259,
+        "modbus_slave_device_id" : 1,
+        "modbus_datatype": "HOLDING_REGISTER_INT16",
+        "modbus_min_value": -10,
+        "modbus_max_value": 10
+    }
+]

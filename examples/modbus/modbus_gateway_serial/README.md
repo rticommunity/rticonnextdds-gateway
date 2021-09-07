@@ -32,7 +32,7 @@ be the slave ID of the XY-MD02 device in the RS485 serial network.
 
 ## Running the Example
 
-In two separate command prompt windows for the Routing Service,
+In three separate command prompt windows for the Routing Service, DDS publisher
 and DDS subscriber. Run the following commands from the example directory (this
 is necessary to ensure the application loads the QoS defined in
 *USER_QOS_PROFILES.xml*):
@@ -59,3 +59,19 @@ messages from the modbus device:
 > &nbsp; &nbsp; baud_rate: 9600
 > &nbsp; &nbsp; temperature_correction: 0
 > &nbsp; &nbsp; humidity_correction: 0
+
+After that, run the DDS Writer
+
+```sh
+./temperature_correction
+```
+
+You will see how this modifies the value of *temperature_correction*.
+
+The *temperature_correction* will be updated in the range [-11,11].
+The value -11 and 11 will be out of the ranged specified in the JSON
+configuration. Therefore the window that runs the Routing Service will show the
+following message indicating the error:
+
+> Error: value <-11> of element <temperature_correction> out of range [-10,10].
+> Error: value <11> of element <temperature_correction> out of range [-10,10].
