@@ -4,7 +4,7 @@
         "value": "XY-MD02_100"
     },
     {
-        "field": "temperatureC",
+        "field": "temperature_celsius",
         "modbus_register_address": 1,
         "modbus_slave_device_id" : 1,
         "modbus_datatype": "INPUT_REGISTER_INT16",

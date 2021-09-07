@@ -13,15 +13,14 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "ndds/ndds_c.h"
 #include "MBus_WTH_CO2_LCD_ETH_WRITE.h"
 #include "MBus_WTH_CO2_LCD_ETH_WRITESupport.h"
+#include "ndds/ndds_c.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 /* Delete all entities */
-static int publisher_shutdown(
-    DDS_DomainParticipant *participant)
+static int publisher_shutdown(DDS_DomainParticipant *participant)
 {
     DDS_ReturnCode_t retcode;
     int status = 0;
@@ -34,7 +33,8 @@ static int publisher_shutdown(
         }
 
         retcode = DDS_DomainParticipantFactory_delete_participant(
-            DDS_TheParticipantFactory, participant);
+                DDS_TheParticipantFactory,
+                participant);
         if (retcode != DDS_RETCODE_OK) {
             fprintf(stderr, "delete_participant error %d\n", retcode);
             status = -1;
@@ -62,30 +62,36 @@ int publisher_main(int domainId, int sample_count)
     DDS_Publisher *publisher = NULL;
     DDS_Topic *topic = NULL;
     DDS_DataWriter *writer = NULL;
-    MBus_WTH_CO2_LCD_ETH_WRITEDataWriter *MBus_WTH_CO2_LCD_ETH_WRITE_writer = NULL;
+    MBus_WTH_CO2_LCD_ETH_WRITEDataWriter *MBus_WTH_CO2_LCD_ETH_WRITE_writer =
+            NULL;
     MBus_WTH_CO2_LCD_ETH_WRITE *instance = NULL;
     DDS_ReturnCode_t retcode;
     DDS_InstanceHandle_t instance_handle = DDS_HANDLE_NIL;
     const char *type_name = NULL;
-    int count = 0;  
-    struct DDS_Duration_t send_period = {1,0};
+    int count = 0;
+    struct DDS_Duration_t send_period = { 1, 0 };
 
-    /* To customize participant QoS, use 
+    /* To customize participant QoS, use
     the configuration file USER_QOS_PROFILES.xml */
     participant = DDS_DomainParticipantFactory_create_participant(
-        DDS_TheParticipantFactory, domainId, &DDS_PARTICIPANT_QOS_DEFAULT,
-        NULL /* listener */, DDS_STATUS_MASK_NONE);
+            DDS_TheParticipantFactory,
+            domainId,
+            &DDS_PARTICIPANT_QOS_DEFAULT,
+            NULL /* listener */,
+            DDS_STATUS_MASK_NONE);
     if (participant == NULL) {
         fprintf(stderr, "create_participant error\n");
         publisher_shutdown(participant);
         return -1;
     }
 
-    /* To customize publisher QoS, use 
+    /* To customize publisher QoS, use
     the configuration file USER_QOS_PROFILES.xml */
     publisher = DDS_DomainParticipant_create_publisher(
-        participant, &DDS_PUBLISHER_QOS_DEFAULT, NULL /* listener */,
-        DDS_STATUS_MASK_NONE);
+            participant,
+            &DDS_PUBLISHER_QOS_DEFAULT,
+            NULL /* listener */,
+            DDS_STATUS_MASK_NONE);
     if (publisher == NULL) {
         fprintf(stderr, "create_publisher error\n");
         publisher_shutdown(participant);
@@ -95,36 +101,44 @@ int publisher_main(int domainId, int sample_count)
     /* Register type before creating topic */
     type_name = MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_get_type_name();
     retcode = MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_register_type(
-        participant, type_name);
+            participant,
+            type_name);
     if (retcode != DDS_RETCODE_OK) {
         fprintf(stderr, "register_type error %d\n", retcode);
         publisher_shutdown(participant);
         return -1;
     }
 
-    /* To customize topic QoS, use 
+    /* To customize topic QoS, use
     the configuration file USER_QOS_PROFILES.xml */
     topic = DDS_DomainParticipant_create_topic(
-        participant, "Example StreamWriter",
-        type_name, &DDS_TOPIC_QOS_DEFAULT, NULL /* listener */,
-        DDS_STATUS_MASK_NONE);
+            participant,
+            "Example StreamWriter",
+            type_name,
+            &DDS_TOPIC_QOS_DEFAULT,
+            NULL /* listener */,
+            DDS_STATUS_MASK_NONE);
     if (topic == NULL) {
         fprintf(stderr, "create_topic error\n");
         publisher_shutdown(participant);
         return -1;
     }
 
-    /* To customize data writer QoS, use 
+    /* To customize data writer QoS, use
     the configuration file USER_QOS_PROFILES.xml */
     writer = DDS_Publisher_create_datawriter(
-        publisher, topic,
-        &DDS_DATAWRITER_QOS_DEFAULT, NULL /* listener */, DDS_STATUS_MASK_NONE);
+            publisher,
+            topic,
+            &DDS_DATAWRITER_QOS_DEFAULT,
+            NULL /* listener */,
+            DDS_STATUS_MASK_NONE);
     if (writer == NULL) {
         fprintf(stderr, "create_datawriter error\n");
         publisher_shutdown(participant);
         return -1;
     }
-    MBus_WTH_CO2_LCD_ETH_WRITE_writer = MBus_WTH_CO2_LCD_ETH_WRITEDataWriter_narrow(writer);
+    MBus_WTH_CO2_LCD_ETH_WRITE_writer =
+            MBus_WTH_CO2_LCD_ETH_WRITEDataWriter_narrow(writer);
     if (MBus_WTH_CO2_LCD_ETH_WRITE_writer == NULL) {
         fprintf(stderr, "DataWriter narrow error\n");
         publisher_shutdown(participant);
@@ -132,15 +146,17 @@ int publisher_main(int domainId, int sample_count)
     }
 
     /* Create data sample for writing */
-    instance = MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_create_data_ex(DDS_BOOLEAN_TRUE);
+    instance = MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_create_data_ex(
+            DDS_BOOLEAN_TRUE);
     if (instance == NULL) {
-        fprintf(stderr, "MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_create_data error\n");
+        fprintf(stderr,
+                "MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_create_data error\n");
         publisher_shutdown(participant);
         return -1;
     }
 
     instance->alarm_sound_on_sec_for_prealarm =
-            (DDS_UnsignedShort*) malloc(sizeof(DDS_UnsignedShort));
+            (DDS_UnsignedShort *) malloc(sizeof(DDS_UnsignedShort));
 
     /* For a data type that has a key, if the same instance is going to be
     written multiple times, initialize the key here
@@ -150,25 +166,25 @@ int publisher_main(int domainId, int sample_count)
         MBus_WTH_CO2_LCD_ETH_WRITE_writer, instance);
     */
     /* Main loop */
-    for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
-
+    for (count = 0; (sample_count == 0) || (count < sample_count); ++count) {
         /* Modify the data to be written here */
         /* the values that we write will be in the range of [0,21] */
         *instance->alarm_sound_on_sec_for_prealarm = count % 22;
 
         printf("Writing MBus_WTH_CO2_LCD_ETH_WRITE, "
-                "alarm_sound_on_sec_for_prealarm %d\n",
-                *instance->alarm_sound_on_sec_for_prealarm);
+               "alarm_sound_on_sec_for_prealarm %d\n",
+               *instance->alarm_sound_on_sec_for_prealarm);
 
         /* Write data */
         retcode = MBus_WTH_CO2_LCD_ETH_WRITEDataWriter_write(
-            MBus_WTH_CO2_LCD_ETH_WRITE_writer, instance, &instance_handle);
+                MBus_WTH_CO2_LCD_ETH_WRITE_writer,
+                instance,
+                &instance_handle);
         if (retcode != DDS_RETCODE_OK) {
             fprintf(stderr, "write error %d\n", retcode);
         }
 
         NDDS_Utility_sleep(&send_period);
-
     }
 
     /*
@@ -179,11 +195,15 @@ int publisher_main(int domainId, int sample_count)
     }
     */
     /* Delete data sample */
-    retcode = MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_delete_data_ex(instance, DDS_BOOLEAN_TRUE);
+    retcode = MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_delete_data_ex(
+            instance,
+            DDS_BOOLEAN_TRUE);
     if (retcode != DDS_RETCODE_OK) {
-        fprintf(stderr, "MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_delete_data error %d\n", retcode);
+        fprintf(stderr,
+                "MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_delete_data error %d\n",
+                retcode);
     }
-    /* Cleanup and delete delete all entities */         
+    /* Cleanup and delete delete all entities */
     return publisher_shutdown(participant);
 }
 
@@ -202,10 +222,9 @@ int main(int argc, char *argv[])
     /* Uncomment this to turn on additional logging
     NDDS_Config_Logger_set_verbosity_by_category(
         NDDS_Config_Logger_get_instance(),
-        NDDS_CONFIG_LOG_CATEGORY_API, 
+        NDDS_CONFIG_LOG_CATEGORY_API,
         NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL);
     */
 
     return publisher_main(domain_id, sample_count);
 }
-

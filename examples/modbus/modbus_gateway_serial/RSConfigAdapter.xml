@@ -22,7 +22,7 @@
           </struct>
         <struct name= "modbus_serial_device" extensibility= "mutable">
             <member name="device_name" stringMaxLength="64" type="string" key="true"/>
-            <member name="temperatureC" type="float32" optional="true"/>
+            <member name="temperature_celsius" type="float32" optional="true"/>
             <member name="humidity" type="float32" optional="true"/>
             <member name="device_address" type="uint8" optional="true"/>
             <member name="baud_rate" type="uint16" optional="true"/>

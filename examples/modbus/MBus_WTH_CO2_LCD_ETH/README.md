@@ -11,8 +11,8 @@ documentation. This configuration contains the following fields:
 * Modbus Input - MBus_WTH_CO2_LCD_ETH_INPUT.idl
   * device_name
   * ip_address
-  * temperatureC
-  * temperatureF
+  * temperature_celsius
+  * temperature_fahrenheit
   * humidity
   * co2_value
   * analog_output_config
@@ -61,8 +61,8 @@ messages from the modbus device:
 > &nbsp; &nbsp; &nbsp; ip_address[1]: <00>
 > &nbsp; &nbsp; &nbsp; ip_address[2]: <00>
 > &nbsp; &nbsp; &nbsp; ip_address[3]: <01>
-> &nbsp; temperatureC: 39.6000023
-> &nbsp; temperatureF: 103.200005
+> &nbsp; temperature_celsius: 39.6000023
+> &nbsp; temperature_fahrenheit: 103.200005
 > &nbsp; humidity: 54.6000023
 > &nbsp; co2_value: 436
 > &nbsp; analog_output_config: <03>

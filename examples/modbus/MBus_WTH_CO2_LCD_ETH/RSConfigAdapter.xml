@@ -22,8 +22,8 @@
         <struct name= "MBus_WTH_CO2_LCD_ETH_INPUT" extensibility= "mutable">
             <member name="device_name" stringMaxLength="64" type="string" key="true"/>
             <member name="ip_address" type="uint8" arrayDimensions="4"/>
-            <member name="temperatureC" type="float32" optional="true"/>
-            <member name="temperatureF" type="float32" optional="true"/>
+            <member name="temperature_celsius" type="float32" optional="true"/>
+            <member name="temperature_fahrenheit" type="float32" optional="true"/>
             <member name="humidity" type="float32" optional="true"/>
             <member name="co2_value" type="float32" optional="true"/>
             <member name="analog_output_config" type="int8" optional="true"/>
