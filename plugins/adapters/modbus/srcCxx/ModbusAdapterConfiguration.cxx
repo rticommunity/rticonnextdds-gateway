@@ -685,7 +685,7 @@ void ModbusAdapterConfigurationElement::check_min_max_consistency(
 
     // error if min or max is negative and the datatype is unsigned
     if (is_dds_type_unsigned) {
-        if(is_min_set_negative) {
+        if (is_min_set_negative) {
             std::string error(
                 "Error: modbus_min_value is set to a negative value for a "
                 "unsigned field: <" + field() + ">");

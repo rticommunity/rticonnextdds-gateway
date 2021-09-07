@@ -68,7 +68,8 @@ void LibModbusClient::disconnect()
     }
 }
 
-void LibModbusClient::set_slave_id(uint8_t slave_id) {
+void LibModbusClient::set_slave_id(uint8_t slave_id)
+{
     if (modbus_set_slave(modbus_connection(), slave_id) != 0) {
         std::string error(
                 "Error setting the slave ID <" + std::to_string(slave_id)
@@ -79,7 +80,8 @@ void LibModbusClient::set_slave_id(uint8_t slave_id) {
     }
 }
 
-int LibModbusClient::get_slave_id() {
+int LibModbusClient::get_slave_id()
+{
     int slave_id = modbus_get_slave(modbus_connection());
     if (slave_id == -1) {
         std::string error(
@@ -209,7 +211,8 @@ int LibModbusClient::read_coils(
     return read_registers;
 }
 
-void LibModbusClient::set_response_timeout(uint32_t sec, uint32_t usec) {
+void LibModbusClient::set_response_timeout(uint32_t sec, uint32_t usec)
+{
     if (modbus_set_response_timeout(modbus_connection(), sec, usec) != 0) {
         std::string error(
                 "Error setting response timeout " + std::to_string(sec)
