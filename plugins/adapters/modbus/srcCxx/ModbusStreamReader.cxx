@@ -162,20 +162,38 @@ void ModbusStreamReader::read_data_from_modbus()
         }
 
         if (mace.modbus_datatype() == ModbusDataType::constant_value) {
-            const StringType &string_type = static_cast<const StringType &>(
+            if(element_kind == TypeKind::STRING_TYPE) {
+                if (mace.constant_kind() != ConstantValueKind::string_kind) {
+                    std::string error(
+                            "Error: the field <" + mace.field() + "> is a "
+                            "string but the constant value is not a string.");
+                    throw std::runtime_error(error);
+                }
+                const StringType &string_type = static_cast<const StringType &>(
                     struct_type.member(mace.field()).type());
-            // If the type is an string, check that the content fits into
-            // the DDS String
-            if (string_type.bounds() >= mace.value().length()) {
-                cached_data_->value<std::string>(
-                        mace.field(),
-                        mace.value());
+                // If the type is a string, check that the content fits into
+                // the DDS String
+                if (string_type.bounds() >= mace.value_string().length()) {
+                    cached_data_->value<std::string>(
+                            mace.field(),
+                            mace.value_string());
+                } else {
+                    std::string error(
+                            "Error: the string constant value <"
+                            + mace.value_string()
+                            + "> doesn't fit in the bounds of the field <"
+                            + mace.field() + ">.");
+                    throw std::runtime_error(error);
+                }
             } else {
-                std::string error(
-                        "Error: the constant value <" + mace.value()
-                        + "> doesn't fit in the bounds of the field <"
-                        + mace.field() + ">.");
-                throw std::runtime_error(error);
+                if (mace.constant_kind() != ConstantValueKind::double_kind
+                        && mace.constant_kind() != ConstantValueKind::boolean_kind
+                        && mace.constant_kind() != ConstantValueKind::integer_kind) {
+                dynamic_data::set_dds_primitive_or_enum_type_value(
+                        *cached_data_,
+                        element_kind,
+                        mace.field(),
+                        mace.value_numeric());
             }
             continue;
         } else if (mace.modbus_datatype() == ModbusDataType::coil_boolean

@@ -47,6 +47,15 @@ enum class ModbusDataType {
     no_modbus_datatype
 };
 
+// enum that identifies the kind of the constant value
+enum class ConstantValueKind {
+    string_kind,
+    integer_kind,
+    double_kind,
+    boolean_kind,
+    undefined_kind
+};
+
 static std::string modbus_datatype_to_string(ModbusDataType type) {
     if (type == ModbusDataType::coil_boolean) {
         return "coil_boolean";
@@ -232,9 +241,17 @@ public:
     {
         return data_offset_;
     }
-    inline std::string const value() const
+    inline std::string const value_string() const
     {
-        return value_;
+        return value_string_;
+    }
+    inline long double const value_numeric() const
+    {
+        return value_numeric_;
+    }
+    inline ConstantValueKind const constant_kind() const
+    {
+        return constant_kind_;
     }
     inline size_t const array_elements() const
     {
@@ -280,7 +297,16 @@ private:
     std::vector<long double> modbus_valid_values_;
     float data_factor_;
     float data_offset_;
-    std::string value_;
+    std::string value_string_;
+    long double value_numeric_;
+    // value_string_ or value_numeric_ will be used depending on the
+    // constant_kind_. If it is:
+    //   - string_kind: value_string_ will be used
+    //   - integer_kind: value_numeric_ will be used
+    //   - double_kind: value_numeric_ will be used
+    //   - boolean_kind: value_numeric_ will be used
+    //   - undefined_kind: no constant value associated with it
+    ConstantValueKind constant_kind_;
 
     // Number of array elements, 0 means that this is not an array.
     // For example an array of 2 int32 will have:

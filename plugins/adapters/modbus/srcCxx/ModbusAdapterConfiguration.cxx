@@ -44,6 +44,7 @@ ModbusAdapterConfigurationElement::ModbusAdapterConfigurationElement()
           modbus_valid_values_(),
           data_factor_(1),
           data_offset_(0),
+          constant_kind_(ConstantValueKind::undefined_kind),
           array_elements_(0)
 {
 }
@@ -210,10 +211,10 @@ void ModbusAdapterConfigurationElement::check_for_errors(void)
 
     // if value is set and CONSTANT_VALUE is not it's datatype
     if (modbus_datatype() != ModbusDataType::constant_value
-            && !value().empty()) {
+            && constant_kind() != ConstantValueKind::undefined_kind) {
         std::string error(
                 "Error: value parameter of <" + field()
-                + "> is set and it's datatype is <"
+                + "> is set and its datatype is <"
                 + modbus_datatype_to_string(modbus_datatype()) + ">");
         throw std::runtime_error(error);
     }
@@ -969,14 +970,27 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                     }
                 }
             } else if (element_name == "value") {
-                json_value *string_node = node_object->u.object.values[j].value;
-                if (string_node->type != json_string) {
+                json_value *value_node = node_object->u.object.values[j].value;
+                if (value_node->type == json_integer) {
+                    mace.constant_kind_ = ConstantValueKind::integer_kind;
+                    mace.value_numeric_ = static_cast<long double>(
+                            value_node->u.integer);
+                } else if (value_node->type == json_double) {
+                    mace.constant_kind_ = ConstantValueKind::double_kind;
+                    mace.value_numeric_ = static_cast<long double>(
+                            value_node->u.dbl);
+                } else if (value_node->type == json_boolean) {
+                    mace.constant_kind_ = ConstantValueKind::boolean_kind;
+                    mace.value_numeric_ = static_cast<long double>(
+                            value_node->u.boolean);
+                } else if (value_node->type == json_string) {
+                    mace.constant_kind_ = ConstantValueKind::string_kind;
+                    mace.value_string_ = value_node->u.string.ptr;
+                } else {
                     throw std::runtime_error(
                             "Error in the JSON configuration "
-                            "value of <value>.");
+                            "value of <value>. Unsupported value.");
                 }
-
-                mace.value_ = string_node->u.string.ptr;
             } else {
                 std::string error(
                         "Error in the JSON configuration. Unsupported "
@@ -988,7 +1002,7 @@ void ModbusAdapterConfiguration::parse_json_config_string(
 
         // Set CONSTANT_VALUE datatype if there is a value
         if (mace.modbus_datatype() == ModbusDataType::no_modbus_datatype
-            && !mace.value().empty()) {
+            && mace.constant_kind() != ConstantValueKind::undefined_kind) {
             mace.modbus_datatype_ = ModbusDataType::constant_value;
         }
 
