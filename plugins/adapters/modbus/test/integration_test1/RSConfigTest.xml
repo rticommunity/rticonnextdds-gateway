@@ -65,6 +65,7 @@
             <member name="float32_constant" type="float32"/>
             <member name="float64_constant" type="float64"/>
             <member name="boolean_constant" type="boolean"/>
+            <member name="enum_constant" type="nonBasic" nonBasicTypeName="ShapeFillKind"/>
             <member name="input_enum_field" type="nonBasic" nonBasicTypeName="ShapeFillKind" optional="true" />
             <member name="input_bool_field" type="boolean" optional="true"/>
             <member name="input_bool_array_field" type="boolean" arrayDimensions="2"/>

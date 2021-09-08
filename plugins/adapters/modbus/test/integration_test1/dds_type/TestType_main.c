@@ -24,7 +24,8 @@
 #define UNSIGNED_CONSTANT_VALUE 11
 #define SIGNED_CONSTANT_VALUE -42
 #define FLOAT_CONSTANT_VALUE 0.5
-#define BOOLEAN_CONSTANT_VALUE 1
+#define BOOLEAN_CONSTANT_VALUE DDS_BOOLEAN_TRUE
+#define ENUM_CONSTANT_VALUE SOLID_FILL
 #define ENUM_VALUE SOLID_FILL
 #define SIGNED_VALUE -1
 #define UNSIGNED_VALUE 1
@@ -127,6 +128,7 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
     ASSERT_COND(sample->float32_constant == FLOAT_CONSTANT_VALUE);
     ASSERT_COND(sample->float64_constant == FLOAT_CONSTANT_VALUE);
     ASSERT_COND(sample->boolean_constant == BOOLEAN_CONSTANT_VALUE);
+    ASSERT_COND(sample->enum_constant == ENUM_CONSTANT_VALUE);
     ASSERT_COND(*sample->input_enum_field == ENUM_VALUE);
     ASSERT_COND(*sample->input_bool_field == DDS_BOOLEAN_TRUE);
     ASSERT_COND(*sample->input_int8_field == UNSIGNED_VALUE);

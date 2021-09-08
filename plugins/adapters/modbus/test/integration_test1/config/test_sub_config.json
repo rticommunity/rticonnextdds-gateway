@@ -218,6 +218,10 @@
         "value": true
     },
     {
+        "field": "enum_constant",
+        "value": 1
+    },
+    {
         "field": "input_int8_field",
         "modbus_register_address": 0,
         "modbus_datatype": "INPUT_REGISTER_INT8",

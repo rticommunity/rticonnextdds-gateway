@@ -51,6 +51,7 @@ struct TestType_sub {
     float float32_constant;
     double float64_constant;
     boolean boolean_constant;
+    ShapeFillKind enum_constant;
     @optional
       ShapeFillKind input_enum_field;
     @optional

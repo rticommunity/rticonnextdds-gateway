@@ -75,7 +75,8 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
         }
     }
 
-    if (dds_datatype == TypeKind::ENUMERATION_TYPE) {
+    if (dds_datatype == TypeKind::ENUMERATION_TYPE
+            && modbus_datatype() != ModbusDataType::constant_value) {
         switch (modbus_datatype()) {
         case ModbusDataType::holding_register_int8:
         case ModbusDataType::input_register_int8:
@@ -91,6 +92,7 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
             break;
         default:
             is_compatible = false;
+            break;
         }
     } else {
         switch (modbus_datatype()) {
@@ -150,7 +152,8 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
                     || dds_datatype == TypeKind::UINT_64_TYPE
                     || dds_datatype == TypeKind::FLOAT_32_TYPE
                     || dds_datatype == TypeKind::FLOAT_64_TYPE
-                    || dds_datatype == TypeKind::BOOLEAN_TYPE;
+                    || dds_datatype == TypeKind::BOOLEAN_TYPE
+                    || dds_datatype == TypeKind::ENUMERATION_TYPE;
             break;
         default:
             is_compatible = false;
