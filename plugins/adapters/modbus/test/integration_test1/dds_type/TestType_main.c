@@ -20,7 +20,11 @@
 #include "TestTypeSupport.h"
 
 /* Define test values */
-#define STRING_VALUE "value"
+#define STRING_CONSTANT_VALUE "value"
+#define UNSIGNED_CONSTANT_VALUE 11
+#define SIGNED_CONSTANT_VALUE -42
+#define FLOAT_CONSTANT_VALUE 0.5
+#define BOOLEAN_CONSTANT_VALUE 1
 #define ENUM_VALUE SOLID_FILL
 #define SIGNED_VALUE -1
 #define UNSIGNED_VALUE 1
@@ -45,7 +49,8 @@
     } while (0)
 
 
-DDS_Boolean check_received_parameters(TestType_sub *sample) {
+DDS_Boolean check_received_parameters(TestType_sub *sample)
+{
     DDS_Boolean ok = DDS_BOOLEAN_FALSE;
     int i = 0;
 
@@ -110,7 +115,18 @@ DDS_Boolean check_received_parameters(TestType_sub *sample) {
     }
 
     /* Check input registers */
-    ASSERT_COND(strcmp(sample->string_field, STRING_VALUE) == 0);
+    ASSERT_COND(strcmp(sample->string_constant, STRING_CONSTANT_VALUE) == 0);
+    ASSERT_COND(sample->int8_constant == SIGNED_CONSTANT_VALUE);
+    ASSERT_COND(sample->int16_constant == SIGNED_CONSTANT_VALUE);
+    ASSERT_COND(sample->int32_constant == SIGNED_CONSTANT_VALUE);
+    ASSERT_COND(sample->int64_constant == SIGNED_CONSTANT_VALUE);
+    ASSERT_COND(sample->uint8_constant == UNSIGNED_CONSTANT_VALUE);
+    ASSERT_COND(sample->uint16_constant == UNSIGNED_CONSTANT_VALUE);
+    ASSERT_COND(sample->uint32_constant == UNSIGNED_CONSTANT_VALUE);
+    ASSERT_COND(sample->uint64_constant == UNSIGNED_CONSTANT_VALUE);
+    ASSERT_COND(sample->float32_constant == FLOAT_CONSTANT_VALUE);
+    ASSERT_COND(sample->float64_constant == FLOAT_CONSTANT_VALUE);
+    ASSERT_COND(sample->boolean_constant == BOOLEAN_CONSTANT_VALUE);
     ASSERT_COND(*sample->input_enum_field == ENUM_VALUE);
     ASSERT_COND(*sample->input_bool_field == DDS_BOOLEAN_TRUE);
     ASSERT_COND(*sample->input_int8_field == UNSIGNED_VALUE);
@@ -163,8 +179,8 @@ done:
 }
 
 /* Delete all entities */
-static int tester_shutdown(
-    DDS_DomainParticipant *participant) {
+static int tester_shutdown(DDS_DomainParticipant *participant)
+{
     DDS_ReturnCode_t retcode;
     int status = 0;
 
@@ -198,7 +214,8 @@ static int tester_shutdown(
     return status;
 }
 
-int publish_data_test(DDS_DomainParticipant *participant) {
+int publish_data_test(DDS_DomainParticipant *participant)
+{
     DDS_Publisher *publisher = NULL;
     DDS_Topic *topic_pub = NULL;
     DDS_DataWriter *writer = NULL;
@@ -400,7 +417,8 @@ done:
     return errorCode;
 }
 
-int read_data_test(DDS_DomainParticipant *participant) {
+int read_data_test(DDS_DomainParticipant *participant)
+{
     DDS_Subscriber *subscriber = NULL;
     DDS_Topic *topic_sub = NULL;
     DDS_DataReader *reader = NULL;
@@ -558,7 +576,8 @@ done:
     return errCode;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     int domain_id = 0;
     int sample_count = 0; /* infinite loop */
     DDS_DomainParticipant *participant = NULL;

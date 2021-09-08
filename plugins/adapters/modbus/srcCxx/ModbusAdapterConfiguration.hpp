@@ -51,7 +51,7 @@ enum class ModbusDataType {
 enum class ConstantValueKind {
     string_kind,
     integer_kind,
-    double_kind,
+    float_kind,
     boolean_kind,
     undefined_kind
 };
@@ -303,7 +303,7 @@ private:
     // constant_kind_. If it is:
     //   - string_kind: value_string_ will be used
     //   - integer_kind: value_numeric_ will be used
-    //   - double_kind: value_numeric_ will be used
+    //   - float_kind: value_numeric_ will be used
     //   - boolean_kind: value_numeric_ will be used
     //   - undefined_kind: no constant value associated with it
     ConstantValueKind constant_kind_;

@@ -53,7 +53,18 @@
         </struct>
         <struct name="TestType_sub">
             <member name="test_type" type="nonBasic" nonBasicTypeName="TestType_pub" />
-            <member name="string_field" type="string" stringMaxLength="64" />
+            <member name="string_constant" type="string" stringMaxLength="64" />
+            <member name="int8_constant" type="int8"/>
+            <member name="int16_constant" type="int16"/>
+            <member name="int32_constant" type="int32"/>
+            <member name="int64_constant" type="int64"/>
+            <member name="uint8_constant" type="uint8"/>
+            <member name="uint16_constant" type="uint16"/>
+            <member name="uint32_constant" type="uint32"/>
+            <member name="uint64_constant" type="uint64"/>
+            <member name="float32_constant" type="float32"/>
+            <member name="float64_constant" type="float64"/>
+            <member name="boolean_constant" type="boolean"/>
             <member name="input_enum_field" type="nonBasic" nonBasicTypeName="ShapeFillKind" optional="true" />
             <member name="input_bool_field" type="boolean" optional="true"/>
             <member name="input_bool_array_field" type="boolean" arrayDimensions="2"/>

@@ -186,16 +186,17 @@ void ModbusStreamReader::read_data_from_modbus()
                     throw std::runtime_error(error);
                 }
             } else {
-                if (mace.constant_kind() != ConstantValueKind::double_kind
-                        && mace.constant_kind() != ConstantValueKind::boolean_kind
-                        && mace.constant_kind() != ConstantValueKind::integer_kind) {
+                if (mace.constant_kind() == ConstantValueKind::float_kind
+                        || mace.constant_kind() == ConstantValueKind::boolean_kind
+                        || mace.constant_kind() == ConstantValueKind::integer_kind) {
                 dynamic_data::set_dds_primitive_or_enum_type_value(
                         *cached_data_,
                         element_kind,
                         mace.field(),
                         mace.value_numeric());
-            }
+                }
             continue;
+            }
         } else if (mace.modbus_datatype() == ModbusDataType::coil_boolean
                 || mace.modbus_datatype()
                         == ModbusDataType::discrete_input_boolean) {

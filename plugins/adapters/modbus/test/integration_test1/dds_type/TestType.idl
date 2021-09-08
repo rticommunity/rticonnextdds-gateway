@@ -39,7 +39,18 @@ struct TestType_pub {
 @appendable
 struct TestType_sub {
     TestType_pub test_type;
-    string<64> string_field;
+    string<64> string_constant;
+    int8 int8_constant;
+    int16 int16_constant;
+    int32 int32_constant;
+    int64 int64_constant;
+    uint8 uint8_constant;
+    uint16 uint16_constant;
+    uint32 uint32_constant;
+    uint64 uint64_constant;
+    float float32_constant;
+    double float64_constant;
+    boolean boolean_constant;
     @optional
       ShapeFillKind input_enum_field;
     @optional

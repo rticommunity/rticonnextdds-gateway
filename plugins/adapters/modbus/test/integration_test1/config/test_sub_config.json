@@ -169,10 +169,53 @@
         "modbus_datatype": "COIL_BOOLEAN",
         "modbus_register_count": 2
     },
-
     {
-        "field": "string_field",
+        "field": "string_constant",
         "value": "value"
+    },
+    {
+        "field": "int8_constant",
+        "value": -42
+    },
+    {
+        "field": "int16_constant",
+        "value": -42
+    },
+    {
+        "field": "int32_constant",
+        "value": -42
+    },
+    {
+        "field": "int64_constant",
+        "value": -42
+    },
+    {
+        "field": "uint8_constant",
+        "value": 11
+    },
+    {
+        "field": "uint16_constant",
+        "value": 11
+    },
+    {
+        "field": "uint32_constant",
+        "value": 11
+    },
+    {
+        "field": "uint64_constant",
+        "value": 11
+    },
+    {
+        "field": "float32_constant",
+        "value": 0.5
+    },
+    {
+        "field": "float64_constant",
+        "value": 0.5
+    },
+    {
+        "field": "boolean_constant",
+        "value": true
     },
     {
         "field": "input_int8_field",

@@ -139,7 +139,18 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
                     || dds_datatype == TypeKind::UINT_64_TYPE;
             break;
         case ModbusDataType::constant_value:
-            is_compatible = dds_datatype == TypeKind::STRING_TYPE;
+            is_compatible = dds_datatype == TypeKind::STRING_TYPE
+                    || dds_datatype == TypeKind::CHAR_8_TYPE
+                    || dds_datatype == TypeKind::UINT_8_TYPE
+                    || dds_datatype == TypeKind::INT_16_TYPE
+                    || dds_datatype == TypeKind::UINT_16_TYPE
+                    || dds_datatype == TypeKind::INT_32_TYPE
+                    || dds_datatype == TypeKind::UINT_32_TYPE
+                    || dds_datatype == TypeKind::INT_64_TYPE
+                    || dds_datatype == TypeKind::UINT_64_TYPE
+                    || dds_datatype == TypeKind::FLOAT_32_TYPE
+                    || dds_datatype == TypeKind::FLOAT_64_TYPE
+                    || dds_datatype == TypeKind::BOOLEAN_TYPE;
             break;
         default:
             is_compatible = false;
@@ -976,7 +987,7 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                     mace.value_numeric_ = static_cast<long double>(
                             value_node->u.integer);
                 } else if (value_node->type == json_double) {
-                    mace.constant_kind_ = ConstantValueKind::double_kind;
+                    mace.constant_kind_ = ConstantValueKind::float_kind;
                     mace.value_numeric_ = static_cast<long double>(
                             value_node->u.dbl);
                 } else if (value_node->type == json_boolean) {
