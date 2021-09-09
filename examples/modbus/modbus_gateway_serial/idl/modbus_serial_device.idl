@@ -1,5 +1,5 @@
 /******************************************************************************/
-/* (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/* (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
 /*                                                                            */
 /* RTI grants Licensee a license to use, modify, compile, and create          */
 /* derivative works of the software solely for use with RTI Connext DDS.      */
@@ -14,13 +14,12 @@
 /******************************************************************************/
 
 @mutable
-struct MBus_WTH_CO2_LCD_ETH_INPUT {
-    @key      string<64>  device_name; // Configured in the input
-    uint8  ip_address[4];
+struct modbus_serial_device {
+    @key string<64>  device_name; // Configured in the input
     @optional float temperature_celsius;
-    @optional float temperature_fahrenheit;
     @optional float humidity;
-    @optional float co2_value;
-    @optional int8  analog_output_config;
-    @optional uint16 alarm_sound_on_sec_for_prealarm;
+    @optional uint8 device_address;
+    @optional uint16 baud_rate;
+    @optional int16 temperature_correction;
+    @optional int16 humidity_correction;
 };

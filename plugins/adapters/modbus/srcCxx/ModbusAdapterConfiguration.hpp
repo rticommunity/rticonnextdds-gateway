@@ -104,7 +104,7 @@ class ModbusAdapterConfiguration;
  * @class ModbusAdapterConfigurationElement
  *
  * @brief Stores and handle all the information related to a configuration
- * element (one elmeent of the array in the JSON configuration).
+ * element (one element of the array in the JSON configuration).
  */
 class ModbusAdapterConfigurationElement {
     // This class is fried of ModbusAdapterConfiguration, so
@@ -208,6 +208,10 @@ public:
     {
         return modbus_datatype_;
     }
+    inline uint8_t const modbus_slave_device_id() const
+    {
+        return modbus_slave_device_id_;
+    }
     inline long double const modbus_min_value() const
     {
         return modbus_min_value_;
@@ -270,6 +274,7 @@ private:
     int modbus_register_address_;
     int modbus_register_count_;
     ModbusDataType modbus_datatype_;
+    uint8_t modbus_slave_device_id_;
     long double modbus_min_value_;
     long double modbus_max_value_;
     std::vector<long double> modbus_valid_values_;

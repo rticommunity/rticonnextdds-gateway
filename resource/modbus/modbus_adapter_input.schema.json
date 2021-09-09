@@ -51,6 +51,9 @@
                     "modbus_register_count" : {
                         "$ref": "https://community.rti.com/static/schemas/rticonnextdds-gateway/current/modbus_adapter_definitions.schema.json#/definitions/modbus_register_count"
                     },
+                    "modbus_slave_device_id" : {
+                        "$ref": "https://community.rti.com/static/schemas/rticonnextdds-gateway/current/modbus_adapter_definitions.schema.json#/definitions/modbus_slave_device_id"
+                    },
                     "modbus_min_value" : {
                         "$ref": "https://community.rti.com/static/schemas/rticonnextdds-gateway/current/modbus_adapter_definitions.schema.json#/definitions/modbus_min_value"
                     },

@@ -1,0 +1,48 @@
+[
+    {
+        "field": "device_name",
+        "value": "XY-MD02_100"
+    },
+    {
+        "field": "temperature_celsius",
+        "modbus_register_address": 1,
+        "modbus_slave_device_id" : 1,
+        "modbus_datatype": "INPUT_REGISTER_INT16",
+        "input_data_factor" : 0.1
+    },
+    {
+        "field": "humidity",
+        "modbus_register_address": 2,
+        "modbus_slave_device_id" : 1,
+        "modbus_datatype": "INPUT_REGISTER_INT16",
+        "input_data_factor" : 0.1
+    },
+    {
+        "field": "device_address",
+        "modbus_register_address": 257,
+        "modbus_slave_device_id" : 1,
+        "modbus_datatype": "HOLDING_REGISTER_INT8"
+    },
+    {
+        "field": "baud_rate",
+        "modbus_register_address": 258,
+        "modbus_slave_device_id" : 1,
+        "modbus_datatype": "HOLDING_REGISTER_INT16"
+    },
+    {
+        "field": "temperature_correction",
+        "modbus_register_address": 259,
+        "modbus_slave_device_id" : 1,
+        "modbus_datatype": "HOLDING_REGISTER_INT16",
+        "modbus_min_value": -10,
+        "modbus_max_value": 10
+    },
+    {
+        "field": "humidity_correction",
+        "modbus_register_address": 260,
+        "modbus_slave_device_id" : 1,
+        "modbus_datatype": "HOLDING_REGISTER_INT16",
+        "modbus_min_value": -10,
+        "modbus_max_value": 10
+    }
+]

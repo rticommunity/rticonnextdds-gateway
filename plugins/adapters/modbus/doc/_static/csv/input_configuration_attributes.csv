@@ -29,6 +29,7 @@ The name can use the hierarchical naming format to indicate access to nested fie
 If unspecified: it defaults to one for COIL, INT8, INT16, to two for INT32 and FLOAT_XXXX, and to four for INT64. |BR|
 |BR|
 If specified: the user should take into account that it takes two registers to read each INT32 and FLOAT_XXXX value and it takes four registers to read an INT64."
+|CONF_MODBUS_SLAVE_DEVICE_ID|,NO,number,"Slave number of a Modbus device on a serial network"
 |CONF_MODBUS_MIN_VALUE|,NO,number,the minimum value for the value read
 |CONF_MODBUS_MAX_VALUE|,NO,number,the maximum value for the value read
 |CONF_MODBUS_VALID_VALUES|,"YES for Enums, NO for other datatypes",array of numbers,the complete list of values that can be written. Values not in the list are considered invalid outputs.

@@ -81,6 +81,22 @@ int ModbusStreamWriter::write(
                 TypeKind element_kind = member_kind;
                 std::vector<long double> float_vector;
 
+                // Sets the slave ID before reading, only when the datatype is
+                // not constant and the slave ID is different from the previous
+                // one.
+                try {
+                    bool is_constant = mace.modbus_datatype()
+                            == ModbusDataType::constant_value;
+                    bool is_same_slave_id = connection_.get_slave_id()
+                            == mace.modbus_slave_device_id();
+                    if (!is_constant && !is_same_slave_id) {
+                        connection_.set_slave_id(mace.modbus_slave_device_id());
+                    }
+                } catch (const std::exception &ex) {
+                    std::cerr << ex.what() << std::endl;
+                    continue;
+                }
+
                 // If the type is optional and it is not set, do nothing
                 if (!sample->member_exists(mace.field())) {
                     continue;

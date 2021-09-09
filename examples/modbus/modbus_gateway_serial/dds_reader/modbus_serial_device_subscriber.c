@@ -1,5 +1,5 @@
 /******************************************************************************/
-/* (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/* (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
 /*                                                                            */
 /* RTI grants Licensee a license to use, modify, compile, and create          */
 /* derivative works of the software solely for use with RTI Connext DDS.      */
@@ -13,74 +13,72 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include "MBus_WTH_CO2_LCD_ETH_INPUT.h"
-#include "MBus_WTH_CO2_LCD_ETH_INPUTSupport.h"
+#include "modbus_serial_device.h"
+#include "modbus_serial_deviceSupport.h"
 #include "ndds/ndds_c.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-void MBus_WTH_CO2_LCD_ETH_INPUTListener_on_requested_deadline_missed(
+void modbus_serial_deviceListener_on_requested_deadline_missed(
         void *listener_data,
         DDS_DataReader *reader,
         const struct DDS_RequestedDeadlineMissedStatus *status)
 {
 }
 
-void MBus_WTH_CO2_LCD_ETH_INPUTListener_on_requested_incompatible_qos(
+void modbus_serial_deviceListener_on_requested_incompatible_qos(
         void *listener_data,
         DDS_DataReader *reader,
         const struct DDS_RequestedIncompatibleQosStatus *status)
 {
 }
 
-void MBus_WTH_CO2_LCD_ETH_INPUTListener_on_sample_rejected(
+void modbus_serial_deviceListener_on_sample_rejected(
         void *listener_data,
         DDS_DataReader *reader,
         const struct DDS_SampleRejectedStatus *status)
 {
 }
 
-void MBus_WTH_CO2_LCD_ETH_INPUTListener_on_liveliness_changed(
+void modbus_serial_deviceListener_on_liveliness_changed(
         void *listener_data,
         DDS_DataReader *reader,
         const struct DDS_LivelinessChangedStatus *status)
 {
 }
 
-void MBus_WTH_CO2_LCD_ETH_INPUTListener_on_sample_lost(
+void modbus_serial_deviceListener_on_sample_lost(
         void *listener_data,
         DDS_DataReader *reader,
         const struct DDS_SampleLostStatus *status)
 {
 }
 
-void MBus_WTH_CO2_LCD_ETH_INPUTListener_on_subscription_matched(
+void modbus_serial_deviceListener_on_subscription_matched(
         void *listener_data,
         DDS_DataReader *reader,
         const struct DDS_SubscriptionMatchedStatus *status)
 {
 }
 
-void MBus_WTH_CO2_LCD_ETH_INPUTListener_on_data_available(
+void modbus_serial_deviceListener_on_data_available(
         void *listener_data,
         DDS_DataReader *reader)
 {
-    MBus_WTH_CO2_LCD_ETH_INPUTDataReader *MBus_WTH_CO2_LCD_ETH_INPUT_reader =
-            NULL;
-    struct MBus_WTH_CO2_LCD_ETH_INPUTSeq data_seq = DDS_SEQUENCE_INITIALIZER;
+    modbus_serial_deviceDataReader *modbus_serial_device_reader = NULL;
+    struct modbus_serial_deviceSeq data_seq = DDS_SEQUENCE_INITIALIZER;
     struct DDS_SampleInfoSeq info_seq = DDS_SEQUENCE_INITIALIZER;
     DDS_ReturnCode_t retcode;
     int i;
 
-    MBus_WTH_CO2_LCD_ETH_INPUT_reader =
-            MBus_WTH_CO2_LCD_ETH_INPUTDataReader_narrow(reader);
-    if (MBus_WTH_CO2_LCD_ETH_INPUT_reader == NULL) {
+    modbus_serial_device_reader = modbus_serial_deviceDataReader_narrow(reader);
+    if (modbus_serial_device_reader == NULL) {
         fprintf(stderr, "DataReader narrow error\n");
         return;
     }
 
-    retcode = MBus_WTH_CO2_LCD_ETH_INPUTDataReader_take(
-            MBus_WTH_CO2_LCD_ETH_INPUT_reader,
+    retcode = modbus_serial_deviceDataReader_take(
+            modbus_serial_device_reader,
             &data_seq,
             &info_seq,
             DDS_LENGTH_UNLIMITED,
@@ -94,16 +92,16 @@ void MBus_WTH_CO2_LCD_ETH_INPUTListener_on_data_available(
         return;
     }
 
-    for (i = 0; i < MBus_WTH_CO2_LCD_ETH_INPUTSeq_get_length(&data_seq); ++i) {
+    for (i = 0; i < modbus_serial_deviceSeq_get_length(&data_seq); ++i) {
         if (DDS_SampleInfoSeq_get_reference(&info_seq, i)->valid_data) {
             printf("Received data\n");
-            MBus_WTH_CO2_LCD_ETH_INPUTTypeSupport_print_data(
-                    MBus_WTH_CO2_LCD_ETH_INPUTSeq_get_reference(&data_seq, i));
+            modbus_serial_deviceTypeSupport_print_data(
+                    modbus_serial_deviceSeq_get_reference(&data_seq, i));
         }
     }
 
-    retcode = MBus_WTH_CO2_LCD_ETH_INPUTDataReader_return_loan(
-            MBus_WTH_CO2_LCD_ETH_INPUT_reader,
+    retcode = modbus_serial_deviceDataReader_return_loan(
+            modbus_serial_device_reader,
             &data_seq,
             &info_seq);
     if (retcode != DDS_RETCODE_OK) {
@@ -189,8 +187,8 @@ int subscriber_main(int domainId, int sample_count)
     }
 
     /* Register the type before creating the topic */
-    type_name = MBus_WTH_CO2_LCD_ETH_INPUTTypeSupport_get_type_name();
-    retcode = MBus_WTH_CO2_LCD_ETH_INPUTTypeSupport_register_type(
+    type_name = modbus_serial_deviceTypeSupport_get_type_name();
+    retcode = modbus_serial_deviceTypeSupport_register_type(
             participant,
             type_name);
     if (retcode != DDS_RETCODE_OK) {
@@ -203,7 +201,7 @@ int subscriber_main(int domainId, int sample_count)
     the configuration file USER_QOS_PROFILES.xml */
     topic = DDS_DomainParticipant_create_topic(
             participant,
-            "Example StreamReader",
+            "Modbus Serial",
             type_name,
             &DDS_TOPIC_QOS_DEFAULT,
             NULL /* listener */,
@@ -216,19 +214,19 @@ int subscriber_main(int domainId, int sample_count)
 
     /* Set up a data reader listener */
     reader_listener.on_requested_deadline_missed =
-            MBus_WTH_CO2_LCD_ETH_INPUTListener_on_requested_deadline_missed;
+            modbus_serial_deviceListener_on_requested_deadline_missed;
     reader_listener.on_requested_incompatible_qos =
-            MBus_WTH_CO2_LCD_ETH_INPUTListener_on_requested_incompatible_qos;
+            modbus_serial_deviceListener_on_requested_incompatible_qos;
     reader_listener.on_sample_rejected =
-            MBus_WTH_CO2_LCD_ETH_INPUTListener_on_sample_rejected;
+            modbus_serial_deviceListener_on_sample_rejected;
     reader_listener.on_liveliness_changed =
-            MBus_WTH_CO2_LCD_ETH_INPUTListener_on_liveliness_changed;
+            modbus_serial_deviceListener_on_liveliness_changed;
     reader_listener.on_sample_lost =
-            MBus_WTH_CO2_LCD_ETH_INPUTListener_on_sample_lost;
+            modbus_serial_deviceListener_on_sample_lost;
     reader_listener.on_subscription_matched =
-            MBus_WTH_CO2_LCD_ETH_INPUTListener_on_subscription_matched;
+            modbus_serial_deviceListener_on_subscription_matched;
     reader_listener.on_data_available =
-            MBus_WTH_CO2_LCD_ETH_INPUTListener_on_data_available;
+            modbus_serial_deviceListener_on_data_available;
 
     /* To customize data reader QoS, use
     the configuration file USER_QOS_PROFILES.xml */
@@ -246,7 +244,7 @@ int subscriber_main(int domainId, int sample_count)
 
     /* Main loop */
     for (count = 0; (sample_count == 0) || (count < sample_count); ++count) {
-        printf("MBus_WTH_CO2_LCD_ETH_INPUT subscriber sleeping for %d sec...\n",
+        printf("modbus_serial_device subscriber sleeping for %d sec...\n",
                poll_period.sec);
 
         NDDS_Utility_sleep(&poll_period);

@@ -15,6 +15,7 @@
 .. |CONF_MODBUS_REGISTER_ADDRESS| replace:: *modbus_register_address*
 .. |CONF_MODBUS_REGISTER_COUNT| replace:: *modbus_register_count*
 .. |CONF_MODBUS_DATATYPE| replace:: *modbus_datatype*
+.. |CONF_MODBUS_SLAVE_DEVICE_ID| replace:: *modbus_slave_device_id*
 .. |CONF_MODBUS_MIN_VALUE| replace:: *modbus_min_value*
 .. |CONF_MODBUS_MAX_VALUE| replace:: *modbus_max_value*
 .. |CONF_MODBUS_VALID_VALUES| replace:: *modbus_valid_values*

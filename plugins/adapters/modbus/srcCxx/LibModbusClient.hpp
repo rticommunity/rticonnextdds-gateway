@@ -38,6 +38,9 @@ namespace rti { namespace adapter { namespace modbus {
 
 class LibModbusClient : public ModbusClient {
 public:
+
+    static const uint8_t MODBUS_DEFAULT_DEVICE_ID = MODBUS_TCP_SLAVE;
+
     /**
      * @brief Default constructor
      */
@@ -79,6 +82,24 @@ public:
     {
         return modbus_connection_;
     }
+
+    /**
+     * @brief Sets a modbus device ID to read data from. This is used when
+     * reading data from a modbus RTU thought a modbus gateway.
+     * @param slave_id the slave ID of the modbus RTU device.
+     *
+     * @see get_slave_id
+     */
+    void set_slave_id(uint8_t slave_id);
+
+    /**
+     * @brief Gets the modbus device ID that is set to this connection.
+     * @param slave_id the slave ID of the modbus RTU device.
+     *
+     * @see set_slave_id
+     */
+    int get_slave_id();
+
 
     /**
      * @brief Writes 1 or more registers to a modbus device.
