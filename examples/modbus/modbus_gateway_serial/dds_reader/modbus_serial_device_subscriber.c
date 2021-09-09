@@ -49,8 +49,15 @@ void modbus_serial_deviceListener_on_liveliness_changed(
 
 void modbus_serial_deviceListener_on_sample_lost(
         void *listener_data,
+        DDS_DataReader *reader,
+        const struct DDS_SampleLostStatus *status)
+{
+}
+
+void modbus_serial_deviceListener_on_subscription_matched(
         void *listener_data,
         DDS_DataReader *reader,
+        const struct DDS_SubscriptionMatchedStatus *status)
 {
 }
 
@@ -245,7 +252,11 @@ int subscriber_main(int domainId, int sample_count)
 
     /* Cleanup and delete all entities */
     return subscriber_shutdown(participant);
+}
+
+int main(int argc, char *argv[])
 {
+    int domain_id = 0;
     int sample_count = 0; /* infinite loop */
 
     if (argc >= 2) {
