@@ -17,8 +17,8 @@
 struct MBus_WTH_CO2_LCD_ETH_INPUT {
     @key      string<64>  device_name; // Configured in the input
     uint8  ip_address[4];
-    @optional float temperatureC;
-    @optional float temperatureF;
+    @optional float temperature_celsius;
+    @optional float temperature_fahrenheit;
     @optional float humidity;
     @optional float co2_value;
     @optional int8  analog_output_config;

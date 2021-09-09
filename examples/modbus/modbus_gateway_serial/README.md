@@ -2,14 +2,14 @@
 
 ## Description of the Example
 
-This example shows to connect to the serial device [XY-MD02](http://www.sah.rs/media/sah/techdocs/xy-md02-manual.pdf)
+This example shows how to connect to the serial device [XY-MD02](http://www.sah.rs/media/sah/techdocs/xy-md02-manual.pdf)
 through a Modbus gateway [USR-W610](https://www.pusr.com/products/rs232/rs485-to-wifi-converters-usr-w610.html)
 and RS485.
 The configuration used for this example contains the following fields:
 
 * Modbus Input - MBus_WTH_CO2_LCD_ETH_INPUT.idl
   * device_name
-  * temperatureC
+  * temperature_celsius
   * humidity
   * device_address
   * baud_rate
@@ -32,10 +32,11 @@ be the slave ID of the XY-MD02 device in the RS485 serial network.
 
 ## Running the Example
 
-In three separate command prompt windows for the Routing Service, DDS publisher
+In three separate command prompt windows for Routing Service, DDS publisher
 and DDS subscriber. Run the following commands from the example directory (this
 is necessary to ensure the application loads the QoS defined in
-*USER_QOS_PROFILES.xml*):
+*USER_QOS_PROFILES.xml*, which requires *USER_QOS_PROFILES.xml* to be present in
+the working directory):
 
 ```sh
 rtiroutingservice -cfgFile RSConfigAdapter.xml -cfgName RSModbusAdapterSerialExample
@@ -53,7 +54,7 @@ messages from the modbus device:
 
 > Received data
 > &nbsp; &nbsp; device_name: "XY-MD02_100"
-> &nbsp; &nbsp; temperatureC: 27.3000011
+> &nbsp; &nbsp; temperature_celsius: 27.3000011
 > &nbsp; &nbsp; humidity: 95.8000031
 > &nbsp; &nbsp; device_address: 1
 > &nbsp; &nbsp; baud_rate: 9600

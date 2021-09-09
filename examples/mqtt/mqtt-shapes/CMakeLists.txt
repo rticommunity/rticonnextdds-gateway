@@ -87,5 +87,10 @@ install(
     DESTINATION "${STAGING_EXAMPLES_DIR}/${STAGING_PLUGIN_DIR}/${EXAMPLE_NAME}"
     USE_SOURCE_PERMISSIONS)
 
+install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/doc"
+    DESTINATION "${STAGING_EXAMPLES_DIR}/${STAGING_PLUGIN_DIR}/${EXAMPLE_NAME}"
+)
+
 ###############################################################################
 ###############################################################################
