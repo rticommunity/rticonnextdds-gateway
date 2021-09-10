@@ -39,8 +39,8 @@ ModbusAdapterConfigurationElement::ModbusAdapterConfigurationElement()
           modbus_register_count_(0),
           modbus_datatype_(ModbusDataType::no_modbus_datatype),
           modbus_slave_device_id_(LibModbusClient::MODBUS_DEFAULT_DEVICE_ID),
-          modbus_min_value_(RTI_FLOAT_MIN),
-          modbus_max_value_(RTI_FLOAT_MAX),
+          modbus_min_value_(RTI_DOUBLE_MIN),
+          modbus_max_value_(RTI_DOUBLE_MAX),
           modbus_valid_values_(),
           data_factor_(1),
           data_offset_(0),
@@ -201,14 +201,14 @@ void ModbusAdapterConfigurationElement::check_for_errors(void)
     }
 
     if (modbus_register_address() == -1
-        && modbus_datatype() != ModbusDataType::constant_value) {
+            && modbus_datatype() != ModbusDataType::constant_value) {
         std::string error(
                 "Error: the modbus_register_address parameter of <" + field()
                 + "> is not set.");
         throw std::runtime_error(error);
     }
 
-    // if value is set and CONSTANT_VALUE is not it's datatype
+    // if value is set and CONSTANT_VALUE is not its datatype
     if (modbus_datatype() != ModbusDataType::constant_value
             && !value().empty()) {
         std::string error(
@@ -230,13 +230,13 @@ void ModbusAdapterConfigurationElement::check_for_errors(void)
     //  - input_data_offset
     if (modbus_datatype() == ModbusDataType::coil_boolean
         || modbus_datatype() == ModbusDataType::constant_value) {
-        if (modbus_min_value() != RTI_FLOAT_MIN) {
+        if (modbus_min_value() != RTI_DOUBLE_MIN) {
             std::cerr
                     << "Warning: The parameter modbus_min_value of the field <"
                     << field() << "> will be ignored as it is a COIL_BOOLEAN "
                     " or has a constant value set.";
         }
-        if (modbus_max_value() != RTI_FLOAT_MAX) {
+        if (modbus_max_value() != RTI_DOUBLE_MAX) {
             std::cerr
                     << "Warning: The parameter modbus_max_value of the field <"
                     << field() << "> will be ignored as it is a COIL_BOOLEAN "
@@ -259,7 +259,8 @@ void ModbusAdapterConfigurationElement::check_for_errors(void)
         }
     }
 
-    // if this is a CONSTANT_VALUE the following parameters will be ignored:
+    // Additionally, if this is a CONSTANT_VALUE the following parameters will be
+    // ignored:
     //  - modbus_register_address
     //  - modbus_register_count
     if (modbus_datatype() == ModbusDataType::constant_value) {
@@ -273,6 +274,14 @@ void ModbusAdapterConfigurationElement::check_for_errors(void)
                     "of the field <" << field() << "> will be ignored "
                     "as it has a constant value set.";
         }
+    }
+
+    // Check that the min is not greater than the max
+    if (modbus_min_value() > modbus_max_value()) {
+        std::string error(
+            "Error: modbus_min_value is greater than modbus_max_value for "
+            "the field: <" + field() + ">");
+        throw std::runtime_error(error);
     }
 }
 
@@ -642,7 +651,7 @@ size_t ModbusAdapterConfigurationElement::calculate_array_elements()
     size_t number_of_registers_type = number_of_registers_primitive_type();
 
     // if the modbus_register_count_ divided by the number of registers that
-    // each type occupated is not exaclty 1, this is an array or an invalid
+    // each type requires is not exactly 1, this is an array or an invalid
     // input
     if (modbus_register_count() % number_of_registers_type != 0
         || modbus_register_count() / number_of_registers_type < 1) {
@@ -664,6 +673,30 @@ void ModbusAdapterConfigurationElement::set_array_elements_from_config()
         // arrays of 1 elements are not supported, this defines a primitive
         // datatype
         array_elements_ = 0;
+    }
+}
+
+void ModbusAdapterConfigurationElement::check_min_max_consistency(
+        bool is_dds_type_unsigned)
+{
+    bool is_min_set_negative = modbus_min_value() != RTI_DOUBLE_MIN
+            && modbus_min_value() < 0.0;
+    bool is_max_set_negative = modbus_max_value() < 0.0;
+
+    // error if min or max is negative and the datatype is unsigned
+    if (is_dds_type_unsigned) {
+        if (is_min_set_negative) {
+            std::string error(
+                "Error: modbus_min_value is set to a negative value for a "
+                "unsigned field: <" + field() + ">");
+            throw std::runtime_error(error);
+        }
+        if (is_max_set_negative) {
+            std::string error(
+                "Error: modbus_max_value is set to a negative value for a "
+                "unsigned field: <" + field() + ">");
+            throw std::runtime_error(error);
+        }
     }
 }
 
@@ -1016,7 +1049,7 @@ void ModbusAdapterConfiguration::check_configuration_consistency(
         const StructType& dds_type)
 {
     for (auto element : config()) {
-        // a StreamWriter cannot hancdle 'value' tag in the configuration,
+        // a StreamWriter cannot handle 'value' tag in the configuration,
         // this means that it cannot handle constant strings values
         if (kind() == RoutingServiceEntityType::stream_writer) {
             if (element.modbus_datatype() == ModbusDataType::constant_value) {
@@ -1028,23 +1061,23 @@ void ModbusAdapterConfiguration::check_configuration_consistency(
             }
             // a StreamWriter cannot be configured with read-only elements
             if (element.modbus_datatype()
-                        == ModbusDataType::discrete_input_boolean
-                || element.modbus_datatype()
-                        == ModbusDataType::input_register_int8
-                || element.modbus_datatype()
-                        == ModbusDataType::input_register_int16
-                || element.modbus_datatype()
-                        == ModbusDataType::input_register_int32
-                || element.modbus_datatype()
-                        == ModbusDataType::input_register_int64
-                || element.modbus_datatype()
-                        == ModbusDataType::input_register_float_abcd
-                || element.modbus_datatype()
-                        == ModbusDataType::input_register_float_badc
-                || element.modbus_datatype()
-                        == ModbusDataType::input_register_float_cdab
-                || element.modbus_datatype()
-                        == ModbusDataType::input_register_float_dcba) {
+                            == ModbusDataType::discrete_input_boolean
+                    || element.modbus_datatype()
+                            == ModbusDataType::input_register_int8
+                    || element.modbus_datatype()
+                            == ModbusDataType::input_register_int16
+                    || element.modbus_datatype()
+                            == ModbusDataType::input_register_int32
+                    || element.modbus_datatype()
+                            == ModbusDataType::input_register_int64
+                    || element.modbus_datatype()
+                            == ModbusDataType::input_register_float_abcd
+                    || element.modbus_datatype()
+                            == ModbusDataType::input_register_float_badc
+                    || element.modbus_datatype()
+                            == ModbusDataType::input_register_float_cdab
+                    || element.modbus_datatype()
+                            == ModbusDataType::input_register_float_dcba) {
                 std::string error(
                         "Error: incompatible modbus_datatype of element <"
                         + element.field()
@@ -1077,17 +1110,24 @@ void ModbusAdapterConfiguration::check_configuration_consistency(
                 // int8_t and uint8_t are mapped to octets. They both can store
                 // "negative numbers".
                 if (element.modbus_datatype() != ModbusDataType::coil_boolean
-                    && element.modbus_datatype()
-                            != ModbusDataType::constant_value
-                    && element.modbus_datatype()
-                            != ModbusDataType::discrete_input_boolean
-                    && element.modbus_datatype()
-                            != ModbusDataType::holding_register_int8
-                    && element.modbus_datatype()
-                            != ModbusDataType::input_register_int8
-                    && !dynamic_data::is_signed_kind(
-                            dynamic_array.content_type().kind())) {
-                    element.modbus_min_value_ = 0;
+                        && element.modbus_datatype()
+                                != ModbusDataType::constant_value
+                        && element.modbus_datatype()
+                                != ModbusDataType::discrete_input_boolean
+                        && element.modbus_datatype()
+                                != ModbusDataType::holding_register_int8
+                        && element.modbus_datatype()
+                                != ModbusDataType::input_register_int8) {
+                    bool is_unsigned = !dynamic_data::is_signed_kind(
+                        dynamic_array.content_type().kind());
+
+                    // Check that neither the min nor the max are set to negative
+                    // values if the datatype is unsigned.
+                    element.check_min_max_consistency(is_unsigned);
+
+                    if (is_unsigned) {
+                        element.modbus_min_value_ = 0;
+                    }
                 }
 
                 if (dynamic_array.dimension_count() != 1) {
@@ -1134,10 +1174,17 @@ void ModbusAdapterConfiguration::check_configuration_consistency(
                         && element.modbus_datatype()
                                 != ModbusDataType::holding_register_int8
                         && element.modbus_datatype()
-                                != ModbusDataType::input_register_int8
-                        && !dynamic_data::is_signed_kind(
-                                dynamic_seq.content_type().kind())) {
-                    element.modbus_min_value_ = 0;
+                                != ModbusDataType::input_register_int8) {
+                    bool is_unsigned = !dynamic_data::is_signed_kind(
+                            dynamic_seq.content_type().kind());
+
+                    // Check that neither the min nor the max are set to negative
+                    // values if the datatype is unsigned.
+                    element.check_min_max_consistency(is_unsigned);
+
+                    if (is_unsigned) {
+                        element.modbus_min_value_ = 0;
+                    }
                 }
 
                 if (!element.is_compatible_dds_datatype(
@@ -1167,9 +1214,16 @@ void ModbusAdapterConfiguration::check_configuration_consistency(
                     && element.modbus_datatype()
                             != ModbusDataType::holding_register_int8
                     && element.modbus_datatype()
-                            != ModbusDataType::input_register_int8
-                    && !dynamic_data::is_signed_kind(field_type.kind())) {
-                element.modbus_min_value_ = 0;
+                            != ModbusDataType::input_register_int8) {
+                bool is_unsigned = !dynamic_data::is_signed_kind(field_type.kind());
+
+                // Check that neither the min nor the max are set to negative
+                // values if the datatype is unsigned.
+                element.check_min_max_consistency(is_unsigned);
+
+                if (is_unsigned) {
+                    element.modbus_min_value_ = 0;
+                }
             }
 
             // primitive type or enum

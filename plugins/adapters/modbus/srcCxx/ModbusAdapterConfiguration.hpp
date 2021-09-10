@@ -264,9 +264,16 @@ private:
      * @brief Sets the array_elements, if we have an array of 1 element, that
      * means that we have a simple element. Arrays of 1 elements are not
      * supported
-     * @return The number of array elements for that specific configuration.
      */
     void set_array_elements_from_config();
+
+    /**
+     * @brief Check whether the min max values are consistent:
+     *   - Min <= Max
+     *   - Min and Max are not negatives if the type is unsigned
+     * @return Void. Throws exception in case of error.
+     */
+    void check_min_max_consistency(bool is_dds_type_unsigned);
 
 private:
     // fields
