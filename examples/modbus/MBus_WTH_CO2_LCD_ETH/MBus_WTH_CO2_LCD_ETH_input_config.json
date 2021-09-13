@@ -4,13 +4,13 @@
         "value": "device_37"
     },
     {
-        "field": "temperatureC",
+        "field": "temperature_celsius",
         "modbus_register_address": 202,
         "modbus_datatype": "HOLDING_REGISTER_INT16",
         "input_data_factor" : 0.1
     },
     {
-        "field": "temperatureF",
+        "field": "temperature_fahrenheit",
         "modbus_register_address": 203,
         "modbus_datatype": "HOLDING_REGISTER_INT16",
         "input_data_factor" : 0.1

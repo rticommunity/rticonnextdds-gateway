@@ -20,8 +20,34 @@
 namespace rti { namespace adapter { namespace modbus {
 class ModbusClient {
 public:
+    /**
+     * @brief Connect to a modbus device.
+     * @param ip of the modbus device.
+     * @param port of the modbus device.
+     */
     virtual void connect(const std::string& ip, uint16_t port) = 0;
+
+    /**
+     * @brief Disconnect to a modbus device.
+     */
     virtual void disconnect() = 0;
+
+    /**
+     * @brief Sets a modbus device ID to read data from. This is used when
+     * reading data from a modbus RTU thought a modbus gateway.
+     * @param slave_id the slave ID of the modbus RTU device.
+     *
+     * @see get_slave_id
+     */
+    virtual void set_slave_id(uint8_t slave_id) = 0;
+
+    /**
+     * @brief Gets the modbus device ID that is set to this connection.
+     * @param slave_id the slave ID of the modbus RTU device.
+     *
+     * @see set_slave_id
+     */
+    virtual int get_slave_id() = 0;
 
     /**
      * @brief Writes 1 or more registers to a modbus device.

@@ -38,6 +38,7 @@ ModbusAdapterConfigurationElement::ModbusAdapterConfigurationElement()
           modbus_register_address_(-1),
           modbus_register_count_(0),
           modbus_datatype_(ModbusDataType::no_modbus_datatype),
+          modbus_slave_device_id_(LibModbusClient::MODBUS_DEFAULT_DEVICE_ID),
           modbus_min_value_(RTI_FLOAT_MIN),
           modbus_max_value_(RTI_FLOAT_MAX),
           modbus_valid_values_(),
@@ -743,6 +744,15 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                 }
 
                 mace.modbus_register_count_ = static_cast<int>(number_node->u.integer);
+            } else if (element_name == "modbus_slave_device_id") {
+                json_value *number_node = node_object->u.object.values[j].value;
+                if (number_node->type != json_integer) {
+                    throw std::runtime_error(
+                            "Error in the JSON configuration "
+                            "<modbus_slave_device_id>.");
+                }
+
+                mace.modbus_slave_device_id_ = static_cast<uint8_t>(number_node->u.integer);
             } else if (element_name == "modbus_datatype") {
                 json_value *string_node = node_object->u.object.values[j].value;
                 if (string_node->type != json_string) {

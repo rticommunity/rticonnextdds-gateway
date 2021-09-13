@@ -33,6 +33,12 @@
             "description": "",
             "exclusiveMinimum": 0
         },
+        "modbus_slave_device_id" : {
+            "type" : "integer",
+            "description": "",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 255
+        },
         "modbus_min_value" : {
             "type" : "integer",
             "description": ""

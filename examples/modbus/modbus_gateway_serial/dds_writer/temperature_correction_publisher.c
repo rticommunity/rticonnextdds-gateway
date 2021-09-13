@@ -1,5 +1,5 @@
 /******************************************************************************/
-/* (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/* (c) 2021 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
 /*                                                                            */
 /* RTI grants Licensee a license to use, modify, compile, and create          */
 /* derivative works of the software solely for use with RTI Connext DDS.      */
@@ -13,9 +13,9 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include "MBus_WTH_CO2_LCD_ETH_WRITE.h"
-#include "MBus_WTH_CO2_LCD_ETH_WRITESupport.h"
 #include "ndds/ndds_c.h"
+#include "temperature_correction.h"
+#include "temperature_correctionSupport.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -62,9 +62,8 @@ int publisher_main(int domainId, int sample_count)
     DDS_Publisher *publisher = NULL;
     DDS_Topic *topic = NULL;
     DDS_DataWriter *writer = NULL;
-    MBus_WTH_CO2_LCD_ETH_WRITEDataWriter *MBus_WTH_CO2_LCD_ETH_WRITE_writer =
-            NULL;
-    MBus_WTH_CO2_LCD_ETH_WRITE *instance = NULL;
+    temperature_correctionDataWriter *temperature_correction_writer = NULL;
+    temperature_correction *instance = NULL;
     DDS_ReturnCode_t retcode;
     DDS_InstanceHandle_t instance_handle = DDS_HANDLE_NIL;
     const char *type_name = NULL;
@@ -99,8 +98,8 @@ int publisher_main(int domainId, int sample_count)
     }
 
     /* Register type before creating topic */
-    type_name = MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_get_type_name();
-    retcode = MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_register_type(
+    type_name = temperature_correctionTypeSupport_get_type_name();
+    retcode = temperature_correctionTypeSupport_register_type(
             participant,
             type_name);
     if (retcode != DDS_RETCODE_OK) {
@@ -113,7 +112,7 @@ int publisher_main(int domainId, int sample_count)
     the configuration file USER_QOS_PROFILES.xml */
     topic = DDS_DomainParticipant_create_topic(
             participant,
-            "Example StreamWriter",
+            "Modbus Serial Temp Correction",
             type_name,
             &DDS_TOPIC_QOS_DEFAULT,
             NULL /* listener */,
@@ -137,47 +136,47 @@ int publisher_main(int domainId, int sample_count)
         publisher_shutdown(participant);
         return -1;
     }
-    MBus_WTH_CO2_LCD_ETH_WRITE_writer =
-            MBus_WTH_CO2_LCD_ETH_WRITEDataWriter_narrow(writer);
-    if (MBus_WTH_CO2_LCD_ETH_WRITE_writer == NULL) {
+    temperature_correction_writer =
+            temperature_correctionDataWriter_narrow(writer);
+    if (temperature_correction_writer == NULL) {
         fprintf(stderr, "DataWriter narrow error\n");
         publisher_shutdown(participant);
         return -1;
     }
 
     /* Create data sample for writing */
-    instance = MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_create_data_ex(
-            DDS_BOOLEAN_TRUE);
+    instance =
+            temperature_correctionTypeSupport_create_data_ex(DDS_BOOLEAN_TRUE);
     if (instance == NULL) {
         fprintf(stderr,
-                "MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_create_data error\n");
+                "temperature_correctionTypeSupport_create_data error\n");
         publisher_shutdown(participant);
         return -1;
     }
 
-    instance->alarm_sound_on_sec_for_prealarm =
+    instance->temperature_correction =
             (DDS_UnsignedShort *) malloc(sizeof(DDS_UnsignedShort));
-
+    strcpy(instance->device_name, "XY-MD02_100");
     /* For a data type that has a key, if the same instance is going to be
     written multiple times, initialize the key here
     and register the keyed instance prior to writing */
     /*
-    instance_handle = MBus_WTH_CO2_LCD_ETH_WRITEDataWriter_register_instance(
-        MBus_WTH_CO2_LCD_ETH_WRITE_writer, instance);
+    instance_handle = temperature_correctionDataWriter_register_instance(
+        temperature_correction_writer, instance);
     */
     /* Main loop */
     for (count = 0; (sample_count == 0) || (count < sample_count); ++count) {
         /* Modify the data to be written here */
-        /* the values that we write will be in the range of [0,21] */
-        *instance->alarm_sound_on_sec_for_prealarm = count % 22;
+        /* the values that we write will be in the range of [-11,11] */
+        *instance->temperature_correction = (count % 23) - 11;
 
-        printf("Writing MBus_WTH_CO2_LCD_ETH_WRITE, "
-               "alarm_sound_on_sec_for_prealarm %d\n",
-               *instance->alarm_sound_on_sec_for_prealarm);
+        printf("Writing temperature_correction, "
+               "temperature_correction %d\n",
+               *instance->temperature_correction);
 
         /* Write data */
-        retcode = MBus_WTH_CO2_LCD_ETH_WRITEDataWriter_write(
-                MBus_WTH_CO2_LCD_ETH_WRITE_writer,
+        retcode = temperature_correctionDataWriter_write(
+                temperature_correction_writer,
                 instance,
                 &instance_handle);
         if (retcode != DDS_RETCODE_OK) {
@@ -188,19 +187,19 @@ int publisher_main(int domainId, int sample_count)
     }
 
     /*
-    retcode = MBus_WTH_CO2_LCD_ETH_WRITEDataWriter_unregister_instance(
-        MBus_WTH_CO2_LCD_ETH_WRITE_writer, instance, &instance_handle);
+    retcode = temperature_correctionDataWriter_unregister_instance(
+        temperature_correction_writer, instance, &instance_handle);
     if (retcode != DDS_RETCODE_OK) {
         fprintf(stderr, "unregister instance error %d\n", retcode);
     }
     */
     /* Delete data sample */
-    retcode = MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_delete_data_ex(
+    retcode = temperature_correctionTypeSupport_delete_data_ex(
             instance,
             DDS_BOOLEAN_TRUE);
     if (retcode != DDS_RETCODE_OK) {
         fprintf(stderr,
-                "MBus_WTH_CO2_LCD_ETH_WRITETypeSupport_delete_data error %d\n",
+                "temperature_correctionTypeSupport_delete_data error %d\n",
                 retcode);
     }
     /* Cleanup and delete delete all entities */

@@ -32,12 +32,12 @@ It is recommended to use a floating point destination DynamicData field if eithe
 |BR|
 An Enumerated field can only be selected if the configuration specifies a |CONF_MODBUS_VALID_VALUES| that is a subset of the values in the enumeration."
 "
-* INPUT_REGISTER_INT16 
+* INPUT_REGISTER_INT16
 * HOLDING_REGISTER_INT16
 ",1,"The value returned from Modbus can be placed in: |BR|
 
-* Signed integer fields except int8 
-* Unsigned integer fields except uint8 
+* Signed integer fields except int8
+* Unsigned integer fields except uint8
 * Enumerated fields
 * Floating point fields
 
@@ -56,14 +56,14 @@ It is recommended to use a floating point destination DynamicData field if eithe
 |BR|
 An Enumerated field can only be selected if the configuration specifies a |CONF_MODBUS_VALID_VALUES| that is a subset of the values in the enumeration."
 "
-* INPUT_REGISTER_INT32 
+* INPUT_REGISTER_INT32
 * HOLDING_REGISTER_INT32
 ","2 |BR|
 |BR|
 (|CONF_MODBUS_REGISTER_ADDRESS| and
 |CONF_MODBUS_REGISTER_ADDRESS| +1)","The value returned from Modbus can placed into: |BR|
 
-* Signed integer fields int32 and int64 
+* Signed integer fields int32 and int64
 * Unsigned integer fields uint32 uint64
 * Floating point fields
 
@@ -91,7 +91,7 @@ An Enumerated field can only be selected if the configuration specifies a |CONF_
 |CONF_MODBUS_REGISTER_ADDRESS| +2, and
 |CONF_MODBUS_REGISTER_ADDRESS| +3)","The value returned from Modbus can placed into: |BR|
 
-* Signed integer fields int64 
+* Signed integer fields int64
 * Unsigned integer fields uint64
 * Floating point fields
 
@@ -112,7 +112,7 @@ An Enumerated field can only be selected if the configuration specifies a |CONF_
 "
 * INPUT_REGISTER_FLOAT_ABCD
 * INPUT_REGISTER_FLOAT_BADC
-* INPUT_REGISTER_FLOAT_CDAB 
+* INPUT_REGISTER_FLOAT_CDAB
 * INPUT_REGISTER_FLOAT_DCBA
 * HOLDING_REGISTER_FLOAT_ABCD
 * HOLDING_REGISTER_FLOAT_BADC
