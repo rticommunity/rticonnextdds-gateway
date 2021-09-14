@@ -25,7 +25,7 @@ Kafka applications use JSON to encode data, fololowing the defined data type. An
 }
 ```
 
-The following figure presents the overall architecture of the example scenario. The example scenario enables real-time stream processing capabilities on DDS with ksqlDB (Kafka-based database for stream processing). 
+The following figure presents the overall architecture of the example scenario. 
 
 ![Example Scenario Architecture](example_arch.png "Example Scenario Architecture")
 
