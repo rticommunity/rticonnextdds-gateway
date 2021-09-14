@@ -36,20 +36,79 @@ The following figure presents the overall architecture of the example scenario. 
 - **Kafka Input** subscribes to Kafka data from a Kafka broker and passes the data to DDS Output. 
 - **Kafka Output** receives DDS data from DDS Input and converts the data from DDS to JSON data. Then, it will publish the data to a Kafka Broker. 
 - **Kafka Broker** exchanges Kafka data between producers (e.g., Kafka Output) and consumers (e.g., Kafka Input). 
-- **ksqlDB engine** executes SQL statements and queries. Users can define stream processing logic by writing SQL statements, and ksqlDB builds and runs the application. Under the hood, ksqlDB parses SQL statements and builds corresponding Kafka Streams topologies.
-- **ksqlDB UI** allows users to write SQL statements with a web-based graphical user interface. 
 
 ## Run Kafka infrastructure components
 To run this example, the following Kafka components are required to run. 
 - ZooKeeper
 - Kafka Broker
-- Confluent Control Center
-- ksqlDB Server
-
-You can use the Docker Compose file provided by Confluent to run them. Please see [this link](https://github.com/confluentinc/cp-all-in-one/tree/6.2.0-post/cp-all-in-one).  
+- Confluent Control Center (only with Docker Compose option)
 
 ## Running RTI Routing Service with the Kafka adapter plugin
-1. Run Kafka infrastructure components:
+We would like to provide instructions with two options to set up Kafka infrastructure components: 1) Script option 2) Docker Compose option 
+
+### Option 1: Running with scripts
+1. Get Kafka.
+   [Download](https://kafka.apache.org/quickstart) the latest Kafka release and extract it:
+    ```sh
+    $ tar -xzf kafka_2.13-2.8.0.tgz
+    $ cd kafka_2.13-2.8.0
+
+    ```
+
+2. Run Kafka infrastructure components:
+   Run the following commands in order to start all services in the correct order:
+    ```sh
+    # Start the ZooKeeper service
+    # Note: Soon, ZooKeeper will no longer be required by Apache Kafka.
+    $ bin/zookeeper-server-start.sh config/zookeeper.properties
+    ```
+
+   Open another terminal session and run:
+    ```sh
+    # Start the Kafka broker service
+    $ bin/kafka-server-start.sh config/server.properties
+    ```
+    Once all services have successfully launched, you will have a basic Kafka environment running and ready to use.
+
+3. Create a `Square` topic
+   ```sh
+   $ bin/kafka-topics.sh --create --topic Square --bootstrap-server localhost:9092
+   ```
+
+4. Start an *RTI Shapes Demo* instance:
+
+    ```sh
+    $NDDSHOME/bin/rtishapesdemo
+    ```
+
+5. Publish a `Square` topic.
+
+    You can create a shapes publisher by clicking in the following
+    menu items in the *RTI Shapes Demo* application:
+
+    - "Publish/Square..." and click 'OK' to use the default parameters.
+
+6. In a separate terminal, start an *RTI Routing Service* instance with the example XML configuration:
+
+    ```sh
+    $NDDSHOME/bin/rtiroutingservice -cfgFile  kafka_adapter_simple.xml -cfgName dds_kafka_bridge
+    ```
+
+7. In a separate terminal, run the console consumer client to see the `Square` topic data from the RTI Gateway.
+    ```sh
+    $ bin/kafka-console-consumer.sh --topic Square --from-beginning --bootstrap-server localhost:9092
+    { "color":"BLUE", "x":120, "y":180, "shapesize":30 } 
+    { "color":"BLUE", "x":120, "y":178, "shapesize":30 } 
+    { "color":"BLUE", "x":120, "y":176, "shapesize":30 } 
+
+    ```
+
+### Option 2: Running with Docker Compose
+
+1. Get the Docker Compose file. 
+   You can get the Docker Compose file provided by Confluent at [this link](https://github.com/confluentinc/cp-all-in-one/tree/6.2.0-post/cp-all-in-one).  
+
+2. Run Kafka infrastructure components:
     Please install [Docker Engine](https://docs.docker.com/engine/install) and [Docker Compose](https://docs.docker.com/compose/install) to run the containers for Kafka. 
 
     Download the Docker Compose file provided by Confluent.
@@ -63,26 +122,26 @@ You can use the Docker Compose file provided by Confluent to run them. Please se
     $ cd cp-all-in-one/cp-all-in-one
     $ docker-compose up -d
     ```
-2. After the Kafka services are running, you can acess the Web-based management UI called `Confluent Control Center` at `localhost:9021`.
+3. After the Kafka services are running, you can acess the Web-based management UI called `Confluent Control Center` at `localhost:9021`.
 
-3. Start an *RTI Shapes Demo* instance:
+4. Start an *RTI Shapes Demo* instance:
 
     ```sh
     $NDDSHOME/bin/rtishapesdemo
     ```
 
-4. Publish a `Square` topic.
+5. Publish a `Square` topic.
 
     You can create a shapes publisher by clicking in the following
     menu items in the *RTI Shapes Demo* application:
 
     - "Publish/Square..." and click 'OK' to use the default parameters.
 
-5. In a separate terminal, start an *RTI Routing Service* instance with the example XML configuration:
+6. In a separate terminal, start an *RTI Routing Service* instance with the example XML configuration:
 
     ```sh
     $NDDSHOME/bin/rtiroutingservice -cfgFile  kafka_adapter_simple.xml -cfgName dds_kafka_bridge
     ```
 
-6. In Confluent Control Center(localhost:9021), you can see the `Square` topic under the `Topics` tab. After clicking the `Square` topic, You can see the `Square` topic data coming from the RTI Gateway.
+7. In Confluent Control Center(localhost:9021), you can see the `Square` topic under the `Topics` tab. After clicking the `Square` topic, You can see the `Square` topic data coming from the RTI Gateway.
 
