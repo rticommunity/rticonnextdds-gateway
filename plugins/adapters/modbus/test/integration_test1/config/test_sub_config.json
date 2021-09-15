@@ -222,6 +222,102 @@
         "value": 1
     },
     {
+        "field": "int8_array_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "int16_array_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "int32_array_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "int64_array_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "uint8_array_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "uint16_array_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "uint32_array_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "uint64_array_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "float32_array_constant",
+        "value": [0.5, 1.5]
+    },
+    {
+        "field": "float64_array_constant",
+        "value": [-0.5, -1.5]
+    },
+    {
+        "field": "bool_array_constant",
+        "value": [false, true]
+    },
+    {
+        "field": "enum_array_constant",
+        "value": [1, 2]
+    },
+    {
+        "field": "int8_seq_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "int16_seq_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "int32_seq_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "int64_seq_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "uint8_seq_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "uint16_seq_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "uint32_seq_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "uint64_seq_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "float32_seq_constant",
+        "value": [0.5, 1.5]
+    },
+    {
+        "field": "float64_seq_constant",
+        "value": [-0.5, -1.5]
+    },
+    {
+        "field": "bool_seq_constant",
+        "value": [false, true]
+    },
+    {
+        "field": "enum_seq_constant",
+        "value": [1, 2]
+    },
+    {
         "field": "input_int8_field",
         "modbus_register_address": 0,
         "modbus_datatype": "INPUT_REGISTER_INT8",

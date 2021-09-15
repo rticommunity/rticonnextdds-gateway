@@ -36,9 +36,11 @@
 #define FLOAT_INCREMENT 0.5f
 #define SIGNED_ARRAY_VALUE(i) (i) * (-1)
 #define UNSIGNED_ARRAY_VALUE(i) (i)
-#define BOOLEAN_ARRAY_VALUE(i) i % 2
+#define BOOLEAN_ARRAY_VALUE(i) (i) % 2
 #define FLOAT_ARRAY_VALUE(i) (i) + FLOAT_INCREMENT
 #define FLOAT_ARRAY_NEGATIVE_VALUE(i) (i) * (-1) - FLOAT_INCREMENT
+// SOLID_FILL when i == 0, and TRANSPARENT_FILL otherwise
+#define ENUM_VALUE_ARRAY(i) ((i) - 1) ? SOLID_FILL : TRANSPARENT_FILL
 
 
 #define ASSERT_COND(cond) \
@@ -115,7 +117,7 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
                         == FLOAT_ARRAY_NEGATIVE_VALUE(i));
     }
 
-    /* Check input registers */
+    /* Check constants */
     ASSERT_COND(strcmp(sample->string_constant, STRING_CONSTANT_VALUE) == 0);
     ASSERT_COND(sample->int8_constant == SIGNED_CONSTANT_VALUE);
     ASSERT_COND(sample->int16_constant == SIGNED_CONSTANT_VALUE);
@@ -129,6 +131,54 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
     ASSERT_COND(sample->float64_constant == FLOAT_CONSTANT_VALUE);
     ASSERT_COND(sample->boolean_constant == BOOLEAN_CONSTANT_VALUE);
     ASSERT_COND(sample->enum_constant == ENUM_CONSTANT_VALUE);
+
+    for (i = 0; i < 2; ++i) {
+        /*
+         * The following conversion to DDS_Octet is done to ensure compatibility
+         * between 6.0.1, where int8 are represented as octets, and 6.1.0, where
+         * int8 are represented by signed int8
+         */
+        ASSERT_COND((DDS_Octet) (sample->int8_array_constant[i])
+                == (DDS_Octet) (SIGNED_ARRAY_VALUE(i)));
+        ASSERT_COND(sample->int16_array_constant[i] == SIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->int32_array_constant[i] == SIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->int64_array_constant[i] == SIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->uint8_array_constant[i] == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->uint16_array_constant[i] == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->uint32_array_constant[i] == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->uint64_array_constant[i] == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->float32_array_constant[i] == FLOAT_ARRAY_VALUE(i));
+        ASSERT_COND(sample->float64_array_constant[i] == FLOAT_ARRAY_NEGATIVE_VALUE(i));
+        ASSERT_COND(sample->bool_array_constant[i] == BOOLEAN_ARRAY_VALUE(i));
+        ASSERT_COND(sample->enum_array_constant[i] == ENUM_VALUE_ARRAY(i));
+
+        ASSERT_COND(DDS_Int8Seq_get(&sample->int8_seq_constant, i)
+                == (DDS_Octet)SIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_ShortSeq_get(&sample->int16_seq_constant, i)
+                == SIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_LongSeq_get(&sample->int32_seq_constant, i)
+                == SIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_LongLongSeq_get(&sample->int64_seq_constant, i)
+                == SIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_UInt8Seq_get(&sample->uint8_seq_constant, i)
+                == (DDS_Octet)UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_UnsignedShortSeq_get(&sample->uint16_seq_constant, i)
+                == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_UnsignedLongSeq_get(&sample->uint32_seq_constant, i)
+                == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_UnsignedLongLongSeq_get(&sample->uint64_seq_constant, i)
+                == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_FloatSeq_get(&sample->float32_seq_constant, i)
+                == FLOAT_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_DoubleSeq_get(&sample->float64_seq_constant, i)
+                == FLOAT_ARRAY_NEGATIVE_VALUE(i));
+        ASSERT_COND(DDS_BooleanSeq_get(&sample->bool_seq_constant, i)
+                == (DDS_Boolean)BOOLEAN_ARRAY_VALUE(i));
+        ASSERT_COND(ShapeFillKindSeq_get(&sample->enum_seq_constant, i)
+                == ENUM_VALUE_ARRAY(i));
+
+    }
+    /* Check input registers */
     ASSERT_COND(*sample->input_enum_field == ENUM_VALUE);
     ASSERT_COND(*sample->input_bool_field == DDS_BOOLEAN_TRUE);
     ASSERT_COND(*sample->input_int8_field == UNSIGNED_VALUE);

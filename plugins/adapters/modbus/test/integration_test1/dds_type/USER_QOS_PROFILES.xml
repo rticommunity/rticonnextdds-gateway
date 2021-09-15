@@ -19,8 +19,6 @@
 
   <qos_library name="ModbusAdapterLibrary">
     <qos_profile name="MyTypeProfile" base_name="BuiltinQosLibExp::Generic.BestEffort" is_default_qos="true">
-      <participant_qos>
-      </participant_qos>
       <datawriter_qos>
         <reliability>
           <kind>RELIABLE_RELIABILITY_QOS</kind>
