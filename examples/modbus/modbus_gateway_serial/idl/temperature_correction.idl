@@ -15,6 +15,6 @@
 
 @mutable
 struct temperature_correction {
-    @key      string<64>  device_name; // Configured in the input
+    @key uint8 serial_id; // Configured in the input
     @optional int16 temperature_correction;
 };

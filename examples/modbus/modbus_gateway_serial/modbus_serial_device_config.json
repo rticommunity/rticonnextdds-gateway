@@ -1,7 +1,7 @@
 [
     {
-        "field": "device_name",
-        "value": "XY-MD02_100"
+        "field": "serial_id",
+        "value": 1
     },
     {
         "field": "temperature_celsius",

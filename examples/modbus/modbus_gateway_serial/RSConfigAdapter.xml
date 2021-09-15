@@ -17,11 +17,11 @@
     xsi:noNamespaceSchemaLocation="https://community.rti.com/schema/latest/rti_routing_service.xsd">
     <types>
         <struct name= "temperature_correction" extensibility= "mutable">
-            <member name="device_name" stringMaxLength="64" type="string" key="true"/>
+            <member name="serial_id" type="uint8" key="true"/>
             <member name="temperature_correction" type="int16" optional="true"/>
           </struct>
         <struct name= "modbus_serial_device" extensibility= "mutable">
-            <member name="device_name" stringMaxLength="64" type="string" key="true"/>
+            <member name="serial_id" type="uint8" key="true"/>
             <member name="temperature_celsius" type="float32" optional="true"/>
             <member name="humidity" type="float32" optional="true"/>
             <member name="device_address" type="uint8" optional="true"/>
