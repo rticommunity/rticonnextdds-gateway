@@ -260,7 +260,7 @@ Configuration steps:
     sudo service mosquitto disable
     mosquitto -c etc/mosquitto/mosquitto.conf -p 1883 -d
     ```
-    > **NOTE**: the Windows version of `mosquitto` doesn't support the daemon
+    > **NOTE**: the Windows® version of `mosquitto` doesn't support the daemon
     > mode, so we shouldn't add the option `-d`.
 
 4. (Optional) To monitor `mosquitto`'s log:
@@ -276,7 +276,7 @@ Also, make sure that `mosquitto_pub`, and `mosquitto_sub` are available from
 the current command prompt, otherwise you should modify the PATH environment
 variable.
 
-Linux systems:
+Linux® systems:
 
     ```sh
     ./scripts/tmux_session.sh
@@ -362,7 +362,7 @@ presented with a `tmux` window containing 4 panels. In clockwise order,
 from top right, each panel contains:
 
 - An instance of *Shapes Agent*.
-- An instane of RTI Routing Service with the MQTT Adapter and the custom
+- An instance of RTI Routing Service with the MQTT Adapter and the custom
   Shapes/JSON transformation installed and enabled.
 - An instance of *MQTT Subsscriber*.
 - An instance of *MQTT Publisher*.
