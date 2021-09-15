@@ -5,8 +5,8 @@
 Release Notes
 =============
 
-New features
-------------
+New features (July 2021)
+------------------------
 
 #. Introduced support for a wider range of input/output members when converting
    between JSON and DynamicData representations.

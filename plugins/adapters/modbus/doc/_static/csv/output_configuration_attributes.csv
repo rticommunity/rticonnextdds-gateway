@@ -19,10 +19,10 @@ See :ref:`section-access-modbus-server`"
 |CONF_MODBUS_REGISTER_COUNT|,NO,integer,"The number of registers to write. |BR| |BR|
 If unspecified: it defaults to one for COIL, INT8, INT16, to two for INT32 and FLOAT_XXXX, and to four for INT64. |BR|
 If specified: the user should take into account that it takes two registers to read each INT32 and FLOAT_XXXX value, and it takes four registers to read an INT64."
-|CONF_MODBUS_SLAVE_DEVICE_ID|,NO,number,"Slave number of a Modbus device on a serial network"
+|CONF_MODBUS_SLAVE_DEVICE_ID|,NO,number,"Slave number of a Modbus device on a serial network. The value of 0 represents a broadcast address."
 |CONF_MODBUS_MIN_VALUE|,NO,number,The minimum value for the value written
 |CONF_MODBUS_MAX_VALUE|,NO,number,The maximum value for the value written
-|CONF_MODBUS_VALID_VALUES|,"YES for Enums, NO for other datatypes",array of integers,The complete list of values that could be written. Values not in the list are considered invalid outputs.
+|CONF_MODBUS_VALID_VALUES|,"YES for Enums, NO for other datatypes",array of numbers,The complete list of values that could be written. Values not in the list are considered invalid outputs.
 |CONF_OUTPUT_DATA_FACTOR|,NO,number,"The value in the DynamicData field is multiplied by this factor. |BR|
 The data  finally written to Modbus is: |BR|
 
