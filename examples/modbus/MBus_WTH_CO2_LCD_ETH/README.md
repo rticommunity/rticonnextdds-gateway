@@ -42,6 +42,9 @@ is necessary to ensure the application loads the QoS defined in
 
 ```sh
 rtiroutingservice -cfgFile RSConfigAdapter.xml -cfgName RSModbusAdapterExample
+```
+
+```sh
 ./MBus_WTH_CO2_LCD_ETH_INPUT
 ```
 

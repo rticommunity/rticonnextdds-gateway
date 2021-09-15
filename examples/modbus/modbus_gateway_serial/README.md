@@ -40,6 +40,9 @@ the working directory):
 
 ```sh
 rtiroutingservice -cfgFile RSConfigAdapter.xml -cfgName RSModbusAdapterSerialExample
+```
+
+```sh
 ./modbus_serial_device
 ```
 
