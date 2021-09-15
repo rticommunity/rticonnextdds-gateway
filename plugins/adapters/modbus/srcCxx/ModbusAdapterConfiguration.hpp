@@ -53,6 +53,7 @@ enum class ConstantValueKind {
     integer_kind,
     float_kind,
     boolean_kind,
+    array_kind,
     undefined_kind
 };
 
@@ -249,6 +250,10 @@ public:
     {
         return value_numeric_;
     }
+    inline std::vector<long double> const value_array() const
+    {
+        return value_array_;
+    }
     inline ConstantValueKind const constant_kind() const
     {
         return constant_kind_;
@@ -299,6 +304,7 @@ private:
     float data_offset_;
     std::string value_string_;
     long double value_numeric_;
+    std::vector<long double> value_array_;
     // value_string_ or value_numeric_ will be used depending on the
     // constant_kind_. If it is:
     //   - string_kind: value_string_ will be used

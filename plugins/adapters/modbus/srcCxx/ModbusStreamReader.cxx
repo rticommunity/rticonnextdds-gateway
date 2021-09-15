@@ -162,15 +162,16 @@ void ModbusStreamReader::read_data_from_modbus()
         }
 
         if (mace.modbus_datatype() == ModbusDataType::constant_value) {
-            if(element_kind == TypeKind::STRING_TYPE) {
-                if (mace.constant_kind() != ConstantValueKind::string_kind) {
+            if (mace.constant_kind() == ConstantValueKind::string_kind) {
+                if (element_kind != TypeKind::STRING_TYPE) {
                     std::string error(
-                            "Error: the field <" + mace.field() + "> is a "
-                            "string but the constant value is not a string.");
+                            "Error: unable to set field <" + mace.field() + ">."
+                            " This is set as a constant string, but its datatype"
+                            " is not compatible.");
                     throw std::runtime_error(error);
                 }
                 const StringType &string_type = static_cast<const StringType &>(
-                    struct_type.member(mace.field()).type());
+                        struct_type.member(mace.field()).type());
                 // If the type is a string, check that the content fits into
                 // the DDS String
                 if (string_type.bounds() >= mace.value_string().length()) {
@@ -185,19 +186,40 @@ void ModbusStreamReader::read_data_from_modbus()
                             + mace.field() + ">.");
                     throw std::runtime_error(error);
                 }
-            } else {
-                if (mace.constant_kind() == ConstantValueKind::float_kind
-                        || mace.constant_kind() == ConstantValueKind::boolean_kind
-                        || mace.constant_kind() == ConstantValueKind::integer_kind) {
-                dynamic_data::set_dds_primitive_or_enum_type_value(
+                continue;
+            } else if (mace.constant_kind() == ConstantValueKind::array_kind) {
+                if (member_kind != TypeKind::ARRAY_TYPE
+                        && member_kind != TypeKind::SEQUENCE_TYPE) {
+                    std::string error(
+                            "Error: unable to set field <" + mace.field() + ">."
+                            " This is set as a constant array, but its datatype"
+                            " is not compatible.");
+                    throw std::runtime_error(error);
+                    }
+                // It is not needed to check the element_kind since it is done
+                // inside the set_vector_values
+                dynamic_data::set_vector_values(
                         *cached_data_,
                         element_kind,
                         mace.field(),
-                        mace.value_numeric());
+                        mace.value_array());
+                continue;
+            } else {
+                // primitive type
+                if (mace.constant_kind() == ConstantValueKind::float_kind
+                        || mace.constant_kind() == ConstantValueKind::boolean_kind
+                        || mace.constant_kind()
+                                == ConstantValueKind::integer_kind) {
+                    dynamic_data::set_dds_primitive_or_enum_type_value(
+                            *cached_data_,
+                            element_kind,
+                            mace.field(),
+                            mace.value_numeric());
                 }
-            continue;
+                continue;
             }
-        } else if (mace.modbus_datatype() == ModbusDataType::coil_boolean
+        } else if (
+                mace.modbus_datatype() == ModbusDataType::coil_boolean
                 || mace.modbus_datatype()
                         == ModbusDataType::discrete_input_boolean) {
             // read coils and store them in a uint8_t array

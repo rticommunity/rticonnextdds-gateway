@@ -45,6 +45,9 @@ ModbusAdapterConfigurationElement::ModbusAdapterConfigurationElement()
           data_factor_(1),
           data_offset_(0),
           constant_kind_(ConstantValueKind::undefined_kind),
+          value_string_(""),
+          value_numeric_(0),
+          value_array_(),
           array_elements_(0)
 {
 }
@@ -153,7 +156,9 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
                     || dds_datatype == TypeKind::FLOAT_32_TYPE
                     || dds_datatype == TypeKind::FLOAT_64_TYPE
                     || dds_datatype == TypeKind::BOOLEAN_TYPE
-                    || dds_datatype == TypeKind::ENUMERATION_TYPE;
+                    || dds_datatype == TypeKind::ENUMERATION_TYPE
+                    || dds_datatype == TypeKind::ARRAY_TYPE
+                    || dds_datatype == TypeKind::SEQUENCE_TYPE;
             break;
         default:
             is_compatible = false;
@@ -337,7 +342,7 @@ void ModbusAdapterConfigurationElement::get_registers_value(
     auto array_data = reinterpret_cast<uint16_t *>(output.data());
     for (int i = 0; i < float_vector.size(); ++i) {
         // check that the data_offset + value * data_factor is a correct
-        // value. This is done, because the linear transformation es what
+        // value. This is done, because the linear transformation is what
         // will be written in modbus
         check_correct_value(
                 data_offset() + float_vector[i] * data_factor(),
@@ -1000,15 +1005,35 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                 } else if (value_node->type == json_string) {
                     mace.constant_kind_ = ConstantValueKind::string_kind;
                     mace.value_string_ = value_node->u.string.ptr;
+                } else if (value_node->type == json_array) {
+                    size_t array_length = value_node->u.array.length;
+                    for (unsigned int k = 0; k < array_length; ++k) {
+                        json_value *node_number = value_node->u.array.values[k];
+
+                        if (node_number->type == json_double) {
+                            mace.value_array_.push_back(
+                                    static_cast<long double>(node_number->u.dbl));
+                        } else if (node_number->type == json_integer) {
+                            mace.value_array_.push_back(
+                                    static_cast<long double>(node_number->u.integer));
+                        } else if (node_number->type == json_boolean) {
+                            mace.value_array_.push_back(
+                                    static_cast<long double>(node_number->u.boolean));
+                        } else {
+                            throw std::runtime_error(
+                                    "Error in the JSON configuration <value>: "
+                                    "array type not supported");
+                        }
+                    }
+                    mace.constant_kind_ = ConstantValueKind::array_kind;
                 } else {
                     throw std::runtime_error(
-                            "Error in the JSON configuration "
-                            "value of <value>. Unsupported value.");
+                            "Error in the JSON configuration <value>. "
+                            "Unsupported value type.");
                 }
             } else {
                 std::string error(
-                        "Error in the JSON configuration. Unsupported "
-                        "element <"
+                        "Error in the JSON configuration. Unsupported element <"
                         + element_name + ">.");
                 throw std::runtime_error(error);
             }
