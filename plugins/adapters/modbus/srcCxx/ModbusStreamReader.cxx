@@ -195,7 +195,7 @@ void ModbusStreamReader::read_data_from_modbus()
                             " This is set as a constant array, but its datatype"
                             " is not compatible.");
                     throw std::runtime_error(error);
-                    }
+                }
                 // It is not needed to check the element_kind since it is done
                 // inside the set_vector_values
                 dynamic_data::set_vector_values(

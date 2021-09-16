@@ -101,23 +101,23 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
         switch (modbus_datatype()) {
         case ModbusDataType::holding_register_int8:
         case ModbusDataType::input_register_int8:
-            is_compatible = dds_datatype == TypeKind::CHAR_8_TYPE
-                    || dds_datatype == TypeKind::UINT_8_TYPE;
+            is_compatible = (dds_datatype == TypeKind::CHAR_8_TYPE
+                    || dds_datatype == TypeKind::UINT_8_TYPE);
         case ModbusDataType::holding_register_int16:
         case ModbusDataType::input_register_int16:
-            is_compatible = is_compatible
+            is_compatible = (is_compatible
                     || dds_datatype == TypeKind::INT_16_TYPE
-                    || dds_datatype == TypeKind::UINT_16_TYPE;
+                    || dds_datatype == TypeKind::UINT_16_TYPE);
         case ModbusDataType::holding_register_int32:
         case ModbusDataType::input_register_int32:
-            is_compatible = is_compatible
+            is_compatible = (is_compatible
                     || dds_datatype == TypeKind::INT_32_TYPE
-                    || dds_datatype == TypeKind::UINT_32_TYPE;
+                    || dds_datatype == TypeKind::UINT_32_TYPE);
         case ModbusDataType::holding_register_int64:
         case ModbusDataType::input_register_int64:
-            is_compatible = is_compatible
+            is_compatible = (is_compatible
                     || dds_datatype == TypeKind::INT_64_TYPE
-                    || dds_datatype == TypeKind::UINT_64_TYPE;
+                    || dds_datatype == TypeKind::UINT_64_TYPE);
         case ModbusDataType::holding_register_float_abcd:
         case ModbusDataType::holding_register_float_badc:
         case ModbusDataType::holding_register_float_cdab:
@@ -126,14 +126,14 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
         case ModbusDataType::input_register_float_badc:
         case ModbusDataType::input_register_float_cdab:
         case ModbusDataType::input_register_float_dcba:
-            is_compatible = is_compatible
+            is_compatible = (is_compatible
                     || dds_datatype == TypeKind::FLOAT_32_TYPE
-                    || dds_datatype == TypeKind::FLOAT_64_TYPE;
+                    || dds_datatype == TypeKind::FLOAT_64_TYPE);
             break;
         case ModbusDataType::coil_boolean:
         case ModbusDataType::discrete_input_boolean:
             // A COIL may fit into a boolean or any integer value
-            is_compatible = dds_datatype == TypeKind::BOOLEAN_TYPE
+            is_compatible = (dds_datatype == TypeKind::BOOLEAN_TYPE
                     || dds_datatype == TypeKind::CHAR_8_TYPE
                     || dds_datatype == TypeKind::UINT_8_TYPE
                     || dds_datatype == TypeKind::INT_16_TYPE
@@ -141,10 +141,10 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
                     || dds_datatype == TypeKind::INT_32_TYPE
                     || dds_datatype == TypeKind::UINT_32_TYPE
                     || dds_datatype == TypeKind::INT_64_TYPE
-                    || dds_datatype == TypeKind::UINT_64_TYPE;
+                    || dds_datatype == TypeKind::UINT_64_TYPE);
             break;
         case ModbusDataType::constant_value:
-            is_compatible = dds_datatype == TypeKind::STRING_TYPE
+            is_compatible = (dds_datatype == TypeKind::STRING_TYPE
                     || dds_datatype == TypeKind::CHAR_8_TYPE
                     || dds_datatype == TypeKind::UINT_8_TYPE
                     || dds_datatype == TypeKind::INT_16_TYPE
@@ -158,7 +158,7 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
                     || dds_datatype == TypeKind::BOOLEAN_TYPE
                     || dds_datatype == TypeKind::ENUMERATION_TYPE
                     || dds_datatype == TypeKind::ARRAY_TYPE
-                    || dds_datatype == TypeKind::SEQUENCE_TYPE;
+                    || dds_datatype == TypeKind::SEQUENCE_TYPE);
             break;
         default:
             is_compatible = false;
