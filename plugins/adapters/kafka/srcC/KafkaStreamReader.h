@@ -36,9 +36,12 @@ struct RTI_RS_KafkaStreamReader
 {
     rd_kafka_t *rk;  /* rdkafka consumer instance handle */
     rd_kafka_conf_t *conf;  /* rdkafka configuration object */
+    rd_kafka_message_t *rkm; /*rdkafka message object */
     const char *topic;  /* Topic to consume */
-    pthread_t thread;
+    struct RTIOsapiThread *thread;
+    struct RTIOsapiSemaphore *sem;
     int run;
+    int finalized_thread;
     struct RTI_RoutingServiceStreamReaderListener listener;
     struct DDS_DynamicData     **sample_list;
     struct DDS_SampleInfo      **info_list;
