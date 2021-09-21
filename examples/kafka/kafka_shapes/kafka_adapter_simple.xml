@@ -115,7 +115,7 @@ use or inability to use the software.
 
                     </output>
                 </route>
-                <!--route name="kafka_to_dds_filter">
+                <route name="kafka_to_dds">
                     <input connection="kafka">
                         <registered_type_name>
                             RTI::Kafka::Message
@@ -124,7 +124,7 @@ use or inability to use the software.
                             <value>
                                 <element>
                                     <name>topic</name>
-                                    <value>FILTER</value>
+                                    <value>Square</value>
                                 </element>
                                     <element>
 			                <name>auto.offset.reset</name>
@@ -133,7 +133,7 @@ use or inability to use the software.
                             </value>
                         </property>
                     </input>
-                    <dds_output name="Filter" participant="dds">
+                    <dds_output name="KafkaSquare" participant="dds">
                         <registered_type_name>
                             ShapeType
                         </registered_type_name>
@@ -155,7 +155,7 @@ use or inability to use the software.
                             </property>
                         </transformation>
                     </dds_output>
-                </route-->
+                </route>
             </session>
         </domain_route>
     </routing_service>
