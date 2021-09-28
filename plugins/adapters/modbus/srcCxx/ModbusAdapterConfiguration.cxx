@@ -44,6 +44,10 @@ ModbusAdapterConfigurationElement::ModbusAdapterConfigurationElement()
           modbus_valid_values_(),
           data_factor_(1),
           data_offset_(0),
+          constant_kind_(ConstantValueKind::undefined_kind),
+          value_string_(""),
+          value_numeric_(0),
+          value_array_(),
           array_elements_(0)
 {
 }
@@ -74,7 +78,8 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
         }
     }
 
-    if (dds_datatype == TypeKind::ENUMERATION_TYPE) {
+    if (dds_datatype == TypeKind::ENUMERATION_TYPE
+            && modbus_datatype() != ModbusDataType::constant_value) {
         switch (modbus_datatype()) {
         case ModbusDataType::holding_register_int8:
         case ModbusDataType::input_register_int8:
@@ -90,28 +95,29 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
             break;
         default:
             is_compatible = false;
+            break;
         }
     } else {
         switch (modbus_datatype()) {
         case ModbusDataType::holding_register_int8:
         case ModbusDataType::input_register_int8:
-            is_compatible = dds_datatype == TypeKind::CHAR_8_TYPE
-                    || dds_datatype == TypeKind::UINT_8_TYPE;
+            is_compatible = (dds_datatype == TypeKind::CHAR_8_TYPE
+                    || dds_datatype == TypeKind::UINT_8_TYPE);
         case ModbusDataType::holding_register_int16:
         case ModbusDataType::input_register_int16:
-            is_compatible = is_compatible
+            is_compatible = (is_compatible
                     || dds_datatype == TypeKind::INT_16_TYPE
-                    || dds_datatype == TypeKind::UINT_16_TYPE;
+                    || dds_datatype == TypeKind::UINT_16_TYPE);
         case ModbusDataType::holding_register_int32:
         case ModbusDataType::input_register_int32:
-            is_compatible = is_compatible
+            is_compatible = (is_compatible
                     || dds_datatype == TypeKind::INT_32_TYPE
-                    || dds_datatype == TypeKind::UINT_32_TYPE;
+                    || dds_datatype == TypeKind::UINT_32_TYPE);
         case ModbusDataType::holding_register_int64:
         case ModbusDataType::input_register_int64:
-            is_compatible = is_compatible
+            is_compatible = (is_compatible
                     || dds_datatype == TypeKind::INT_64_TYPE
-                    || dds_datatype == TypeKind::UINT_64_TYPE;
+                    || dds_datatype == TypeKind::UINT_64_TYPE);
         case ModbusDataType::holding_register_float_abcd:
         case ModbusDataType::holding_register_float_badc:
         case ModbusDataType::holding_register_float_cdab:
@@ -120,14 +126,14 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
         case ModbusDataType::input_register_float_badc:
         case ModbusDataType::input_register_float_cdab:
         case ModbusDataType::input_register_float_dcba:
-            is_compatible = is_compatible
+            is_compatible = (is_compatible
                     || dds_datatype == TypeKind::FLOAT_32_TYPE
-                    || dds_datatype == TypeKind::FLOAT_64_TYPE;
+                    || dds_datatype == TypeKind::FLOAT_64_TYPE);
             break;
         case ModbusDataType::coil_boolean:
         case ModbusDataType::discrete_input_boolean:
             // A COIL may fit into a boolean or any integer value
-            is_compatible = dds_datatype == TypeKind::BOOLEAN_TYPE
+            is_compatible = (dds_datatype == TypeKind::BOOLEAN_TYPE
                     || dds_datatype == TypeKind::CHAR_8_TYPE
                     || dds_datatype == TypeKind::UINT_8_TYPE
                     || dds_datatype == TypeKind::INT_16_TYPE
@@ -135,10 +141,24 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
                     || dds_datatype == TypeKind::INT_32_TYPE
                     || dds_datatype == TypeKind::UINT_32_TYPE
                     || dds_datatype == TypeKind::INT_64_TYPE
-                    || dds_datatype == TypeKind::UINT_64_TYPE;
+                    || dds_datatype == TypeKind::UINT_64_TYPE);
             break;
         case ModbusDataType::constant_value:
-            is_compatible = dds_datatype == TypeKind::STRING_TYPE;
+            is_compatible = (dds_datatype == TypeKind::STRING_TYPE
+                    || dds_datatype == TypeKind::CHAR_8_TYPE
+                    || dds_datatype == TypeKind::UINT_8_TYPE
+                    || dds_datatype == TypeKind::INT_16_TYPE
+                    || dds_datatype == TypeKind::UINT_16_TYPE
+                    || dds_datatype == TypeKind::INT_32_TYPE
+                    || dds_datatype == TypeKind::UINT_32_TYPE
+                    || dds_datatype == TypeKind::INT_64_TYPE
+                    || dds_datatype == TypeKind::UINT_64_TYPE
+                    || dds_datatype == TypeKind::FLOAT_32_TYPE
+                    || dds_datatype == TypeKind::FLOAT_64_TYPE
+                    || dds_datatype == TypeKind::BOOLEAN_TYPE
+                    || dds_datatype == TypeKind::ENUMERATION_TYPE
+                    || dds_datatype == TypeKind::ARRAY_TYPE
+                    || dds_datatype == TypeKind::SEQUENCE_TYPE);
             break;
         default:
             is_compatible = false;
@@ -210,10 +230,10 @@ void ModbusAdapterConfigurationElement::check_for_errors(void)
 
     // if value is set and CONSTANT_VALUE is not its datatype
     if (modbus_datatype() != ModbusDataType::constant_value
-            && !value().empty()) {
+            && constant_kind() != ConstantValueKind::undefined_kind) {
         std::string error(
                 "Error: value parameter of <" + field()
-                + "> is set and it's datatype is <"
+                + "> is set and its datatype is <"
                 + modbus_datatype_to_string(modbus_datatype()) + ">");
         throw std::runtime_error(error);
     }
@@ -331,7 +351,7 @@ void ModbusAdapterConfigurationElement::get_registers_value(
     auto array_data = reinterpret_cast<uint16_t *>(output.data());
     for (int i = 0; i < float_vector.size(); ++i) {
         // check that the data_offset + value * data_factor is a correct
-        // value. This is done, because the linear transformation es what
+        // value. This is done, because the linear transformation is what
         // will be written in modbus
         check_correct_value(
                 data_offset() + float_vector[i] * data_factor(),
@@ -1002,18 +1022,51 @@ void ModbusAdapterConfiguration::parse_json_config_string(
                     }
                 }
             } else if (element_name == "value") {
-                json_value *string_node = node_object->u.object.values[j].value;
-                if (string_node->type != json_string) {
-                    throw std::runtime_error(
-                            "Error in the JSON configuration "
-                            "value of <value>.");
-                }
+                json_value *value_node = node_object->u.object.values[j].value;
+                if (value_node->type == json_integer) {
+                    mace.constant_kind_ = ConstantValueKind::integer_kind;
+                    mace.value_numeric_ = static_cast<long double>(
+                            value_node->u.integer);
+                } else if (value_node->type == json_double) {
+                    mace.constant_kind_ = ConstantValueKind::float_kind;
+                    mace.value_numeric_ = static_cast<long double>(
+                            value_node->u.dbl);
+                } else if (value_node->type == json_boolean) {
+                    mace.constant_kind_ = ConstantValueKind::boolean_kind;
+                    mace.value_numeric_ = static_cast<long double>(
+                            value_node->u.boolean);
+                } else if (value_node->type == json_string) {
+                    mace.constant_kind_ = ConstantValueKind::string_kind;
+                    mace.value_string_ = value_node->u.string.ptr;
+                } else if (value_node->type == json_array) {
+                    size_t array_length = value_node->u.array.length;
+                    for (unsigned int k = 0; k < array_length; ++k) {
+                        json_value *node_number = value_node->u.array.values[k];
 
-                mace.value_ = string_node->u.string.ptr;
+                        if (node_number->type == json_double) {
+                            mace.value_array_.push_back(
+                                    static_cast<long double>(node_number->u.dbl));
+                        } else if (node_number->type == json_integer) {
+                            mace.value_array_.push_back(
+                                    static_cast<long double>(node_number->u.integer));
+                        } else if (node_number->type == json_boolean) {
+                            mace.value_array_.push_back(
+                                    static_cast<long double>(node_number->u.boolean));
+                        } else {
+                            throw std::runtime_error(
+                                    "Error in the JSON configuration <value>: "
+                                    "array type not supported");
+                        }
+                    }
+                    mace.constant_kind_ = ConstantValueKind::array_kind;
+                } else {
+                    throw std::runtime_error(
+                            "Error in the JSON configuration <value>. "
+                            "Unsupported value type.");
+                }
             } else {
                 std::string error(
-                        "Error in the JSON configuration. Unsupported "
-                        "element <"
+                        "Error in the JSON configuration. Unsupported element <"
                         + element_name + ">.");
                 throw std::runtime_error(error);
             }
@@ -1021,7 +1074,7 @@ void ModbusAdapterConfiguration::parse_json_config_string(
 
         // Set CONSTANT_VALUE datatype if there is a value
         if (mace.modbus_datatype() == ModbusDataType::no_modbus_datatype
-            && !mace.value().empty()) {
+            && mace.constant_kind() != ConstantValueKind::undefined_kind) {
             mace.modbus_datatype_ = ModbusDataType::constant_value;
         }
 

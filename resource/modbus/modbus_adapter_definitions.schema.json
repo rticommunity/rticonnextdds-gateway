@@ -71,8 +71,25 @@
             "description": ""
         },
         "value" : {
-            "type" : "string",
-            "description" : ""
+            "oneOf" : [
+                {
+                    "type" : ["string", "number", "boolean"],
+                    "description" : ""
+                },
+                {
+                    "type" : "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "type" : "number"
+                            },
+                            {
+                                "type" : "boolean"
+                            }
+                        ]
+                    }
+                }
+            ]
         }
     }
 }

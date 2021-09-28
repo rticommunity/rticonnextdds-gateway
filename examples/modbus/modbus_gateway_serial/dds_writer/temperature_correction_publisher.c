@@ -156,7 +156,7 @@ int publisher_main(int domainId, int sample_count)
 
     instance->temperature_correction =
             (DDS_UnsignedShort *) malloc(sizeof(DDS_UnsignedShort));
-    strcpy(instance->device_name, "XY-MD02_100");
+    instance->serial_id = 1;
     /* For a data type that has a key, if the same instance is going to be
     written multiple times, initialize the key here
     and register the keyed instance prior to writing */

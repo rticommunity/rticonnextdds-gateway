@@ -169,10 +169,153 @@
         "modbus_datatype": "COIL_BOOLEAN",
         "modbus_register_count": 2
     },
-
     {
-        "field": "string_field",
+        "field": "string_constant",
         "value": "value"
+    },
+    {
+        "field": "int8_constant",
+        "value": -42
+    },
+    {
+        "field": "int16_constant",
+        "value": -42
+    },
+    {
+        "field": "int32_constant",
+        "value": -42
+    },
+    {
+        "field": "int64_constant",
+        "value": -42
+    },
+    {
+        "field": "uint8_constant",
+        "value": 11
+    },
+    {
+        "field": "uint16_constant",
+        "value": 11
+    },
+    {
+        "field": "uint32_constant",
+        "value": 11
+    },
+    {
+        "field": "uint64_constant",
+        "value": 11
+    },
+    {
+        "field": "float32_constant",
+        "value": 0.5
+    },
+    {
+        "field": "float64_constant",
+        "value": 0.5
+    },
+    {
+        "field": "boolean_constant",
+        "value": true
+    },
+    {
+        "field": "enum_constant",
+        "value": 1
+    },
+    {
+        "field": "int8_array_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "int16_array_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "int32_array_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "int64_array_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "uint8_array_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "uint16_array_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "uint32_array_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "uint64_array_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "float32_array_constant",
+        "value": [0.5, 1.5]
+    },
+    {
+        "field": "float64_array_constant",
+        "value": [-0.5, -1.5]
+    },
+    {
+        "field": "bool_array_constant",
+        "value": [false, true]
+    },
+    {
+        "field": "enum_array_constant",
+        "value": [1, 2]
+    },
+    {
+        "field": "int8_seq_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "int16_seq_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "int32_seq_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "int64_seq_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "uint8_seq_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "uint16_seq_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "uint32_seq_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "uint64_seq_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "float32_seq_constant",
+        "value": [0.5, 1.5]
+    },
+    {
+        "field": "float64_seq_constant",
+        "value": [-0.5, -1.5]
+    },
+    {
+        "field": "bool_seq_constant",
+        "value": [false, true]
+    },
+    {
+        "field": "enum_seq_constant",
+        "value": [1, 2]
     },
     {
         "field": "input_int8_field",

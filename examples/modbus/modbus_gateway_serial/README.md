@@ -8,7 +8,7 @@ and RS485.
 The configuration used for this example contains the following fields:
 
 * Modbus Input - MBus_WTH_CO2_LCD_ETH_INPUT.idl
-  * device_name
+  * serial_id
   * temperature_celsius
   * humidity
   * device_address
@@ -56,7 +56,7 @@ After running the Routing Service and modbus_serial_device, you will read
 messages from the modbus device:
 
 > Received data
-> &nbsp; &nbsp; device_name: "XY-MD02_100"
+> &nbsp; &nbsp; serial_id: 1
 > &nbsp; &nbsp; temperature_celsius: 27.3000011
 > &nbsp; &nbsp; humidity: 95.8000031
 > &nbsp; &nbsp; device_address: 1

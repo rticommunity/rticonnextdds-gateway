@@ -39,7 +39,43 @@ struct TestType_pub {
 @appendable
 struct TestType_sub {
     TestType_pub test_type;
-    string<64> string_field;
+    string<64> string_constant;
+    int8 int8_constant;
+    int16 int16_constant;
+    int32 int32_constant;
+    int64 int64_constant;
+    uint8 uint8_constant;
+    uint16 uint16_constant;
+    uint32 uint32_constant;
+    uint64 uint64_constant;
+    float float32_constant;
+    double float64_constant;
+    boolean boolean_constant;
+    ShapeFillKind enum_constant;
+    int8 int8_array_constant[2];
+    int16 int16_array_constant[2];
+    int32 int32_array_constant[2];
+    int64 int64_array_constant[2];
+    uint8 uint8_array_constant[2];
+    uint16 uint16_array_constant[2];
+    uint32 uint32_array_constant[2];
+    uint64 uint64_array_constant[2];
+    float float32_array_constant[2];
+    double float64_array_constant[2];
+    boolean bool_array_constant[2];
+    ShapeFillKind enum_array_constant[2];
+    sequence<int8,2> int8_seq_constant;
+    sequence<int16,2> int16_seq_constant;
+    sequence<int32,2> int32_seq_constant;
+    sequence<int64,2> int64_seq_constant;
+    sequence<uint8,2> uint8_seq_constant;
+    sequence<uint16,2> uint16_seq_constant;
+    sequence<uint32,2> uint32_seq_constant;
+    sequence<uint64,2> uint64_seq_constant;
+    sequence<float,2> float32_seq_constant;
+    sequence<double,2> float64_seq_constant;
+    sequence<boolean,2> bool_seq_constant;
+    sequence<ShapeFillKind,2> enum_seq_constant;
     @optional
       ShapeFillKind input_enum_field;
     @optional

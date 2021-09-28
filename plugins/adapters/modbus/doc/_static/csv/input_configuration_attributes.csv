@@ -23,16 +23,21 @@ The name can use the hierarchical naming format to indicate access to nested fie
 * HOLDING_REGISTER_FLOAT_CDAB
 * HOLDING_REGISTER_FLOAT_DCBA
 "
-|CONF_VALUE|,"NO if |CONF_MODBUS_REGISTER_ADDRESS| and |CONF_MODBUS_DATATYPE| are set, YES otherwise",string,"Value of a string constant that will be set to the specified field."
+|CONF_VALUE|,"NO if |CONF_MODBUS_REGISTER_ADDRESS| and |CONF_MODBUS_DATATYPE| are set, YES otherwise","
+One of the following: |BR|
+
+* string
+* number
+* array of numbers","Value of a constant that will be set to the specified DynamicData field if it is compatible."
 |CONF_MODBUS_REGISTER_COUNT|,NO,number,"The number of registers to read. |BR|
 |BR|
 If unspecified: it defaults to one for COIL, INT8, INT16, to two for INT32 and FLOAT_XXXX, and to four for INT64. |BR|
 |BR|
 If specified: the user should take into account that it takes two registers to read each INT32 and FLOAT_XXXX value and it takes four registers to read an INT64."
-|CONF_MODBUS_SLAVE_DEVICE_ID|,NO,number,"Slave number of a Modbus device on a serial network"
-|CONF_MODBUS_MIN_VALUE|,NO,number,the minimum value for the value read
-|CONF_MODBUS_MAX_VALUE|,NO,number,the maximum value for the value read
-|CONF_MODBUS_VALID_VALUES|,"YES for Enums, NO for other datatypes",array of numbers,the complete list of values that can be written. Values not in the list are considered invalid outputs.
+|CONF_MODBUS_SLAVE_DEVICE_ID|,NO,number,"Slave number of a Modbus device on a serial network. The value of 0 represents a broadcast address."
+|CONF_MODBUS_MIN_VALUE|,NO,number,The minimum value for the value read
+|CONF_MODBUS_MAX_VALUE|,NO,number,The maximum value for the value read
+|CONF_MODBUS_VALID_VALUES|,"YES for Enums, NO for other datatypes",array of numbers,The complete list of values that can be written. Values not in the list are considered invalid outputs.
 |CONF_INPUT_DATA_FACTOR|,NO,number,"The value read from Modbus is multiplied by this factor. |BR|
 |BR|
 The data stored in the DynamicData field is: |BR|
