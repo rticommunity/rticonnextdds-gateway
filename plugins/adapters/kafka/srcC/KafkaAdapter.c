@@ -23,6 +23,7 @@
 /*
  * Entry point to the Kafka adapter plugin
  */
+RTI_USER_DLL_EXPORT
 struct RTI_RoutingServiceAdapterPlugin *
 RTI_RS_Kafka_AdapterPlugin_create(
     const struct RTI_RoutingServiceProperties *properties,
@@ -109,7 +110,7 @@ RTI_RS_KafkaAdapterPlugin_create_connection(
     struct RTI_RS_KafkaConnection *connection;
 
     RTI_RoutingServiceLogger_log(RTI_ROUTING_SERVICE_VERBOSITY_DEBUG, "%s", __func__);
-    
+
     connection = calloc(1, sizeof(struct RTI_RS_KafkaConnection));
 
     if (connection == NULL)

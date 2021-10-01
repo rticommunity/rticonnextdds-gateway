@@ -16,7 +16,10 @@
 #ifndef KafkaStreamReader_h
 #define KafkaStreamReader_h
 
-#include "rtiadapt_kafka.h"
+#include "ndds/ndds_c.h"
+
+#include "routingservice/routingservice_adapter.h"
+#include "routingservice/routingservice_service.h"
 
 /* Kafka C library */
 #include "rdkafka.h"
@@ -38,14 +41,14 @@ struct RTI_RS_KafkaStreamReader
     rd_kafka_conf_t *conf;  /* rdkafka configuration object */
     rd_kafka_message_t *rkm; /*rdkafka message object */
     const char *topic;  /* Topic to consume */
-    struct RTIOsapiThread *thread;
+    struct RTIOsapiJoinableThread *polling_thread;
     struct RTIOsapiSemaphore *sem;
-    int run;
-    int finalized_thread;
+    int run_thread;
     struct RTI_RoutingServiceStreamReaderListener listener;
     struct DDS_DynamicData     **sample_list;
     struct DDS_SampleInfo      **info_list;
     struct DDS_TypeCode *type_code;
+    struct DDS_OctetSeq payload;
     //struct DDS_Duration_t polling_period;
 };
 
@@ -63,6 +66,6 @@ void RTI_RS_KafkaStreamReader_return_loan(
     int count,
     RTI_RoutingServiceEnvironment *env);
 
-void *RTI_RS_KafkaStreamReader_run(void *threadParam);
+void *RTI_RS_KafkaStreamReader_on_data_availabe_thread(void *thread_params);
 
 #endif /* KafkaStreamReader_h */

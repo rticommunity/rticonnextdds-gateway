@@ -16,29 +16,21 @@
 #ifndef KafkaAdapter_h
 #define KafkaAdapter_h
 
-#include "rtiadapt_kafka.h"
+#include "ndds/ndds_c.h"
+
+#include "routingservice/routingservice_adapter.h"
+#include "routingservice/routingservice_service.h"
 
 #include "KafkaConnection.h"
 #include "KafkaStreamWriter.h"
 #include "KafkaStreamReader.h"
 
-
-#ifdef RTI_WIN32
-  #define DllExport __declspec( dllexport )
-  #include <Winsock2.h>
-  #include <process.h>
-#else
-  #define DllExport
-  #include <sys/select.h>
-  #include <semaphore.h>
-  #include <pthread.h>
-#endif
-
 struct RTI_RS_KafkaAdapterPlugin {
     struct RTI_RoutingServiceAdapterPlugin base;
 };
 
-DllExport struct RTI_RoutingServiceAdapterPlugin *
+RTI_USER_DLL_EXPORT
+struct RTI_RoutingServiceAdapterPlugin *
 RTI_RS_Kafka_AdapterPlugin_create(
     const struct RTI_RoutingServiceProperties *properties,
     RTI_RoutingServiceEnvironment *env);

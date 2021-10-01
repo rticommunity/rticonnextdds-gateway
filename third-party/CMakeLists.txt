@@ -41,9 +41,8 @@ endif()
 
 
 if (RTIGATEWAY_ENABLE_KAFKA)
-    set(RDKAFKA_BUILD_EXAMPLES OFF)
-    set(RDKAFKA_BUILD_TESTS OFF)
-    set(WITH_SSL OFF)
+    rtigw_configure_rd_kafka_build()
+
     add_subdirectory("${LIBRD_KAFKA_C_DIR}")
 endif()
 

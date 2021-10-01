@@ -16,7 +16,10 @@
 #ifndef KafkaConnection_h
 #define KafkaConnection_h
 
-#include "rtiadapt_kafka.h"
+#include "ndds/ndds_c.h"
+
+#include "routingservice/routingservice_adapter.h"
+#include "routingservice/routingservice_service.h"
 
 /* Kafka C library */
 #include "rdkafka.h"

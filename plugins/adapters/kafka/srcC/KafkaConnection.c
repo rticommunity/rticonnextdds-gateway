@@ -351,8 +351,8 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
     stream_reader->listener = *listener;
     stream_reader->type_code =
 	    (struct DDS_TypeCode *) stream_info->type_info.type_representation;
-    stream_reader->run = 1;
-    stream_reader->finalized_thread = 0;
+    stream_reader->run_thread = RTI_TRUE;
+
     stream_reader->sample_list = calloc(1, sizeof(DDS_DynamicData *));
     stream_reader->info_list = calloc(1, sizeof(struct DDS_SampleInfo *));
 
@@ -382,6 +382,9 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
     }
 
     stream_reader->conf = rd_kafka_conf_new();
+    DDS_OctetSeq_initialize(&stream_reader->payload);
+    //TODO this 63k should be configurable
+    DDS_OctetSeq_ensure_length(&stream_reader->payload, 63000, 63000);
 
     /* Set bootstrap broker(s) as a comma-separated list of
      * host or host:port (default port 9092).
@@ -506,13 +509,13 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
     }
 
     // CHECK ERROR
-    RTIOsapiThread_new(
+    stream_reader->polling_thread = RTIOsapiJoinableThread_new(
 		    "KafkaStreamReader_run",
 		    RTI_OSAPI_THREAD_PRIORITY_DEFAULT,
 		    RTI_OSAPI_THREAD_OPTION_DEFAULT,
-		    RTI_OSAPI_THREAD_STACK_SIZE_DEFAULT, 
-		    NULL, 
-		    RTI_RS_KafkaStreamReader_run,
+		    RTI_OSAPI_THREAD_STACK_SIZE_DEFAULT,
+		    NULL,
+		    RTI_RS_KafkaStreamReader_on_data_availabe_thread,
 		    (void *) stream_reader);
 
     /*
@@ -521,7 +524,7 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
        error = pthread_create(
        &stream_reader->thread,
        &thread_attr,
-       RTI_RS_KafkaStreamReader_run,
+       RTI_RS_KafkaStreamReader_thread,
        (void *) stream_reader);
        pthread_attr_destroy(&thread_attr);
 
@@ -551,6 +554,17 @@ void RTI_RS_KafkaConnection_delete_stream_reader(
 			"%s\n",
 			__func__);
 
+        self->run_thread = RTI_FALSE;
+
+        if (!RTIOsapiJoinableThread_stopAndDelete(
+                self->polling_thread,
+                RTI_OSAPI_THREAD_INFINITE_BLOCKING_TIMEOUT)) {
+            RTI_RoutingServiceLogger_log(
+                    RTI_ROUTING_SERVICE_VERBOSITY_INFO,
+                    "Error deleting RTI_RS_KafkaStreamReader_on_data_availabe_thread");
+        }
+        self->polling_thread = NULL;
+
 	/* Close the consumer: commit final offsets and leave the group. */
 	RTI_RoutingServiceLogger_log(
 			RTI_ROUTING_SERVICE_VERBOSITY_INFO,
@@ -564,16 +578,7 @@ void RTI_RS_KafkaConnection_delete_stream_reader(
 		rd_kafka_destroy(self->rk);
 	}
 
-	self->run = 0;
-
-	while(!self->finalized_thread) {
-		RTI_RoutingServiceLogger_log(
-				RTI_ROUTING_SERVICE_VERBOSITY_INFO,
-				"Waiting for KafkaStreamReader_run thread is finished...");
-		NDDS_Utility_sleep(&sleep_period);
-	};
-
-	RTIOsapiThread_delete(self->thread);
+        DDS_OctetSeq_finalize(&self->payload);
 
 	RTIOsapiSemaphore_delete(self->sem);
 

@@ -16,7 +16,10 @@
 #ifndef KafkaStreamWriter_h
 #define KafkaStreamWriter_h
 
-#include "rtiadapt_kafka.h"
+#include "ndds/ndds_c.h"
+
+#include "routingservice/routingservice_adapter.h"
+#include "routingservice/routingservice_service.h"
 
 /* Kafka C library */
 #include "rdkafka.h"
@@ -27,7 +30,7 @@
 struct RTI_RS_KafkaStreamWriter
 {
     rd_kafka_t *rk;  /* rdkafka producer instance handle */
-    rd_kafka_conf_t *conf;  /* rdkafka ponfiguration object */
+    rd_kafka_conf_t *conf;  /* rdkafka configuration object */
     const char *topic;  /* Topic to produce to */
 };
 

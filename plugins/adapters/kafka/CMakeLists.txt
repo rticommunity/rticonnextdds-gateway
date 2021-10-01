@@ -20,34 +20,24 @@ set(RSPLUGIN_LIB_NAME rtikafkaadapter)
 
 set(KAFKA_LIBRARY "rdkafka")
 
-#set(RDKAFKA_BUILD_STATIC ON CACHE BOOL "")
-
 ###############################################################################
 # Create library
 ###############################################################################
-set(RTI_KAFKA_SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/srcC/KafkaAdapter.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/srcC/KafkaConnection.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/srcC/KafkaStreamReader.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/srcC/KafkaStreamWriter.c"
-)
-
 add_library(${RSPLUGIN_LIB_NAME}
     SHARED
-        ${RTI_KAFKA_SOURCES}
+        "${CMAKE_CURRENT_SOURCE_DIR}/srcC/KafkaAdapter.c"
+        "${CMAKE_CURRENT_SOURCE_DIR}/srcC/KafkaConnection.c"
+        "${CMAKE_CURRENT_SOURCE_DIR}/srcC/KafkaStreamReader.c"
+        "${CMAKE_CURRENT_SOURCE_DIR}/srcC/KafkaStreamWriter.c"
 )
 
-set(RTI_KAFKA_INCLUDES
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/srcC>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rti>"
-    "$<BUILD_INTERFACE:${LIBRD_KAFKA_C_DIR}/src>"
-    "$<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rti>"
-)
+set_target_properties(${RSPLUGIN_LIB_NAME} PROPERTIES DEBUG_POSTFIX "d")
 
 target_include_directories(${RSPLUGIN_LIB_NAME}
     PUBLIC
         ${CONNEXTDDS_INCLUDE_DIRS}
-        ${RTI_KAFKA_INCLUDES}
+        "${CMAKE_CURRENT_SOURCE_DIR}/srcC"
+        "${LIBRD_KAFKA_C_DIR}/src"
 )
 
 target_link_libraries(${RSPLUGIN_LIB_NAME}
@@ -67,11 +57,6 @@ target_compile_definitions(${RSPLUGIN_LIB_NAME}
 install(
     TARGETS ${RSPLUGIN_LIB_NAME}
     DESTINATION "${STAGING_LIB_DIR}"
-)
-
-install(
-    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/rti/"
-    DESTINATION "${STAGING_INCLUDE_DIR}/rti/${STAGING_PLUGIN_DIR}"
 )
 
 ###############################################################################
