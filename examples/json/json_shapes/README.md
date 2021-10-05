@@ -53,7 +53,7 @@ struct MessagePayload {
 ### Routing Service Configuration
 
 The example provides two Routing Service configurations in file
-[RsJsonShapes.xml](examples/json/json_shapes/RsJsonShapes.xml) which demonstrate
+[RsJsonShapes.xml](RsJsonShapes.xml) which demonstrate
 the use of the JSON plugin in both directions:
 
 - `ShapeToJson`
