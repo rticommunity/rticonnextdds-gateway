@@ -16,6 +16,8 @@
 #ifndef KafkaConnection_h
 #define KafkaConnection_h
 
+#define ERR_MSG_BUF_SIZE 512
+
 #include "ndds/ndds_c.h"
 
 #include "routingservice/routingservice_adapter.h"
