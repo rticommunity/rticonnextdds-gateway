@@ -31,81 +31,87 @@ void *RTI_RS_KafkaStreamReader_on_data_availabe_thread(void *thread_params)
 
     RTI_RoutingServiceLogger_log(
             RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-            "%s",
-            __func__);
+	    "%s",
+	    __func__);
 
     // printf("RTI_RS_KafkaStreamReader_thread. Period: {%d,%u}\n",
     // self->polling_period.sec + self->polling_period.nanosec);
 
     while (self->run_thread) {
-        self->rkm = rd_kafka_consumer_poll(self->rk, 100);
+	    self->rkm = rd_kafka_consumer_poll(self->rk, 100);
+	    RTIOsapiSemaphore_take(self->poll_sem, NULL);
 
-        if (self->rkm) {
-            /* consumer_poll() will return either a proper message
-             * or a consumer error (rkm->err is set). */
-            if (self->rkm->err) {
-                /* Consumer errors are generally to be considered
-                 * informational as the consumer will automatically
-                 * try to recover from all types of errors. */
+	    if (self->rkm) {
+		    /* consumer_poll() will return either a proper message
+		     * or a consumer error (rkm->err is set). */
+		    if (self->rkm->err) {
+			    /* Consumer errors are generally to be considered
+			     * informational as the consumer will automatically
+			     * try to recover from all types of errors. */
 
-                RTI_RoutingServiceLogger_log(
-                        RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
-                        "Consumer error: %s\n",
-                        rd_kafka_message_errstr(self->rkm));
-            } else {
-    			RTIOsapiSemaphoreStatus mutexStatus = RTI_OSAPI_SEMAPHORE_STATUS_OK;
-				mutexStatus = RTIOsapiSemaphore_take(self->sem, NULL);
-				if (mutexStatus != RTI_OSAPI_SEMAPHORE_STATUS_OK) {
-					RTI_RoutingServiceLogger_log(
-                        RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
-                        "Error taking mutex");
-					continue;
-				}
+			    RTI_RoutingServiceLogger_log(
+					    RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
+					    "Consumer error: %s\n",
+					    rd_kafka_message_errstr(self->rkm));
+			    RTIOsapiSemaphore_give(self->poll_sem);
+		    } else {
+			    RTIOsapiSemaphoreStatus mutexStatus = RTI_OSAPI_SEMAPHORE_STATUS_OK;
+			    /*mutexStatus = RTIOsapiSemaphore_take(self->sem, NULL);
+			      if (mutexStatus != RTI_OSAPI_SEMAPHORE_STATUS_OK) {
+			      RTI_RoutingServiceLogger_log(
+			      RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
+			      "Error taking mutex");
+			      continue;
+			      }
+			      */
 
-                if (self->rkm->len > DDS_OctetSeq_get_length(&self->payload)) {
-					/* adding space for the '/0' character */
-					DDS_OctetSeq_ensure_length(
-							&self->payload,
-                            self->rkm->len + 1,
-							self->rkm->len + 1);
-				}
+			    if (self->rkm->len > DDS_OctetSeq_get_length(&self->payload)) {
+				    /* adding space for the '/0' character */
+				    DDS_OctetSeq_ensure_length(
+						    &self->payload,
+						    self->rkm->len + 1,
+						    self->rkm->len + 1);
+			    }
 
-				//TODO not sure if we need the +1, it depends on how the payload
-				// is serialized in kafka and what the 'len' contains
-                memcpy(
-						DDS_OctetSeq_get_contiguous_buffer(&self->payload),
-						self->rkm->payload,
-						sizeof(DDS_Octet) * (self->rkm->len + 1));
+			    //TODO not sure if we need the +1, it depends on how the payload
+			    // is serialized in kafka and what the 'len' contains
+			    memcpy(
+					    DDS_OctetSeq_get_contiguous_buffer(&self->payload),
+					    self->rkm->payload,
+					    sizeof(DDS_Octet) * (self->rkm->len + 1));
 
-                DDS_OctetSeq_set_length(&self->payload, self->rkm->len + 1);
+			    DDS_OctetSeq_set_length(&self->payload, self->rkm->len + 1);
 
-                RTIOsapiSemaphore_give(self->sem);
+			    //RTIOsapiSemaphore_give(self->sem);
 
-                self->listener.on_data_available(
-                        self,
-                        self->listener.listener_data);
-            }
+			    RTIOsapiSemaphore_give(self->read_sem);
+			    self->listener.on_data_available(
+					    self,
+					    self->listener.listener_data);
+		    }
 
-        }
+	    } else /* timeout */{
+		    RTIOsapiSemaphore_give(self->poll_sem);
+	    }
 
-        /* Destroy message if it exist */
-        if (self->rkm != NULL) {
-            rd_kafka_message_destroy(self->rkm);
-        }
+	    /* Destroy message if it exist */
+	    if (self->rkm != NULL) {
+		    rd_kafka_message_destroy(self->rkm);
+	    }
 
-        // // Proper message.
-        // RTI_RoutingServiceLogger_log(
-        //         RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-        //         "Message on %s [%" PRId32 "] at offset %" PRId64 ":",
-        //         rd_kafka_topic_name(self->rkm->rkt), self->rkm->partition,
-        //         self->rkm->offset);
+	    // // Proper message.
+	    // RTI_RoutingServiceLogger_log(
+	    //         RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
+	    //         "Message on %s [%" PRId32 "] at offset %" PRId64 ":",
+	    //         rd_kafka_topic_name(self->rkm->rkt), self->rkm->partition,
+	    //         self->rkm->offset);
 
-        // Print the message value/payload.
-        // RTI_RoutingServiceLogger_log(
-        //         RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-        //         "Value: %.*s",
-        //         (int) self->rkm->len,
-        //         (const char *) self->rkm->payload);
+	    // Print the message value/payload.
+	    // RTI_RoutingServiceLogger_log(
+	    //         RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
+	    //         "Value: %.*s",
+	    //         (int) self->rkm->len,
+	    //         (const char *) self->rkm->payload);
 
     }
 
@@ -113,70 +119,75 @@ void *RTI_RS_KafkaStreamReader_on_data_availabe_thread(void *thread_params)
 }
 
 void RTI_RS_KafkaStreamReader_read(
-        RTI_RoutingServiceStreamReader stream_reader,
-        RTI_RoutingServiceSample **sample_list,
-        RTI_RoutingServiceSampleInfo **info_list,
-        int *count,
-        RTI_RoutingServiceEnvironment *env)
+		RTI_RoutingServiceStreamReader stream_reader,
+		RTI_RoutingServiceSample **sample_list,
+		RTI_RoutingServiceSampleInfo **info_list,
+		int *count,
+		RTI_RoutingServiceEnvironment *env)
 {
-    struct RTI_RS_KafkaStreamReader *self =
-        (struct RTI_RS_KafkaStreamReader *) stream_reader;
+	struct RTI_RS_KafkaStreamReader *self =
+		(struct RTI_RS_KafkaStreamReader *) stream_reader;
 
-    RTI_RoutingServiceLogger_log(
-            RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-            "%s",
-            __func__);
+	RTI_RoutingServiceLogger_log(
+			RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
+			"%s",
+			__func__);
 
-    *sample_list = NULL;
-    *info_list = NULL;
-    *count = 0;
+	*sample_list = NULL;
+	*info_list = NULL;
+	*count = 0;
 
-    struct DDS_DynamicData * sample = NULL;
-    struct DDS_SampleInfo  * info   = NULL;
-    sample = self->sample_list[0];
-    info = self->info_list[0];
+	struct DDS_DynamicData * sample = NULL;
+	struct DDS_SampleInfo  * info   = NULL;
+	sample = self->sample_list[0];
+	info = self->info_list[0];
 
-    DDS_Octet *buffer = NULL;
-    DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
+	DDS_Octet *buffer = NULL;
+	DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
 
-    RTIOsapiSemaphore_take(self->sem, NULL);
-    //TODO the payload.data should be configurable
-    retcode = DDS_DynamicData_set_octet_seq(
-            sample,
-            "payload.data",
-            DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-            &self->payload);
-    if (retcode != DDS_RETCODE_OK) {
-        RTI_RoutingServiceLogger_log(
-                RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
-                "Error setting payload data");
-        goto done;
-    }
+	//RTIOsapiSemaphore_take(self->sem, NULL);
+	//TODO the payload.data should be configurable
+	RTIOsapiSemaphore_take(self->read_sem, NULL);
+	retcode = DDS_DynamicData_set_octet_seq(
+			sample,
+			"payload.data",
+			DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
+			&self->payload);
+	if (retcode != DDS_RETCODE_OK) {
+		RTI_RoutingServiceLogger_log(
+				RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
+				"Error setting payload data");
+		//goto done;
+	}
 
-    *count = 1;
-    *sample_list = (RTI_RoutingServiceSample *) self->sample_list;
-    *info_list = (RTI_RoutingServiceSampleInfo *) self->info_list;
+	*count = 1;
+	*sample_list = (RTI_RoutingServiceSample *) self->sample_list;
+	*info_list = (RTI_RoutingServiceSampleInfo *) self->info_list;
 
-done:
-    RTIOsapiSemaphore_give(self->sem);
+	//done:
+
 }
 
 void RTI_RS_KafkaStreamReader_return_loan(
-        RTI_RoutingServiceStreamReader stream_reader,
-        RTI_RoutingServiceSample *sample_list,
-        RTI_RoutingServiceSampleInfo *info_list,
-        int count,
-        RTI_RoutingServiceEnvironment *env)
+		RTI_RoutingServiceStreamReader stream_reader,
+		RTI_RoutingServiceSample *sample_list,
+		RTI_RoutingServiceSampleInfo *info_list,
+		int count,
+		RTI_RoutingServiceEnvironment *env)
 {
-    RTI_RoutingServiceLogger_log(
-            RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-            "%s",
-            __func__);
+	RTI_RoutingServiceLogger_log(
+			RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
+			"%s",
+			__func__);
 
-    /*
-     * Nothing to do here since the samples and sample list are
-     * only used by the session thread
-     */
+	struct RTI_RS_KafkaStreamReader *self =
+		(struct RTI_RS_KafkaStreamReader *) stream_reader;
+
+	RTIOsapiSemaphore_give(self->poll_sem);
+	/*
+	 * Nothing to do here since the samples and sample list are
+	 * only used by the session thread
+	 */
 }
 
 #undef ROUTER_CURRENT_SUBMODULE

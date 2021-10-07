@@ -42,7 +42,8 @@ struct RTI_RS_KafkaStreamReader
     rd_kafka_message_t *rkm; /*rdkafka message object */
     const char *topic;  /* Topic to consume */
     struct RTIOsapiJoinableThread *polling_thread;
-    struct RTIOsapiSemaphore *sem;
+    struct RTIOsapiSemaphore *poll_sem;
+    struct RTIOsapiSemaphore *read_sem;
     int run_thread;
     struct RTI_RoutingServiceStreamReaderListener listener;
     struct DDS_DynamicData     **sample_list;
