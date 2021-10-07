@@ -15,6 +15,7 @@
 
 #ifndef KafkaStreamReader_h
 #define KafkaStreamReader_h
+#define CONSUMER_POLL_TIMEOUT 100 /*100 ms*/
 
 #include "ndds/ndds_c.h"
 
@@ -48,8 +49,8 @@ struct RTI_RS_KafkaStreamReader {
     struct DDS_DynamicData **sample_list;
     struct DDS_SampleInfo **info_list;
     struct DDS_TypeCode *type_code;
+    struct DDS_DynamicDataTypeSupport *type_support;
     struct DDS_OctetSeq payload;
-    // struct DDS_Duration_t polling_period;
 };
 
 void RTI_RS_KafkaStreamReader_read(

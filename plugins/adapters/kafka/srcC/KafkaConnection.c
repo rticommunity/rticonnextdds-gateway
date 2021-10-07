@@ -384,6 +384,8 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
     rd_kafka_topic_partition_list_t *subscription; /* Subscribed topics */
     struct DDS_DynamicDataProperty_t dynamicDataProps =
             DDS_DynamicDataProperty_t_INITIALIZER;
+    struct DDS_DynamicDataTypeProperty_t dynamicDataTypeProp =
+    	DDS_DynamicDataTypeProperty_t_INITIALIZER;
     int i = 0;
     rd_kafka_conf_res_t res;
 
@@ -407,6 +409,23 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
 
     stream_reader->sample_list = calloc(1, sizeof(DDS_DynamicData *));
     stream_reader->info_list = calloc(1, sizeof(struct DDS_SampleInfo *));
+
+    if (stream_reader->sample_list == NULL) {
+        RTI_RoutingServiceEnvironment_set_error(
+                env,
+                "Memory allocation error (sample_list)");
+        goto error;
+    }
+    if (stream_reader->info_list == NULL) {
+        RTI_RoutingServiceEnvironment_set_error(
+                env,
+                "Memory allocation error (info_list)");
+        goto error;
+    }
+
+    stream_reader->type_support = DDS_DynamicDataTypeSupport_new(
+            stream_reader->type_code,
+            &dynamicDataTypeProp);
 
     stream_reader->sample_list[0] =
             DDS_DynamicData_new(stream_reader->type_code, &dynamicDataProps);
