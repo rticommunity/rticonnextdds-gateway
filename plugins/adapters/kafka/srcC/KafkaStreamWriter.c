@@ -16,7 +16,8 @@
 /* =========================================================================*/
 /* RTI Routing Service Kafka Adapter                                        */
 /* =========================================================================*/
-/* This reads DDS samples and then writes them to Kafka in a format that Kafka supports                      */
+/* This reads DDS samples and then writes them to Kafka in a format that Kafka
+ * supports                      */
 
 #include "KafkaStreamWriter.h"
 

@@ -27,19 +27,18 @@
 #include <ctype.h>
 #include <time.h>
 
-struct RTI_RS_KafkaStreamWriter
-{
-    rd_kafka_t *rk;  /* rdkafka producer instance handle */
-    rd_kafka_conf_t *conf;  /* rdkafka configuration object */
-    const char *topic;  /* Topic to produce to */
+struct RTI_RS_KafkaStreamWriter {
+    rd_kafka_t *rk;        /* rdkafka producer instance handle */
+    rd_kafka_conf_t *conf; /* rdkafka configuration object */
+    const char *topic;     /* Topic to produce to */
 };
 
 int RTI_RS_KafkaStreamWriter_write(
-    RTI_RoutingServiceStreamWriter stream_writer,
-    const RTI_RoutingServiceSample *sample_list,
-    const RTI_RoutingServiceSampleInfo *info_list,
-    int count,
-    RTI_RoutingServiceEnvironment *env);
+        RTI_RoutingServiceStreamWriter stream_writer,
+        const RTI_RoutingServiceSample *sample_list,
+        const RTI_RoutingServiceSampleInfo *info_list,
+        int count,
+        RTI_RoutingServiceEnvironment *env);
 
 static void RTI_RS_KafkaStreamWriter_dr_msg_cb(
         rd_kafka_t *rk,

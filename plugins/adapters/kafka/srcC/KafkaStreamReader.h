@@ -25,47 +25,46 @@
 #include "rdkafka.h"
 
 #ifdef RTI_WIN32
-  #define DllExport __declspec( dllexport )
-  #include <Winsock2.h>
-  #include <process.h>
+    #define DllExport __declspec(dllexport)
+    #include <Winsock2.h>
+    #include <process.h>
 #else
-  #define DllExport
-  #include <sys/select.h>
-  #include <semaphore.h>
-  #include <pthread.h>
+    #define DllExport
+    #include <pthread.h>
+    #include <semaphore.h>
+    #include <sys/select.h>
 #endif
 
-struct RTI_RS_KafkaStreamReader
-{
-    rd_kafka_t *rk;  /* rdkafka consumer instance handle */
-    rd_kafka_conf_t *conf;  /* rdkafka configuration object */
+struct RTI_RS_KafkaStreamReader {
+    rd_kafka_t *rk;          /* rdkafka consumer instance handle */
+    rd_kafka_conf_t *conf;   /* rdkafka configuration object */
     rd_kafka_message_t *rkm; /*rdkafka message object */
-    const char *topic;  /* Topic to consume */
+    const char *topic;       /* Topic to consume */
     struct RTIOsapiJoinableThread *polling_thread;
     struct RTIOsapiSemaphore *poll_sem;
     struct RTIOsapiSemaphore *read_sem;
     int run_thread;
     struct RTI_RoutingServiceStreamReaderListener listener;
-    struct DDS_DynamicData     **sample_list;
-    struct DDS_SampleInfo      **info_list;
+    struct DDS_DynamicData **sample_list;
+    struct DDS_SampleInfo **info_list;
     struct DDS_TypeCode *type_code;
     struct DDS_OctetSeq payload;
-    //struct DDS_Duration_t polling_period;
+    // struct DDS_Duration_t polling_period;
 };
 
 void RTI_RS_KafkaStreamReader_read(
-    RTI_RoutingServiceStreamReader stream_reader,
-    RTI_RoutingServiceSample **sample_list,
-    RTI_RoutingServiceSampleInfo **info_list,
-    int *count,
-    RTI_RoutingServiceEnvironment *env);
+        RTI_RoutingServiceStreamReader stream_reader,
+        RTI_RoutingServiceSample **sample_list,
+        RTI_RoutingServiceSampleInfo **info_list,
+        int *count,
+        RTI_RoutingServiceEnvironment *env);
 
 void RTI_RS_KafkaStreamReader_return_loan(
-    RTI_RoutingServiceStreamReader stream_reader,
-    RTI_RoutingServiceSample *sample_list,
-    RTI_RoutingServiceSampleInfo *info_list,
-    int count,
-    RTI_RoutingServiceEnvironment *env);
+        RTI_RoutingServiceStreamReader stream_reader,
+        RTI_RoutingServiceSample *sample_list,
+        RTI_RoutingServiceSampleInfo *info_list,
+        int count,
+        RTI_RoutingServiceEnvironment *env);
 
 void *RTI_RS_KafkaStreamReader_on_data_availabe_thread(void *thread_params);
 

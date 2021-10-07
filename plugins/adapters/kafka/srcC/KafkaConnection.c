@@ -148,7 +148,7 @@ void delete_stream_writer(struct RTI_RS_KafkaStreamWriter *self)
             RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
             "%s",
             __func__);
-    
+
     /* Free allocated resources */
     if (self->rk != NULL) {
         rd_kafka_destroy(self->rk);
@@ -336,7 +336,7 @@ void delete_stream_reader(struct RTI_RS_KafkaStreamReader *self)
             RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
             "%s",
             __func__);
-    
+
     /* Free allocated resources */
     if (self->rk != NULL) {
         rd_kafka_destroy(self->rk);
@@ -437,14 +437,18 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
 
     stream_reader->conf = rd_kafka_conf_new();
     if (!DDS_OctetSeq_initialize(&stream_reader->payload)) {
-        RTI_RoutingServiceEnvironment_set_error(env, "DDS_OctetSeq_initialize error");
-        goto error;       
+        RTI_RoutingServiceEnvironment_set_error(
+                env,
+                "DDS_OctetSeq_initialize error");
+        goto error;
     }
 
     // TODO this 63k should be configurable
     if (!DDS_OctetSeq_ensure_length(&stream_reader->payload, 63000, 63000)) {
-        RTI_RoutingServiceEnvironment_set_error(env, "DDS_OctetSeq_ensure_length error");
-        goto error;       
+        RTI_RoutingServiceEnvironment_set_error(
+                env,
+                "DDS_OctetSeq_ensure_length error");
+        goto error;
     }
 
     /* Set bootstrap broker(s) as a comma-separated list of
@@ -571,14 +575,18 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
     stream_reader->poll_sem =
             RTIOsapiSemaphore_new(RTI_OSAPI_SEMAPHORE_KIND_BINARY, NULL);
     if (!stream_reader->poll_sem) {
-        RTI_RoutingServiceEnvironment_set_error(env, "Error creating semaphore");
+        RTI_RoutingServiceEnvironment_set_error(
+                env,
+                "Error creating semaphore");
         goto error;
     }
 
     stream_reader->read_sem =
             RTIOsapiSemaphore_new(RTI_OSAPI_SEMAPHORE_KIND_BINARY, NULL);
     if (!stream_reader->read_sem) {
-        RTI_RoutingServiceEnvironment_set_error(env, "Error creating semaphore");
+        RTI_RoutingServiceEnvironment_set_error(
+                env,
+                "Error creating semaphore");
         goto error;
     }
 
@@ -608,8 +616,10 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
             (void *) stream_reader);
 
     if (!stream_reader->polling_thread) {
-        RTI_RoutingServiceEnvironment_set_error(env, "Error creating polling_thread");
-        goto error; 
+        RTI_RoutingServiceEnvironment_set_error(
+                env,
+                "Error creating polling_thread");
+        goto error;
     }
 
     return stream_reader;
