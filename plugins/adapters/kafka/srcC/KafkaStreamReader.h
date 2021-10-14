@@ -16,6 +16,7 @@
 #ifndef KafkaStreamReader_h
 #define KafkaStreamReader_h
 #define CONSUMER_POLL_TIMEOUT 100 /*100 ms*/
+#define BUFFER_MEMBER "payload.data" 
 
 #include "ndds/ndds_c.h"
 

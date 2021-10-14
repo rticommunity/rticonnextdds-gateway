@@ -462,14 +462,6 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
         goto error;
     }
 
-    // TODO this 63k should be configurable
-    if (!DDS_OctetSeq_ensure_length(&stream_reader->payload, 63000, 63000)) {
-        RTI_RoutingServiceEnvironment_set_error(
-                env,
-                "DDS_OctetSeq_ensure_length error");
-        goto error;
-    }
-
     /* Set bootstrap broker(s) as a comma-separated list of
      * host or host:port (default port 9092).
      * librdkafka will use the bootstrap brokers to acquire the full

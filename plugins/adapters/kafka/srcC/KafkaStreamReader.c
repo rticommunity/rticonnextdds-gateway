@@ -21,7 +21,7 @@
 #include "KafkaStreamReader.h"
 
 
-int error_cleanup(struct RTI_RS_KafkaStreamReader *stream_reader)
+int RTI_RS_KafkaStreamReader_error_cleanup(struct RTI_RS_KafkaStreamReader *stream_reader)
 {
     if (stream_reader->rkm != NULL) {
         rd_kafka_message_destroy(stream_reader->rkm);
@@ -83,7 +83,7 @@ void *RTI_RS_KafkaStreamReader_on_data_availabe_thread(void *thread_params)
                     RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
                     "Consumer error: %s\n",
                     rd_kafka_message_errstr(self->rkm));
-            if (!error_cleanup(self)) {
+            if (!RTI_RS_KafkaStreamReader_error_cleanup(self)) {
                 return NULL;
             }
             continue;
@@ -108,7 +108,7 @@ void *RTI_RS_KafkaStreamReader_on_data_availabe_thread(void *thread_params)
             RTI_RoutingServiceLogger_log(
                     RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
                     "Error initialize buffer");
-            if (!error_cleanup(self)) {
+            if (!RTI_RS_KafkaStreamReader_error_cleanup(self)) {
                 return NULL;
             }
             continue;
@@ -125,7 +125,7 @@ void *RTI_RS_KafkaStreamReader_on_data_availabe_thread(void *thread_params)
                     (DDS_Octet *) self->rkm->payload,
                     self->rkm->len + 1,
                     self->rkm->len + 1)) {
-            if (!error_cleanup(self)) {
+            if (!RTI_RS_KafkaStreamReader_error_cleanup(self)) {
                 return NULL;
             }
             continue;
@@ -176,7 +176,7 @@ void RTI_RS_KafkaStreamReader_read(
         RTI_RoutingServiceLogger_log(
                 RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
                 "Error taking read semaphore");
-        return NULL;
+        return;
     }
 
     // TODO the payload.data should be configurable
@@ -189,7 +189,7 @@ void RTI_RS_KafkaStreamReader_read(
         RTI_RoutingServiceLogger_log(
                 RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
                 "Error setting payload data");
-        return NULL;
+        return;
     }
 
     *count = 1;
@@ -217,11 +217,13 @@ void RTI_RS_KafkaStreamReader_return_loan(
         rd_kafka_message_destroy(self->rkm);
     }
 
-    RTIOsapiSemaphore_give(self->poll_sem);
-    /*
-     * Nothing to do here since the samples and sample list are
-     * only used by the session thread
-     */
+    if (RTIOsapiSemaphore_give(self->poll_sem)
+        != RTI_OSAPI_SEMAPHORE_STATUS_OK) {
+        RTI_RoutingServiceLogger_log(
+                RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
+                "Error giving poll semaphore");
+        return;
+    }
 }
 
 #undef ROUTER_CURRENT_SUBMODULE

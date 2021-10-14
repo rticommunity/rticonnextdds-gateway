@@ -16,6 +16,8 @@
 #ifndef KafkaStreamWriter_h
 #define KafkaStreamWriter_h
 
+#define BUFFER_MEMBER "payload.data" 
+
 #include "ndds/ndds_c.h"
 
 #include "routingservice/routingservice_adapter.h"
