@@ -142,7 +142,7 @@ static int stats_cb(rd_kafka_t *rk, char *json, size_t json_len, void *opaque)
     return 0;
 }
 
-void delete_stream_writer(struct RTI_RS_KafkaStreamWriter *self)
+void RTI_RS_KafkaConnection_cleanup_stream_writer(struct RTI_RS_KafkaStreamWriter *self)
 {
     RTI_RoutingServiceLogger_log(
             RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
@@ -293,7 +293,7 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
     return stream_writer;
 
 error:
-    delete_stream_writer(stream_writer);
+    RTI_RS_KafkaConnection_cleanup_stream_writer(stream_writer);
     return NULL;
 }
 
@@ -327,10 +327,10 @@ void RTI_RS_KafkaConnection_delete_stream_writer(
                 rd_kafka_outq_len(self->rk));
     }
 
-    delete_stream_writer(stream_writer);
+    RTI_RS_KafkaConnection_cleanup_stream_writer(stream_writer);
 }
 
-void delete_stream_reader(struct RTI_RS_KafkaStreamReader *self)
+void RTI_RS_KafkaConnection_cleanup_stream_reader(struct RTI_RS_KafkaStreamReader *self)
 {
     RTI_RoutingServiceLogger_log(
             RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
@@ -636,7 +636,7 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
     return stream_reader;
 
 error:
-    delete_stream_reader(stream_reader);
+    RTI_RS_KafkaConnection_cleanup_stream_reader(stream_reader);
     return NULL;
 }
 
@@ -676,7 +676,7 @@ void RTI_RS_KafkaConnection_delete_stream_reader(
     }
 
     /* Free allocated resources */
-    delete_stream_reader(stream_reader);
+    RTI_RS_KafkaConnection_cleanup_stream_reader(stream_reader);
 }
 
 #undef ROUTER_CURRENT_SUBMODULE
