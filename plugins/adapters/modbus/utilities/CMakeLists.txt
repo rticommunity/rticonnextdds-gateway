@@ -26,5 +26,5 @@ target_link_libraries(modbusserver
 install(
     TARGETS modbusserver
     DESTINATION "${STAGING_BIN_DIR}"
-    PERMISSIONS OWNER_EXECUTE
+    PERMISSIONS OWNER_EXECUTE OWNER_WRITE
 )
