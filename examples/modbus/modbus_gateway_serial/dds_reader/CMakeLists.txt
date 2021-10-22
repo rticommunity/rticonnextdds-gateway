@@ -44,5 +44,5 @@ target_link_libraries(modbus_serial_device
 install(
     TARGETS modbus_serial_device
     DESTINATION "${STAGING_EXAMPLES_DIR}/${STAGING_PLUGIN_DIR}/${EXAMPLE_NAME}"
-    PERMISSIONS OWNER_EXECUTE
+    PERMISSIONS OWNER_EXECUTE OWNER_WRITE
 )
