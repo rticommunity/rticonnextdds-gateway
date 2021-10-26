@@ -25,17 +25,6 @@
 /* Kafka C library */
 #include "rdkafka.h"
 
-#ifdef RTI_WIN32
-    #define DllExport __declspec(dllexport)
-    #include <Winsock2.h>
-    #include <process.h>
-#else
-    #define DllExport
-    #include <pthread.h>
-    #include <semaphore.h>
-    #include <sys/select.h>
-#endif
-
 struct RTI_RS_KafkaStreamReader {
     rd_kafka_t *rk;          /* rdkafka consumer instance handle */
     rd_kafka_conf_t *conf;   /* rdkafka configuration object */

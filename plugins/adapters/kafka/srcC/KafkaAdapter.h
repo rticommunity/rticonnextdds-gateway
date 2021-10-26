@@ -16,6 +16,8 @@
 #ifndef KafkaAdapter_h
 #define KafkaAdapter_h
 
+#define KAFKA_ADAPTER_VERSION {1, 0, 0, 0}
+
 #include "ndds/ndds_c.h"
 
 #include "routingservice/routingservice_adapter.h"

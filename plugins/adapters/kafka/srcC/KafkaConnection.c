@@ -27,93 +27,6 @@
  * the application's thread.
  */
 
-/*
-static uint64_t json_parse_fields(
-        const char *json,
-        const char **end,
-        const char *field1,
-        const char *field2)
-{
-    const char *t = json;
-    const char *t2;
-    int len1 = (int) strlen(field1);
-    int len2 = (int) strlen(field2);
-
-    RTI_RoutingServiceLogger_log(
-            RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-            "%s",
-            __func__);
-
-    while ((t2 = strstr(t, field1))) {
-        uint64_t v;
-
-        t = t2;
-        t += len1;
-
-        if (!(t2 = strstr(t, field2)))
-            continue;
-        t2 += len2;
-
-        while (isspace((int) *t2))
-            t2++;
-
-        v = strtoull(t2, (char **) &t, 10);
-        if (t2 == t)
-            continue;
-
-        *end = t;
-        return v;
-    }
-
-    *end = t + strlen(t);
-    return 0;
-}
-
-static void json_parse_stats(const char *json)
-{
-    const char *t;
-#define MAX_AVGS 100 
-    uint64_t avg_rtt[MAX_AVGS + 1];
-    int avg_rtt_i = 0;
-    avg_rtt[MAX_AVGS] = 0;
-    t = json;
-
-    RTI_RoutingServiceLogger_log(
-            RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-            "%s",
-            __func__);
-
-    while (avg_rtt_i < MAX_AVGS && *t) {
-        avg_rtt[avg_rtt_i] = json_parse_fields(t, &t, "\"rtt\":", "\"avg\":");
-
-        if (avg_rtt[avg_rtt_i] < 100 )
-            continue;
-
-        avg_rtt[MAX_AVGS] += avg_rtt[avg_rtt_i];
-        avg_rtt_i++;
-    }
-
-    if (avg_rtt_i > 0)
-        avg_rtt[MAX_AVGS] /= avg_rtt_i;
-}
-
-static int stats_cb(rd_kafka_t *rk, char *json, size_t json_len, void *opaque)
-{
-    RTI_RoutingServiceLogger_log(
-            RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-            "%s",
-            __func__);
-
-    json_parse_stats(json);
-    RTI_RoutingServiceLogger_log(
-            RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-            "%s",
-            json);
-
-    return 0;
-}
-*/
-
 static void RTI_RS_KafkaConnection_dr_msg_cb(
         rd_kafka_t *rk,
         const rd_kafka_message_t *rkmessage,
@@ -137,7 +50,7 @@ static void RTI_RS_KafkaConnection_dr_msg_cb(
                 rkmessage->partition);
     }
 
-    // The rkmessage is destroyed automatically by librdkafka
+    /* The rkmessage is destroyed automatically by librdkafka */
 }
 
 void RTI_RS_KafkaConnection_cleanup_stream_writer(struct RTI_RS_KafkaStreamWriter *self)
@@ -169,9 +82,9 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
     struct RTI_RS_KafkaConnection *kafka_connection =
             (struct RTI_RS_KafkaConnection *) connection;
     struct RTI_RS_KafkaStreamWriter *stream_writer = NULL;
-    char errstr[ERR_MSG_BUF_SIZE]; /* librdkafka API error reporting buffer */
+    char errstr[ERR_MSG_BUF_SIZE] = {0}; /* librdkafka API error reporting buffer */
     int i = 0;
-    rd_kafka_conf_res_t res;
+    rd_kafka_conf_res_t res = RD_KAFKA_CONF_UNKNOWN;
 
     RTI_RoutingServiceLogger_log(
             RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
@@ -228,7 +141,7 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
                 "property value[%d]: %s\n",
                 i,
                 properties->properties[i].value);
-        // Skip RTI Connext configurations
+        /* Skip RTI Connext configurations */
         if ((strcmp(properties->properties[i].name, "topic") == 0)
             || (strcmp(properties->properties[i].name,
                        "rti.routing_service.entity.resource_name")
@@ -258,18 +171,6 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
      * The callback is only triggered from rd_kafka_poll() and
      * rd_kafka_flush(). */
     rd_kafka_conf_set_dr_msg_cb(stream_writer->conf, RTI_RS_KafkaConnection_dr_msg_cb);
-
-    /* Set the statistics callback. */
-    /*
-    rd_kafka_conf_set_stats_cb(stream_writer->conf, stats_cb);
-
-    if (rd_kafka_conf_set(stream_writer->conf, "statistics.interval.ms",
-                          "1000",
-                          errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
-    {
-        RTI_RoutingServiceEnvironment_set_error(env, errstr);
-        return NULL;
-    }*/
 
     /*
      * Create producer instance.
@@ -647,7 +548,6 @@ void RTI_RS_KafkaConnection_delete_stream_reader(
             (struct RTI_RS_KafkaStreamReader *) stream_reader;
 
     void *value = NULL;
-    struct DDS_Duration_t sleep_period = { 1, 0 };
 
     RTI_RoutingServiceLogger_log(
             RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,

@@ -179,7 +179,6 @@ void RTI_RS_KafkaStreamReader_read(
         return;
     }
 
-    // TODO the payload.data should be configurable
     retcode = DDS_DynamicData_set_octet_seq(
             sample,
             "payload.data",

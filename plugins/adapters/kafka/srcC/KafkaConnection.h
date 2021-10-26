@@ -33,11 +33,6 @@ struct RTI_RS_KafkaConnection {
     struct RTI_RS_KafkaAdapterPlugin *adapter;
     const char *bootstrap_servers; /* Initial list of brokers as a CSV list of
                                       broker host or host:port */
-    // char *client_id; /* Client identifier (default: rdkafka) */
-    // unsigned int statistics_interval_ms; /* Statistics emit interval
-    // (default: 0) */ char *security_protocol; /* Protocol used to communicate
-    // with brokers. (options: plaintext, ssl, sasl_plaintext, sasl_ssl)
-    // (default: plaintext) */
 };
 
 RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
