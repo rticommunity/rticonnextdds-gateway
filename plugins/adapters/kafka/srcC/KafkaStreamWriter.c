@@ -96,17 +96,16 @@ int RTI_RS_KafkaStreamWriter_write(
         err = rd_kafka_producev(
                 self->rk,
                 RD_KAFKA_V_TOPIC(self->topic),
-                // Make a copy of the payload.
+                /* Make a copy of the payload. */
                 RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
-                // Message value and length
+                /* Message value and length */
                 RD_KAFKA_V_VALUE(buffer, len),
-                // Per-Message opaque, provided in delivery report callback as
-                // msg_opaque.
+                /* Per-Message opaque, provided in delivery report callback as msg_opaque. */
                 RD_KAFKA_V_OPAQUE(NULL),
-                // End sentinel
+                /* End sentinel */
                 RD_KAFKA_V_END);
-        if (err) {
-            // Failed to *enqueue* message for producing.
+        if (err != RD_KAFKA_RESP_ERR_NO_ERROR) {
+            /* Failed to *enqueue* message for producing. */
             RTI_RoutingServiceLogger_log(
                     RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
                     "Failed to produce to topic %s: %s\n",
@@ -114,21 +113,21 @@ int RTI_RS_KafkaStreamWriter_write(
                     rd_kafka_err2str(err));
 
             if (err == RD_KAFKA_RESP_ERR__QUEUE_FULL) {
-                // If the internal queue is full, wait for
-                // messages to be delivered and then retry.
-                // The internal queue represents both
-                // messages to be sent and messages that have
-                // been sent or failed, awaiting their
-                // delivery report callback to be called.
+                /* If the internal queue is full, wait for
+                 * messages to be delivered and then retry.
+                 * The internal queue represents both
+                 * messages to be sent and messages that have
+                 * been sent or failed, awaiting their
+                 * delivery report callback to be called.
 
-                // The internal queue is limited by the
-                // configuration property
-                // queue.buffering.max.messages
+                 * The internal queue is limited by the
+                 * configuration property
+                 * queue.buffering.max.messages */
                 RTI_RoutingServiceLogger_log(
                         RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
                         "Internal queue is full. Waiting for messages to be "
                         "delivered...");
-                rd_kafka_poll(self->rk, 10);  // block for max 10ms
+                rd_kafka_poll(self->rk, 10);  /* block for max 10ms */
                 goto retry;
             }
         } else {
