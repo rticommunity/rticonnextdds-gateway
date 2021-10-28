@@ -92,7 +92,6 @@ int RTI_RS_KafkaStreamWriter_write(
                 "Payload lenth: %d",
                 len);
 
-    retry:
         err = rd_kafka_producev(
                 self->rk,
                 RD_KAFKA_V_TOPIC(self->topic),
@@ -111,8 +110,7 @@ int RTI_RS_KafkaStreamWriter_write(
                     "Failed to produce to topic %s: %s\n",
                     self->topic,
                     rd_kafka_err2str(err));
-
-            if (err == RD_KAFKA_RESP_ERR__QUEUE_FULL) {
+            while (err == RD_KAFKA_RESP_ERR__QUEUE_FULL) {
                 /* If the internal queue is full, wait for
                  * messages to be delivered and then retry.
                  * The internal queue represents both
@@ -127,8 +125,26 @@ int RTI_RS_KafkaStreamWriter_write(
                         RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
                         "Internal queue is full. Waiting for messages to be "
                         "delivered...");
-                rd_kafka_poll(self->rk, 10);  /* block for max 10ms */
-                goto retry;
+                rd_kafka_poll(self->rk, 10); /* block for max 10ms */
+                err = rd_kafka_producev(
+                        self->rk,
+                        RD_KAFKA_V_TOPIC(self->topic),
+                        /* Make a copy of the payload. */
+                        RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
+                        /* Message value and length */
+                        RD_KAFKA_V_VALUE(buffer, len),
+                        /* Per-Message opaque, provided in delivery report
+                           callback as msg_opaque. */
+                        RD_KAFKA_V_OPAQUE(NULL),
+                        /* End sentinel */
+                        RD_KAFKA_V_END);
+                if (err != RD_KAFKA_RESP_ERR_NO_ERROR) {
+                    RTI_RoutingServiceLogger_log(
+                            RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
+                            "Failed to produce to topic %s: %s\n",
+                            self->topic,
+                            rd_kafka_err2str(err));
+                }
             }
         } else {
             RTI_RoutingServiceLogger_log(
