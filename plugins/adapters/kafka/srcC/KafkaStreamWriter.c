@@ -171,5 +171,3 @@ int RTI_RS_KafkaStreamWriter_write(
 
     return count;
 }
-
-#undef ROUTER_CURRENT_SUBMODULE

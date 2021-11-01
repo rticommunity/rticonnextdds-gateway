@@ -576,5 +576,3 @@ void RTI_RS_KafkaConnection_delete_stream_reader(
     /* Free allocated resources */
     RTI_RS_KafkaConnection_cleanup_stream_reader(stream_reader);
 }
-
-#undef ROUTER_CURRENT_SUBMODULE

@@ -151,5 +151,3 @@ void RTI_RS_KafkaAdapterPlugin_delete_connection(
 
     free(connection);
 }
-
-#undef ROUTER_CURRENT_SUBMODULE

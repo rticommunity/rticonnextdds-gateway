@@ -219,4 +219,3 @@ void RTI_RS_KafkaStreamReader_return_loan(
     }
 }
 
-#undef ROUTER_CURRENT_SUBMODULE
