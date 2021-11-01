@@ -27,7 +27,6 @@
 
 struct RTI_RS_KafkaStreamReader {
     rd_kafka_t *rk;          /* rdkafka consumer instance handle */
-    rd_kafka_conf_t *conf;   /* rdkafka configuration object */
     rd_kafka_message_t *rkm; /*rdkafka message object */
     const char *topic;       /* Topic to consume */
     struct RTIOsapiJoinableThread *polling_thread;

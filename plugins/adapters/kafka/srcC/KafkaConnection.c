@@ -85,6 +85,7 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
     char errstr[ERR_MSG_BUF_SIZE] = {0}; /* librdkafka API error reporting buffer */
     int i = 0;
     rd_kafka_conf_res_t res = RD_KAFKA_CONF_UNKNOWN;
+    rd_kafka_conf_t *conf = NULL;   /* rdkafka configuration object */
 
     RTI_RoutingServiceLogger_log(
             RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
@@ -112,14 +113,14 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
         goto error;
     }
 
-    stream_writer->conf = rd_kafka_conf_new();
+    conf = rd_kafka_conf_new();
 
     /* Set bootstrap broker(s) as a comma-separated list of
      * host or host:port (default port 9092).
      * librdkafka will use the bootstrap brokers to acquire the full
      * set of brokers from the cluster. */
     if (rd_kafka_conf_set(
-                stream_writer->conf,
+                conf,
                 "bootstrap.servers",
                 kafka_connection->bootstrap_servers,
                 errstr,
@@ -152,7 +153,7 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
                     properties->properties[i].name);
         } else {
             res = rd_kafka_conf_set(
-                    stream_writer->conf,
+                    conf,
                     properties->properties[i].name,
                     properties->properties[i].value,
                     errstr,
@@ -170,7 +171,7 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
      * See dr_msg_cb() above.
      * The callback is only triggered from rd_kafka_poll() and
      * rd_kafka_flush(). */
-    rd_kafka_conf_set_dr_msg_cb(stream_writer->conf, RTI_RS_KafkaConnection_dr_msg_cb);
+    rd_kafka_conf_set_dr_msg_cb(conf, RTI_RS_KafkaConnection_dr_msg_cb);
 
     /*
      * Create producer instance.
@@ -181,7 +182,7 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
      */
     stream_writer->rk = rd_kafka_new(
             RD_KAFKA_PRODUCER,
-            stream_writer->conf,
+            conf,
             errstr,
             sizeof(errstr));
     if (!stream_writer->rk) {
@@ -287,6 +288,7 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
     	DDS_DynamicDataTypeProperty_t_INITIALIZER;
     int i = 0;
     rd_kafka_conf_res_t res;
+    rd_kafka_conf_t *conf = NULL;
 
     RTI_RoutingServiceLogger_log(
             RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
@@ -353,7 +355,8 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
         goto error;
     }
 
-    stream_reader->conf = rd_kafka_conf_new();
+    conf = rd_kafka_conf_new();
+
     if (!DDS_OctetSeq_initialize(&stream_reader->payload)) {
         RTI_RoutingServiceEnvironment_set_error(
                 env,
@@ -366,7 +369,7 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
      * librdkafka will use the bootstrap brokers to acquire the full
      * set of brokers from the cluster. */
     if (rd_kafka_conf_set(
-                stream_reader->conf,
+                conf,
                 "bootstrap.servers",
                 kafka_connection->bootstrap_servers,
                 errstr,
@@ -382,7 +385,7 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
      * according to the partition.assignment.strategy
      * (consumer config property) to the consumers in the group. */
     if (rd_kafka_conf_set(
-                stream_reader->conf,
+                conf,
                 "group.id",
                 "1",
                 errstr,
@@ -415,7 +418,7 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
                     properties->properties[i].name);
         } else {
             res = rd_kafka_conf_set(
-                    stream_reader->conf,
+                    conf,
                     properties->properties[i].name,
                     properties->properties[i].value,
                     errstr,
@@ -436,7 +439,7 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
      */
     stream_reader->rk = rd_kafka_new(
             RD_KAFKA_CONSUMER,
-            stream_reader->conf,
+            conf,
             errstr,
             sizeof(errstr));
     if (!stream_reader->rk) {
