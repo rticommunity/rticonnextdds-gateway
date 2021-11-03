@@ -29,7 +29,6 @@
 
 struct RTI_RS_KafkaStreamWriter {
     rd_kafka_t *rk;        /* rdkafka producer instance handle */
-    rd_kafka_conf_t *conf; /* rdkafka configuration object */
     const char *topic;     /* Topic to produce to */
 };
 

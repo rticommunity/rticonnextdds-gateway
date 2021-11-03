@@ -48,11 +48,6 @@ target_link_libraries(${RSPLUGIN_LIB_NAME}
 
 rtigw_configure_plugin_defines()
 
-target_compile_definitions(${RSPLUGIN_LIB_NAME}
-    PUBLIC
-        ${${RSPLUGIN_PREFIX}_DEFINES}
-)
-
 # Stagging targets
 install(
     TARGETS ${RSPLUGIN_LIB_NAME}

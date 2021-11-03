@@ -29,7 +29,7 @@ struct RTI_RoutingServiceAdapterPlugin *RTI_RS_Kafka_AdapterPlugin_create(
         RTI_RoutingServiceEnvironment *env)
 {
     struct RTI_RS_KafkaAdapterPlugin *adapter = NULL;
-    struct RTI_RoutingServiceVersion version = { 0, 0, 0, 1 };
+    struct RTI_RoutingServiceVersion version = KAFKA_ADAPTER_VERSION;
 
     RTI_RoutingServiceLogger_log(
             RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
@@ -151,5 +151,3 @@ void RTI_RS_KafkaAdapterPlugin_delete_connection(
 
     free(connection);
 }
-
-#undef ROUTER_CURRENT_SUBMODULE

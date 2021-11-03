@@ -114,17 +114,11 @@ void *RTI_RS_KafkaStreamReader_on_data_availabe_thread(void *thread_params)
             continue;
         }
 
-        // TODO not sure if we need the +1, it depends on how the
-        // payload
-        // is serialized in kafka and what the 'len' contains
-        // KA: Kafka does not serialize data. Need to discuss on
-        // this... KA: instead of copying the buffer, loaning the
-        // buffer from the kafka message object.
         if (!DDS_OctetSeq_loan_contiguous(
                     &self->payload,
                     (DDS_Octet *) self->rkm->payload,
-                    self->rkm->len + 1,
-                    self->rkm->len + 1)) {
+                    self->rkm->len,
+                    self->rkm->len)) {
             if (!RTI_RS_KafkaStreamReader_error_cleanup(self)) {
                 return NULL;
             }
@@ -179,7 +173,6 @@ void RTI_RS_KafkaStreamReader_read(
         return;
     }
 
-    // TODO the payload.data should be configurable
     retcode = DDS_DynamicData_set_octet_seq(
             sample,
             "payload.data",
@@ -226,4 +219,3 @@ void RTI_RS_KafkaStreamReader_return_loan(
     }
 }
 
-#undef ROUTER_CURRENT_SUBMODULE

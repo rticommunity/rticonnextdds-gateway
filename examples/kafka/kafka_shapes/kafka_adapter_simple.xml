@@ -76,7 +76,8 @@ use or inability to use the software.
             </connection>
             <session name="session">
                 <route name="dds_to_kafka">
-                    <dds_input name="Square" participant="dds">
+			<dds_input name="Square" participant="dds">
+			<topic_name>Square</topic_name>
                         <registered_type_name>
                             ShapeType
                         </registered_type_name>
@@ -126,14 +127,15 @@ use or inability to use the software.
                                     <name>topic</name>
                                     <value>Square</value>
                                 </element>
-                                    <element>
-			                <name>auto.offset.reset</name>
-                                        <value>latest</value>
-                                    </element>
+                                <element>
+			            <name>auto.offset.reset</name>
+                                    <value>latest</value>
+                                </element>
                             </value>
                         </property>
                     </input>
                     <dds_output name="KafkaSquare" participant="dds">
+			<topic_name>KafkaSquare</topic_name>
                         <registered_type_name>
                             ShapeType
                         </registered_type_name>
