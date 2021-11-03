@@ -72,4 +72,7 @@ macro (rtigw_configure_rd_kafka_build)
     set(WITH_BUNDLED_SSL ${RTIGATEWAY_ENABLE_SSL}
         CACHE INTERNAL "Enable building RD Kafka with OpenSSL support"
         FORCE)
+    set(WITH_SSL ${RTIGATEWAY_ENABLE_SSL}
+        CACHE INTERNAL "Enable building RD Kafka with OpenSSL support"
+        FORCE)
 endmacro()
