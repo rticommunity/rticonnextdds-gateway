@@ -40,6 +40,14 @@ rtigw_add_plugin(
     PLUGIN_TYPE "ADAPTER"
 )
 
+rtigw_add_plugin(
+    ENABLE_PLUGIN RTIGATEWAY_ENABLE_KAFKA
+    PREFIX "RTI_KAFKA"
+    STAGING_DIR "kafka"
+    PLUGIN_DIR_NAME "kafka"
+    PLUGIN_TYPE "ADAPTER"
+)
+
 # Adding processors
 rtigw_add_plugin(
     ENABLE_PLUGIN RTIGATEWAY_ENABLE_FWD

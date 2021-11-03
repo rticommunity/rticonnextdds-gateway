@@ -30,8 +30,7 @@ import sphinx_rtd_theme
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.imgmath',
-              'sphinx.ext.extlinks',]
+extensions = ['sphinx.ext.imgmath']
 
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']
@@ -46,8 +45,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'RTI Connext Gateway'
-copyright = '2020, Real-Time Innovations, Inc'
+project = 'RTI Routing Service Kafka Adapter'
+copyright = '2021, Real-Time Innovations, Inc'
 author = 'Real-Time Innovations, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -120,22 +119,25 @@ html_sidebars = {
     ]
 }
 
-# -- links
-LINK_PAHO_C = 'https://www.eclipse.org/paho/clients/c/'
-LINK_LIBMODBUS = 'https://libmodbus.org/'
-LINK_RDKAFKA = 'https://github.com/edenhill/librdkafka'
-LINK_JSON_PARSER = 'https://github.com/udp/json-parser'
+# -- Custom roles
+from docutils import nodes
 
-extlinks = {'link_paho_c': (LINK_PAHO_C + '%s', 'link_paho_c'),
-            'link_libmodbus': (LINK_LIBMODBUS + '%s', 'link_libmodbus'),
-            'link_librdkafka': (LINK_RDKAFKA + '%s', 'link_librdkafka'),
-            'link_json_parser': (LINK_JSON_PARSER + '%s', 'link_json_parser')
-}
+def role_litrep(name, rawtext, text, lineno, inliner,
+            options={}, content=[]):
+
+    node = nodes.Text(text)
+    node.source, node.line = inliner.reporter.get_source_and_line(lineno)
+    return [node],[]
+
+from docutils.parsers.rst import roles
+roles.register_local_role('litrep', role_litrep)
 
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'RTI_Properties'
+htmlhelp_basename = 'RTIConnextGatewayKafkaDoc'
 
-
-
+rst_epilog = """
+.. |version| replace:: {0}
+.. |project| replace:: {1}
+""".format(version, project)
