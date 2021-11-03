@@ -49,14 +49,6 @@ External Librarires
               implementation of the client side of the MQTT protocol.
 :License: `Eclipse Public License - v 2.0 <https://github.com/eclipse/paho.mqtt.c/blob/master/LICENSE>`__
 
-|RSKAFKA|
-~~~~~~~~~
-
-:librdkafka: The :link_librdkafka:`Librdkafka <>` library is used as
-              implementation of the client side of the Kafka protocol.
-:License: `2-clause BSD license <https://github.com/edenhill/librdkafka/blob/master/LICENSE>`__
-
-
 Other Dependencies
 ------------------
 

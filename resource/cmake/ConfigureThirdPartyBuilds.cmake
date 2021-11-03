@@ -54,25 +54,5 @@ macro (rtigw_install_dependencies_dll)
                 rtigw_copy_dll_from_third_party_bin_to_lib("paho-mqtt3c")
             endif()
         endif()
-
-        if(RTIGATEWAY_ENABLE_KAFKA)
-            rtigw_copy_dll_from_third_party_bin_to_lib("rdkafka")
-            rtigw_copy_dll_from_third_party_bin_to_lib("rdkafka++")
-        endif()
     endif()
-endmacro()
-
-macro (rtigw_configure_rd_kafka_build)
-    set(RDKAFKA_BUILD_EXAMPLES        FALSE
-        CACHE INTERNAL "Enable building RD Kafka's documentation"
-        FORCE)
-    set(RDKAFKA_BUILD_TESTS              FALSE
-        CACHE INTERNAL "Enable building RD Kafka's sample programs"
-        FORCE)
-    set(WITH_BUNDLED_SSL ${RTIGATEWAY_ENABLE_SSL}
-        CACHE INTERNAL "Enable building RD Kafka with OpenSSL support"
-        FORCE)
-    set(WITH_SSL ${RTIGATEWAY_ENABLE_SSL}
-        CACHE INTERNAL "Enable building RD Kafka with OpenSSL support"
-        FORCE)
 endmacro()
