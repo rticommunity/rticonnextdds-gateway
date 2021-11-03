@@ -23,7 +23,7 @@ DDS and Routing Service, and their terminology.
 Modbus Registers and Addresses
 ------------------------------
 
-|RSMODBUS| diferentiates between a "register address" and a "register number".
+|RSMODBUS| differentiates between a "register address" and a "register number".
 Register addresses use a 0-based index; register numbers use a 1-based index.
 
 Throughout this documentation, only "register address" is used. Therefore,

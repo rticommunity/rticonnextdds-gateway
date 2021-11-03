@@ -187,6 +187,15 @@ RTIGATEWAY_ENABLE_MQTT
               components are enabled unless they are specifically disabled
               (tests, examples, docs...).
 
+RTIGATEWAY_ENABLE_KAFKA
+^^^^^^^^^^^^^^^^^^^^^^^
+
+:Required: No
+:Default: ``ON``
+:Description: If this variable is enabled, the Kafka adapter and all its
+              components are enabled unless they are specifically disabled
+              (tests, examples, docs...).
+
 RTIGATEWAY_ENABLE_FWD
 ^^^^^^^^^^^^^^^^^^^^^
 
