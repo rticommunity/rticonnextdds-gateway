@@ -22,7 +22,7 @@ Bug fixes (September 2021)
    field was unsigned. Now an error is thrown when this happens.
 
 Supported Platforms
---------------------
+-------------------
 
 |RTI_RSMODBUS| is expected to build and run on the platforms in
 :numref:`TableSupportedPlatforms`.

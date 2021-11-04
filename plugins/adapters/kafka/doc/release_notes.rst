@@ -6,7 +6,7 @@ Release Notes
 =============
 
 Supported Platforms
---------------------
+-------------------
 
 |RTI_RSKAFKA| is expected to build and run on the platforms in
 :numref:`TableSupportedPlatforms`.
