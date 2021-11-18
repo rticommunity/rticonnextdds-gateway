@@ -31,12 +31,12 @@ use or inability to use the software.
         </transformation_plugin>
     </plugin_library>
     <types>
-    <struct name="ShapeType" extensibility="extensible">
-      <member name="color" stringMaxLength="128" type="string" key="true"/>
-      <member name="x" type="long"/>
-      <member name="y" type="long"/>
-      <member name="shapesize" type="long"/>
-    </struct>
+        <struct name="ShapeType" extensibility="extensible">
+            <member name="color" stringMaxLength="128" type="string" key="true"/>
+            <member name="x" type="long"/>
+            <member name="y" type="long"/>
+            <member name="shapesize" type="long"/>
+        </struct>
         <module name="RTI">
             <module name="Kafka">
                 <struct name="MessagePayload" nested="true">
@@ -76,8 +76,8 @@ use or inability to use the software.
             </connection>
             <session name="session">
                 <route name="dds_to_kafka">
-			<dds_input name="Square" participant="dds">
-			<topic_name>Square</topic_name>
+            <dds_input name="Square" participant="dds">
+            <topic_name>Square</topic_name>
                         <registered_type_name>
                             ShapeType
                         </registered_type_name>
@@ -128,14 +128,14 @@ use or inability to use the software.
                                     <value>Square</value>
                                 </element>
                                 <element>
-			            <name>auto.offset.reset</name>
+                        <name>auto.offset.reset</name>
                                     <value>latest</value>
                                 </element>
                             </value>
                         </property>
                     </input>
                     <dds_output name="KafkaSquare" participant="dds">
-			<topic_name>KafkaSquare</topic_name>
+            <topic_name>KafkaSquare</topic_name>
                         <registered_type_name>
                             ShapeType
                         </registered_type_name>
