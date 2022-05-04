@@ -7,7 +7,7 @@ through a Modbus gateway [USR-W610](https://www.pusr.com/products/rs232/rs485-to
 and RS485.
 The configuration used for this example contains the following fields:
 
-* Modbus Input - MBus_WTH_CO2_LCD_ETH_INPUT.idl
+* Modbus Input - modbus_serial_device.idl
   * serial_id
   * temperature_celsius
   * humidity
