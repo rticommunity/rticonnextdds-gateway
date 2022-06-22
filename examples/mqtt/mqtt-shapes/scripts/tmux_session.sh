@@ -121,9 +121,11 @@ function send_tmux_commands {
     #######################################################################
 
     tmux send-keys -t "$session_name:1.0" \
-        "LD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH ./mqtt-shapes" C-m
+        "DYLD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH " \
+            "LD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH ./mqtt-shapes" C-m
     tmux send-keys -t "$session_name:1.1" \
-        "sleep 4 && LD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH " \
+        "sleep 4 && DYLD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH " \
+            "LD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH " \
             "$NDDSHOME/bin/rtiroutingservice -cfgFile ${DEMO_DIR}/etc/shapes_bridge.xml -cfgName shapes_bridge" C-m
     tmux send-keys -t "$session_name:1.2" \
         "sleep 2 && ${DEMO_DIR}/scripts/shapes_mqtt_publisher.sh GREEN" C-m

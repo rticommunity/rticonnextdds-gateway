@@ -180,6 +180,12 @@ The following additional external dependencies are required to run the demo:
 
 - [tmux](https://github.com/tmux/tmux) (optional)
 
+Additionally, in macOS® systems you need to install `coreutils`:
+
+    ```sh
+    brew install coreutils
+    ```
+
 ## Building
 
 This section contains instructions on how to configure, build, and run the
@@ -203,7 +209,7 @@ demo on your system.
    By default, the broker will be started and added to the services run
    at start up.
 
-   On Linux systems:
+   On Linux® systems:
 
     ```sh
     sudo apt install mosquitto mosquitto-clients
@@ -212,8 +218,8 @@ demo on your system.
     sudo service mosquitto disable
     ```
 
-3. On Linux systems, optionally, you can also install `tmux` in order to spawn
-   all components in a single window split into multiple panes:
+3. On Linux and macOS systems, optionally, you can also install `tmux` in order
+   to spawn all components in a single window split into multiple panes:
 
     ```sh
     apt install tmux
@@ -255,11 +261,25 @@ Configuration steps:
 
 3. Restart the `mosquitto` MQTT Broker:
 
+    Kill `mosquitto` if it is already running:
+
     ```sh
     sudo service mosquitto stop
     sudo service mosquitto disable
+    ```
+
+    or
+
+    ```sh
+    pkill -f mosquitto
+    ```
+
+    Start `mosquitto` broker again:
+
+    ```sh
     mosquitto -c etc/mosquitto/mosquitto.conf -p 1883 -d
     ```
+
     > **NOTE**: the Windows® version of `mosquitto` doesn't support the daemon
     > mode, so we shouldn't add the option `-d`.
 
@@ -276,7 +296,7 @@ Also, make sure that `mosquitto_pub`, and `mosquitto_sub` are available from
 the current command prompt, otherwise you should modify the PATH environment
 variable.
 
-Linux® systems:
+Linux and macOS systems:
 
     ```sh
     ./scripts/tmux_session.sh
@@ -332,8 +352,9 @@ for all of the terminals. Also the working directory for them is
     ```
 
 > **NOTE**: The above commands are for Linux systems, there are similar `*.bat`
-> scripts that can be used when using Windows. Also, we need to set the
-> environment variables before running the corresponding command.
+> scripts that can be used when using Windows. Also, depending on the OS,
+> the `PATH` or `DYLD_LIBRARY_PATH` environment variable should be set
+> before running the corresponding command.
 
 In order to see the shapes that are being published, you can subscribe to
 different shapes by clicking in the following menu items in the
@@ -350,8 +371,8 @@ menu items in the *RTI Shapes Demo* application:
 - "Publish/Circle..." and click 'OK' to use the default parameters.
 - "Publish/Triangle..." and click 'OK' to use the default parameters.
 
-> **NOTE**: The Windows `shapes_mqtt_publisher.bat` only publishes circles if
-> the topic is not specified.
+> **NOTE**: The Windows script `shapes_mqtt_publisher.bat` only publishes
+> circles if the topic is not specified.
 
 ## Navigating the demo with tmux
 
