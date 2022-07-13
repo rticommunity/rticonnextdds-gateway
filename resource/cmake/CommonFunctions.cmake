@@ -261,7 +261,7 @@ macro(rtigw_init_globals)
 
     list(APPEND CMAKE_MODULE_PATH "${RTICMAKE_UTILS_MODULES_DIR}")
 
-    rtigw_configure_connextdds(6.0.1)
+    rtigw_configure_connextdds(6.1.0)
 
     if (RTIGATEWAY_ENABLE_TESTS)
         enable_testing()
