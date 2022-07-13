@@ -15,7 +15,7 @@
 -->
 
 <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/latest/rti_dds_qos_profiles.xsd">
+    xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/current/rti_dds_qos_profiles.xsd">
 
   <qos_library name="ModbusAdapterLibrary">
     <qos_profile name="MyTypeProfile" base_name="BuiltinQosLibExp::Generic.BestEffort" is_default_qos="true">

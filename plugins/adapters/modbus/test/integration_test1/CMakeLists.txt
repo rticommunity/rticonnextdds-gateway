@@ -58,7 +58,7 @@ target_link_libraries(${TEST_NAME}
 # staging rules
 # Config files
 
-set(CO2_LCD_ETH_EXAMPLE_INSTALL_FILES
+set(MODBUS_ADAPTER_TEST_INSTALL_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/config/test_pub_config.json"
         "${CMAKE_CURRENT_SOURCE_DIR}/config/test_sub_config.json"
         "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
@@ -73,7 +73,7 @@ install(
 )
 
 install(
-    FILES ${CO2_LCD_ETH_EXAMPLE_INSTALL_FILES}
+    FILES ${MODBUS_ADAPTER_TEST_INSTALL_FILES}
     DESTINATION "${STAGING_TEST_DIR}/${STAGING_PLUGIN_DIR}/${TEST_NAME}"
 )
 
