@@ -174,6 +174,7 @@ function(rtigw_configure_connextdds _CONNEXTDDS_VERSION)
 
     if (DEFINED CONNEXTDDS_ARCH)
         message(STATUS "CONNEXTDDS_ARCH set to <${CONNEXTDDS_ARCH}>")
+        set (CONNEXTDDS_ARCH ${CONNEXTDDS_ARCH} PARENT_SCOPE)
     endif()
 
     find_package(
@@ -248,6 +249,7 @@ macro(rtigw_init_globals)
     option(RTIGATEWAY_ENABLE_FWD "Build Forwarder Processor" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_TSFM_FIELD "Build Field Transformation" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_TSFM_JSON "Build JSON Transformation" ${RTIGATEWAY_ENABLE_ALL})
+    option(RTIGATEWAY_ENABLE_TSFM_SEQ2ARRAY "Build Seq2Array Transformation" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_TESTS "Build tester applications for enabled plugins" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_EXAMPLES "Build examples applications for enabled plugins" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_DOCS "Build documentation for enabled plugins" OFF)

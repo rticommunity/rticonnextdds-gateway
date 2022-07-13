@@ -366,7 +366,7 @@ DynamicType rti::common::dynamic_data::get_member_type(
         nested_elements = rti::utils::strings::split(field_name, '.');
         type = const_cast<DynamicType *>(
                 &struct_type.member(nested_elements[0]).type());
-        // the loop starts in 1 because we already has taken the first element
+        // the loop starts at 1 because we already have taken the first element
         for (int i = 1; i < nested_elements.size(); ++i) {
             if (type->kind() == TypeKind::STRUCTURE_TYPE) {
                 const StructType &dynamic_struct =
@@ -384,4 +384,172 @@ DynamicType rti::common::dynamic_data::get_member_type(
                 &struct_type.member(field_name).type());
     }
     return *type;
+}
+
+
+/*
+ * @brief Copy a primitive member from the input to the output. The index
+ * specifies which type is being copied.
+ *
+ * Input may be a sequence or an array
+ * Output is an array
+ */
+void rti::common::dynamic_data::copy_primitive_array_elements(
+        DynamicData& input,
+        DynamicData& output,
+        uint32_t index,
+        uint32_t max_elements)
+{
+    switch (input.member_info(index).element_kind().underlying()) {
+    case TypeKind::BOOLEAN_TYPE:
+    // booleans are stored in memory as uint8_t for arrays/seqs
+    case TypeKind::UINT_8_TYPE: {
+        auto values = input.get_values<uint8_t>(index);
+        values.resize(max_elements);
+        output.set_values<uint8_t>(index, values);
+
+        break;
+    }
+    case TypeKind::CHAR_8_TYPE: {
+        auto values = input.get_values<char>(index);
+        values.resize(max_elements);
+        output.set_values<char>(index, values);
+
+        break;
+    }
+    case TypeKind::INT_16_TYPE: {
+        auto values = input.get_values<int16_t>(index);
+        values.resize(max_elements);
+        output.set_values<int16_t>(index, values);
+
+        break;
+    }
+    case TypeKind::UINT_16_TYPE: {
+        auto values = input.get_values<uint16_t>(index);
+        values.resize(max_elements);
+        output.set_values<uint16_t>(index, values);
+
+        break;
+    }
+    case TypeKind::INT_32_TYPE:
+    case TypeKind::ENUMERATION_TYPE: {
+        auto values = input.get_values<int32_t>(index);
+        values.resize(max_elements);
+        output.set_values<int32_t>(index, values);
+        break;
+    }
+    case TypeKind::UINT_32_TYPE: {
+        auto values = input.get_values<uint32_t>(index);
+        values.resize(max_elements);
+        output.set_values<uint32_t>(index, values);
+
+        break;
+    }
+    case TypeKind::INT_64_TYPE: {
+        auto values = input.get_values<int64_t>(index);
+        values.resize(max_elements);
+        output.set_values<int64_t>(index, values);
+
+        break;
+    }
+    case TypeKind::UINT_64_TYPE: {
+        auto values = input.get_values<uint64_t>(index);
+        values.resize(max_elements);
+        output.set_values<uint64_t>(index, values);
+
+        break;
+    }
+    case TypeKind::FLOAT_32_TYPE: {
+        auto values = input.get_values<float>(index);
+        values.resize(max_elements);
+        output.set_values<float>(index, values);
+
+        output.set_values<float>(index, input.get_values<float>(index));
+        break;
+    }
+    case TypeKind::FLOAT_64_TYPE: {
+        auto values = input.get_values<double>(index);
+        values.resize(max_elements);
+        output.set_values<double>(index, values);
+
+        output.set_values<double>(index, input.get_values<double>(index));
+        break;
+    }
+    case TypeKind::STRING_TYPE: {
+        for (int i = 1; i <= max_elements; ++i) {
+            output.value<std::string>(i, input.value<std::string>(i));
+        }
+        break;
+    }
+    default:
+        std::string error("Error: unsupported type of <" + input.type().name() + ">");
+        throw std::runtime_error(error);
+    }
+}
+
+/*
+ * @brief Copy a primitive member from the input to the output. The index
+ * specifies which type is being copied.
+ *
+ */
+void rti::common::dynamic_data::copy_primitive_member(
+        DynamicData& input,
+        DynamicData& output,
+        uint32_t index)
+{
+    switch (input.member_info(index).member_kind().underlying()) {
+    case TypeKind::BOOLEAN_TYPE:
+        output.value<bool>(index, input.value<bool>(index));
+        break;
+    case TypeKind::CHAR_8_TYPE:
+        output.value<char>(index, input.value<char>(index));
+        break;
+    case TypeKind::UINT_8_TYPE:
+        output.value<uint8_t>(index, input.value<uint8_t>(index));
+        break;
+    case TypeKind::INT_16_TYPE:
+        output.value<int16_t>(index, input.value<int16_t>(index));
+        break;
+    case TypeKind::UINT_16_TYPE: {
+        // output.value<uint16_t>(index, input.value<uint16_t>(index));
+        // affected by CORE-10286, use C API as a workaround
+        auto retcode = DDS_DynamicData_set_ushort(
+                &output.native(),
+                NULL,
+                index,
+                input.value<uint16_t>(index));
+        if (retcode != DDS_RETCODE_OK) {
+            std::string error("Error: setting ushort value of <"
+                    + input.type().name() + ">");
+            throw std::runtime_error(error);
+        }
+        break;
+    }
+    case TypeKind::INT_32_TYPE:
+    case TypeKind::ENUMERATION_TYPE:
+        output.value<int32_t>(index, input.value<int32_t>(index));
+        break;
+    case TypeKind::UINT_32_TYPE:
+        output.value<uint32_t>(index, input.value<uint32_t>(index));
+        break;
+    case TypeKind::INT_64_TYPE:
+        output.value<int64_t>(index, input.value<int64_t>(index));
+        break;
+    case TypeKind::UINT_64_TYPE:
+        output.value<uint64_t>(index, input.value<uint64_t>(index));
+        break;
+    case TypeKind::FLOAT_32_TYPE:
+        output.value<float>(index, input.value<float>(index));
+        break;
+    case TypeKind::FLOAT_64_TYPE:
+        output.value<double>(index, input.value<double>(index));
+        break;
+    case TypeKind::STRING_TYPE:{
+        output.value<std::string>(index, input.value<std::string>(index));
+        break;
+    }
+    default:
+        std::string error("Error: unsupported type of <" + input.type().name() + ">");
+        throw std::runtime_error(error);
+    }
 }
