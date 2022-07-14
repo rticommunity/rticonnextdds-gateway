@@ -309,33 +309,31 @@ Seq2ArrayTransformation::Seq2ArrayTransformation(
  * @brief Substitutes sequences by arrays of any type.
  *
  */
-DynamicData *Seq2ArrayTransformation::convert_sample(
-        DynamicData *input_sample,
-        const DynamicType &output_dynamic_type)
+void Seq2ArrayTransformation::convert_sample(
+        DynamicData &input_sample,
+        DynamicData &output_sample)
 {
-    DynamicData *output_sample = new DynamicData(output_dynamic_type);
-
     // convert all the elements within a struct, sequence, array or union.
-    for (uint32_t i = 1; i <= input_sample->member_count(); ++i) {
+    for (uint32_t i = 1; i <= input_sample.member_count(); ++i) {
         uint32_t member_to_process = i;
         bool is_union_member = false;
 
         // unions only have to check the value that the discriminator identifies
-        if (input_sample->type_kind() == TypeKind::UNION_TYPE) {
-            member_to_process = input_sample->discriminator_value();
+        if (input_sample.type_kind() == TypeKind::UNION_TYPE) {
+            member_to_process = input_sample.discriminator_value();
             is_union_member = true;
         }
 
-        if (!input_sample->member_exists(member_to_process)) {
+        if (!input_sample.member_exists(member_to_process)) {
             continue;
         }
 
         // convert a member of the main Dynamic Data
-        switch (input_sample->member_info(member_to_process).member_kind().underlying()) {
+        switch (input_sample.member_info(member_to_process).member_kind().underlying()) {
         case TypeKind::SEQUENCE_TYPE:
         case TypeKind::ARRAY_TYPE: {
-            auto input_loaned_member = input_sample->loan_value(member_to_process);
-            auto output_loaned_member = output_sample->loan_value(member_to_process);
+            auto input_loaned_member = input_sample.loan_value(member_to_process);
+            auto output_loaned_member = output_sample.loan_value(member_to_process);
 
             // in case of input sequences, check that the size of output array
             // is enough to store all the values the sequence has.
@@ -369,9 +367,7 @@ DynamicData *Seq2ArrayTransformation::convert_sample(
                 for (uint32_t j = 1; j <= input_loaned_member.get().member_count(); ++j) {
                     auto input_loaned_element = input_loaned_member.get().loan_value(j);
                     auto output_loaned_element = output_loaned_member.get().loan_value(j);
-                    output_loaned_element.get() = *convert_sample(
-                                &input_loaned_element.get(),
-                                output_loaned_element.get().type());
+                    convert_sample(input_loaned_element.get(), output_loaned_element.get());
 
                     input_loaned_element.return_loan();
                     output_loaned_element.return_loan();
@@ -384,10 +380,10 @@ DynamicData *Seq2ArrayTransformation::convert_sample(
                 input_loaned_member.return_loan();
                 output_loaned_member.return_loan();
                 rti::common::dynamic_data::copy_primitive_array_elements(
-                         *input_sample,
-                         *output_sample,
+                         input_sample,
+                         output_sample,
                          member_to_process,
-                         output_sample->member_info(member_to_process).element_count());
+                         output_sample.member_info(member_to_process).element_count());
                 break;
 
             }
@@ -397,13 +393,11 @@ DynamicData *Seq2ArrayTransformation::convert_sample(
         }
         case TypeKind::STRUCTURE_TYPE:
         case TypeKind::UNION_TYPE: {
-            auto input_loaned_member = input_sample->loan_value(member_to_process);
-            auto output_loaned_member = output_sample->loan_value(member_to_process);
+            auto input_loaned_member = input_sample.loan_value(member_to_process);
+            auto output_loaned_member = output_sample.loan_value(member_to_process);
             // call recursively the convert_sample function since the struct or
             // union may contain sequences
-            output_loaned_member.get() = *convert_sample(
-                    &input_loaned_member.get(),
-                    output_loaned_member.get().type());
+            convert_sample(input_loaned_member.get(), output_loaned_member.get());
             input_loaned_member.return_loan();
             output_loaned_member.return_loan();
             break;
@@ -411,8 +405,8 @@ DynamicData *Seq2ArrayTransformation::convert_sample(
         default:
             // copy directly the primitive member (including strings and enums)
             rti::common::dynamic_data::copy_primitive_member(
-                    *input_sample,
-                    *output_sample,
+                    input_sample,
+                    output_sample,
                     member_to_process);
         }
         if (is_union_member) {
@@ -421,7 +415,6 @@ DynamicData *Seq2ArrayTransformation::convert_sample(
             break;
         }
     }
-    return output_sample;
 }
 
 void Seq2ArrayTransformation::transform(
@@ -438,9 +431,9 @@ void Seq2ArrayTransformation::transform(
     // Convert each individual input sample
     for (size_t i = 0; i < input_sample_seq.size(); ++i) {
         // convert data
-        output_sample_seq[i] = convert_sample(
-                input_sample_seq[i],
-                output_type_info_);
+        output_sample_seq[i] = new DynamicData(output_type_info_);
+        convert_sample(*input_sample_seq[i], *output_sample_seq[i]);
+
         // copy info as is
         output_info_seq[i] = new SampleInfo(*input_info_seq[i]);
     }

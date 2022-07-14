@@ -45,10 +45,10 @@ private:
         const dds::core::xtypes::DynamicType & input_type,
         const dds::core::xtypes::DynamicType & output_type);
 
-    dds::core::xtypes::DynamicData *
-            convert_sample(
-                    dds::core::xtypes::DynamicData *input_sample,
-                    const dds::core::xtypes::DynamicType &output_dynamic_type);
+    void convert_sample(
+            dds::core::xtypes::DynamicData & input_sample,
+            dds::core::xtypes::DynamicData & output_sample);
+
     dds::core::xtypes::DynamicType input_type_info_;
     dds::core::xtypes::DynamicType output_type_info_;
 };
