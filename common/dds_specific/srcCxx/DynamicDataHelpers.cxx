@@ -433,29 +433,30 @@ void rti::common::dynamic_data::copy_primitive_array_elements(
     }
     case TypeKind::INT_32_TYPE:
     case TypeKind::ENUMERATION_TYPE: {
-        auto values = input.get_values<int32_t>(index);
+        auto values = input.get_values<DDS_Long>(index);
         values.resize(max_elements);
-        output.set_values<int32_t>(index, values);
+        output.set_values<DDS_Long>(index, values);
+
         break;
     }
     case TypeKind::UINT_32_TYPE: {
-        auto values = input.get_values<uint32_t>(index);
+        auto values = input.get_values<DDS_UnsignedLong>(index);
         values.resize(max_elements);
-        output.set_values<uint32_t>(index, values);
+        output.set_values<DDS_UnsignedLong>(index, values);
 
         break;
     }
     case TypeKind::INT_64_TYPE: {
-        auto values = input.get_values<int64_t>(index);
+        auto values = input.get_values<DDS_LongLong>(index);
         values.resize(max_elements);
-        output.set_values<int64_t>(index, values);
+        output.set_values<DDS_LongLong>(index, values);
 
         break;
     }
     case TypeKind::UINT_64_TYPE: {
-        auto values = input.get_values<uint64_t>(index);
+        auto values = input.get_values<DDS_UnsignedLongLong>(index);
         values.resize(max_elements);
-        output.set_values<uint64_t>(index, values);
+        output.set_values<DDS_UnsignedLongLong>(index, values);
 
         break;
     }
