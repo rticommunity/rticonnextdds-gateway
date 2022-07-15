@@ -103,8 +103,8 @@ https://community.rti.com/static/documentation/gateway/current/index.html
 
 - [doxygen](https://www.doxygen.nl/download.html)
 - [sphinx](https://www.sphinx-doc.org/en/master/usage/installation.html)
-- [graphviz](http://www.graphviz.org/download/): this might be required in
-Windows systems to run the `dot` command.
+- [graphviz](http://www.graphviz.org/download/): this might be required to run
+the `dot` command.
 - [docutils 0.14+](https://docutils.sourceforge.io/)
 
 > **NOTE**: you may need to install manually `sphinx_rtd_theme`,

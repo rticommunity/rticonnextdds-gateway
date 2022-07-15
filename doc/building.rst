@@ -16,7 +16,7 @@ The code can be built using |CMAKE|, version 3.10.0 or greater.
 Build Setup
 ===========
 
-|RTI_CONNEXT| (version |CONNEXT_VERSION_601| or greater) must be available
+|RTI_CONNEXT| (version |CONNEXT_VERSION| or greater) must be available
 on the build system. The installation must include libraries for the
 target build architecture, and ``rtiddsgen``.
 
@@ -222,6 +222,16 @@ RTIGATEWAY_ENABLE_TSFM_JSON
 :Description: If this variable is enabled, the JSON transformation and all its
               components are enabled unless they are specifically disabled
               (tests, examples, docs...).
+
+RTIGATEWAY_ENABLE_TSFM_SEQ2ARRAY
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:Required: No
+:Default: ``ON``
+:Description: If this variable is enabled, the Seq2Array transformation and all
+              its components are enabled unless they are specifically disabled
+              (tests, examples, docs...).
+
 
 RTIGATEWAY_ENABLE_LOG
 ^^^^^^^^^^^^^^^^^^^^^
