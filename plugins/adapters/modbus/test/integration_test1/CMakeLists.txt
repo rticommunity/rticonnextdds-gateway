@@ -39,6 +39,7 @@ connextdds_rtiddsgen_run(
     IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
     LANG "C"
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
+    EXTRA_ARGS ${RTIDDSGEN_GLOBAL_ARGS}
 )
 
 add_executable(${TEST_NAME}

@@ -32,6 +32,7 @@ connextdds_rtiddsgen_run(
     EXTRA_ARGS
         "-unboundedSupport"
         "-qualifiedEnumerator"
+        ${RTIDDSGEN_GLOBAL_ARGS}
 )
 
 # Create library

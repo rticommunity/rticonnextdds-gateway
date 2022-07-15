@@ -54,6 +54,7 @@ foreach(IDL_NAME ${ADAPTER_MQTT_IDL})
         EXTRA_ARGS
             "-unboundedSupport"
             "-qualifiedEnumerator"
+            ${RTIDDSGEN_GLOBAL_ARGS}
     )
     list(APPEND GENERATED_SRC_IDL_FILES ${${IDL_NAME}_C_SOURCES})
 endforeach()
