@@ -12,8 +12,8 @@ All configuration is specified in |RS|'s XML configuration file.
 
 .. _section-how-to-load-plugin:
 
-Load the JSON Transformation Plugin
-===================================
+Load the Seq2Array Transformation Plugin
+========================================
 
 |RS_SEQ2ARRAY_TSFM| must be registered as a |RS| plugin by using the
 ``<transformation_plugin>`` tag.
