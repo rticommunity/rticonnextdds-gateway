@@ -18,20 +18,7 @@ include(ConnextDdsCodegen)
 
 set(TEST_NAME seq2array_integration_test1)
 
-# Copy the test_publisher.cxx before generating the code
-# This is not needed since we could install that file directly. However, for
-# consistency between the 'build' and 'install' directories, this is copied
-# to the binary directory so codegen doesn't generate 'test_publisher.cxx' in
-# the binary directory.
-
 # Publisher
-connextdds_copy_files(
-    INPUT_FILES
-        "publisher/test_publisher.cxx"
-    OUTPUT_DIR
-        "${CMAKE_CURRENT_BINARY_DIR}/publisher"
-)
-
 set(IDL_NAME "testPublisher")
 set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/publisher")
 
@@ -40,7 +27,6 @@ connextdds_rtiddsgen_run(
     IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
     LANG "C++11"
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/publisher"
-    GENERATE_EXAMPLE ${CONNEXTDDS_ARCH}
 )
 
 add_executable(${TEST_NAME}_publisher
@@ -58,13 +44,6 @@ target_link_libraries(${TEST_NAME}_publisher
 )
 
 # Subscriber
-connextdds_copy_files(
-    INPUT_FILES
-        "subscriber/test_subscriber.cxx"
-    OUTPUT_DIR
-        "${CMAKE_CURRENT_BINARY_DIR}/subscriber"
-)
-
 set(IDL_NAME "testSubscriber")
 set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/subscriber")
 
@@ -73,7 +52,6 @@ connextdds_rtiddsgen_run(
     IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
     LANG "C++11"
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/subscriber"
-    GENERATE_EXAMPLE ${CONNEXTDDS_ARCH}
 )
 
 add_executable(${TEST_NAME}_subscriber

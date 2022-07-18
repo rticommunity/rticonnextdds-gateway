@@ -174,7 +174,6 @@ function(rtigw_configure_connextdds _CONNEXTDDS_VERSION)
 
     if (DEFINED CONNEXTDDS_ARCH)
         message(STATUS "CONNEXTDDS_ARCH set to <${CONNEXTDDS_ARCH}>")
-        set (CONNEXTDDS_ARCH ${CONNEXTDDS_ARCH} PARENT_SCOPE)
     endif()
 
     find_package(

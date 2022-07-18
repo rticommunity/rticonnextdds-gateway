@@ -12,7 +12,7 @@ These applications test that the transformation of the data is done correctly
 (replacing sequences by arrays) and the samples are received.
 
 The configuration of the RS transformation is done in
-`rticonnextgateways/plugins/transformations/seq2array/test/integration_test1/RsSeq2ArrayTransfTest.xml`.
+`<RTI Gateway main folder>/plugins/transformations/seq2array/test/integration_test1/RsSeq2ArrayTransfTest.xml`.
 It enables an output transformation for the data (with sequences) sent.
 
 ### Behavior
@@ -91,10 +91,10 @@ Both applications won't be compatible because they use different datatypes,
 however, when the Routing Service is running with the seq2array transformation,
 the data will be received in the subscriber side.
 
-### How to run Modbus Integration Test 1
+### How to run Seq2Array Integration Test 1
 
 In order to run the integration test, three elements are required (all of them
-are supposed to be running from `test/seq2array/seq2array_integration_test1/`
+are supposed to be running from `<install dir>/test/tsfm_seq2array/seq2array_integration_test1/`
 directory):
 
 1. Add the folders which contains `librtiseq2arraytransf` library to
