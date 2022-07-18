@@ -75,7 +75,9 @@ and publish them in the topic ``Seq2ArrayTopicArray`` whose type is
 ``NewStruct2Array``.
 
 The Seq2Array transformation will check that those types are compatible, meaning
-that the types are the same ones but just changing sequences by arrays.
+that the types are the same ones but just changing sequences by arrays. The
+name of the inner types may be different, but the Dynamic Data ``index`` must
+be the same.
 
 For example, if we have the following type:
 
