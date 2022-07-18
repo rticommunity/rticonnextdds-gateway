@@ -174,7 +174,7 @@ system:
 
 ## Dependencies
 
-The following additional external dependencies are required to run the demo:
+The example relies on some external dependencies:
 
 - [Mosquitto MQTT Broker](https://mosquitto.org/download/)
 
@@ -230,7 +230,7 @@ demo on your system.
 All commands in this section assume that you already
 [built and installed the demo](#building).
 
-The directory where the repository's artefacts have been installed will be
+The directory where the repository's artifacts have been installed will be
 referred to as `${INSTALL_DIR}`.
 
 Configuration steps:
@@ -244,8 +244,6 @@ Configuration steps:
 2. Configure required environment variables
 
     ```sh
-    # Modify INSTALL_DIR if you installed the repository in a
-    # custom location.
     export NDDSHOME=/path/to/rti_connext_dds \
            CONNEXTDDS_ARCH=myOsAndCompiler
     ```
@@ -253,8 +251,6 @@ Configuration steps:
     or
 
     ```bat
-    # Modify INSTALL_DIR if you installed the repository in a
-    # custom location.
     set NDDSHOME=/path/to/rti_connext_dds
     set CONNEXTDDS_ARCH=myOsAndCompiler
     ```
@@ -289,6 +285,8 @@ Configuration steps:
     tail -f mosquitto.log
     ```
 
+### Running the example with scripts
+
 The following commands can be run at once using `tmux` and the following
 script, or `windows_run_all.bat`.
 Note that `NDDSHOME` and `CONNEXTDDS_ARCH` should be set as explained above.
@@ -311,6 +309,8 @@ Windows systems:
 > **NOTE**: In order to close the Windows `windows_run_all.bat` script, all the
 > windows which have been opened should be closed, including the RTI Shape Demo
 > application.
+
+### Running the example manually
 
 You can run these commands manually in 5 different terminals. This README
 assumes that `NDDSHOME` and `CONNEXTDDS_ARCH` environment variables are set
@@ -347,8 +347,8 @@ for all of the terminals. Also the working directory for them is
 5. In a separate terminal, start an *RTI Routing Service* instance:
 
     ```sh
-        LD_LIBRARY_PATH=${INSTALL_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH \
-        $NDDSHOME/bin/rtiroutingservice -cfgFile  etc/shapes_bridge.xml -cfgName shapes_bridge
+        LD_LIBRARY_PATH=${INSTALL_DIR}/lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH \
+        $NDDSHOME/bin/rtiroutingservice -cfgFile etc/shapes_bridge.xml -cfgName shapes_bridge
     ```
 
 > **NOTE**: The above commands are for Linux systems, there are similar `*.bat`
