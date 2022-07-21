@@ -15,16 +15,16 @@
 #include <dds/dds.hpp>
 
 /**
- *  @class Seq2ArrayTransformation
+ *  @class Sequence2ArrayTransformation
  *
  * @brief implementation of the Transformation.
  *
  * This transformation replaces sequences of any type by arrays.
  */
-class Seq2ArrayTransformation
+class Sequence2ArrayTransformation
         : public rti::routing::transf::DynamicDataTransformation {
 public:
-    Seq2ArrayTransformation(
+    Sequence2ArrayTransformation(
             const rti::routing::TypeInfo &input_type_info,
             const rti::routing::TypeInfo &output_type_info,
             const rti::routing::PropertySet &properties);
@@ -55,11 +55,11 @@ private:
 
 
 /**
- * @class Seq2ArrayTransformationPlugin
+ * @class Sequence2ArrayTransformationPlugin
  *
  * @brief This class will be used by Routing Service to create and initialize
  * our custom Transformation Subclass. In this example, that class is
- * Seq2ArrayTransformation.
+ * Sequence2ArrayTransformation.
  *
  * This class must use the macro
  * RTI_TRANSFORMATION_PLUGIN_CREATE_FUNCTION_DECL(classname) in order to
@@ -68,14 +68,14 @@ private:
  *
  */
 
-class Seq2ArrayTransformationPlugin
+class Sequence2ArrayTransformationPlugin
         : public rti::routing::transf::TransformationPlugin {
 public:
-    Seq2ArrayTransformationPlugin(
+    Sequence2ArrayTransformationPlugin(
             const rti::routing::PropertySet &properties);
 
     /*
-     * @brief Creates an instance of Seq2ArrayTransformation
+     * @brief Creates an instance of Sequence2ArrayTransformation
      */
     rti::routing::transf::Transformation *create_transformation(
             const rti::routing::TypeInfo &input_type_info,
@@ -94,9 +94,9 @@ public:
  * The generated symbol has the name:
  *
  * \code
- * Seq2ArrayTransformationPlugin_create_transformation_plugin
+ * Sequence2ArrayTransformationPlugin_create_transformation_plugin
  * \endcode
  */
-RTI_TRANSFORMATION_PLUGIN_CREATE_FUNCTION_DECL(Seq2ArrayTransformationPlugin)
+RTI_TRANSFORMATION_PLUGIN_CREATE_FUNCTION_DECL(Sequence2ArrayTransformationPlugin)
 
 #endif /* STRUCT_ARRAY_TRANSF_HPP_ */

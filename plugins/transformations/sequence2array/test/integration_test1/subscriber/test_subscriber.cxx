@@ -56,7 +56,7 @@ void run_subscriber_application(unsigned int domain_id, unsigned int sample_coun
     dds::domain::DomainParticipant participant(domain_id);
 
     // Create a Topic with a name and a datatype
-    dds::topic::Topic<NewStruct2Array> topic(participant, "Seq2ArrayTopicArray");
+    dds::topic::Topic<NewStruct2Array> topic(participant, "Sequence2ArrayTopicArray");
 
     // Create a Subscriber and DataReader with default Qos
     dds::sub::Subscriber subscriber(participant);

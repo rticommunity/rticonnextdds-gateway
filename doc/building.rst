@@ -223,14 +223,14 @@ RTIGATEWAY_ENABLE_TSFM_JSON
               components are enabled unless they are specifically disabled
               (tests, examples, docs...).
 
-RTIGATEWAY_ENABLE_TSFM_SEQ2ARRAY
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RTIGATEWAY_ENABLE_TSFM_SEQUENCE2ARRAY
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 :Required: No
 :Default: ``ON``
-:Description: If this variable is enabled, the Seq2Array transformation and all
-              its components are enabled unless they are specifically disabled
-              (tests, examples, docs...).
+:Description: If this variable is enabled, the Sequence2Array transformation
+              and all its components are enabled unless they are specifically
+              disabled (tests, examples, docs...).
 
 
 RTIGATEWAY_ENABLE_LOG

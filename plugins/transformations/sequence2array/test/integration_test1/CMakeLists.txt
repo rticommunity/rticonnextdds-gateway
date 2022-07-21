@@ -16,7 +16,7 @@
 include(ConnextDdsGenerateFiles)
 include(ConnextDdsCodegen)
 
-set(TEST_NAME seq2array_integration_test1)
+set(TEST_NAME sequence2array_integration_test1)
 
 # Publisher
 set(IDL_NAME "testPublisher")
@@ -72,9 +72,9 @@ target_link_libraries(${TEST_NAME}_subscriber
 # staging rules
 # Config files
 
-set(SEQ2ARRAY_TRANSFORMATION_TEST_INSTALL_FILES
+set(SEQUENCE2ARRAY_TRANSFORMATION_TEST_INSTALL_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
-        "${CMAKE_CURRENT_SOURCE_DIR}/RsSeq2ArrayTransfTest.xml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/RsSequence2ArrayTransfTest.xml"
 )
 
 install(
@@ -90,7 +90,7 @@ install(
 )
 
 install(
-    FILES ${SEQ2ARRAY_TRANSFORMATION_TEST_INSTALL_FILES}
+    FILES ${SEQUENCE2ARRAY_TRANSFORMATION_TEST_INSTALL_FILES}
     DESTINATION "${STAGING_TEST_DIR}/${STAGING_PLUGIN_DIR}/${TEST_NAME}"
 )
 

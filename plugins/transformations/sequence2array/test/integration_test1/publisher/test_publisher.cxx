@@ -37,7 +37,7 @@ void run_publisher_application(unsigned int domain_id, unsigned int sample_count
     dds::domain::DomainParticipant participant(domain_id);
 
     // Create a Topic with a name and a datatype
-    dds::topic::Topic<NewStruct2> topic(participant, "Seq2ArrayTopic");
+    dds::topic::Topic<NewStruct2> topic(participant, "Sequence2ArrayTopic");
 
     // Create a Publisher
     dds::pub::Publisher publisher(participant);

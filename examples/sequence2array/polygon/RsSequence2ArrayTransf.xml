@@ -19,24 +19,24 @@
     Here we're loading our custom transformation class
     -->
     <plugin_library name="MyPluginLib">
-        <transformation_plugin name="Seq2ArrayTransformation">
+        <transformation_plugin name="Sequence2ArrayTransformation">
             <!--
             By specifing this value, RTI Router will search for
-            libSeq2Arraytransf.so in Unix systems and Seq2Arraytransf.dll on
-            Windows systems. RTI Routing Service will attempt to load this
+            libSequence2Arraytransf.so in Unix systems and Sequence2Arraytransf.dll
+            on Windows systems. RTI Routing Service will attempt to load this
             library from:
                 - Working directory or plugin_search_path
                 - Executable directory
                 - Environment library path
             -->
-            <dll>rtiseq2arraytransf</dll>
+            <dll>rtisequence2arraytransf</dll>
             <create_function>
-                Seq2ArrayTransformationPlugin_create_transformation_plugin
+                Sequence2ArrayTransformationPlugin_create_transformation_plugin
             </create_function>
         </transformation_plugin>
     </plugin_library>
 
-    <routing_service name="RsSeq2ArrayTransfTest">
+    <routing_service name="RsSequence2ArrayTransf">
         <annotation>
             <documentation>
                 Uses a transformation to convert sequences to arrays.
@@ -90,15 +90,35 @@
                 <domain_id>0</domain_id>
             </participant>
             <session name="Session">
-                <topic_route name="Seq2ArrayTestRoute">
+                <topic_route name="PolygonRoute">
                     <input participant="myDomain">
-                        <registered_type_name>NewStruct2</registered_type_name>
-                        <topic_name>Seq2ArrayTopic</topic_name>
+                        <registered_type_name>polygonSeq</registered_type_name>
+                        <topic_name>PolygonTopicSeq</topic_name>
                     </input>
                     <output participant="myDomain">
-                        <registered_type_name>NewStruct2Array</registered_type_name>
-                        <topic_name>Seq2ArrayTopicArray</topic_name>
-                        <transformation plugin_name="MyPluginLib::Seq2ArrayTransformation"/>
+                        <creation_mode>IMMEDIATE</creation_mode>
+                        <registered_type_name>polygonArray</registered_type_name>
+                        <topic_name>PolygonTopicArray</topic_name>
+                        <transformation plugin_name="MyPluginLib::Sequence2ArrayTransformation"/>
+                    </output>
+                </topic_route>
+            </session>
+        </domain_route>
+        <domain_route>
+            <participant name="myDomain">
+                <domain_id>0</domain_id>
+            </participant>
+            <session name="Session">
+                <topic_route name="PolygonRoute">
+                    <input participant="myDomain">
+                        <registered_type_name>polygonSetSeq</registered_type_name>
+                        <topic_name>PolygonSetTopicSeq</topic_name>
+                    </input>
+                    <output participant="myDomain">
+                        <creation_mode>IMMEDIATE</creation_mode>
+                        <registered_type_name>polygonSetArray</registered_type_name>
+                        <topic_name>PolygonSetTopicArray</topic_name>
+                        <transformation plugin_name="MyPluginLib::Sequence2ArrayTransformation"/>
                     </output>
                 </topic_route>
             </session>

@@ -1,4 +1,4 @@
-# Example Seq2Array Polygon
+# Example Sequence2Array Polygon
 
 ## Description of the Example
 
@@ -48,10 +48,10 @@ struct polygonSetArray {
 ### Routing Service Configuration
 
 The example provides a Routing Service configurations in file
-[RsSeq2ArrayTransf.xml](RsSeq2AraryTransf.xml) which demonstrate
-the use of the Seq2Array transformation.
+[RsSequence2ArrayTransf.xml](RsSequence2AraryTransf.xml) which demonstrate
+the use of the Sequence2Array transformation.
 
-- `RsSeq2ArrayTransf`
+- `RsSequence2ArrayTransf`
   - Read `polygonSeq` and `polygonSetSeq` samples from topic `PolygonTopicSeq`
     and `PolygonSetTopicSeq` respectively. Then, it converts these samples to
     `polygonArray` and `polygonSetArray` in topics `PolygonTopicArray` and
@@ -60,7 +60,7 @@ the use of the Seq2Array transformation.
 ## Running the Example
 
 In order to run the integration test, three elements are required (all of them
-are supposed to be running from `<install dir>/examples/tsfm_seq2array/polygon/`
+are supposed to be running from `<install dir>/examples/tsfm_sequence2array/polygon/`
 directory):
 
 - Publisher:
@@ -78,10 +78,10 @@ directory):
 Start a Routing Service instance:
 
 ```sh
-rtiroutingservice -cfgFile RsSeq2ArrayTransf.xml -cfgName RsSeq2ArrayTransf
+rtiroutingservice -cfgFile RsSequence2ArrayTransf.xml -cfgName RsSequence2ArrayTransf
 ```
 
-> **NOTE**: the `rtiseq2arraytransf` library should be reachable by the OS. Add
+> **NOTE**: the `rtisequence2arraytransf` library should be reachable by the OS. Add
 > the corresponding folders to your `LD_LIBRARY_PATH`, `PATH` or
 > `RTI_LD_LIBRARY_PATH` environment variable (depending on your OS). If you
 > followed the default building instructions, the folder to include is:

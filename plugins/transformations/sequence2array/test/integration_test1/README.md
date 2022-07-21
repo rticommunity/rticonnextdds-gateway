@@ -1,18 +1,18 @@
 # Integration test
 
-## Seq2Array Integration test 1
+## Sequence2Array Integration test 1
 
 ### Description
 
 This integration test consists of 2 different applications, a publisher, and a
-subscriber, plus a Routing Service configuration to use the Seq2Array
+subscriber, plus a Routing Service configuration to use the Sequence2Array
 transformation.
 
 These applications test that the transformation of the data is done correctly
 (replacing sequences by arrays) and the samples are received.
 
 The configuration of the RS transformation is done in
-`<RTI Gateway main folder>/plugins/transformations/seq2array/test/integration_test1/RsSeq2ArrayTransfTest.xml`.
+`<RTI Gateway main folder>/plugins/transformations/sequence2array/test/integration_test1/RsSequence2ArrayTransfTest.xml`.
 It enables an output transformation for the data (with sequences) sent.
 
 ### Behavior
@@ -50,8 +50,8 @@ struct NewStruct2 {
 };
 ```
 
-That data will be transformed by the seq2array transformation into the following
-type:
+That data will be transformed by the sequence2array transformation into the
+following type:
 
 ```
 enum NewEnum1 {
@@ -88,16 +88,16 @@ The sequences of the publisher IDL have been modified to arrays with a fixed
 size (5).
 
 Both applications won't be compatible because they use different datatypes,
-however, when the Routing Service is running with the seq2array transformation,
-the data will be received in the subscriber side.
+however, when the Routing Service is running with the sequence2array
+transformation, the data will be received in the subscriber side.
 
-### How to run Seq2Array Integration Test 1
+### How to run Sequence2Array Integration Test 1
 
 In order to run the integration test, three elements are required (all of them
-are supposed to be running from `<install dir>/test/tsfm_seq2array/seq2array_integration_test1/`
+are supposed to be running from `<install dir>/test/tsfm_sequence2array/sequence2array_integration_test1/`
 directory):
 
-1. Add the folders which contains `librtiseq2arraytransf` library to
+1. Add the folders which contains `librtisequence2arraytransf` library to
 your `LD_LIBRARY_PATH`, `PATH` or `RTI_LD_LIBRARY_PATH` environment variable
 (depending on your OS). If you follow these instructions, the folder is:
 `<path to rticonnextdds-gateway>/install/lib`.
@@ -105,19 +105,19 @@ your `LD_LIBRARY_PATH`, `PATH` or `RTI_LD_LIBRARY_PATH` environment variable
 1. DDS Publisher
 
     ```sh
-    ./publisher/seq2array_integration_test1_publisher
+    ./publisher/sequence2array_integration_test1_publisher
     ```
 
 1. DDS Subscriber
 
     ```sh
-    ./subscriber/seq2array_integration_test1_subscriber
+    ./subscriber/sequence2array_integration_test1_subscriber
     ```
 
 1. Routing Service with the specific configuration
 
     ```sh
-    rtiroutingservice -cfgFile RsSeq2ArrayTransfTest.xml -cfgName RsSeq2ArrayTransfTest
+    rtiroutingservice -cfgFile RsSequence2ArrayTransfTest.xml -cfgName RsSequence2ArrayTransfTest
     ```
 
 

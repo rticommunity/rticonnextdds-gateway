@@ -13,43 +13,28 @@
 #                                                                             #
 ###############################################################################
 
-cmake_minimum_required(VERSION 3.12.0)
+cmake_minimum_required (VERSION 3.5)
 
-# Set variables
-set(RSPLUGIN_LIB_NAME rtiseq2arraytransf)
+include("${RTICMAKE_COMMON_DIR}/CommonFunctions.cmake")
 
-# Create library
-add_library(
-    ${RSPLUGIN_LIB_NAME}
-    SHARED
-        "srcCxx/Seq2ArrayTransformation.cxx"
-        "${DDS_COMMON_DIR}/srcCxx/DynamicDataHelpers.cxx"
+rtigw_generate_doc(
+    PLUGIN "Sequence2Array Transformation"
+    TARGET sequence2array-transformation-doc
+    INPUT "${CMAKE_CURRENT_SOURCE_DIR}"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html"
+    DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/conf.py"
+        "${CMAKE_CURRENT_SOURCE_DIR}/additional_resources.rst"
+        "${CMAKE_CURRENT_SOURCE_DIR}/configuration.rst"
+        "${CMAKE_CURRENT_SOURCE_DIR}/copyright.rst"
+        "${CMAKE_CURRENT_SOURCE_DIR}/index.rst"
+        "${CMAKE_CURRENT_SOURCE_DIR}/introduction.rst"
+        "${CMAKE_CURRENT_SOURCE_DIR}/release_notes.rst"
+        "${CMAKE_CURRENT_SOURCE_DIR}/static/"
 )
 
-set_target_properties(${RSPLUGIN_LIB_NAME} PROPERTIES DEBUG_POSTFIX "d")
-
-target_include_directories(
-    ${RSPLUGIN_LIB_NAME}
-    PRIVATE
-        ${CONNEXTDDS_INCLUDE_DIRS}
-        "srcCxx/"
-        "${DDS_COMMON_DIR}/srcCxx"
-        "${UTILS_COMMON_DIR}/srcCxx"
-)
-
-target_link_libraries(
-    ${RSPLUGIN_LIB_NAME}
-    RTIConnextDDS::routing_service_cpp2
-)
-
-# Stagging targets
+# staging documentation
 install(
-    TARGETS ${RSPLUGIN_LIB_NAME}
-    DESTINATION "${STAGING_LIB_DIR}"
+    DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html/"
+    DESTINATION "${STAGING_DOC_DIR}/transformations/${STAGING_PLUGIN_DIR}"
 )
-
-###############################################################################
-# Build documentation and tests if they are enabled
-###############################################################################
-rtigw_add_doc()
-rtigw_add_tests()

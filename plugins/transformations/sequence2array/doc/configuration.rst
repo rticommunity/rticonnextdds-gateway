@@ -12,8 +12,8 @@ All configuration is specified in |RS|'s XML configuration file.
 
 .. _section-how-to-load-plugin:
 
-Load the Seq2Array Transformation Plugin
-========================================
+Load the Sequence2Array Transformation Plugin
+=============================================
 
 |RS_SEQ2ARRAY_TSFM| must be registered as a |RS| plugin by using the
 ``<transformation_plugin>`` tag.
@@ -26,10 +26,10 @@ The following snippet demonstrates how to register the plugin in the
     <?xml version="1.0"?>
     <dds>
         <plugin_library name="MyPluginLib">
-            <transformation_plugin name="Seq2ArrayTransformation">
-                <dll>rtiseq2arraytransf</dll>
+            <transformation_plugin name="Sequence2ArrayTransformation">
+                <dll>rtisequence2arraytransf</dll>
                 <create_function>
-                    Seq2ArrayTransformationPlugin_create_transformation_plugin
+                    Sequence2ArrayTransformationPlugin_create_transformation_plugin
                 </create_function>
             </transformation_plugin>
         </plugin_library>
@@ -57,27 +57,27 @@ automatically. For example:
 
 .. code-block:: xml
 
-     <topic_route name="Seq2ArrayTestRoute">
+     <topic_route name="Sequence2ArrayTestRoute">
         <input participant="myDomain">
             <registered_type_name>NewStruct2</registered_type_name>
-            <topic_name>Seq2ArrayTopic</topic_name>
+            <topic_name>Sequence2ArrayTopic</topic_name>
         </input>
         <output participant="myDomain">
             <registered_type_name>NewStruct2Array</registered_type_name>
-            <topic_name>Seq2ArrayTopicArray</topic_name>
-            <transformation plugin_name="MyPluginLib::Seq2ArrayTransformation"/>
+            <topic_name>Sequence2ArrayTopicArray</topic_name>
+            <transformation plugin_name="MyPluginLib::Sequence2ArrayTransformation"/>
         </output>
     </topic_route>
 
-The snippet above automatically applies the Seq2Array Transformation to all the
-types in the topic ``Seq2ArrayTopic`` whose registered name is ``NewStruct2``,
-and publish them in the topic ``Seq2ArrayTopicArray`` whose type is
-``NewStruct2Array``.
+The snippet above automatically applies the Sequence2Array Transformation to all
+the types in the topic ``Sequence2ArrayTopic`` whose registered name is
+``NewStruct2``, and publish them in the topic ``Sequence2ArrayTopicArray`` whose
+type is ``NewStruct2Array``.
 
-The Seq2Array transformation will check that those types are compatible, meaning
-that the types are the same ones but just changing sequences by arrays. The
-name of the inner types may be different, but the Dynamic Data ``index`` must
-be the same.
+The Sequence2Array transformation will check that those types are compatible,
+meaning that the types are the same ones but just changing sequences by arrays.
+The name of the inner types may be different, but the Dynamic Data ``index``
+must be the same.
 
 For example, if we have the following type:
 

@@ -45,7 +45,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'RTI Routing Service Seq2Array Transformation'
+project = 'RTI Routing Service Sequence2Array Transformation'
 copyright = '2022, Real-Time Innovations, Inc'
 author = 'Real-Time Innovations, Inc.'
 

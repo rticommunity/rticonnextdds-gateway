@@ -126,10 +126,10 @@ LINK_LIBMODBUS = 'https://libmodbus.org/'
 LINK_RDKAFKA = 'https://github.com/edenhill/librdkafka'
 LINK_JSON_PARSER = 'https://github.com/udp/json-parser'
 
-extlinks = {'link_paho_c': (LINK_PAHO_C + '%s', 'link_paho_c'),
-            'link_libmodbus': (LINK_LIBMODBUS + '%s', 'link_libmodbus'),
-            'link_librdkafka': (LINK_RDKAFKA + '%s', 'link_librdkafka'),
-            'link_json_parser': (LINK_JSON_PARSER + '%s', 'link_json_parser')
+extlinks = {'link_paho_c': (LINK_PAHO_C + '%s', 'link_paho_c %s'),
+            'link_libmodbus': (LINK_LIBMODBUS + '%s', 'link_libmodbus %s'),
+            'link_librdkafka': (LINK_RDKAFKA + '%s', 'link_librdkafka %s'),
+            'link_json_parser': (LINK_JSON_PARSER + '%s', 'link_json_parser %s')
 }
 
 # -- Options for HTMLHelp output ------------------------------------------

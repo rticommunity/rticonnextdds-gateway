@@ -14,7 +14,7 @@
 #include <rti/routing/transf/TransformationPlugin.hpp>
 #include <rti/core/xtypes/DynamicDataImpl.hpp>
 
-#include "Seq2ArrayTransformation.hpp"
+#include "Sequence2ArrayTransformation.hpp"
 #include "DynamicDataHelpers.hpp"
 
 using namespace dds::core::xtypes;
@@ -26,7 +26,7 @@ using dds::sub::SampleInfo;
  * in the input are replaced by arrays in the output.
  *
  */
-bool Seq2ArrayTransformation::are_type_compatible(
+bool Sequence2ArrayTransformation::are_type_compatible(
         const dds::core::xtypes::DynamicType & input_type,
         const dds::core::xtypes::DynamicType & output_type)
 {
@@ -291,7 +291,7 @@ bool Seq2ArrayTransformation::are_type_compatible(
     return is_compatible;
 }
 
-Seq2ArrayTransformation::Seq2ArrayTransformation(
+Sequence2ArrayTransformation::Sequence2ArrayTransformation(
         const rti::routing::TypeInfo &input_type_info,
         const rti::routing::TypeInfo &output_type_info,
         const rti::routing::PropertySet &properties)
@@ -309,7 +309,7 @@ Seq2ArrayTransformation::Seq2ArrayTransformation(
  * @brief Substitutes sequences by arrays of any type.
  *
  */
-void Seq2ArrayTransformation::convert_sample(
+void Sequence2ArrayTransformation::convert_sample(
         DynamicData &input_sample,
         DynamicData &output_sample)
 {
@@ -417,7 +417,7 @@ void Seq2ArrayTransformation::convert_sample(
     }
 }
 
-void Seq2ArrayTransformation::transform(
+void Sequence2ArrayTransformation::transform(
         std::vector<DynamicData *> &output_sample_seq,
         std::vector<SampleInfo *> &output_info_seq,
         const std::vector<DynamicData *> &input_sample_seq,
@@ -439,7 +439,7 @@ void Seq2ArrayTransformation::transform(
     }
 }
 
-void Seq2ArrayTransformation::return_loan(
+void Sequence2ArrayTransformation::return_loan(
         std::vector<DynamicData *> &sample_seq,
         std::vector<SampleInfo *> &info_seq)
 {
@@ -451,31 +451,31 @@ void Seq2ArrayTransformation::return_loan(
 
 
 /*
- * --- Seq2ArrayTransformationPlugin ----------------------------------------
+ * --- Sequence2ArrayTransformationPlugin --------------------------------------
  */
-Seq2ArrayTransformationPlugin::Seq2ArrayTransformationPlugin(
+Sequence2ArrayTransformationPlugin::Sequence2ArrayTransformationPlugin(
         const rti::routing::PropertySet &)
 {
     // no configuration properties for this plug-in
 }
 
-rti::routing::transf::Transformation *Seq2ArrayTransformationPlugin::
+rti::routing::transf::Transformation *Sequence2ArrayTransformationPlugin::
         create_transformation(
                 const rti::routing::TypeInfo &input_type_info,
                 const rti::routing::TypeInfo &output_type_info,
                 const rti::routing::PropertySet &properties)
 {
-    return new Seq2ArrayTransformation(
+    return new Sequence2ArrayTransformation(
             input_type_info,
             output_type_info,
             properties);
 }
 
-void Seq2ArrayTransformationPlugin::delete_transformation(
+void Sequence2ArrayTransformationPlugin::delete_transformation(
         rti::routing::transf::Transformation *transformation)
 {
     delete transformation;
 }
 
 
-RTI_TRANSFORMATION_PLUGIN_CREATE_FUNCTION_DEF(Seq2ArrayTransformationPlugin);
+RTI_TRANSFORMATION_PLUGIN_CREATE_FUNCTION_DEF(Sequence2ArrayTransformationPlugin);
