@@ -46,7 +46,7 @@ MQTT applications use JSON to encode shape information, following the template:
 }
 ```
 
-The type of a shape is also encoded in the MQTT topic name, preceeded by a
+The type of a shape is also encoded in the MQTT topic name, preceded by a
 prefix to identify the source application, for example "foo/circles",
 "foo/squares", and "foo/circles".
 
@@ -107,7 +107,7 @@ for multiple instances, each corresponding to a different MQTT topic,
 within a single DDS topic.
 
 The `sequence<octet>` member `payload.data` of both types is used to store
-paylods of MQTT messages.
+payloads of MQTT messages.
 
 The following figure presents the overall architecture of the demo scenario,
 including markers to describe data streams within the system:
@@ -370,9 +370,6 @@ menu items in the *RTI Shapes Demo* application:
 - "Publish/Square..." and click 'OK' to use the default parameters.
 - "Publish/Circle..." and click 'OK' to use the default parameters.
 - "Publish/Triangle..." and click 'OK' to use the default parameters.
-
-> **NOTE**: The Windows script `shapes_mqtt_publisher.bat` only publishes
-> circles if the topic is not specified.
 
 ## Navigating the demo with tmux
 
