@@ -19,19 +19,16 @@ include(ConnextDdsCodegen)
 set(TEST_NAME sequence2array_integration_test1)
 
 # Publisher
-set(IDL_NAME "testPublisher")
-set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/publisher")
-
 # Generate codegen files
 connextdds_rtiddsgen_run(
-    IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
+    IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/publisher/testPublisher.idl"
     LANG "C++11"
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/publisher"
 )
 
 add_executable(${TEST_NAME}_publisher
     "${CMAKE_CURRENT_SOURCE_DIR}/publisher/test_publisher.cxx"
-    "${${IDL_NAME}_CXX11_SOURCES}"
+    "${testPublisher_CXX11_SOURCES}"
 )
 
 target_include_directories(${TEST_NAME}_publisher
@@ -44,19 +41,16 @@ target_link_libraries(${TEST_NAME}_publisher
 )
 
 # Subscriber
-set(IDL_NAME "testSubscriber")
-set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/subscriber")
-
 # Generate codegen files
 connextdds_rtiddsgen_run(
-    IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
+    IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/subscriber/testSubscriber.idl"
     LANG "C++11"
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/subscriber"
 )
 
 add_executable(${TEST_NAME}_subscriber
     "${CMAKE_CURRENT_SOURCE_DIR}/subscriber/test_subscriber.cxx"
-    "${${IDL_NAME}_CXX11_SOURCES}"
+    "${testSubscriber_CXX11_SOURCES}"
 )
 
 target_include_directories(${TEST_NAME}_subscriber

@@ -21,12 +21,119 @@ using namespace dds::core::xtypes;
 using dds::sub::SampleInfo;
 
 /*
+ * @brief Check that both types are compatible. This function only works with
+ * unions and structs. A compatible type for this transformation will mean that
+ * all the elements are the same but the sequences in the input are replaced by
+ * arrays in the output.
+ *
+ * This function has an indirect recursion. This function must be called only
+ * from are_types_compatible(). And also, this function call recursively to it.
+ */
+template<typename T>
+bool Sequence2ArrayTransformation::is_union_or_struct_type_compatible(
+        const dds::core::xtypes::DynamicType & input_type,
+        const dds::core::xtypes::DynamicType & output_type)
+{
+    // Check that the types are the same
+    if (input_type.kind() != output_type.kind()) {
+        std::string error("the ouput field <" + output_type.name()
+                + "> is different to the input type <"
+                + input_type.name() + ">.");
+        throw std::runtime_error(error);
+    }
+
+    // check that the types are either union or struct
+    if (input_type.kind() != TypeKind::UNION_TYPE
+            && input_type.kind() != TypeKind::STRUCTURE_TYPE)  {
+        std::string error("unsupported kind of the input type <"
+            + input_type.name() + ">.");
+        throw std::runtime_error(error);
+    }
+
+    auto t_input_type = static_cast<const T &>(input_type);
+    auto t_output_type = static_cast<const T &>(output_type);
+    bool is_compatible = true;
+
+    // in case it is a union, check that the discriminator is the same
+    if (input_type.kind() == TypeKind::UNION_TYPE) {
+        auto union_input_type = static_cast<const UnionType &>(input_type);
+        auto union_output_type = static_cast<const UnionType &>(output_type);
+        if (union_input_type.discriminator() != union_output_type.discriminator()){
+            std::string error("different discriminator of input and output "
+                    "unions. Input union <" + union_input_type.name()
+                    + "> discriminator name <" + union_input_type.discriminator().name()
+                    + "> is different of output union <" + union_output_type.name()
+                    + "> discriminator name <" + union_output_type.discriminator().name()
+                    + ">.");
+            throw std::runtime_error(error);
+        }
+    }
+
+    // check that the number of elements are the same
+    if (t_input_type.member_count() != t_output_type.member_count()) {
+        std::string error("different member count of input and output "
+                "input name: <" + t_input_type.name()
+                + ">, output name <" + t_output_type.name() + ">: "
+                + std::to_string(t_input_type.member_count())
+                + " != " + std::to_string(t_output_type.member_count()));
+        throw std::runtime_error(error);
+    }
+
+    if (t_input_type == t_output_type) {
+        return true;
+    } else {
+        // inspect member by member since it may be compatible
+        // (output with arrays and input with sequences)
+        for (auto input_member : t_input_type.members()) {
+            auto output_member = t_output_type.member(input_member.name());
+            switch (input_member.type().kind().underlying()) {
+            case TypeKind::STRUCTURE_TYPE:
+            case TypeKind::SEQUENCE_TYPE:
+            case TypeKind::ARRAY_TYPE:
+            case TypeKind::UNION_TYPE:
+                // indirect recursion with the function are_types_compatible
+                is_compatible = is_compatible && are_types_compatible(
+                        input_member.type(),
+                        output_member.type());
+                if (!is_compatible) {
+                    std::string error("input member <"
+                            + input_member.name().to_std_string()
+                            + ">, not compatible with output name <"
+                            + output_member.name().to_std_string()
+                            + ">");
+                    throw std::runtime_error(error);
+                }
+            break;
+            // primitive type
+            default:
+                is_compatible = is_compatible
+                        && (input_member.type() == output_member.type());
+                if (!is_compatible) {
+                    std::string error("input member <"
+                            + input_member.name().to_std_string()
+                            + ">, not compatible with output name <"
+                            + output_member.name().to_std_string()
+                            + ">");
+                    throw std::runtime_error(error);
+                }
+                break;
+            }
+
+            if (!is_compatible) {
+                break;
+            }
+        }
+    }
+    return is_compatible;
+}
+
+/*
  * @brief Check that both types are compatible, a compatible type for this
  * transformation will mean that all the elements are the same but the sequences
  * in the input are replaced by arrays in the output.
  *
  */
-bool Sequence2ArrayTransformation::are_type_compatible(
+bool Sequence2ArrayTransformation::are_types_compatible(
         const dds::core::xtypes::DynamicType & input_type,
         const dds::core::xtypes::DynamicType & output_type)
 {
@@ -34,149 +141,20 @@ bool Sequence2ArrayTransformation::are_type_compatible(
 
     switch (input_type.kind().underlying()) {
     case TypeKind::STRUCTURE_TYPE: {
-        if (output_type.kind() != TypeKind::STRUCTURE_TYPE) {
-            std::string error("Error: the ouput field <" + output_type.name()
-                    + "> is different to the input type <" + input_type.name());
-            throw std::runtime_error(error);
-        }
-
-        auto input_struct_type = static_cast<const StructType &>(input_type);
-        auto output_struct_type = static_cast<const StructType &>(output_type);
-
-        if (input_struct_type.member_count() != output_struct_type.member_count()) {
-            std::string error("Error: different member count of input and output "
-                    "struct, input name: <" + input_struct_type.name()
-                    + ">, output name <" + output_struct_type.name() + ">: "
-                    + std::to_string(input_struct_type.member_count())
-                    + " != " + std::to_string(output_struct_type.member_count()));
-            throw std::runtime_error(error);
-        }
-
-        if (input_struct_type == output_struct_type) {
-            return true;
-        } else {
-            // inspect element by element since it may be compatible
-            // (output with arrays and input with sequences)
-            for (auto member : input_struct_type.members()) {
-                switch (member.type().kind().underlying()) {
-                case TypeKind::STRUCTURE_TYPE:
-                case TypeKind::SEQUENCE_TYPE:
-                case TypeKind::ARRAY_TYPE:
-                case TypeKind::UNION_TYPE:
-                    is_compatible = is_compatible && are_type_compatible(
-                            member.type(),
-                            output_struct_type.member(member.name()).type());
-                    if (!is_compatible) {
-                        std::string error("Error: input member <"
-                                + member.name().to_std_string()
-                                + ">, not compatible with output name <"
-                                + output_struct_type.member(member.name()).name().to_std_string()
-                                + ">");
-                        throw std::runtime_error(error);
-                    }
-                break;
-                // primitive type
-                default:
-                    is_compatible = is_compatible
-                            && (member.type() == output_struct_type.member(member.name()).type());
-                    if (!is_compatible) {
-                         std::string error("Error: input member <"
-                                + member.name().to_std_string()
-                                + ">, not compatible with output name <"
-                                + output_struct_type.member(member.name()).name().to_std_string()
-                                + ">");
-                        throw std::runtime_error(error);
-                    }
-                    break;
-                }
-
-                if (!is_compatible) {
-                    break;
-                }
-            }
-        }
-
+        is_compatible = is_union_or_struct_type_compatible<StructType>(
+                input_type, output_type);
         break;
     }
 
     case TypeKind::UNION_TYPE: {
-        if (output_type.kind() != TypeKind::UNION_TYPE) {
-            std::string error("Error: the ouput field <" + output_type.name()
-                    + "> is different to the input type <" + input_type.name());
-            throw std::runtime_error(error);
-        }
-
-        auto input_union_type = static_cast<const UnionType &>(input_type);
-        auto output_union_type = static_cast<const UnionType &>(output_type);
-
-        if (input_union_type.member_count() != output_union_type.member_count()) {
-            std::string error("Error: different member count of input and output "
-                    "union, input name: <" + input_union_type.name()
-                    + ">, output name <" + output_union_type.name() + ">: "
-                    + std::to_string(input_union_type.member_count())
-                    + " != " + std::to_string(output_union_type.member_count()));
-            throw std::runtime_error(error);
-        }
-
-        if (input_union_type.discriminator() != output_union_type.discriminator()){
-            std::string error("Error: different discriminator of input and output "
-                    "unions. Input union <" + input_union_type.name()
-                    + "> discriminator name <" + input_union_type.discriminator().name()
-                    + "> is different of output union <" + output_union_type.name()
-                    + "> discriminator name <" + output_union_type.discriminator().name()
-                    + ">.");
-            throw std::runtime_error(error);
-        }
-
-        if (input_union_type == output_union_type) {
-            return true;
-        } else {
-            // inspect element by element since it may be compatible
-            // (output with arrays and input with sequences)
-            for (auto member : input_union_type.members()) {
-                switch (member.type().kind().underlying()) {
-                case TypeKind::STRUCTURE_TYPE:
-                case TypeKind::SEQUENCE_TYPE:
-                case TypeKind::ARRAY_TYPE:
-                case TypeKind::UNION_TYPE:
-                    is_compatible = is_compatible && are_type_compatible(
-                            member.type(),
-                            output_union_type.member(member.name()).type());
-                    if (!is_compatible) {
-                        std::string error("Error: input member <"
-                                + member.name().to_std_string()
-                                + ">, not compatible with output name <"
-                                + output_union_type.member(member.name()).name().to_std_string()
-                                + ">");
-                        throw std::runtime_error(error);
-                    }
-                break;
-                // primitive type
-                default:
-                    is_compatible = is_compatible
-                            && (member.type() == output_union_type.member(member.name()).type());
-                    if (!is_compatible) {
-                        std::string error("Error: input member <"
-                                + member.name().to_std_string()
-                                + ">, not compatible with output name <"
-                                + output_union_type.member(member.name()).name().to_std_string()
-                                + ">");
-                        throw std::runtime_error(error);
-                    }
-                    break;
-                }
-
-                if (!is_compatible) {
-                    break;
-                }
-            }
-        }
+        is_compatible = is_union_or_struct_type_compatible<UnionType>(
+                input_type, output_type);
         break;
     }
 
     case TypeKind::ARRAY_TYPE: {
         if (output_type.kind() != TypeKind::ARRAY_TYPE) {
-            std::string error("Error: the ouput field <" + output_type.name()
+            std::string error("the ouput field <" + output_type.name()
                     + "> is different to the input type <" + input_type.name());
             throw std::runtime_error(error);
         }
@@ -185,7 +163,7 @@ bool Sequence2ArrayTransformation::are_type_compatible(
         auto output_array_type = static_cast<const ArrayType &>(output_type);
 
         if (input_array_type.dimension_count() != output_array_type.dimension_count()) {
-            std::string error("Error: different dimension count of input and output "
+            std::string error("different dimension count of input and output "
                     "array, input name: <" + input_array_type.name()
                     + ">, output name <" + output_array_type.name() + ">: "
                     + std::to_string(input_array_type.dimension_count())
@@ -194,7 +172,7 @@ bool Sequence2ArrayTransformation::are_type_compatible(
         }
 
         if (input_array_type.total_element_count() != output_array_type.total_element_count()) {
-            std::string error("Error: different total element count of input "
+            std::string error("different total element count of input "
                     "and output array, input name: <" + input_array_type.name()
                     + ">, output name <" + output_array_type.name() + ">: "
                     + std::to_string(input_array_type.dimension_count())
@@ -212,11 +190,11 @@ bool Sequence2ArrayTransformation::are_type_compatible(
             case TypeKind::SEQUENCE_TYPE:
             case TypeKind::ARRAY_TYPE:
             case TypeKind::UNION_TYPE:
-                is_compatible = is_compatible && are_type_compatible(
+                is_compatible = is_compatible && are_types_compatible(
                         input_array_type.content_type(),
                         output_array_type.content_type());
                 if (!is_compatible) {
-                    std::string error("Error: content of input member <"
+                    std::string error("content of input member <"
                             + input_array_type.name()
                             + ">, not compatible with content of output member <"
                             + output_array_type.name()
@@ -226,8 +204,8 @@ bool Sequence2ArrayTransformation::are_type_compatible(
                 break;
             // primitive type
             default:
-                // not needed because if it is a primitive content_type, this
-                // has been already checked in the previous if condition
+                // this means two arrays of different primitive types
+                is_compatible = false;
                 break;
             }
         }
@@ -236,7 +214,7 @@ bool Sequence2ArrayTransformation::are_type_compatible(
 
     case TypeKind::SEQUENCE_TYPE: {
         if (output_type.kind() != TypeKind::ARRAY_TYPE) {
-            std::string error("Error: the ouput field <" + output_type.name()
+            std::string error("the ouput field <" + output_type.name()
                     + "> is not an array.");
             throw std::runtime_error(error);
         }
@@ -245,7 +223,7 @@ bool Sequence2ArrayTransformation::are_type_compatible(
         auto output_array_type = static_cast<const ArrayType &>(output_type);
 
         if (output_array_type.dimension_count() != 1) {
-            std::string error("Error: cannot transform a sequence to a "
+            std::string error("cannot transform a sequence to a "
                     "multidimensional array. The array dimension count should be 1.");
             throw std::runtime_error(error);
         }
@@ -260,11 +238,11 @@ bool Sequence2ArrayTransformation::are_type_compatible(
                 case TypeKind::SEQUENCE_TYPE:
                 case TypeKind::ARRAY_TYPE:
                 case TypeKind::UNION_TYPE:
-                    is_compatible = is_compatible && are_type_compatible(
+                    is_compatible = is_compatible && are_types_compatible(
                             input_sequence_type.content_type(),
                             output_array_type.content_type());
                     if (!is_compatible) {
-                        std::string error("Error: content of input member <"
+                        std::string error("content of input member <"
                                 + input_sequence_type.name()
                                 + ">, not compatible with content of output member <"
                                 + output_array_type.name()
@@ -282,7 +260,7 @@ bool Sequence2ArrayTransformation::are_type_compatible(
             break;
         }
     default:
-        std::string error("Error: incompatible type input <" + input_type.name()
+        std::string error("incompatible type input <" + input_type.name()
                 + ">, and output <" + output_type.name() + ">");
         throw std::runtime_error(error);
         break;
@@ -298,8 +276,8 @@ Sequence2ArrayTransformation::Sequence2ArrayTransformation(
         : input_type_info_(input_type_info.dynamic_type()),
           output_type_info_(output_type_info.dynamic_type())
 {
-    if (!are_type_compatible(input_type_info_, output_type_info_)) {
-        throw std::runtime_error("Error: input and ouput types are not compatible");
+    if (!are_types_compatible(input_type_info_, output_type_info_)) {
+        throw std::runtime_error("input and ouput types are not compatible");
     }
     // properties are not used because there is no additional configuration for
     // this transformation
@@ -344,7 +322,7 @@ void Sequence2ArrayTransformation::convert_sample(
 
             // Check that the size of the ouput array is enough
             if (input_loaned_member.get().member_count() > array_type.total_element_count()) {
-                std::string error("Error: not enough space to copy output field <"
+                std::string error("not enough space to copy output field <"
                         + output_loaned_member.get().type().name()
                         + "> (max size <"
                         + std::to_string(array_type.total_element_count())

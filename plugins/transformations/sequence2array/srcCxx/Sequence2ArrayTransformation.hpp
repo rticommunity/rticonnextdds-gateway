@@ -41,7 +41,12 @@ public:
             std::vector<dds::sub::SampleInfo *> &info_seq);
 
 private:
-    bool are_type_compatible(
+    template<typename T>
+    bool is_union_or_struct_type_compatible(
+        const dds::core::xtypes::DynamicType & input_type,
+        const dds::core::xtypes::DynamicType & output_type);
+
+    bool are_types_compatible(
         const dds::core::xtypes::DynamicType & input_type,
         const dds::core::xtypes::DynamicType & output_type);
 

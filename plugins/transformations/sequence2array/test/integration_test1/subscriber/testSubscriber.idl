@@ -17,7 +17,7 @@ union NewUnion1Array switch(NewEnum1) {
   default:   NewStruct1 NewMember3[5];
 };
 
-struct NewStruct2Array {
+struct MyTypeWithArrays {
   NewStruct1 member1[5];
   NewEnum1 member2[5];
   NewUnion1Array member3[5];
@@ -26,4 +26,3 @@ struct NewStruct2Array {
   uint64 member6;
   NewEnum1 member7;
 };
-

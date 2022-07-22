@@ -86,7 +86,7 @@ dds::core::xtypes::DynamicType get_member_type(
 
 /**
  * @brief Copy an array or a sequence of primitive elements from a Dynamic Data
- * into a DynamicData array of the same primitive elements. The index specifies
+ * into a Dynamic Data array of the same primitive elements. The index specifies
  * the sequence or array that is being copied.
  * @param input the input DynamicData.
  * @param output the output DynamicData.

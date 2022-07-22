@@ -37,15 +37,15 @@ void run_publisher_application(unsigned int domain_id, unsigned int sample_count
     dds::domain::DomainParticipant participant(domain_id);
 
     // Create a Topic with a name and a datatype
-    dds::topic::Topic<NewStruct2> topic(participant, "Sequence2ArrayTopic");
+    dds::topic::Topic<MyTypeWithSequences> topic(participant, "MyTypeWithSequencesTopic");
 
     // Create a Publisher
     dds::pub::Publisher publisher(participant);
 
     // Create a DataWriter with default QoS
-    dds::pub::DataWriter<NewStruct2> writer(publisher, topic);
+    dds::pub::DataWriter<MyTypeWithSequences> writer(publisher, topic);
 
-    std::unique_ptr<NewStruct2> data(new NewStruct2());
+    std::unique_ptr<MyTypeWithSequences> data(new MyTypeWithSequences());
     for (unsigned int samples_written = 0;
         !application::shutdown_requested && samples_written < sample_count;
         samples_written++) {
@@ -116,7 +116,7 @@ void run_publisher_application(unsigned int domain_id, unsigned int sample_count
         // create member7 of the data to sent
         data->member7(structValue1.member4());
 
-        std::cout << "Writing NewStruct2, count " << samples_written << std::endl;
+        std::cout << "Writing MyTypeWithSequences, count " << samples_written << std::endl;
 
         writer.write(*data);
 

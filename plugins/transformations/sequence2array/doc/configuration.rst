@@ -59,11 +59,11 @@ automatically. For example:
 
      <topic_route name="Sequence2ArrayTestRoute">
         <input participant="myDomain">
-            <registered_type_name>NewStruct2</registered_type_name>
+            <registered_type_name>MyTypeWithSequences</registered_type_name>
             <topic_name>Sequence2ArrayTopic</topic_name>
         </input>
         <output participant="myDomain">
-            <registered_type_name>NewStruct2Array</registered_type_name>
+            <registered_type_name>MyTypeWithArrays</registered_type_name>
             <topic_name>Sequence2ArrayTopicArray</topic_name>
             <transformation plugin_name="MyPluginLib::Sequence2ArrayTransformation"/>
         </output>
@@ -71,13 +71,15 @@ automatically. For example:
 
 The snippet above automatically applies the Sequence2Array Transformation to all
 the types in the topic ``Sequence2ArrayTopic`` whose registered name is
-``NewStruct2``, and publish them in the topic ``Sequence2ArrayTopicArray`` whose
-type is ``NewStruct2Array``.
+``MyTypeWithSequences``, and publish them in the topic ``Sequence2ArrayTopicArray``
+whose type is ``MyTypeWithArrays``.
 
 The Sequence2Array transformation will check that those types are compatible,
 meaning that the types are the same ones but just changing sequences by arrays.
-The name of the inner types may be different, but the Dynamic Data ``index``
-must be the same.
+This means that the name of inner members and the order of them within the whole
+type must be the same (DynamicData ``index``) in the input and the output.
+Besides this, these types must be compatible (i.e. they have the same type, or
+one is a sequence and the other is an array with the same type of elements).
 
 For example, if we have the following type:
 
@@ -102,7 +104,7 @@ For example, if we have the following type:
         default:   sequence<NewStruct1, 5> NewMember3;
     };
 
-    struct NewStruct2 {
+    struct MyTypeWithSequences {
         sequence<NewStruct1> member1;
         sequence<NewEnum1> member2;
         sequence<NewUnion1> member3;
@@ -112,7 +114,7 @@ For example, if we have the following type:
         NewEnum1 member7;
     };
 
-The compatible matching type will be:
+A compatible matching type might be:
 
 .. code-block:: idl
 
@@ -135,7 +137,7 @@ The compatible matching type will be:
         default:   NewStruct1 NewMember3[5];
     };
 
-    struct NewStruct2Array {
+    struct MyTypeWithArrays {
         NewStruct1 member1[5];
         NewEnum1 member2[5];
         NewUnion1Array member3[5];
@@ -149,4 +151,6 @@ As you can see, when replacing sequences by arrays, an array size must be added.
 It is responsibility of the user to assign enough size for storing data that
 comes from the sequence. Unbounded sequences are supported, but the actual
 size sent should be less than or equal to the array size. If using bounded
-sequences, using the bound as array size is recommended.
+sequences, using the bound as array size is recommended. In case that the
+number of sequence elements are greater than the array size, an error is logged
+and the sample is dropped.

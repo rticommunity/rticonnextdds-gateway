@@ -17,7 +17,7 @@ union NewUnion1 switch(NewEnum1) {
   default:   sequence<NewStruct1, 5> NewMember3;
 };
 
-struct NewStruct2 {
+struct MyTypeWithSequences {
   sequence<NewStruct1> member1;
   sequence<NewEnum1> member2;
   sequence<NewUnion1> member3;

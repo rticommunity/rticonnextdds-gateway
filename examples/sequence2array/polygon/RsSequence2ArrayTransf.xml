@@ -85,6 +85,10 @@
                 </database>
             </participant_qos>
         </monitoring>
+
+        <!-- Domain Routes define the mapping between different data domains
+            (for example for different topics: PolygonTopicSeq to
+            PolygonTopicArray) -->
         <domain_route>
             <participant name="myDomain">
                 <domain_id>0</domain_id>

@@ -85,6 +85,9 @@
                 </database>
             </participant_qos>
         </monitoring>
+        <!-- Domain Routes define the mapping between different data domains
+            (for example for different topics: MyTypeWithSequencesTopic to
+            MyTypeWithArraysTopic) -->
         <domain_route>
             <participant name="myDomain">
                 <domain_id>0</domain_id>
@@ -92,12 +95,12 @@
             <session name="Session">
                 <topic_route name="Sequence2ArrayTestRoute">
                     <input participant="myDomain">
-                        <registered_type_name>NewStruct2</registered_type_name>
-                        <topic_name>Sequence2ArrayTopic</topic_name>
+                        <registered_type_name>MyTypeWithSequences</registered_type_name>
+                        <topic_name>MyTypeWithSequencesTopic</topic_name>
                     </input>
                     <output participant="myDomain">
-                        <registered_type_name>NewStruct2Array</registered_type_name>
-                        <topic_name>Sequence2ArrayTopicArray</topic_name>
+                        <registered_type_name>MyTypeWithArrays</registered_type_name>
+                        <topic_name>MyTypeWithArraysTopic</topic_name>
                         <transformation plugin_name="MyPluginLib::Sequence2ArrayTransformation"/>
                     </output>
                 </topic_route>

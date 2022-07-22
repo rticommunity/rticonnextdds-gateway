@@ -60,7 +60,7 @@ long double
         float_value = data.value<double>(field);
         break;
     default:
-        std::string error("Error: unsupported type of <" + field + ">");
+        std::string error("unsupported type of <" + field + ">");
         throw std::runtime_error(error);
     }
     return float_value;
@@ -159,7 +159,7 @@ std::vector<long double>
         break;
     }
     default:
-        std::string error("Error: unsupported member type of <" + field + ">");
+        std::string error("unsupported member type of <" + field + ">");
         throw std::runtime_error(error);
     }
     return float_vector;
@@ -194,7 +194,7 @@ void rti::common::dynamic_data::set_dds_primitive_or_enum_type_value(
                 DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
                 static_cast<uint16_t>(float_value));
         if (retcode != DDS_RETCODE_OK) {
-            std::string error("Error: setting ushort value of <" + field + ">");
+            std::string error("setting ushort value of <" + field + ">");
             throw std::runtime_error(error);
         }
         break;
@@ -219,7 +219,7 @@ void rti::common::dynamic_data::set_dds_primitive_or_enum_type_value(
         data.value<double>(field, static_cast<double>(float_value));
         break;
     default:
-        std::string error("Error: unsupported type of <" + field + ">");
+        std::string error("unsupported type of <" + field + ">");
         throw std::runtime_error(error);
     }
 }
@@ -271,8 +271,7 @@ void rti::common::dynamic_data::set_vector_values(
                 static_cast<DDS_UnsignedLong>(values.size()),
                 &values[0]);
         if (retcode != DDS_RETCODE_OK) {
-            std::string error(
-                    "Error: setting ushort array value of <" + field + ">");
+            std::string error("setting ushort array value of <" + field + ">");
             throw std::runtime_error(error);
         }
         break;
@@ -327,7 +326,7 @@ void rti::common::dynamic_data::set_vector_values(
         break;
     }
     default:
-        std::string error("Error: unsupported member type of <" + field + ">");
+        std::string error("unsupported member type of <" + field + ">");
         throw std::runtime_error(error);
     }
 }
@@ -350,7 +349,7 @@ bool rti::common::dynamic_data::is_signed_kind(TypeKind kind)
     case TypeKind::UINT_64_TYPE:
         return false;
     default:
-        std::string error("Error: unsupported numeric member type.");
+        std::string error("unsupported numeric member type.");
         throw std::runtime_error(error);
     }
 }
@@ -374,8 +373,7 @@ DynamicType rti::common::dynamic_data::get_member_type(
                 type = const_cast<DynamicType *>(
                         &dynamic_struct.member(nested_elements[i]).type());
             } else {
-                std::string error(
-                        "Error: nested member only can belong to structs.");
+                std::string error("nested member only can belong to structs.");
                 throw std::runtime_error(error);
             }
         }
@@ -389,7 +387,7 @@ DynamicType rti::common::dynamic_data::get_member_type(
 
 /*
  * @brief Copy a primitive member from the input to the output. The index
- * specifies which type is being copied.
+ * specifies which member is being copied.
  *
  * Input may be a sequence or an array
  * Output is an array
@@ -400,6 +398,22 @@ void rti::common::dynamic_data::copy_primitive_array_elements(
         uint32_t index,
         uint32_t max_elements)
 {
+    if (output.member_info(index).member_kind() != TypeKind::ARRAY_TYPE) {
+        std::string error("the element <" + std::to_string(index)
+                + "> of the output type <" + output.type().name()
+                + "> is not an array.");
+        throw std::runtime_error(error);
+    }
+
+    if (input.member_info(index).member_kind() != TypeKind::ARRAY_TYPE
+            && input.member_info(index).member_kind() != TypeKind::SEQUENCE_TYPE) {
+        std::string error("the element <" + std::to_string(index)
+                + "> of the input type <" + input.type().name()
+                + "> is not an array or a sequence.");
+        throw std::runtime_error(error);
+
+    }
+
     switch (input.member_info(index).element_kind().underlying()) {
     case TypeKind::BOOLEAN_TYPE:
     // booleans are stored in memory as uint8_t for arrays/seqs
@@ -483,14 +497,16 @@ void rti::common::dynamic_data::copy_primitive_array_elements(
         break;
     }
     default:
-        std::string error("Error: unsupported type of <" + input.type().name() + ">");
+        std::string error("cannot copy elements into array, unsupported "
+                "element kind of <" + input.type().name() + "> index <"
+                + std::to_string(index) + ">.");
         throw std::runtime_error(error);
     }
 }
 
 /*
  * @brief Copy a primitive member from the input to the output. The index
- * specifies which type is being copied.
+ * specifies which member is being copied.
  *
  */
 void rti::common::dynamic_data::copy_primitive_member(
@@ -520,7 +536,7 @@ void rti::common::dynamic_data::copy_primitive_member(
                 index,
                 input.value<uint16_t>(index));
         if (retcode != DDS_RETCODE_OK) {
-            std::string error("Error: setting ushort value of <"
+            std::string error("setting ushort value of <"
                     + input.type().name() + ">");
             throw std::runtime_error(error);
         }
@@ -550,7 +566,9 @@ void rti::common::dynamic_data::copy_primitive_member(
         break;
     }
     default:
-        std::string error("Error: unsupported type of <" + input.type().name() + ">");
+        std::string error("cannot copy primitive member, unsupported "
+                "member kind of <" + input.type().name() + "> index <"
+                + std::to_string(index) + ">.");
         throw std::runtime_error(error);
     }
 }

@@ -20,19 +20,16 @@ set(PUBLISHER_NAME PolygonSeq)
 set(SUBSCRIBER_NAME PolygonArray)
 
 # Publisher
-set(IDL_NAME "${PUBLISHER_NAME}")
-set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/publisher")
-
 # Generate codegen files
 connextdds_rtiddsgen_run(
-    IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
+    IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/publisher/${PUBLISHER_NAME}.idl"
     LANG "C++11"
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/publisher"
 )
 
 add_executable(${PUBLISHER_NAME}_publisher
     "${CMAKE_CURRENT_SOURCE_DIR}/publisher/${PUBLISHER_NAME}_publisher.cxx"
-    "${${IDL_NAME}_CXX11_SOURCES}"
+    "${${PUBLISHER_NAME}_CXX11_SOURCES}"
 )
 
 target_include_directories(${PUBLISHER_NAME}_publisher
@@ -45,19 +42,16 @@ target_link_libraries(${PUBLISHER_NAME}_publisher
 )
 
 # Subscriber
-set(IDL_NAME "${SUBSCRIBER_NAME}")
-set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/subscriber")
-
 # Generate codegen files
 connextdds_rtiddsgen_run(
-    IDL_FILE "${IDL_DIR}/${IDL_NAME}.idl"
+    IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/subscriber/${SUBSCRIBER_NAME}.idl"
     LANG "C++11"
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/subscriber"
 )
 
 add_executable(${SUBSCRIBER_NAME}_subscriber
     "${CMAKE_CURRENT_SOURCE_DIR}/subscriber/${SUBSCRIBER_NAME}_subscriber.cxx"
-    "${${IDL_NAME}_CXX11_SOURCES}"
+    "${${SUBSCRIBER_NAME}_CXX11_SOURCES}"
 )
 
 target_include_directories(${SUBSCRIBER_NAME}_subscriber

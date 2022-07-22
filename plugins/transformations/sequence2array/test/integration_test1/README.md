@@ -39,7 +39,7 @@ union NewUnion1 switch(NewEnum1) {
   default:   sequence<NewStruct1, 5> NewMember3;
 };
 
-struct NewStruct2 {
+struct MyTypeWithSequences {
   sequence<NewStruct1> member1;
   sequence<NewEnum1> member2;
   sequence<NewUnion1> member3;
@@ -73,7 +73,7 @@ union NewUnion1Array switch(NewEnum1) {
   default:   NewStruct1 NewMember3[5];
 };
 
-struct NewStruct2Array {
+struct MyTypeWithArrays {
   NewStruct1 member1[5];
   NewEnum1 member2[5];
   NewUnion1Array member3[5];
