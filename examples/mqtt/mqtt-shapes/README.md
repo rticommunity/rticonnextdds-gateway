@@ -46,7 +46,7 @@ MQTT applications use JSON to encode shape information, following the template:
 }
 ```
 
-The type of a shape is also encoded in the MQTT topic name, preceeded by a
+The type of a shape is also encoded in the MQTT topic name, preceded by a
 prefix to identify the source application, for example "foo/circles",
 "foo/squares", and "foo/circles".
 
@@ -107,7 +107,7 @@ for multiple instances, each corresponding to a different MQTT topic,
 within a single DDS topic.
 
 The `sequence<octet>` member `payload.data` of both types is used to store
-paylods of MQTT messages.
+payloads of MQTT messages.
 
 The following figure presents the overall architecture of the demo scenario,
 including markers to describe data streams within the system:
@@ -174,11 +174,17 @@ system:
 
 ## Dependencies
 
-The following additional external dependencies are required to run the demo:
+The example relies on some external dependencies:
 
 - [Mosquitto MQTT Broker](https://mosquitto.org/download/)
 
 - [tmux](https://github.com/tmux/tmux) (optional)
+
+Additionally, in macOS® systems you need to install `coreutils`:
+
+    ```sh
+    brew install coreutils
+    ```
 
 ## Building
 
@@ -203,7 +209,7 @@ demo on your system.
    By default, the broker will be started and added to the services run
    at start up.
 
-   On Linux systems:
+   On Linux® systems:
 
     ```sh
     sudo apt install mosquitto mosquitto-clients
@@ -212,8 +218,8 @@ demo on your system.
     sudo service mosquitto disable
     ```
 
-3. On Linux systems, optionally, you can also install `tmux` in order to spawn
-   all components in a single window split into multiple panes:
+3. On Linux and macOS systems, optionally, you can also install `tmux` in order
+   to spawn all components in a single window split into multiple panes:
 
     ```sh
     apt install tmux
@@ -224,7 +230,7 @@ demo on your system.
 All commands in this section assume that you already
 [built and installed the demo](#building).
 
-The directory where the repository's artefacts have been installed will be
+The directory where the repository's artifacts have been installed will be
 referred to as `${INSTALL_DIR}`.
 
 Configuration steps:
@@ -238,8 +244,6 @@ Configuration steps:
 2. Configure required environment variables
 
     ```sh
-    # Modify INSTALL_DIR if you installed the repository in a
-    # custom location.
     export NDDSHOME=/path/to/rti_connext_dds \
            CONNEXTDDS_ARCH=myOsAndCompiler
     ```
@@ -247,19 +251,31 @@ Configuration steps:
     or
 
     ```bat
-    # Modify INSTALL_DIR if you installed the repository in a
-    # custom location.
     set NDDSHOME=/path/to/rti_connext_dds
     set CONNEXTDDS_ARCH=myOsAndCompiler
     ```
 
 3. Restart the `mosquitto` MQTT Broker:
 
+    Kill `mosquitto` if it is already running:
+
     ```sh
     sudo service mosquitto stop
     sudo service mosquitto disable
+    ```
+
+    or
+
+    ```sh
+    pkill -f mosquitto
+    ```
+
+    Start `mosquitto` broker again:
+
+    ```sh
     mosquitto -c etc/mosquitto/mosquitto.conf -p 1883 -d
     ```
+
     > **NOTE**: the Windows® version of `mosquitto` doesn't support the daemon
     > mode, so we shouldn't add the option `-d`.
 
@@ -269,6 +285,8 @@ Configuration steps:
     tail -f mosquitto.log
     ```
 
+### Running the example with scripts
+
 The following commands can be run at once using `tmux` and the following
 script, or `windows_run_all.bat`.
 Note that `NDDSHOME` and `CONNEXTDDS_ARCH` should be set as explained above.
@@ -276,7 +294,7 @@ Also, make sure that `mosquitto_pub`, and `mosquitto_sub` are available from
 the current command prompt, otherwise you should modify the PATH environment
 variable.
 
-Linux® systems:
+Linux and macOS systems:
 
     ```sh
     ./scripts/tmux_session.sh
@@ -291,6 +309,8 @@ Windows systems:
 > **NOTE**: In order to close the Windows `windows_run_all.bat` script, all the
 > windows which have been opened should be closed, including the RTI Shape Demo
 > application.
+
+### Running the example manually
 
 You can run these commands manually in 5 different terminals. This README
 assumes that `NDDSHOME` and `CONNEXTDDS_ARCH` environment variables are set
@@ -327,13 +347,14 @@ for all of the terminals. Also the working directory for them is
 5. In a separate terminal, start an *RTI Routing Service* instance:
 
     ```sh
-        LD_LIBRARY_PATH=${INSTALL_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH \
-        $NDDSHOME/bin/rtiroutingservice -cfgFile  etc/shapes_bridge.xml -cfgName shapes_bridge
+        LD_LIBRARY_PATH=${INSTALL_DIR}/lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH \
+        $NDDSHOME/bin/rtiroutingservice -cfgFile etc/shapes_bridge.xml -cfgName shapes_bridge
     ```
 
 > **NOTE**: The above commands are for Linux systems, there are similar `*.bat`
-> scripts that can be used when using Windows. Also, we need to set the
-> environment variables before running the corresponding command.
+> scripts that can be used when using Windows. Also, depending on the OS,
+> the `PATH` or `DYLD_LIBRARY_PATH` environment variable should be set
+> before running the corresponding command.
 
 In order to see the shapes that are being published, you can subscribe to
 different shapes by clicking in the following menu items in the
@@ -349,9 +370,6 @@ menu items in the *RTI Shapes Demo* application:
 - "Publish/Square..." and click 'OK' to use the default parameters.
 - "Publish/Circle..." and click 'OK' to use the default parameters.
 - "Publish/Triangle..." and click 'OK' to use the default parameters.
-
-> **NOTE**: The Windows `shapes_mqtt_publisher.bat` only publishes circles if
-> the topic is not specified.
 
 ## Navigating the demo with tmux
 

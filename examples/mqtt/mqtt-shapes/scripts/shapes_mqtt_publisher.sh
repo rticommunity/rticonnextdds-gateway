@@ -98,9 +98,15 @@ publish_topic()
 kill_publishers()
 {
   printf "killing child processes: ${PUB_PIDS}"
-  kill ${PUB_PIDS}
-  ps aux  | grep "/bin/sh ./bin/shapes_mqtt_publisher.sh ${SHAPE_COLOR}" |
-    grep -v grep | awk '{print $2;}' | xargs kill
+  case "$(uname)" in
+    (*Darwin*)
+      pkill -f shapes_mqtt_publisher; ;;
+    (*Linux*)
+      kill ${PUB_PIDS}
+      ps aux  | grep "/bin/sh ./bin/shapes_mqtt_publisher.sh ${SHAPE_COLOR}" |
+      grep -v grep | awk '{print $2;}' | xargs kill
+    ;;
+  esac
 }
 
 trap kill_publishers INT
