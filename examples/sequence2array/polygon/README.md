@@ -60,8 +60,7 @@ the use of the Sequence2Array transformation.
 ## Running the Example
 
 In order to run the integration test, three elements are required (all of them
-are supposed to be running from `<install dir>/examples/tsfm_sequence2array/polygon/`
-directory):
+must be run from directory `<install dir>/examples/tsfm_sequence2array/polygon/`):
 
 - Publisher:
 

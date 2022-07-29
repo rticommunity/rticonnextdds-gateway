@@ -69,17 +69,35 @@ automatically. For example:
         </output>
     </topic_route>
 
-The snippet above automatically applies the Sequence2Array Transformation to all
-the types in the topic ``Sequence2ArrayTopic`` whose registered name is
-``MyTypeWithSequences``, and publish them in the topic ``Sequence2ArrayTopicArray``
-whose type is ``MyTypeWithArrays``.
+The snippet above will cause Routing Service to automatically establish a route
+whenever it detects a DataWriter using topic ``Sequence2ArrayTopic`` with
+registered type name``MyTypeWithSequences``.
+The received data will be transformed using the Sequence2Array transformation,
+and published to topic ``Sequence2ArrayTopicArray``, which uses type
+``MyTypeWithArray``.
 
-The Sequence2Array transformation will check that those types are compatible,
-meaning that the types are the same ones but just changing sequences by arrays.
-This means that the name of inner members and the order of them within the whole
-type must be the same (DynamicData ``index``) in the input and the output.
-Besides this, these types must be compatible (i.e. they have the same type, or
-one is a sequence and the other is an array with the same type of elements).
+When a new route is established, the Sequence2Array transformation will check
+compatibility between the input and output types, to make sure that samples may
+be converted from one to the other.
+In order for types to be compatible, the types must have compatible nested
+members, based on the following rules:
+
+- The members are of the same primitive type.
+- The members are of two compatible structured types.
+- The input member is a collection (array or sequence), the output member is an
+  array, and satisfy the following conditions:
+  - The elements of both members have compatible types.
+  - The input member is a sequence, or the size of the input array is less than
+    or equal to the size of the output array.
+
+The type validation is performed recursively until all "leaf" nested members
+have been validated, or until at least one member is found to be incompatible.
+If the types are found to be incompatible, the Sequence2Array transformation
+will throw an error and prevent Routing Service from establishing the new route.
+
+Members are matched based on their names and the value assignation is done by
+the position of the member. Therefore, both, the name and position of the
+members must be the same.
 
 For example, if we have the following type:
 
@@ -147,10 +165,16 @@ A compatible matching type might be:
         NewEnum1 member7;
     };
 
-As you can see, when replacing sequences by arrays, an array size must be added.
-It is responsibility of the user to assign enough size for storing data that
-comes from the sequence. Unbounded sequences are supported, but the actual
-size sent should be less than or equal to the array size. If using bounded
-sequences, using the bound as array size is recommended. In case that the
-number of sequence elements are greater than the array size, an error is logged
-and the sample is dropped.
+Since sequences are dynamically-sized containers whose actual size might change
+at runtime, the Sequence2Array transformation will check, at runtime, that the
+size of an array member in the output type is compatible with the current size
+of the sequence member in the input.
+
+This allows the input type to make use of both "unbounded sequences"
+(e.g. ``sequence<int32> my_int32_sequence``) and sequences whose boundaries
+exceed those of the corresponding output array
+(e.g. ``sequence<int32, 100> my_bounded_int32_sequence``).
+
+It is the user's responsibility to guarantee that the actual values of any
+sequence member will fit in the corresponding output array. If this is not the
+case, Sequence2Array will log an error and drop the incompatible sample.
