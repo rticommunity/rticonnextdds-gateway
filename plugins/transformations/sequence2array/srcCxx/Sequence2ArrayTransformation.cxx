@@ -26,8 +26,15 @@ using dds::sub::SampleInfo;
  * all the elements are the same but the sequences in the input are replaced by
  * arrays in the output.
  *
- * This function has an indirect recursion. This function must be called only
- * from are_types_compatible(). And also, this function call recursively to it.
+ * This function will indirectly call itself (by means of a call to
+ * `Sequence2ArrayTransformation::are_types_compatible()`) in order to:
+ * - Validate the compatibility of two members of a structured type
+ *   (i.e. union or struct).
+ * - Validate the compatibility of the element type of two members of a
+ *   collection type (i.e. array or sequence).
+ *
+ * This function should only be called from within
+ * `Sequence2ArrayTransformation::are_types_compatible()`.
  */
 template<typename T>
 bool Sequence2ArrayTransformation::is_union_or_struct_type_compatible(
@@ -36,47 +43,50 @@ bool Sequence2ArrayTransformation::is_union_or_struct_type_compatible(
 {
     // Check that the types are the same
     if (input_type.kind() != output_type.kind()) {
-        std::string error("the ouput field <" + output_type.name()
-                + "> is different to the input type <"
-                + input_type.name() + ">.");
-        throw std::runtime_error(error);
+        rti::routing::Logger::instance().error("incompatible type kinds: "
+                + input_type.name() + ", "
+                + output_type.name());
+        return true;
     }
 
     // check that the types are either union or struct
     if (input_type.kind() != TypeKind::UNION_TYPE
             && input_type.kind() != TypeKind::STRUCTURE_TYPE)  {
-        std::string error("unsupported kind of the input type <"
-            + input_type.name() + ">.");
-        throw std::runtime_error(error);
+        rti::routing::Logger::instance().error("expected union or struct, found: "
+                + input_type.name() + " "
+                + std::to_string(input_type.kind().underlying()));
+        return false;
     }
 
     auto t_input_type = static_cast<const T &>(input_type);
     auto t_output_type = static_cast<const T &>(output_type);
     bool is_compatible = true;
 
-    // in case it is a union, check that the discriminator is the same
+    // in case it is a union, check that the discriminator is the same.
+    // We rely on the overloaded `operator==` provided by DynamicType.
     if (input_type.kind() == TypeKind::UNION_TYPE) {
         auto union_input_type = static_cast<const UnionType &>(input_type);
         auto union_output_type = static_cast<const UnionType &>(output_type);
         if (union_input_type.discriminator() != union_output_type.discriminator()){
-            std::string error("different discriminator of input and output "
-                    "unions. Input union <" + union_input_type.name()
-                    + "> discriminator name <" + union_input_type.discriminator().name()
-                    + "> is different of output union <" + union_output_type.name()
-                    + "> discriminator name <" + union_output_type.discriminator().name()
-                    + ">.");
-            throw std::runtime_error(error);
+            rti::routing::Logger::instance().error(
+                    "incompatible union discriminators: "
+                    + union_input_type.name()
+                    + "(" + union_input_type.discriminator().name() + "), "
+                    + union_output_type.name()
+                    + "(" + union_output_type.discriminator().name() + ")");
+            return false;
         }
     }
 
     // check that the number of elements are the same
     if (t_input_type.member_count() != t_output_type.member_count()) {
-        std::string error("different member count of input and output "
-                "input name: <" + t_input_type.name()
-                + ">, output name <" + t_output_type.name() + ">: "
-                + std::to_string(t_input_type.member_count())
-                + " != " + std::to_string(t_output_type.member_count()));
-        throw std::runtime_error(error);
+       rti::routing::Logger::instance().error(
+                "incompatible members count: "
+                + t_input_type.name()
+                + "(" + std::to_string(t_input_type.member_count()) + "), "
+                + t_output_type.name()
+                + "(" + std::to_string(t_output_type.member_count()) + ")");
+        return false;
     }
 
     if (t_input_type == t_output_type) {
@@ -96,12 +106,12 @@ bool Sequence2ArrayTransformation::is_union_or_struct_type_compatible(
                         input_member.type(),
                         output_member.type());
                 if (!is_compatible) {
-                    std::string error("input member <"
+                    rti::routing::Logger::instance().error(
+                            "incompatible members: "
                             + input_member.name().to_std_string()
-                            + ">, not compatible with output name <"
-                            + output_member.name().to_std_string()
-                            + ">");
-                    throw std::runtime_error(error);
+                            + ", "
+                            + output_member.name().to_std_string());
+                    return false;
                 }
             break;
             // primitive type
@@ -109,12 +119,12 @@ bool Sequence2ArrayTransformation::is_union_or_struct_type_compatible(
                 is_compatible = is_compatible
                         && (input_member.type() == output_member.type());
                 if (!is_compatible) {
-                    std::string error("input member <"
+                   rti::routing::Logger::instance().error(
+                            "incompatible members: "
                             + input_member.name().to_std_string()
-                            + ">, not compatible with output name <"
-                            + output_member.name().to_std_string()
-                            + ">");
-                    throw std::runtime_error(error);
+                            + ", "
+                            + output_member.name().to_std_string());
+                    return false;
                 }
                 break;
             }
@@ -154,30 +164,25 @@ bool Sequence2ArrayTransformation::are_types_compatible(
 
     case TypeKind::ARRAY_TYPE: {
         if (output_type.kind() != TypeKind::ARRAY_TYPE) {
-            std::string error("the ouput field <" + output_type.name()
-                    + "> is different to the input type <" + input_type.name());
-            throw std::runtime_error(error);
+            rti::routing::Logger::instance().error("output is not an array");
+            return false;
         }
 
         auto input_array_type = static_cast<const ArrayType &>(input_type);
         auto output_array_type = static_cast<const ArrayType &>(output_type);
 
         if (input_array_type.dimension_count() != output_array_type.dimension_count()) {
-            std::string error("different dimension count of input and output "
-                    "array, input name: <" + input_array_type.name()
-                    + ">, output name <" + output_array_type.name() + ">: "
+            rti::routing::Logger::instance().error("different array dimension count: "
                     + std::to_string(input_array_type.dimension_count())
                     + " != " + std::to_string(output_array_type.dimension_count()));
-            throw std::runtime_error(error);
+            return false;
         }
 
         if (input_array_type.total_element_count() != output_array_type.total_element_count()) {
-            std::string error("different total element count of input "
-                    "and output array, input name: <" + input_array_type.name()
-                    + ">, output name <" + output_array_type.name() + ">: "
+            rti::routing::Logger::instance().error("different array total element count: "
                     + std::to_string(input_array_type.dimension_count())
                     + " != " + std::to_string(output_array_type.dimension_count()));
-            throw std::runtime_error(error);
+            return false;
         }
 
         if (input_array_type.content_type() == output_array_type.content_type()) {
@@ -194,12 +199,9 @@ bool Sequence2ArrayTransformation::are_types_compatible(
                         input_array_type.content_type(),
                         output_array_type.content_type());
                 if (!is_compatible) {
-                    std::string error("content of input member <"
-                            + input_array_type.name()
-                            + ">, not compatible with content of output member <"
-                            + output_array_type.name()
-                            + ">");
-                    throw std::runtime_error(error);
+                    rti::routing::Logger::instance().error(
+                            "incompatible array content.");
+                    return false;
                 }
                 break;
             // primitive type
@@ -214,18 +216,19 @@ bool Sequence2ArrayTransformation::are_types_compatible(
 
     case TypeKind::SEQUENCE_TYPE: {
         if (output_type.kind() != TypeKind::ARRAY_TYPE) {
-            std::string error("the ouput field <" + output_type.name()
-                    + "> is not an array.");
-            throw std::runtime_error(error);
+            rti::routing::Logger::instance().error(
+                    "the ouput element is not an array.");
+            return false;
         }
 
         auto input_sequence_type = static_cast<const SequenceType &>(input_type);
         auto output_array_type = static_cast<const ArrayType &>(output_type);
 
         if (output_array_type.dimension_count() != 1) {
-            std::string error("cannot transform a sequence to a "
-                    "multidimensional array. The array dimension count should be 1.");
-            throw std::runtime_error(error);
+            rti::routing::Logger::instance().error("cannot transform a sequence "
+                    "to a multidimensional array. The array dimension count "
+                    "should be 1.");
+            return false;
         }
 
         if (input_sequence_type.content_type() == output_array_type.content_type()) {
@@ -242,12 +245,9 @@ bool Sequence2ArrayTransformation::are_types_compatible(
                             input_sequence_type.content_type(),
                             output_array_type.content_type());
                     if (!is_compatible) {
-                        std::string error("content of input member <"
-                                + input_sequence_type.name()
-                                + ">, not compatible with content of output member <"
-                                + output_array_type.name()
-                                + ">");
-                        throw std::runtime_error(error);
+                        rti::routing::Logger::instance().error(
+                                "incompatible array and sequence content.");
+                        return false;
                     }
                 break;
                 // primitive type
@@ -260,10 +260,8 @@ bool Sequence2ArrayTransformation::are_types_compatible(
             break;
         }
     default:
-        std::string error("incompatible type input <" + input_type.name()
-                + ">, and output <" + output_type.name() + ">");
-        throw std::runtime_error(error);
-        break;
+        rti::routing::Logger::instance().error("incompatible type input.");
+        return false;
     }
 
     return is_compatible;
@@ -277,7 +275,7 @@ Sequence2ArrayTransformation::Sequence2ArrayTransformation(
           output_type_info_(output_type_info.dynamic_type())
 {
     if (!are_types_compatible(input_type_info_, output_type_info_)) {
-        throw std::runtime_error("input and ouput types are not compatible");
+        throw std::runtime_error("input and ouput types are not compatible.");
     }
     // properties are not used because there is no additional configuration for
     // this transformation
