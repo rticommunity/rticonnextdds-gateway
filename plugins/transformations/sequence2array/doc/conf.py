@@ -30,8 +30,7 @@ import sphinx_rtd_theme
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.imgmath',
-              'sphinx.ext.extlinks',]
+extensions = ['sphinx.ext.imgmath']
 
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']
@@ -46,8 +45,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'RTI Connext Gateway'
-copyright = '2020, Real-Time Innovations, Inc'
+project = 'RTI Routing Service Sequence2Array Transformation'
+copyright = '2022, Real-Time Innovations, Inc'
 author = 'Real-Time Innovations, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -98,15 +97,15 @@ def setup(app):
 # documentation.
 #
 # html_theme_options = {}
-html_logo = "_static/img/rti-logo.png"
-html_favicon = "_static/img/favicon.ico"
+html_logo = "static/img/rti-logo.png"
+html_favicon = "static/img/favicon.ico"
 html_css_files = ['css/custom.css']
 html_js_files = ['js/custom.js']
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ['static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -120,22 +119,12 @@ html_sidebars = {
     ]
 }
 
-# -- links
-LINK_PAHO_C = 'https://www.eclipse.org/paho/clients/c/'
-LINK_LIBMODBUS = 'https://libmodbus.org/'
-LINK_RDKAFKA = 'https://github.com/edenhill/librdkafka'
-LINK_JSON_PARSER = 'https://github.com/udp/json-parser'
-
-extlinks = {'link_paho_c': (LINK_PAHO_C + '%s', 'link_paho_c %s'),
-            'link_libmodbus': (LINK_LIBMODBUS + '%s', 'link_libmodbus %s'),
-            'link_librdkafka': (LINK_RDKAFKA + '%s', 'link_librdkafka %s'),
-            'link_json_parser': (LINK_JSON_PARSER + '%s', 'link_json_parser %s')
-}
-
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'RTI_Properties'
+htmlhelp_basename = 'RTIConnextGatewayFwdDoc'
 
-
-
+rst_epilog = """
+.. |version| replace:: {0}
+.. |project| replace:: {1}
+""".format(version, project)

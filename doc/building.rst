@@ -16,7 +16,7 @@ The code can be built using |CMAKE|, version 3.10.0 or greater.
 Build Setup
 ===========
 
-|RTI_CONNEXT| (version |CONNEXT_VERSION_601| or greater) must be available
+|RTI_CONNEXT| (version |CONNEXT_VERSION| or greater) must be available
 on the build system. The installation must include libraries for the
 target build architecture, and ``rtiddsgen``.
 
@@ -174,54 +174,71 @@ RTIGATEWAY_ENABLE_MODBUS
 
 :Required: No
 :Default: ``ON``
-:Description: If this variable is enabled, the Modbus adapter and all its
-              components are enabled unless they are specifically disabled
-              (tests, examples, docs...).
+:Description: If this variable is enabled, the Modbus adapter
+              and all of its components (tests, examples, docs...) will be
+              enabled, unless they have been explicitly disabled using the
+              dedicated variables.
 
 RTIGATEWAY_ENABLE_MQTT
 ^^^^^^^^^^^^^^^^^^^^^^
 
 :Required: No
 :Default: ``ON``
-:Description: If this variable is enabled, the MQTT adapter and all its
-              components are enabled unless they are specifically disabled
-              (tests, examples, docs...).
+:Description: If this variable is enabled, the MQTT adapter
+              and all of its components (tests, examples, docs...) will be
+              enabled, unless they have been explicitly disabled using the
+              dedicated variables.
 
 RTIGATEWAY_ENABLE_KAFKA
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 :Required: No
 :Default: ``ON``
-:Description: If this variable is enabled, the Kafka adapter and all its
-              components are enabled unless they are specifically disabled
-              (tests, examples, docs...).
+:Description: If this variable is enabled, the Kafka adapter
+              and all of its components (tests, examples, docs...) will be
+              enabled, unless they have been explicitly disabled using the
+              dedicated variables.
 
 RTIGATEWAY_ENABLE_FWD
 ^^^^^^^^^^^^^^^^^^^^^
 
 :Required: No
 :Default: ``ON``
-:Description: If this variable is enabled, the forwarder processor and all its
-              components are enabled unless they are specifically disabled
-              (tests, examples, docs...).
+:Description: If this variable is enabled, the forwarder processor
+              and all of its components (tests, examples, docs...) will be
+              enabled, unless they have been explicitly disabled using the
+              dedicated variables.
 
 RTIGATEWAY_ENABLE_TSFM_FIELD
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 :Required: No
 :Default: ``ON``
-:Description: If this variable is enabled, the field transformation and all its
-              components are enabled unless they are specifically disabled
-              (tests, examples, docs...).
+:Description: If this variable is enabled, the field transformation
+              and all of its components (tests, examples, docs...) will be
+              enabled, unless they have been explicitly disabled using the
+              dedicated variables.
 
 RTIGATEWAY_ENABLE_TSFM_JSON
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 :Required: No
 :Default: ``ON``
-:Description: If this variable is enabled, the JSON transformation and all its
-              components are enabled unless they are specifically disabled
-              (tests, examples, docs...).
+:Description: If this variable is enabled, the JSON transformation
+              and all of its components (tests, examples, docs...) will be
+              enabled, unless they have been explicitly disabled using the
+              dedicated variables.
+
+RTIGATEWAY_ENABLE_TSFM_SEQUENCE2ARRAY
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:Required: No
+:Default: ``ON``
+:Description: If this variable is enabled, the Sequence2Array transformation
+              and all of its components (tests, examples, docs...) will be
+              enabled, unless they have been explicitly disabled using the
+              dedicated variables.
+
 
 RTIGATEWAY_ENABLE_LOG
 ^^^^^^^^^^^^^^^^^^^^^

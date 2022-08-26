@@ -248,6 +248,7 @@ macro(rtigw_init_globals)
     option(RTIGATEWAY_ENABLE_FWD "Build Forwarder Processor" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_TSFM_FIELD "Build Field Transformation" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_TSFM_JSON "Build JSON Transformation" ${RTIGATEWAY_ENABLE_ALL})
+    option(RTIGATEWAY_ENABLE_TSFM_SEQUENCE2ARRAY "Build Sequence2Array Transformation" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_TESTS "Build tester applications for enabled plugins" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_EXAMPLES "Build examples applications for enabled plugins" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_DOCS "Build documentation for enabled plugins" OFF)
@@ -259,7 +260,7 @@ macro(rtigw_init_globals)
 
     list(APPEND CMAKE_MODULE_PATH "${RTICMAKE_UTILS_MODULES_DIR}")
 
-    rtigw_configure_connextdds(6.0.1)
+    rtigw_configure_connextdds(6.1.0)
 
     if (RTIGATEWAY_ENABLE_TESTS)
         enable_testing()

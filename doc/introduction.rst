@@ -126,3 +126,4 @@ information on its use and configuration:
 
     * `Field <transformations/tsfm_field/index.html>`__ : Extract an attribute from input samples and convert its value to a string.
     * `JSON <transformations/tsfm_json/index.html>`__ : Convert DDS samples to JSON format.
+    * `Sequence2Array <transformations/tsfm_sequence2array/index.html>`__ : Convert a sample into a type which uses arrays instead of sequences.

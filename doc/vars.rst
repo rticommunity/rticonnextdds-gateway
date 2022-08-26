@@ -2,7 +2,7 @@
 
    <br />
 
-.. |CONNEXT_VERSION_601| replace:: 6.0.1
+.. |CONNEXT_VERSION| replace:: 6.1.0
 .. |RS| replace:: *Routing Service*
 .. |RS_SDK| replace:: |RS| *SDK*
 .. |RSs| replace:: *Routing Services*
@@ -20,7 +20,7 @@
 .. |DDS_TOPIC| replace:: *DDS Topic*
 .. |DDS_DOMAIN| replace:: *DDS Domain*
 .. |DDS_DOMAINS| replace:: *DDS Domains*
-.. |COPYRIGHT_YEAR| replace:: 2020
+.. |COPYRIGHT_YEAR| replace:: 2022
 .. |COPYRIGHT_HEADER| replace:: © |COPYRIGHT_YEAR| Real-Time Innovations, Inc.
 .. |PAHO_ASYNC| replace:: *Paho C Client Async MQTT Library*
 .. |RSMQTT| replace:: |RS| *MQTT Adapter*

@@ -59,7 +59,7 @@ rtigw_add_plugin(
 
 # Adding transformations
 rtigw_add_plugin(
-    ENABLE_PLUGIN RTIGATEWAY_ENABLE_FWD
+    ENABLE_PLUGIN RTIGATEWAY_ENABLE_TSFM_FIELD
     PREFIX "RTI_TSFM_FIELD"
     STAGING_DIR "tsfm_field"
     PLUGIN_DIR_NAME "field"
@@ -67,10 +67,18 @@ rtigw_add_plugin(
 )
 
 rtigw_add_plugin(
-    ENABLE_PLUGIN RTIGATEWAY_ENABLE_FWD
+    ENABLE_PLUGIN RTIGATEWAY_ENABLE_TSFM_JSON
     PREFIX "RTI_TSFM_JSON"
     STAGING_DIR "tsfm_json"
     PLUGIN_DIR_NAME "json"
+    PLUGIN_TYPE "TRANSFORMATION"
+)
+
+rtigw_add_plugin(
+    ENABLE_PLUGIN RTIGATEWAY_ENABLE_TSFM_SEQUENCE2ARRAY
+    PREFIX "RTI_TSFM_SEQUENCE2ARRAY"
+    STAGING_DIR "tsfm_sequence2array"
+    PLUGIN_DIR_NAME "sequence2array"
     PLUGIN_TYPE "TRANSFORMATION"
 )
 
