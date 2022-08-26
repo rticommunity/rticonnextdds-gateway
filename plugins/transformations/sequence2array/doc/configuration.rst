@@ -86,6 +86,7 @@ members, based on the following rules:
 - The members are of two compatible structured types.
 - The input member is a collection (array or sequence), the output member is an
   array, and satisfy the following conditions:
+
   - The elements of both members have compatible types.
   - The input member is a sequence, or the size of the input array is less than
     or equal to the size of the output array.

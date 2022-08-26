@@ -18,7 +18,7 @@ struct ShapeType
 };
 ```
 
-Kafka applications use JSON to encode data, fololowing the defined data type. An
+Kafka applications use JSON to encode data, following the defined data type. An
 example encoded data looks like:
 ```json
 {
