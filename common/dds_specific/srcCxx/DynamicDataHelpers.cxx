@@ -15,63 +15,64 @@
 
 #include "DynamicDataHelpers.hpp"
 #include "UtilsStrings.hpp"
+#include "UniversalPrimitiveTypeUnion.hpp"
 
 using namespace dds::core::xtypes;
 
-long double
+UniversalPrimitiveTypeUnion
     rti::common::dynamic_data::get_dds_primitive_or_enum_type_value(
         const DynamicData& data,
-        const std::string &field)
+        const std::string& field)
 {
-    long double float_value = 0;
+    UniversalPrimitiveTypeUnion my_value = {0};
     switch (data.member_info(field).member_kind().underlying()) {
     case TypeKind::BOOLEAN_TYPE:
-        float_value = data.value<bool>(field) ? 1 : 0;
+        my_value.uint64_value = data.value<bool>(field) ? 1 : 0;
         break;
     case TypeKind::CHAR_8_TYPE:
-        float_value = data.value<char>(field);
+        my_value.int64_value = data.value<char>(field);
         break;
     case TypeKind::UINT_8_TYPE:
-        float_value = data.value<uint8_t>(field);
+        my_value.uint64_value = data.value<uint8_t>(field);
         break;
     case TypeKind::INT_16_TYPE:
-        float_value = data.value<int16_t>(field);
+        my_value.int64_value = data.value<int16_t>(field);
         break;
     case TypeKind::UINT_16_TYPE:
-        float_value = data.value<uint16_t>(field);
+        my_value.uint64_value = data.value<uint16_t>(field);
         break;
     case TypeKind::INT_32_TYPE:
     case TypeKind::ENUMERATION_TYPE:
-        float_value = data.value<int32_t>(field);
+        my_value.int64_value = data.value<int32_t>(field);
         break;
     case TypeKind::UINT_32_TYPE:
-        float_value = data.value<uint32_t>(field);
+        my_value.uint64_value = data.value<uint32_t>(field);
         break;
     case TypeKind::INT_64_TYPE:
-        float_value = static_cast<long double>(data.value<int64_t>(field));
+        my_value.int64_value = data.value<int64_t>(field);
         break;
     case TypeKind::UINT_64_TYPE:
-        float_value = static_cast<long double>(data.value<uint64_t>(field));
+        my_value.uint64_value = data.value<uint64_t>(field);
         break;
     case TypeKind::FLOAT_32_TYPE:
-        float_value = data.value<float>(field);
+        my_value.double_value = data.value<float>(field);
         break;
     case TypeKind::FLOAT_64_TYPE:
-        float_value = data.value<double>(field);
+        my_value.double_value = data.value<double>(field);
         break;
     default:
         std::string error("unsupported type of <" + field + ">");
         throw std::runtime_error(error);
     }
-    return float_value;
+    return my_value;
 }
 
-std::vector<long double>
+std::vector<UniversalPrimitiveTypeUnion>
     rti::common::dynamic_data::get_vector_values(
         const DynamicData& data,
         const std::string& field)
 {
-    std::vector<long double> float_vector;
+    std::vector<UniversalPrimitiveTypeUnion> union_vector;
     size_t size = data.member_info(field).element_count();
 
     switch (data.member_info(field).element_kind().underlying()) {
@@ -79,7 +80,9 @@ std::vector<long double>
         std::vector<char> members(size);
         data.get_values<char>(field, members);
         for (auto member : members) {
-            float_vector.push_back(member);
+            UniversalPrimitiveTypeUnion my_value = {0};
+            my_value.int64_value = static_cast<int64_t>(member);
+            union_vector.push_back(my_value);
         }
         break;
     }
@@ -89,7 +92,9 @@ std::vector<long double>
         std::vector<uint8_t> members(size);
         data.get_values<uint8_t>(field, members);
         for (auto member : members) {
-            float_vector.push_back(member);
+            UniversalPrimitiveTypeUnion my_value = {0};
+            my_value.uint64_value = static_cast<uint64_t>(member);
+            union_vector.push_back(my_value);
         }
         break;
     }
@@ -97,7 +102,9 @@ std::vector<long double>
         std::vector<int16_t> members(size);
         data.get_values<int16_t>(field, members);
         for (auto member : members) {
-            float_vector.push_back(member);
+            UniversalPrimitiveTypeUnion my_value = {0};
+            my_value.int64_value = static_cast<int64_t>(member);
+            union_vector.push_back(my_value);
         }
         break;
     }
@@ -105,7 +112,9 @@ std::vector<long double>
         std::vector<uint16_t> members(size);
         data.get_values<uint16_t>(field, members);
         for (auto member : members) {
-            float_vector.push_back(member);
+            UniversalPrimitiveTypeUnion my_value = {0};
+            my_value.uint64_value = static_cast<uint64_t>(member);
+            union_vector.push_back(my_value);
         }
         break;
     }
@@ -114,7 +123,9 @@ std::vector<long double>
         std::vector<DDS_Long> members(size);
         data.get_values<DDS_Long>(field, members);
         for (auto member : members) {
-            float_vector.push_back(member);
+            UniversalPrimitiveTypeUnion my_value = {0};
+            my_value.int64_value = static_cast<int64_t>(member);
+            union_vector.push_back(my_value);
         }
         break;
     }
@@ -122,7 +133,9 @@ std::vector<long double>
         std::vector<DDS_UnsignedLong> members(size);
         data.get_values<DDS_UnsignedLong>(field, members);
         for (auto member : members) {
-            float_vector.push_back(member);
+            UniversalPrimitiveTypeUnion my_value = {0};
+            my_value.uint64_value = static_cast<uint64_t>(member);
+            union_vector.push_back(my_value);
         }
         break;
     }
@@ -130,7 +143,9 @@ std::vector<long double>
         std::vector<DDS_LongLong> members(size);
         data.get_values<DDS_LongLong>(field, members);
         for (auto member : members) {
-            float_vector.push_back(static_cast<long double>(member));
+            UniversalPrimitiveTypeUnion my_value = {0};
+            my_value.int64_value = static_cast<int64_t>(member);
+            union_vector.push_back(my_value);
         }
         break;
     }
@@ -138,7 +153,9 @@ std::vector<long double>
         std::vector<DDS_UnsignedLongLong> members(size);
         data.get_values<DDS_UnsignedLongLong>(field, members);
         for (auto member : members) {
-            float_vector.push_back(static_cast<long double>(member));
+            UniversalPrimitiveTypeUnion my_value = {0};
+            my_value.uint64_value = static_cast<uint64_t>(member);
+            union_vector.push_back(my_value);
         }
         break;
     }
@@ -146,7 +163,9 @@ std::vector<long double>
         std::vector<float> members(size);
         data.get_values<float>(field, members);
         for (auto member : members) {
-            float_vector.push_back(member);
+            UniversalPrimitiveTypeUnion my_value = {0};
+            my_value.double_value = static_cast<double>(member);
+            union_vector.push_back(my_value);
         }
         break;
     }
@@ -154,7 +173,9 @@ std::vector<long double>
         std::vector<double> members(size);
         data.get_values<double>(field, members);
         for (auto member : members) {
-            float_vector.push_back(member);
+            UniversalPrimitiveTypeUnion my_value = {0};
+            my_value.double_value = static_cast<double>(member);
+            union_vector.push_back(my_value);
         }
         break;
     }
@@ -162,7 +183,7 @@ std::vector<long double>
         std::string error("unsupported member type of <" + field + ">");
         throw std::runtime_error(error);
     }
-    return float_vector;
+    return union_vector;
 }
 
 
@@ -170,20 +191,26 @@ void rti::common::dynamic_data::set_dds_primitive_or_enum_type_value(
         DynamicData& data,
         const TypeKind type,
         const std::string& field,
-        const long double& float_value)
+        const UniversalPrimitiveTypeUnion& union_value)
 {
     switch (type.underlying()) {
     case TypeKind::BOOLEAN_TYPE:
-        data.value<bool>(field, static_cast<bool>(float_value ? 1 : 0));
+        data.value<bool>(
+                field,
+                static_cast<bool>(union_value.uint64_value ? 1 : 0));
         break;
     case TypeKind::CHAR_8_TYPE:
-        data.value<char>(field, static_cast<char>(float_value));
+        data.value<char>(field, static_cast<char>(union_value.int64_value));
         break;
     case TypeKind::UINT_8_TYPE:
-        data.value<uint8_t>(field, static_cast<uint8_t>(float_value));
+        data.value<uint8_t>(
+                field,
+                static_cast<uint8_t>(union_value.uint64_value));
         break;
     case TypeKind::INT_16_TYPE:
-        data.value<int16_t>(field, static_cast<int16_t>(float_value));
+        data.value<int16_t>(
+                field,
+                static_cast<int16_t>(union_value.int64_value));
         break;
     case TypeKind::UINT_16_TYPE: {
         // data.value<uint16_t>(field, static_cast<uint16_t>(float_value));
@@ -192,7 +219,7 @@ void rti::common::dynamic_data::set_dds_primitive_or_enum_type_value(
                 &data.native(),
                 field.c_str(),
                 DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                static_cast<uint16_t>(float_value));
+                static_cast<uint16_t>(union_value.uint64_value));
         if (retcode != DDS_RETCODE_OK) {
             std::string error("setting ushort value of <" + field + ">");
             throw std::runtime_error(error);
@@ -201,22 +228,26 @@ void rti::common::dynamic_data::set_dds_primitive_or_enum_type_value(
     }
     case TypeKind::INT_32_TYPE:
     case TypeKind::ENUMERATION_TYPE:
-        data.value<int32_t>(field, static_cast<int32_t>(float_value));
+        data.value<int32_t>(
+                field,
+                static_cast<int32_t>(union_value.int64_value));
         break;
     case TypeKind::UINT_32_TYPE:
-        data.value<uint32_t>(field, static_cast<uint32_t>(float_value));
+        data.value<uint32_t>(
+                field,
+                static_cast<uint32_t>(union_value.uint64_value));
         break;
     case TypeKind::INT_64_TYPE:
-        data.value<int64_t>(field, static_cast<int64_t>(float_value));
+        data.value<int64_t>(field, union_value.int64_value);
         break;
     case TypeKind::UINT_64_TYPE:
-        data.value<uint64_t>(field, static_cast<uint64_t>(float_value));
+        data.value<uint64_t>(field, union_value.uint64_value);
         break;
     case TypeKind::FLOAT_32_TYPE:
-        data.value<float>(field, static_cast<float>(float_value));
+        data.value<float>(field, static_cast<float>(union_value.double_value));
         break;
     case TypeKind::FLOAT_64_TYPE:
-        data.value<double>(field, static_cast<double>(float_value));
+        data.value<double>(field, union_value.double_value);
         break;
     default:
         std::string error("unsupported type of <" + field + ">");
@@ -228,13 +259,13 @@ void rti::common::dynamic_data::set_vector_values(
         DynamicData& data,
         const TypeKind type,
         const std::string& field,
-        const std::vector<long double>& float_vector)
+        const std::vector<UniversalPrimitiveTypeUnion>& union_vector)
 {
     switch (type.underlying()) {
     case TypeKind::CHAR_8_TYPE: {
         std::vector<char> values;
-        for (auto element : float_vector) {
-            values.push_back(static_cast<char>(element));
+        for (auto element : union_vector) {
+            values.push_back(static_cast<char>(element.int64_value));
         }
         data.set_values<char>(field, values);
         break;
@@ -243,24 +274,24 @@ void rti::common::dynamic_data::set_vector_values(
     // booleans are stored in memory as an uint8 for arrays/seqs
     case TypeKind::UINT_8_TYPE: {
         std::vector<uint8_t> values;
-        for (auto element : float_vector) {
-            values.push_back(static_cast<uint8_t>(element));
+        for (auto element : union_vector) {
+            values.push_back(static_cast<uint8_t>(element.uint64_value));
         }
         data.set_values<uint8_t>(field, values);
         break;
     }
     case TypeKind::INT_16_TYPE: {
         std::vector<int16_t> values;
-        for (auto element : float_vector) {
-            values.push_back(static_cast<int16_t>(element));
+        for (auto element : union_vector) {
+            values.push_back(static_cast<int16_t>(element.int64_value));
         }
         data.set_values<int16_t>(field, values);
         break;
     }
     case TypeKind::UINT_16_TYPE: {
         std::vector<uint16_t> values;
-        for (auto element : float_vector) {
-            values.push_back(static_cast<uint16_t>(element));
+        for (auto element : union_vector) {
+            values.push_back(static_cast<uint16_t>(element.uint64_value));
         }
         // data.set_values<uint16_t>(field, values);
         // affected by CORE-10286, use C API as a workaround
@@ -279,48 +310,49 @@ void rti::common::dynamic_data::set_vector_values(
     case TypeKind::ENUMERATION_TYPE:
     case TypeKind::INT_32_TYPE: {
         std::vector<DDS_Long> values;
-        for (auto element : float_vector) {
-            values.push_back(static_cast<DDS_Long>(element));
+        for (auto element : union_vector) {
+            values.push_back(static_cast<DDS_Long>(element.int64_value));
         }
         data.set_values<DDS_Long>(field, values);
         break;
     }
     case TypeKind::UINT_32_TYPE: {
         std::vector<DDS_UnsignedLong> values;
-        for (auto element : float_vector) {
-            values.push_back(static_cast<DDS_UnsignedLong>(element));
+        for (auto element : union_vector) {
+            values.push_back(
+                    static_cast<DDS_UnsignedLong>(element.uint64_value));
         }
         data.set_values<DDS_UnsignedLong>(field, values);
         break;
     }
     case TypeKind::INT_64_TYPE: {
         std::vector<DDS_LongLong> values;
-        for (auto element : float_vector) {
-            values.push_back(static_cast<DDS_LongLong>(element));
+        for (auto element : union_vector) {
+            values.push_back(element.int64_value);
         }
         data.set_values<DDS_LongLong>(field, values);
         break;
     }
     case TypeKind::UINT_64_TYPE: {
         std::vector<DDS_UnsignedLongLong> values;
-        for (auto element : float_vector) {
-            values.push_back(static_cast<DDS_UnsignedLongLong>(element));
+        for (auto element : union_vector) {
+            values.push_back(element.uint64_value);
         }
         data.set_values<DDS_UnsignedLongLong>(field, values);
         break;
     }
     case TypeKind::FLOAT_32_TYPE: {
         std::vector<float> values;
-        for (auto element : float_vector) {
-            values.push_back(static_cast<float>(element));
+        for (auto element : union_vector) {
+            values.push_back(static_cast<float>(element.double_value));
         }
         data.set_values<float>(field, values);
         break;
     }
     case TypeKind::FLOAT_64_TYPE: {
         std::vector<double> values;
-        for (auto element : float_vector) {
-            values.push_back(element);
+        for (auto element : union_vector) {
+            values.push_back(element.double_value);
         }
         data.set_values<double>(field, values);
         break;

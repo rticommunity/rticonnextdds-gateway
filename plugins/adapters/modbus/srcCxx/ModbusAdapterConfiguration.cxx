@@ -20,6 +20,8 @@
 #include <dds/dds.hpp>
 
 #include "DynamicDataHelpers.hpp"
+#include "UniversalPrimitiveTypeUnion.hpp"
+
 #include "LibModbusClient.hpp"
 #include "ModbusAdapterConfiguration.hpp"
 #include "json.hpp"
@@ -169,31 +171,31 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
 }
 
 std::string ModbusAdapterConfigurationElement::get_value_string(
-        long double value,
+        UniversalPrimitiveTypeUnion value,
         TypeKind element_kind)
 {
     switch (element_kind.underlying()) {
     case TypeKind::CHAR_8_TYPE:
-        return std::to_string((int8_t) value);
+        return std::to_string(static_cast<int8_t>(value.int64_value));
     case TypeKind::UINT_8_TYPE:
-        return std::to_string((uint8_t) value);
+        return std::to_string(static_cast<uint8_t>(value.uint64_value));
     case TypeKind::INT_16_TYPE:
-        return std::to_string((int16_t) value);
+        return std::to_string(static_cast<int16_t>(value.int64_value));
     case TypeKind::UINT_16_TYPE:
-        return std::to_string((uint16_t) value);
+        return std::to_string(static_cast<uint16_t>(value.uint64_value));
     case TypeKind::ENUMERATION_TYPE:
     case TypeKind::INT_32_TYPE:
-        return std::to_string((int32_t) value);
+        return std::to_string(static_cast<int32_t>(value.int64_value));
     case TypeKind::UINT_32_TYPE:
-        return std::to_string((uint32_t) value);
+        return std::to_string(static_cast<uint32_t>(value.uint64_value));
     case TypeKind::INT_64_TYPE:
-        return std::to_string((int64_t) value);
+        return std::to_string(value.int64_value);
     case TypeKind::UINT_64_TYPE:
-        return std::to_string((uint64_t) value);
+        return std::to_string(value.uint64_value);
     case TypeKind::FLOAT_32_TYPE:
-        return std::to_string((float) value);
+        return std::to_string(static_cast<float>(value.double_value));
     case TypeKind::FLOAT_64_TYPE:
-        return std::to_string((double) value);
+        return std::to_string(value.double_value);
     default:
         // Unsupported datatype, return empty string
         return std::string("");
@@ -202,7 +204,7 @@ std::string ModbusAdapterConfigurationElement::get_value_string(
 
 void ModbusAdapterConfigurationElement::check_for_errors(void)
 {
-    // Check for manatory parameters are correctly set:
+    // Check for mandatory parameters are correctly set:
     //  - field
     //  - modbus_datatype
     //  - modbus_register_address
@@ -305,21 +307,76 @@ void ModbusAdapterConfigurationElement::check_for_errors(void)
     }
 }
 
+bool ModbusAdapterConfigurationElement::is_union_value_within_range(
+    UniversalPrimitiveTypeUnion union_value,
+    TypeKind element_kind)
+{
+    switch (element_kind.underlying()) {
+    case TypeKind::CHAR_8_TYPE:
+    case TypeKind::INT_16_TYPE:
+    case TypeKind::INT_32_TYPE:
+    case TypeKind::INT_64_TYPE:
+        return (union_value.int64_value > modbus_min_value()
+                && union_value.int64_value < modbus_max_value());
+    case TypeKind::UINT_8_TYPE:
+    case TypeKind::UINT_16_TYPE:
+    case TypeKind::UINT_32_TYPE:
+    case TypeKind::UINT_64_TYPE:
+        return (union_value.int64_value > modbus_min_value()
+                && union_value.int64_value < modbus_max_value());
+    case TypeKind::FLOAT_32_TYPE:
+    case TypeKind::FLOAT_64_TYPE:
+        return (union_value.int64_value > modbus_min_value()
+                && union_value.int64_value < modbus_max_value());
+    default:
+        std::string error(
+                "Error: incorrect element_kind in is_union_value_within_range, "
+                "field <" + field() + ">.");
+        throw std::runtime_error(error);
+    }
+}
+
+bool ModbusAdapterConfigurationElement::is_union_value_equal(
+    UniversalPrimitiveTypeUnion union_value1,
+    UniversalPrimitiveTypeUnion union_value2,
+    TypeKind element_kind)
+{
+    switch(element_kind.underlying()) {
+    case TypeKind::CHAR_8_TYPE:
+    case TypeKind::INT_16_TYPE:
+    case TypeKind::INT_32_TYPE:
+    case TypeKind::INT_64_TYPE:
+        return (union_value1.int64_value == union_value2.int64_value);
+    case TypeKind::UINT_8_TYPE:
+    case TypeKind::UINT_16_TYPE:
+    case TypeKind::UINT_32_TYPE:
+    case TypeKind::UINT_64_TYPE:
+        return (union_value1.uint64_value == union_value2.uint64_value);
+    case TypeKind::FLOAT_32_TYPE:
+    case TypeKind::FLOAT_64_TYPE:
+        return (union_value1.double_value == union_value2.double_value);
+    default:
+        std::string error(
+                "Error: incorrect element_kind in is_union_value_equal, "
+                "field <" + field() + ">.");
+        throw std::runtime_error(error);
+    }
+}
+
 void ModbusAdapterConfigurationElement::check_correct_value(
-        long double float_value,
+        UniversalPrimitiveTypeUnion union_value,
         size_t index,
         TypeKind element_kind)
 {
     // The value is not out of range
-    if (float_value < modbus_min_value() || float_value > modbus_max_value()) {
+    if (!is_union_value_within_range(union_value, element_kind)) {
         std::string element_number =
                 array_elements() > 0 ? "[" + std::to_string(index) + "]" : "";
         std::string error(
-                "Error: value <" + get_value_string(float_value, element_kind)
+                "Error: value <" + get_value_string(union_value, element_kind)
                 + "> of element <" + field() + element_number
-                + "> out of range ["
-                + get_value_string(modbus_min_value(), element_kind) + ","
-                + get_value_string(modbus_max_value(), element_kind) + "].");
+                + "> out of range [" + std::to_string(modbus_min_value()) + ","
+                + std::to_string(modbus_max_value()) + "].");
         throw std::runtime_error(error);
     }
 
@@ -328,14 +385,19 @@ void ModbusAdapterConfigurationElement::check_correct_value(
         if (!std::any_of(
                     modbus_valid_values().begin(),
                     modbus_valid_values().end(),
-                    [&](long double elem) { return elem == float_value; })) {
+                    [&](UniversalPrimitiveTypeUnion elem) {
+                        return is_union_value_equal(
+                                elem,
+                                union_value,
+                                element_kind);
+                    })) {
             // element not found in the modbus_valid_values list
             std::string element_number = array_elements() > 0
                     ? "[" + std::to_string(index) + "]"
                     : "";
             std::string error(
                     "Error: value <"
-                    + get_value_string(float_value, element_kind)
+                    + get_value_string(union_value, element_kind)
                     + "> of element <" + field() + element_number
                     + "> not in the modbus_valid_values list.");
             throw std::runtime_error(error);
@@ -343,18 +405,59 @@ void ModbusAdapterConfigurationElement::check_correct_value(
     }
 }
 
+UniversalPrimitiveTypeUnion ModbusAdapterConfigurationElement::
+        get_union_value_w_linear_transformation(
+                UniversalPrimitiveTypeUnion union_value,
+                TypeKind element_kind)
+{
+    UniversalPrimitiveTypeUnion union_value_w_linear_transformation = {0};
+    switch(element_kind.underlying()) {
+    case TypeKind::CHAR_8_TYPE:
+    case TypeKind::INT_16_TYPE:
+    case TypeKind::INT_32_TYPE:
+    case TypeKind::INT_64_TYPE:
+        union_value_w_linear_transformation.int64_value = static_cast<int64_t>(
+                data_offset() + union_value.int64_value * data_factor());
+        break;
+    case TypeKind::UINT_8_TYPE:
+    case TypeKind::UINT_16_TYPE:
+    case TypeKind::UINT_32_TYPE:
+    case TypeKind::UINT_64_TYPE:
+        union_value_w_linear_transformation.uint64_value = static_cast<uint64_t>(
+                data_offset() + union_value.uint64_value * data_factor());
+        break;
+    case TypeKind::FLOAT_32_TYPE:
+    case TypeKind::FLOAT_64_TYPE:
+        union_value_w_linear_transformation.double_value = static_cast<double>(
+                data_offset() + union_value.double_value * data_factor());
+        break;
+    default:
+        std::string error(
+                "Error: incorrect element_kind in "
+                "get_union_value_w_linear_transformation, field <"
+                + field() + ">.");
+        throw std::runtime_error(error);
+    }
+}
+
 void ModbusAdapterConfigurationElement::get_registers_value(
         std::vector<uint16_t>& output,
-        const std::vector<long double>& float_vector,
+        const std::vector<UniversalPrimitiveTypeUnion>& union_vector,
         TypeKind element_kind)
 {
     auto array_data = reinterpret_cast<uint16_t *>(output.data());
-    for (int i = 0; i < float_vector.size(); ++i) {
+    for (int i = 0; i < union_vector.size(); ++i) {
         // check that the data_offset + value * data_factor is a correct
         // value. This is done, because the linear transformation is what
         // will be written in modbus
+        UniversalPrimitiveTypeUnion value_w_linear_transf = {0};
+
+        value_w_linear_transf = get_union_value_w_linear_transformation(
+                union_vector[i],
+                element_kind);
+
         check_correct_value(
-                data_offset() + float_vector[i] * data_factor(),
+                value_w_linear_transf,
                 i,
                 element_kind);
 
@@ -363,51 +466,55 @@ void ModbusAdapterConfigurationElement::get_registers_value(
             // cast the element to it corresponding type after doing all the
             // maths with the data_factor and data_offset
             array_data[0] = static_cast<uint8_t>(
-                    data_offset() + float_vector[i] * data_factor());
+                    dynamic_data::is_signed_kind(element_kind)
+                            ? value_w_linear_transf.int64_value
+                            : value_w_linear_transf.uint64_value);
             break;
         case ModbusDataType::holding_register_int16:
             array_data[0] = static_cast<uint16_t>(
-                    data_offset() + float_vector[i] * data_factor());
+                    dynamic_data::is_signed_kind(element_kind)
+                            ? value_w_linear_transf.int64_value
+                            : value_w_linear_transf.uint64_value);
             break;
         case ModbusDataType::holding_register_int32:
             LibModbusClient::int32_to_int16(
                     array_data,
                     static_cast<uint32_t>(
-                            data_offset() + float_vector[i] * data_factor()));
+                            dynamic_data::is_signed_kind(element_kind)
+                                    ? value_w_linear_transf.int64_value
+                                    : value_w_linear_transf.uint64_value));
             break;
         case ModbusDataType::holding_register_int64:
             LibModbusClient::int64_to_int16(
                     array_data,
                     static_cast<uint64_t>(
-                            data_offset() + float_vector[i] * data_factor()));
+                            dynamic_data::is_signed_kind(element_kind)
+                                    ? value_w_linear_transf.int64_value
+                                    : value_w_linear_transf.uint64_value));
             break;
         case ModbusDataType::holding_register_float_abcd:
             LibModbusClient::float_to_int16_abcd(
                     array_data,
-                    static_cast<float>(
-                            data_offset() + float_vector[i] * data_factor()));
+                    static_cast<float>(value_w_linear_transf.double_value));
             break;
         case ModbusDataType::holding_register_float_badc:
             LibModbusClient::float_to_int16_badc(
                     array_data,
-                    static_cast<float>(
-                            data_offset() + float_vector[i] * data_factor()));
+                    static_cast<float>(value_w_linear_transf.double_value));
             break;
         case ModbusDataType::holding_register_float_cdab:
             LibModbusClient::float_to_int16_cdab(
                     array_data,
-                    static_cast<float>(
-                            data_offset() + float_vector[i] * data_factor()));
+                    static_cast<float>(value_w_linear_transf.double_value));
             break;
         case ModbusDataType::holding_register_float_dcba:
             LibModbusClient::float_to_int16_dcba(
                     array_data,
-                    static_cast<float>(
-                            data_offset() + float_vector[i] * data_factor()));
+                    static_cast<float>(value_w_linear_transf.double_value));
             break;
         default:
             // INPUT registers cannot be here because this function translates
-            // from float_vector to uint16_t* to write into a modbus device,
+            // from union_vector to uint16_t* to write into a modbus device,
             // and INPUT registers are read-only
             std::string error(
                     "Error: invalid datatype <"
@@ -422,19 +529,22 @@ void ModbusAdapterConfigurationElement::get_registers_value(
     }
 }
 
-std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
-        const std::vector<uint16_t>& input,
-        TypeKind element_kind)
+std::vector<UniversalPrimitiveTypeUnion>
+        ModbusAdapterConfigurationElement::get_union_value(
+                const std::vector<uint16_t> &input,
+                TypeKind element_kind)
 {
-    std::vector<long double> float_vector;
+    std::vector<UniversalPrimitiveTypeUnion> union_vector;
 
     for (size_t i = 0;
             i < modbus_register_count();
             i += number_of_registers_primitive_type()) {
         size_t index = i / number_of_registers_primitive_type();
 
+        UniversalPrimitiveTypeUnion union_value = {0};
+
         switch (modbus_datatype()) {
-        // in this case, check_corrent_value() checks directly the value
+        // in this case, check_correct_value() checks directly the value
         // that has been read from modbus.
         case ModbusDataType::holding_register_int8:
         case ModbusDataType::input_register_int8: {
@@ -442,44 +552,65 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
             // the datatype used
             if (dynamic_data::is_signed_kind(element_kind)) {
                 int8_t value = static_cast<int8_t>(input[i]);
+                union_value.int64_value = static_cast<int64_t>(value);
                 check_correct_value(
-                        static_cast<long double>(static_cast<int8_t>(value)),
+                        union_value,
                         index,
                         element_kind);
 
-                float_vector.push_back(
-                        (int8_t) data_offset() + value * data_factor());
+                SET_U_UNION_VALUE(
+                    union_value,
+                    data_offset() + value * data_factor(),
+                    element_kind);
+
+                union_vector.push_back(union_value);
             } else {
                 uint8_t value = static_cast<uint8_t>(input[i]);
+                union_value.uint64_value = static_cast<uint64_t>(value);
                 check_correct_value(
-                        static_cast<long double>(static_cast<uint8_t>(value)),
+                        union_value,
                         index,
                         element_kind);
 
-                float_vector.push_back(
-                        (unsigned) (int8_t) data_offset()
-                        + value * data_factor());
+                SET_U_UNION_VALUE(
+                    union_value,
+                    data_offset() + value * data_factor(),
+                    element_kind);
+
+                union_vector.push_back(union_value);
             }
             break;
         }
         case ModbusDataType::holding_register_int16:
         case ModbusDataType::input_register_int16: {
             if (dynamic_data::is_signed_kind(element_kind)) {
-                int16_t value = input[i];
-                check_correct_value(value, index, element_kind);
-
-                float_vector.push_back(
-                        (int16_t) data_offset() + value * data_factor());
-            } else {
-                uint16_t value = input[i];
+                int16_t value = static_cast<int16_t>(input[i]);
+                union_value.int64_value = static_cast<int64_t>(value);
                 check_correct_value(
-                        static_cast<long double>(static_cast<uint16_t>(value)),
+                        union_value,
                         index,
                         element_kind);
 
-                float_vector.push_back(
-                        (unsigned) (int16_t) data_offset()
-                        + value * data_factor());
+                SET_U_UNION_VALUE(
+                    union_value,
+                    data_offset() + value * data_factor(),
+                    element_kind);
+
+                union_vector.push_back(union_value);
+            } else {
+                uint16_t value = static_cast<uint16_t>(input[i]);
+                union_value.uint64_value = static_cast<uint64_t>(value);
+                check_correct_value(
+                        union_value,
+                        index,
+                        element_kind);
+
+                SET_U_UNION_VALUE(
+                    union_value,
+                    data_offset() + value * data_factor(),
+                    element_kind);
+
+                union_vector.push_back(union_value);
             }
             break;
         }
@@ -487,31 +618,44 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
         case ModbusDataType::input_register_int32: {
             if (dynamic_data::is_signed_kind(element_kind)) {
                 int32_t value = 0;
+
                 LibModbusClient::int16_to_int32(
                         (uint32_t &) value,
                         const_cast<uint16_t *>(input.data()) + i);
 
+                union_value.int64_value = static_cast<int64_t>(value);
+
                 check_correct_value(
-                        static_cast<long double>(static_cast<int32_t>(value)),
+                        union_value,
                         index,
                         element_kind);
 
-                float_vector.push_back(
-                        (int32_t) data_offset() + value * data_factor());
+                SET_U_UNION_VALUE(
+                    union_value,
+                    data_offset() + value * data_factor(),
+                    element_kind);
+
+                union_vector.push_back(union_value);
             } else {
                 uint32_t value = 0;
+
                 LibModbusClient::int16_to_int32(
                         value,
                         const_cast<uint16_t *>(input.data()) + i);
 
+                union_value.uint64_value = static_cast<uint64_t>(value);
+
                 check_correct_value(
-                        static_cast<long double>(static_cast<uint32_t>(value)),
+                        union_value,
                         index,
                         element_kind);
 
-                float_vector.push_back(
-                        (unsigned) (int32_t) data_offset()
-                        + value * data_factor());
+                SET_U_UNION_VALUE(
+                    union_value,
+                    data_offset() + value * data_factor(),
+                    element_kind);
+
+                union_vector.push_back(union_value);
             }
             break;
         }
@@ -526,91 +670,134 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                 // The int16_to_int64() function uses unsigned types, but this
                 // case is for signed numbers, therefore we need to cast it
                 // to a signed type before checking it is a correct value.
+                union_value.int64_value = static_cast<int64_t>(value);
+
                 check_correct_value(
-                    static_cast<long double>(static_cast<int64_t>(value)),
-                    index,
+                        union_value,
+                        index,
+                        element_kind);
+
+                SET_U_UNION_VALUE(
+                    union_value,
+                    data_offset() + value * data_factor(),
                     element_kind);
 
-                float_vector.push_back(
-                        (int64_t) data_offset() + value * data_factor());
+                union_vector.push_back(union_value);
             } else {
                 uint64_t value = 0;
                 LibModbusClient::int16_to_int64(
                         value,
                         const_cast<uint16_t *>(input.data()) + i);
 
+                union_value.uint64_value = static_cast<uint64_t>(value);
+
                 check_correct_value(
-                    static_cast<long double>(static_cast<uint64_t>(value)),
-                    index,
+                        union_value,
+                        index,
+                        element_kind);
+
+                SET_U_UNION_VALUE(
+                    union_value,
+                    data_offset() + value * data_factor(),
                     element_kind);
 
-                float_vector.push_back(
-                        (unsigned) (int64_t) data_offset()
-                        + value * data_factor());
+                union_vector.push_back(union_value);
             }
             break;
         }
         case ModbusDataType::holding_register_float_abcd:
         case ModbusDataType::input_register_float_abcd: {
             float value = 0;
+
             LibModbusClient::int16_to_float_abcd(
                     value,
                     const_cast<uint16_t *>(input.data()) + i);
 
+            union_value.double_value = static_cast<double>(value);
+
             check_correct_value(
-                    static_cast<long double>(value),
+                    union_value,
                     index,
                     element_kind);
 
-            float_vector.push_back(data_offset() + value * data_factor());
+            SET_U_UNION_VALUE(
+                union_value,
+                data_offset() + value * data_factor(),
+                element_kind);
+
+            union_vector.push_back(union_value);
 
             break;
         }
         case ModbusDataType::holding_register_float_badc:
         case ModbusDataType::input_register_float_badc: {
             float value = 0;
+
             LibModbusClient::int16_to_float_badc(
                     value,
                     const_cast<uint16_t *>(input.data()) + i);
 
+            union_value.double_value = static_cast<double>(value);
+
             check_correct_value(
-                    static_cast<long double>(value),
+                    union_value,
                     index,
                     element_kind);
 
-            float_vector.push_back(data_offset() + value * data_factor());
+            SET_U_UNION_VALUE(
+                union_value,
+                data_offset() + value * data_factor(),
+                element_kind);
+
+            union_vector.push_back(union_value);
 
             break;
         }
         case ModbusDataType::holding_register_float_cdab:
         case ModbusDataType::input_register_float_cdab: {
             float value = 0;
+
             LibModbusClient::int16_to_float_cdab(
                     value,
                     const_cast<uint16_t *>(input.data()) + i);
 
+            union_value.double_value = static_cast<double>(value);
+
             check_correct_value(
-                    static_cast<long double>(value),
+                    union_value,
                     index,
                     element_kind);
 
-            float_vector.push_back(data_offset() + value * data_factor());
+            SET_U_UNION_VALUE(
+                union_value,
+                data_offset() + value * data_factor(),
+                element_kind);
+
+            union_vector.push_back(union_value);
 
             break;
         }
         case ModbusDataType::holding_register_float_dcba:
         case ModbusDataType::input_register_float_dcba: {
             float value = 0;
+
             LibModbusClient::int16_to_float_dcba(
                     value,
                     const_cast<uint16_t *>(input.data()) + i);
 
+            union_value.double_value = static_cast<double>(value);
+
             check_correct_value(
-                    static_cast<long double>(value),
+                    union_value,
                     index,
                     element_kind);
 
-            float_vector.push_back(data_offset() + value * data_factor());
+            SET_U_UNION_VALUE(
+                union_value,
+                data_offset() + value * data_factor(),
+                element_kind);
+
+            union_vector.push_back(union_value);
 
             break;
         }
@@ -622,7 +809,7 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
             throw std::runtime_error(error);
         }
     }
-    return float_vector;
+    return union_vector;
 }
 
 size_t ModbusAdapterConfigurationElement::number_of_registers_primitive_type()

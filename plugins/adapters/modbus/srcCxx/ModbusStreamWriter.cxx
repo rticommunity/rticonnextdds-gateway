@@ -22,6 +22,8 @@
 #include <dds/dds.hpp>
 
 #include "DynamicDataHelpers.hpp"
+#include "UniversalPrimitiveTypeUnion.hpp"
+
 #include "ModbusStreamWriter.hpp"
 
 using namespace dds::core::xtypes;
@@ -79,7 +81,7 @@ int ModbusStreamWriter::write(
                                            dynamic_struct,
                                            mace.field()).kind();
                 TypeKind element_kind = member_kind;
-                std::vector<long double> float_vector;
+                std::vector<UniversalPrimitiveTypeUnion> union_vector;
 
                 // Sets the slave ID before reading, only when the datatype is
                 // not constant and the slave ID is different from the previous
@@ -107,7 +109,7 @@ int ModbusStreamWriter::write(
                             dynamic_struct.member(mace.field()).type())
                         || member_kind == TypeKind::ENUMERATION_TYPE) {
                     // an array with one element means that it's a simple value
-                    float_vector.push_back(
+                    union_vector.push_back(
                             dynamic_data::
                                     get_dds_primitive_or_enum_type_value(
                                             *sample,
@@ -116,7 +118,7 @@ int ModbusStreamWriter::write(
                         || member_kind == TypeKind::SEQUENCE_TYPE) {
                     element_kind =
                             sample->member_info(mace.field()).element_kind();
-                    float_vector = dynamic_data::get_vector_values(
+                    union_vector = dynamic_data::get_vector_values(
                             *sample,
                             mace.field());
                     // when checking type_consistency() we ensure that the
@@ -128,8 +130,9 @@ int ModbusStreamWriter::write(
                 if (mace.modbus_datatype() == ModbusDataType::coil_boolean) {
                     std::vector<uint8_t> values(mace.modbus_register_count());
 
-                    for (int i = 0; i < float_vector.size(); ++i) {
-                        values[i] = static_cast<uint8_t>(float_vector[i]);
+                    for (int i = 0; i < union_vector.size(); ++i) {
+                        values[i] = static_cast<uint8_t>(
+                                union_vector[i].uint64_value);
                     }
                     // write coils to a modbus server
                     try {
@@ -149,7 +152,7 @@ int ModbusStreamWriter::write(
                     try {
                         mace.get_registers_value(
                                 registers,
-                                float_vector,
+                                union_vector,
                                 element_kind);
                         // write register/s to the modbus device
                         connection_.write_registers(

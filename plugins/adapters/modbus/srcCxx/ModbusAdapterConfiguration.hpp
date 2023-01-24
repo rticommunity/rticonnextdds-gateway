@@ -21,6 +21,8 @@
 
 #include <dds/dds.hpp>
 
+#include "UniversalPrimitiveTypeUnion.hpp"
+
 namespace rti { namespace adapter { namespace modbus {
 
 // enum that identifies the kind of data read/write from/to a modbus device
@@ -149,8 +151,36 @@ public:
      * @return A string that contains the numeric value of 'value'
      */
     std::string get_value_string(
-            long double value,
+            UniversalPrimitiveTypeUnion value,
             dds::core::xtypes::TypeKind element_kind);
+
+    /**
+     * @brief Check that the union value is within the specified range for
+     * this element (min < value < max).
+     * @param union_value the value to be checked
+     * @param element_kind the kind of the DDS datatype
+     * @throw exception in case the value is not correct/consistent
+     */
+    bool is_union_value_within_range(
+            UniversalPrimitiveTypeUnion union_value,
+            TypeKind element_kind);
+
+    /**
+     * @brief Check that two union values are the same
+     * @param union_value1 first parameter of the comparison
+     * @param union_value2 second parameter of the comparison
+     * @param element_kind the kind of the DDS datatype
+     * @throw exception in case the value is not correct/consistent
+     */
+    bool is_union_value_equal(
+            UniversalPrimitiveTypeUnion union_value1,
+            UniversalPrimitiveTypeUnion union_value2,
+            TypeKind element_kind);
+
+    UniversalPrimitiveTypeUnion get_union_value_w_linear_transformation(
+            UniversalPrimitiveTypeUnion union_value,
+            TypeKind element_kind);
+
     /**
      * @brief Check that the value read or that will be written to a modbus
      * device is correct and consistent with the configuration. Throws
@@ -162,7 +192,7 @@ public:
      * @throw exception in case the value is not correct/consistent
      */
     void check_correct_value(
-            long double float_value,
+            UniversalPrimitiveTypeUnion float_value,
             size_t index,
             dds::core::xtypes::TypeKind element_kind);
 
@@ -177,19 +207,19 @@ public:
      */
     void get_registers_value(
             std::vector<uint16_t>& output,
-            const std::vector<long double>& float_vector,
+            const std::vector<UniversalPrimitiveTypeUnion>& float_vector,
             dds::core::xtypes::TypeKind element_kind);
 
     /**
      * @brief Translates an array of uint16_t (registers) into an array of
-     * long_double and applies the linear transformation defined by data_factor
-     * and data_offset.
+     * UniversalPrimitiveType_Union and applies the linear transformation
+     * defined by data_factor and data_offset.
      * @param input the uint16 array that has been read from a modbus device
      * @param element_kind the kind of the DDS datatype
-     * @return The long double vector which contains the corresponding values
-     * translated from the modbus registers (uint16_t)
+     * @return The UniversalPrimitiveTypeUnion vector which contains the
+     * corresponding values translated from the modbus registers (uint16_t)
      */
-    std::vector<long double> get_float_value(
+    std::vector<UniversalPrimitiveTypeUnion> get_union_value(
             const std::vector<uint16_t>& input,
             dds::core::xtypes::TypeKind element_kind);
 
@@ -230,7 +260,8 @@ public:
     {
         return modbus_max_value_;
     }
-    inline std::vector<long double> const &modbus_valid_values() const
+    inline std::vector<UniversalPrimitiveTypeUnion> const &
+            modbus_valid_values() const
     {
         return modbus_valid_values_;
     }
@@ -246,11 +277,11 @@ public:
     {
         return value_string_;
     }
-    inline long double const value_numeric() const
+    inline UniversalPrimitiveTypeUnion const value_numeric() const
     {
         return value_numeric_;
     }
-    inline std::vector<long double> const value_array() const
+    inline std::vector<UniversalPrimitiveTypeUnion> const value_array() const
     {
         return value_array_;
     }
@@ -268,7 +299,7 @@ private:
     /**
      * @brief Calculates the number of registers that a primitive type will use
      * @return The number of modbus registers that a specific datatype uses,
-     * depeneding on the configuration provided.
+     * depending on the configuration provided.
      */
 
     size_t number_of_registers_primitive_type();
@@ -306,12 +337,12 @@ private:
     uint8_t modbus_slave_device_id_;
     long double modbus_min_value_;
     long double modbus_max_value_;
-    std::vector<long double> modbus_valid_values_;
+    std::vector<UniversalPrimitiveTypeUnion> modbus_valid_values_;
     float data_factor_;
     float data_offset_;
     std::string value_string_;
-    long double value_numeric_;
-    std::vector<long double> value_array_;
+    UniversalPrimitiveTypeUnion value_numeric_;
+    std::vector<UniversalPrimitiveTypeUnion> value_array_;
     // value_string_ or value_numeric_ will be used depending on the
     // constant_kind_. If it is:
     //   - string_kind: value_string_ will be used

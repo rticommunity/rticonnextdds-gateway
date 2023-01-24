@@ -24,6 +24,8 @@
 #include <dds/dds.hpp>
 
 #include "DynamicDataHelpers.hpp"
+#include "UniversalPrimitiveTypeUnion.hpp"
+
 #include "ModbusAdapterConfiguration.hpp"
 #include "ModbusStreamReader.hpp"
 
@@ -127,7 +129,7 @@ void ModbusStreamReader::read_data_from_modbus()
                 dynamic_data::get_member_type(struct_type, mace.field())
                         .kind();
         TypeKind element_kind = member_kind;
-        std::vector<long double> float_vector;
+        std::vector<UniversalPrimitiveTypeUnion> union_vector;
 
         // Sets the slave ID before reading, only when the datatype is not
         // constant and the slave ID is different from the previous one.
@@ -288,8 +290,8 @@ void ModbusStreamReader::read_data_from_modbus()
                     cached_data_->clear_optional_member(mace.field());
                 }
                 if (size > 0) {
-                    // set the read value into float_vector
-                    float_vector =
+                    // set the read value into union_vector
+                    union_vector =
                             mace.get_float_value(registers, element_kind);
                 }
             } catch (const std::exception &ex) {
@@ -300,19 +302,19 @@ void ModbusStreamReader::read_data_from_modbus()
             }
         }
 
-        if (float_vector.size() == 1) {
+        if (union_vector.size() == 1) {
             // an array with one element means that it's a simple value
             dynamic_data::set_dds_primitive_or_enum_type_value(
                     *cached_data_,
                     element_kind,
                     mace.field(),
-                    float_vector[0]);
-        } else if (float_vector.size() > 1) {
+                    union_vector[0]);
+        } else if (union_vector.size() > 1) {
             dynamic_data::set_vector_values(
                     *cached_data_,
                     element_kind,
                     mace.field(),
-                    float_vector);
+                    union_vector);
             // when checking type_consistency() we ensure that the number of
             // elements won't be higher than mace.array_elements(). Therefore
             // float_vector.size() can be used safely.
