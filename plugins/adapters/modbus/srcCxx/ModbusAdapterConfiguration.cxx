@@ -20,6 +20,7 @@
 #include <dds/dds.hpp>
 
 #include "DynamicDataHelpers.hpp"
+#include "UtilsLongDouble.hpp"
 #include "LibModbusClient.hpp"
 #include "ModbusAdapterConfiguration.hpp"
 #include "json.hpp"
@@ -57,7 +58,7 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
 {
     bool is_compatible = false;
 
-    // Check that if the datatype is unsigned, its minimun is >= 0
+    // Check that if the datatype is unsigned, its minimum is >= 0
     // int8 and uint8 are mapped as octets --> unsigned, therefore
     // the int8 won't allow negative values.
     // int8 and uint8 doesn't require to have a min_value > 0, both
@@ -202,7 +203,7 @@ std::string ModbusAdapterConfigurationElement::get_value_string(
 
 void ModbusAdapterConfigurationElement::check_for_errors(void)
 {
-    // Check for manatory parameters are correctly set:
+    // Check for mandatory parameters are correctly set:
     //  - field
     //  - modbus_datatype
     //  - modbus_register_address
@@ -279,8 +280,8 @@ void ModbusAdapterConfigurationElement::check_for_errors(void)
         }
     }
 
-    // Additionally, if this is a CONSTANT_VALUE the following parameters will be
-    // ignored:
+    // Additionally, if this is a CONSTANT_VALUE the following parameters will
+    // be ignored:
     //  - modbus_register_address
     //  - modbus_register_count
     if (modbus_datatype() == ModbusDataType::constant_value) {
@@ -362,47 +363,47 @@ void ModbusAdapterConfigurationElement::get_registers_value(
         case ModbusDataType::holding_register_int8:
             // cast the element to it corresponding type after doing all the
             // maths with the data_factor and data_offset
-            array_data[0] = static_cast<uint8_t>(
+            array_data[0] = rti::utils::long_double::safe_cast<uint8_t>(
                     data_offset() + float_vector[i] * data_factor());
             break;
         case ModbusDataType::holding_register_int16:
-            array_data[0] = static_cast<uint16_t>(
+            array_data[0] = rti::utils::long_double::safe_cast<uint16_t>(
                     data_offset() + float_vector[i] * data_factor());
             break;
         case ModbusDataType::holding_register_int32:
             LibModbusClient::int32_to_int16(
                     array_data,
-                    static_cast<uint32_t>(
+                    rti::utils::long_double::safe_cast<uint32_t>(
                             data_offset() + float_vector[i] * data_factor()));
             break;
         case ModbusDataType::holding_register_int64:
             LibModbusClient::int64_to_int16(
                     array_data,
-                    static_cast<uint64_t>(
+                    rti::utils::long_double::safe_cast<uint64_t>(
                             data_offset() + float_vector[i] * data_factor()));
             break;
         case ModbusDataType::holding_register_float_abcd:
             LibModbusClient::float_to_int16_abcd(
                     array_data,
-                    static_cast<float>(
+                    rti::utils::long_double::safe_cast<float>(
                             data_offset() + float_vector[i] * data_factor()));
             break;
         case ModbusDataType::holding_register_float_badc:
             LibModbusClient::float_to_int16_badc(
                     array_data,
-                    static_cast<float>(
+                    rti::utils::long_double::safe_cast<float>(
                             data_offset() + float_vector[i] * data_factor()));
             break;
         case ModbusDataType::holding_register_float_cdab:
             LibModbusClient::float_to_int16_cdab(
                     array_data,
-                    static_cast<float>(
+                    rti::utils::long_double::safe_cast<float>(
                             data_offset() + float_vector[i] * data_factor()));
             break;
         case ModbusDataType::holding_register_float_dcba:
             LibModbusClient::float_to_int16_dcba(
                     array_data,
-                    static_cast<float>(
+                    rti::utils::long_double::safe_cast<float>(
                             data_offset() + float_vector[i] * data_factor()));
             break;
         default:
@@ -434,7 +435,7 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
         size_t index = i / number_of_registers_primitive_type();
 
         switch (modbus_datatype()) {
-        // in this case, check_corrent_value() checks directly the value
+        // in this case, check_current_value() checks directly the value
         // that has been read from modbus.
         case ModbusDataType::holding_register_int8:
         case ModbusDataType::input_register_int8: {
@@ -443,22 +444,23 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
             if (dynamic_data::is_signed_kind(element_kind)) {
                 int8_t value = static_cast<int8_t>(input[i]);
                 check_correct_value(
-                        static_cast<long double>(static_cast<int8_t>(value)),
+                        static_cast<long double>(value),
                         index,
                         element_kind);
 
                 float_vector.push_back(
-                        (int8_t) data_offset() + value * data_factor());
+                        rti::utils::long_double::safe_cast<int8_t>(
+                                data_offset() + value * data_factor()));
             } else {
                 uint8_t value = static_cast<uint8_t>(input[i]);
                 check_correct_value(
-                        static_cast<long double>(static_cast<uint8_t>(value)),
+                        static_cast<long double>(value),
                         index,
                         element_kind);
 
                 float_vector.push_back(
-                        (unsigned) (int8_t) data_offset()
-                        + value * data_factor());
+                        rti::utils::long_double::safe_cast<uint8_t>(
+                                data_offset() + value * data_factor()));
             }
             break;
         }
@@ -466,20 +468,24 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
         case ModbusDataType::input_register_int16: {
             if (dynamic_data::is_signed_kind(element_kind)) {
                 int16_t value = input[i];
-                check_correct_value(value, index, element_kind);
-
-                float_vector.push_back(
-                        (int16_t) data_offset() + value * data_factor());
-            } else {
-                uint16_t value = input[i];
                 check_correct_value(
-                        static_cast<long double>(static_cast<uint16_t>(value)),
+                        static_cast<long double>(value),
                         index,
                         element_kind);
 
                 float_vector.push_back(
-                        (unsigned) (int16_t) data_offset()
-                        + value * data_factor());
+                        rti::utils::long_double::safe_cast<int16_t>(
+                                data_offset() + value * data_factor()));
+            } else {
+                uint16_t value = input[i];
+                check_correct_value(
+                        static_cast<long double>(value),
+                        index,
+                        element_kind);
+
+                float_vector.push_back(
+                        rti::utils::long_double::safe_cast<uint8_t>(
+                                data_offset() + value * data_factor()));
             }
             break;
         }
@@ -492,12 +498,15 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                         const_cast<uint16_t *>(input.data()) + i);
 
                 check_correct_value(
-                        static_cast<long double>(static_cast<int32_t>(value)),
+                        static_cast<long double>(
+                                rti::utils::long_double::safe_cast<int32_t>(
+                                        value)),
                         index,
                         element_kind);
 
                 float_vector.push_back(
-                        (int32_t) data_offset() + value * data_factor());
+                        rti::utils::long_double::safe_cast<int32_t>(
+                                data_offset() + value * data_factor()));
             } else {
                 uint32_t value = 0;
                 LibModbusClient::int16_to_int32(
@@ -505,13 +514,15 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                         const_cast<uint16_t *>(input.data()) + i);
 
                 check_correct_value(
-                        static_cast<long double>(static_cast<uint32_t>(value)),
+                        static_cast<long double>(
+                                rti::utils::long_double::safe_cast<uint32_t>(
+                                        value)),
                         index,
                         element_kind);
 
                 float_vector.push_back(
-                        (unsigned) (int32_t) data_offset()
-                        + value * data_factor());
+                        rti::utils::long_double::safe_cast<uint32_t>(
+                                data_offset() + value * data_factor()));
             }
             break;
         }
@@ -527,12 +538,15 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                 // case is for signed numbers, therefore we need to cast it
                 // to a signed type before checking it is a correct value.
                 check_correct_value(
-                    static_cast<long double>(static_cast<int64_t>(value)),
-                    index,
-                    element_kind);
+                        static_cast<long double>(
+                                rti::utils::long_double::safe_cast<int64_t>(
+                                        value)),
+                        index,
+                        element_kind);
 
                 float_vector.push_back(
-                        (int64_t) data_offset() + value * data_factor());
+                        rti::utils::long_double::safe_cast<int64_t>(
+                                data_offset() + value * data_factor()));
             } else {
                 uint64_t value = 0;
                 LibModbusClient::int16_to_int64(
@@ -540,13 +554,15 @@ std::vector<long double> ModbusAdapterConfigurationElement::get_float_value(
                         const_cast<uint16_t *>(input.data()) + i);
 
                 check_correct_value(
-                    static_cast<long double>(static_cast<uint64_t>(value)),
-                    index,
-                    element_kind);
+                        static_cast<long double>(
+                                rti::utils::long_double::safe_cast<uint64_t>(
+                                        value)),
+                        index,
+                        element_kind);
 
                 float_vector.push_back(
-                        (unsigned) (int64_t) data_offset()
-                        + value * data_factor());
+                        rti::utils::long_double::safe_cast<uint64_t>(
+                                data_offset() + value * data_factor()));
             }
             break;
         }

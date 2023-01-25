@@ -13,8 +13,11 @@
 /*                                                                            */
 /******************************************************************************/
 
+#include <dds/dds.hpp>
+
 #include "DynamicDataHelpers.hpp"
 #include "UtilsStrings.hpp"
+#include "UtilsLongDouble.hpp"
 
 using namespace dds::core::xtypes;
 
@@ -174,49 +177,60 @@ void rti::common::dynamic_data::set_dds_primitive_or_enum_type_value(
 {
     switch (type.underlying()) {
     case TypeKind::BOOLEAN_TYPE:
-        data.value<bool>(field, static_cast<bool>(float_value ? 1 : 0));
+        data.value<bool>(
+                field,
+                rti::utils::long_double::safe_cast<bool>(float_value));
         break;
     case TypeKind::CHAR_8_TYPE:
-        data.value<char>(field, static_cast<char>(float_value));
+        data.value<char>(
+                field,
+                rti::utils::long_double::safe_cast<char>(float_value));
         break;
     case TypeKind::UINT_8_TYPE:
-        data.value<uint8_t>(field, static_cast<uint8_t>(float_value));
+        data.value<uint8_t>(
+                field,
+                rti::utils::long_double::safe_cast<uint8_t>(float_value));
         break;
     case TypeKind::INT_16_TYPE:
-        data.value<int16_t>(field, static_cast<int16_t>(float_value));
+        data.value<int16_t>(
+                field,
+                rti::utils::long_double::safe_cast<int16_t>(float_value));
         break;
-    case TypeKind::UINT_16_TYPE: {
-        // data.value<uint16_t>(field, static_cast<uint16_t>(float_value));
-        // affected by CORE-10286, use C API as a workaround
-        auto retcode = DDS_DynamicData_set_ushort(
-                &data.native(),
-                field.c_str(),
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                static_cast<uint16_t>(float_value));
-        if (retcode != DDS_RETCODE_OK) {
-            std::string error("setting ushort value of <" + field + ">");
-            throw std::runtime_error(error);
-        }
+    case TypeKind::UINT_16_TYPE:
+        data.value<uint16_t>(
+                field,
+                rti::utils::long_double::safe_cast<uint16_t>(float_value));
         break;
-    }
     case TypeKind::INT_32_TYPE:
     case TypeKind::ENUMERATION_TYPE:
-        data.value<int32_t>(field, static_cast<int32_t>(float_value));
+        data.value<int32_t>(
+                field,
+                rti::utils::long_double::safe_cast<int32_t>(float_value));
         break;
     case TypeKind::UINT_32_TYPE:
-        data.value<uint32_t>(field, static_cast<uint32_t>(float_value));
+        data.value<uint32_t>(
+                field,
+                rti::utils::long_double::safe_cast<uint32_t>(float_value));
         break;
     case TypeKind::INT_64_TYPE:
-        data.value<int64_t>(field, static_cast<int64_t>(float_value));
+        data.value<int64_t>(
+                field,
+                rti::utils::long_double::safe_cast<int64_t>(float_value));
         break;
     case TypeKind::UINT_64_TYPE:
-        data.value<uint64_t>(field, static_cast<uint64_t>(float_value));
+        data.value<uint64_t>(
+                field,
+                rti::utils::long_double::safe_cast<uint64_t>(float_value));
         break;
     case TypeKind::FLOAT_32_TYPE:
-        data.value<float>(field, static_cast<float>(float_value));
+        data.value<float>(
+                field,
+                rti::utils::long_double::safe_cast<float>(float_value));
         break;
     case TypeKind::FLOAT_64_TYPE:
-        data.value<double>(field, static_cast<double>(float_value));
+        data.value<double>(
+                field,
+                rti::utils::long_double::safe_cast<double>(float_value));
         break;
     default:
         std::string error("unsupported type of <" + field + ">");
@@ -234,7 +248,7 @@ void rti::common::dynamic_data::set_vector_values(
     case TypeKind::CHAR_8_TYPE: {
         std::vector<char> values;
         for (auto element : float_vector) {
-            values.push_back(static_cast<char>(element));
+            values.push_back(rti::utils::long_double::safe_cast<char>(element));
         }
         data.set_values<char>(field, values);
         break;
@@ -244,7 +258,8 @@ void rti::common::dynamic_data::set_vector_values(
     case TypeKind::UINT_8_TYPE: {
         std::vector<uint8_t> values;
         for (auto element : float_vector) {
-            values.push_back(static_cast<uint8_t>(element));
+            values.push_back(
+                    rti::utils::long_double::safe_cast<uint8_t>(element));
         }
         data.set_values<uint8_t>(field, values);
         break;
@@ -252,7 +267,8 @@ void rti::common::dynamic_data::set_vector_values(
     case TypeKind::INT_16_TYPE: {
         std::vector<int16_t> values;
         for (auto element : float_vector) {
-            values.push_back(static_cast<int16_t>(element));
+            values.push_back(
+                    rti::utils::long_double::safe_cast<int16_t>(element));
         }
         data.set_values<int16_t>(field, values);
         break;
@@ -260,27 +276,18 @@ void rti::common::dynamic_data::set_vector_values(
     case TypeKind::UINT_16_TYPE: {
         std::vector<uint16_t> values;
         for (auto element : float_vector) {
-            values.push_back(static_cast<uint16_t>(element));
+            values.push_back(
+                    rti::utils::long_double::safe_cast<uint16_t>(element));
         }
-        // data.set_values<uint16_t>(field, values);
-        // affected by CORE-10286, use C API as a workaround
-        auto retcode = DDS_DynamicData_set_ushort_array(
-                &data.native(),
-                field.c_str(),
-                DDS_DYNAMIC_DATA_MEMBER_ID_UNSPECIFIED,
-                static_cast<DDS_UnsignedLong>(values.size()),
-                &values[0]);
-        if (retcode != DDS_RETCODE_OK) {
-            std::string error("setting ushort array value of <" + field + ">");
-            throw std::runtime_error(error);
-        }
+        data.set_values<uint16_t>(field, values);
         break;
     }
     case TypeKind::ENUMERATION_TYPE:
     case TypeKind::INT_32_TYPE: {
         std::vector<DDS_Long> values;
         for (auto element : float_vector) {
-            values.push_back(static_cast<DDS_Long>(element));
+            values.push_back(
+                    rti::utils::long_double::safe_cast<int32_t>(element));
         }
         data.set_values<DDS_Long>(field, values);
         break;
@@ -288,7 +295,8 @@ void rti::common::dynamic_data::set_vector_values(
     case TypeKind::UINT_32_TYPE: {
         std::vector<DDS_UnsignedLong> values;
         for (auto element : float_vector) {
-            values.push_back(static_cast<DDS_UnsignedLong>(element));
+            values.push_back(
+                    rti::utils::long_double::safe_cast<uint32_t>(element));
         }
         data.set_values<DDS_UnsignedLong>(field, values);
         break;
@@ -296,7 +304,8 @@ void rti::common::dynamic_data::set_vector_values(
     case TypeKind::INT_64_TYPE: {
         std::vector<DDS_LongLong> values;
         for (auto element : float_vector) {
-            values.push_back(static_cast<DDS_LongLong>(element));
+            values.push_back(
+                    rti::utils::long_double::safe_cast<int64_t>(element));
         }
         data.set_values<DDS_LongLong>(field, values);
         break;
@@ -304,7 +313,8 @@ void rti::common::dynamic_data::set_vector_values(
     case TypeKind::UINT_64_TYPE: {
         std::vector<DDS_UnsignedLongLong> values;
         for (auto element : float_vector) {
-            values.push_back(static_cast<DDS_UnsignedLongLong>(element));
+            values.push_back(
+                    rti::utils::long_double::safe_cast<uint64_t>(element));
         }
         data.set_values<DDS_UnsignedLongLong>(field, values);
         break;
@@ -312,7 +322,8 @@ void rti::common::dynamic_data::set_vector_values(
     case TypeKind::FLOAT_32_TYPE: {
         std::vector<float> values;
         for (auto element : float_vector) {
-            values.push_back(static_cast<float>(element));
+            values.push_back(
+                    rti::utils::long_double::safe_cast<float>(element));
         }
         data.set_values<float>(field, values);
         break;
@@ -320,7 +331,8 @@ void rti::common::dynamic_data::set_vector_values(
     case TypeKind::FLOAT_64_TYPE: {
         std::vector<double> values;
         for (auto element : float_vector) {
-            values.push_back(element);
+            values.push_back(
+                    rti::utils::long_double::safe_cast<double>(element));
         }
         data.set_values<double>(field, values);
         break;

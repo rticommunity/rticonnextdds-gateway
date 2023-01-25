@@ -13,6 +13,9 @@
 /*                                                                            */
 /******************************************************************************/
 
+#ifndef UTILSSTRINGS_HPP
+#define UTILSSTRINGS_HPP
+
 #include <string>
 #include <vector>
 
@@ -27,7 +30,7 @@ namespace rti { namespace utils { namespace strings {
  * as elements. For example: 'hello.world' will return ["hello", "world"].
  */
 
-std::vector<std::string> split(const std::string &input, char delim)
+inline std::vector<std::string> split(const std::string &input, char delim)
 {
     std::vector<std::string> output;
     size_t prev_position = 0;
@@ -58,3 +61,5 @@ std::vector<std::string> split(const std::string &input, char delim)
     return output;
 }
 }}}  // namespace rti::utils::strings
+
+#endif
