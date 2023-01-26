@@ -27,13 +27,21 @@ namespace rti { namespace utils { namespace long_double {
  * floating number value to a unsigned value is not defined if the value doesn't
  * fit in the unsigned value. For example:
  *     long double x = -1.0;
- *     uint8_t y = (uint8_t) x; --> this behavior is not defined, some
- *                                  architectures return 0, instead of 255.
+ *     uint8_t y = static_cast<uint8_t>(x); --> this behavior is not defined,
+ *                                  some architectures return 0, instead of 255.
  * The solution is to cast 'x' to an signed int8_t and then to a uint8_y.
- *     uint8_t y = (uint8_t) (int8_t) x; --> this returns 255
+ *     uint8_t y = static_cast<uint8_t>(static_cast<int8_t>(x); --> returns 255
  * However, in this case, values that are between INT8_MAX and UINT8_MAX cannot
  * be represented. Therefore, we need a function that check if the number
  * is negative or do a different thing otherwise.
+ *
+ * These functions also throw a warning in case there is overflow. The overflow
+ * happens in these situations:
+ *   - Signed integer: value < INTx_MIN || value > INTx_MAX
+ *   - Unsigned integer: value > UINTx_MAX || value < INTx_MIN
+ * The last condition overflows when doing the first casting to signed integer
+ * from a negative value. The value cannot be casted to a number that is less
+ * than the minimum integer number of the same size.
  * @param value The long double value that will be casted.
  * @return The value casted safely to the specified size.
  */
@@ -46,13 +54,13 @@ inline T safe_cast(long double value) {
 template<>
 inline uint8_t safe_cast(long double value)
 {
-    if (value > UINT8_MAX) {
+    if (value > UINT8_MAX || value < INT8_MIN) {
         std::cerr << "Warning: overflow casting value <"
                   << std::to_string(value)
                   << "> to uint8_t. Potential loss of information.";
     }
     if (value < 0) {
-        return (uint8_t) (int8_t) value;
+        return static_cast<uint8_t>(static_cast<int8_t>(value));
     } else {
         return static_cast<uint8_t>(value);
     }
@@ -61,13 +69,13 @@ inline uint8_t safe_cast(long double value)
 template<>
 inline uint16_t safe_cast(long double value)
 {
-    if (value > UINT16_MAX) {
+    if (value > UINT16_MAX || value < INT16_MIN) {
         std::cerr << "Warning: overflow casting value <"
                   << std::to_string(value)
                   << "> to uint16_t. Potential loss of information.";
     }
     if (value < 0) {
-        return (uint16_t) (int16_t) value;
+        return static_cast<uint16_t>(static_cast<int16_t>(value));
     } else {
         return static_cast<uint16_t>(value);
     }
@@ -76,13 +84,13 @@ inline uint16_t safe_cast(long double value)
 template<>
 inline uint32_t safe_cast(long double value)
 {
-    if (value > UINT32_MAX) {
+    if (value > UINT32_MAX || value < INT32_MIN) {
         std::cerr << "Warning: overflow casting value <"
                   << std::to_string(value)
                   << "> to uint32_t. Potential loss of information.";
     }
     if (value < 0) {
-        return (uint32_t) (int32_t) value;
+        return static_cast<uint32_t>(static_cast<int32_t>(value));
     } else {
         return static_cast<uint32_t>(value);
     }
@@ -91,13 +99,13 @@ inline uint32_t safe_cast(long double value)
 template<>
 inline uint64_t safe_cast(long double value)
 {
-    if (value > UINT64_MAX) {
+    if (value > UINT64_MAX || value < INT64_MIN) {
         std::cerr << "Warning: overflow casting value <"
                   << std::to_string(value)
                   << "> to uint64_t. Potential loss of information.";
     }
     if (value < 0) {
-        return (uint64_t) (int64_t) value;
+        return static_cast<uint64_t>(static_cast<int64_t>(value));
     } else {
         return static_cast<uint64_t>(value);
     }
