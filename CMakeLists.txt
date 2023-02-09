@@ -14,7 +14,7 @@
 ###############################################################################
 
 cmake_minimum_required (VERSION 3.10)
-project (RTIConnextGateway VERSION 6.1.0)
+project (RTIConnextGateway VERSION 6.1.2)
 
 include(resource/cmake/CommonFunctions.cmake)
 
