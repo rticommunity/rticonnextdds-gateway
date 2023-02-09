@@ -33,7 +33,7 @@ git submodule update --init --recursive
 
 **Requirements**:
 
-- [Connext DDS 6.1.0](https://community.rti.com/content/page/downloads)
+- [Connext DDS 6.1.2](https://community.rti.com/content/page/downloads)
 - [cmake 3.10+](https://cmake.org/download/)
 
 In order to build the RTI Connext Gateway components you have to run the following
