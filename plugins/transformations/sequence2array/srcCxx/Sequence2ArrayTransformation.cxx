@@ -96,15 +96,20 @@ bool Sequence2ArrayTransformation::is_union_or_struct_type_compatible(
         // (output with arrays and input with sequences)
         for (auto input_member : t_input_type.members()) {
             auto output_member = t_output_type.member(input_member.name());
-            switch (input_member.type().kind().underlying()) {
+
+            // Resolve alias before going into the switch
+            auto input_member_type = rti::core::xtypes::resolve_alias(input_member.type());
+            auto output_member_type = rti::core::xtypes::resolve_alias(output_member.type());
+
+            switch (input_member_type.kind().underlying()) {
             case TypeKind::STRUCTURE_TYPE:
             case TypeKind::SEQUENCE_TYPE:
             case TypeKind::ARRAY_TYPE:
             case TypeKind::UNION_TYPE:
                 // indirect recursion with the function are_types_compatible
                 is_compatible = is_compatible && are_types_compatible(
-                        input_member.type(),
-                        output_member.type());
+                        input_member_type,
+                        output_member_type);
                 if (!is_compatible) {
                     rti::routing::Logger::instance().error(
                             "incompatible members: "
@@ -113,11 +118,11 @@ bool Sequence2ArrayTransformation::is_union_or_struct_type_compatible(
                             + output_member.name().to_std_string());
                     return false;
                 }
-            break;
+                break;
             // primitive type
             default:
                 is_compatible = is_compatible
-                        && (input_member.type() == output_member.type());
+                        && (input_member_type == output_member_type);
                 if (!is_compatible) {
                    rti::routing::Logger::instance().error(
                             "incompatible members: "
