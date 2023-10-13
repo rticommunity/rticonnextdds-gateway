@@ -15,3 +15,5 @@
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/integration_test1")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/integration_test2")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/integration_test3")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/integration_test4")

@@ -247,7 +247,8 @@ bool are_types_compatible(
                     break;
                 // primitive type
                 default:
-                    is_compatible = false;
+                    // not needed because if it is a primitive content_type, this
+                    // has been already checked in the previous if condition
                     break;
                 }
             }
