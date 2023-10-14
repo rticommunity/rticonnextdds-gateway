@@ -222,12 +222,6 @@ bool are_types_compatible(
         } else { // TypeKind::SEQUENCE_TYPE
             auto output_sequence_type = static_cast<const SequenceType &>(output_type);
 
-            if (input_array_type.total_element_count() > output_sequence_type.bounds()) {
-                rti::routing::Logger::instance().error("array total element count: "
-                        + std::to_string(input_array_type.total_element_count())
-                        + " > " + std::to_string(output_sequence_type.bounds()));
-                return false;
-            }
             if (input_array_type.content_type() == output_sequence_type.content_type()) {
                 return true;
             } else {
