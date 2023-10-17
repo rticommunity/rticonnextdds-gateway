@@ -1,0 +1,11 @@
+
+typedef char T_String[10];
+typedef long T_List[10];
+typedef T_String T_StringArr[5];
+
+struct MyTypeWithArrays {
+  T_String member1[5];
+  T_List member2[5];
+  @optional T_StringArr member3;
+};
+

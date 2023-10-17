@@ -508,6 +508,126 @@ void rti::common::dynamic_data::copy_primitive_array_elements(
  * @brief Copy a primitive member from the input to the output. The index
  * specifies which member is being copied.
  *
+ * Input may be a sequence or an array
+ * Output is a sequence
+ */
+void rti::common::dynamic_data::copy_primitive_sequence_elements(
+        DynamicData& input,
+        DynamicData& output,
+        uint32_t index,
+        uint32_t max_elements)
+{
+    if (output.member_info(index).member_kind() != TypeKind::SEQUENCE_TYPE) {
+        std::string error("the element <" + std::to_string(index)
+                + "> of the output type <" + output.type().name()
+                + "> is not a sequence.");
+        throw std::runtime_error(error);
+    }
+
+    if (input.member_info(index).member_kind() != TypeKind::ARRAY_TYPE
+            && input.member_info(index).member_kind() != TypeKind::SEQUENCE_TYPE) {
+        std::string error("the element <" + std::to_string(index)
+                + "> of the input type <" + input.type().name()
+                + "> is not an array or a sequence.");
+        throw std::runtime_error(error);
+
+    }
+
+    switch (input.member_info(index).element_kind().underlying()) {
+    case TypeKind::BOOLEAN_TYPE:
+    // booleans are stored in memory as uint8_t for arrays/seqs
+    case TypeKind::UINT_8_TYPE: {
+        auto values = input.get_values<uint8_t>(index);
+        values.resize(max_elements);
+        output.set_values<uint8_t>(index, values);
+
+        break;
+    }
+    case TypeKind::CHAR_8_TYPE: {
+        auto values = input.get_values<char>(index);
+        values.resize(max_elements);
+        output.set_values<char>(index, values);
+
+        break;
+    }
+    case TypeKind::INT_16_TYPE: {
+        auto values = input.get_values<int16_t>(index);
+        values.resize(max_elements);
+        output.set_values<int16_t>(index, values);
+
+        break;
+    }
+    case TypeKind::UINT_16_TYPE: {
+        auto values = input.get_values<uint16_t>(index);
+        values.resize(max_elements);
+        output.set_values<uint16_t>(index, values);
+
+        break;
+    }
+    case TypeKind::INT_32_TYPE:
+    case TypeKind::ENUMERATION_TYPE: {
+        auto values = input.get_values<DDS_Long>(index);
+        values.resize(max_elements);
+        output.set_values<DDS_Long>(index, values);
+
+        break;
+    }
+    case TypeKind::UINT_32_TYPE: {
+        auto values = input.get_values<DDS_UnsignedLong>(index);
+        values.resize(max_elements);
+        output.set_values<DDS_UnsignedLong>(index, values);
+
+        break;
+    }
+    case TypeKind::INT_64_TYPE: {
+        auto values = input.get_values<DDS_LongLong>(index);
+        values.resize(max_elements);
+        output.set_values<DDS_LongLong>(index, values);
+
+        break;
+    }
+    case TypeKind::UINT_64_TYPE: {
+        auto values = input.get_values<DDS_UnsignedLongLong>(index);
+        values.resize(max_elements);
+        output.set_values<DDS_UnsignedLongLong>(index, values);
+
+        break;
+    }
+    case TypeKind::FLOAT_32_TYPE: {
+        auto values = input.get_values<float>(index);
+        values.resize(max_elements);
+        output.set_values<float>(index, values);
+
+        output.set_values<float>(index, input.get_values<float>(index));
+        break;
+    }
+    case TypeKind::FLOAT_64_TYPE: {
+        auto values = input.get_values<double>(index);
+        values.resize(max_elements);
+        output.set_values<double>(index, values);
+
+        output.set_values<double>(index, input.get_values<double>(index));
+        break;
+    }
+    case TypeKind::STRING_TYPE: {
+        for (int i = 1; i <= max_elements; ++i) {
+            output.value<std::string>(i, input.value<std::string>(i));
+        }
+        break;
+    }
+    default:
+        std::string error("cannot copy elements into sequence, unsupported "
+                "element kind of <" + input.type().name() + "> index <"
+                + std::to_string(index) + ">.");
+        throw std::runtime_error(error);
+    }
+}
+
+
+/*
+ * @brief Copy a primitive member from the input to the output. The index
+ * specifies which member is being copied.
+ *
  */
 void rti::common::dynamic_data::copy_primitive_member(
         DynamicData& input,

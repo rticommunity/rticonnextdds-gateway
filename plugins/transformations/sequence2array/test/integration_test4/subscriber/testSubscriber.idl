@@ -1,0 +1,9 @@
+typedef sequence<char, 10> T_String;
+typedef sequence<long, 10> T_List;
+typedef sequence<T_String, 5> T_StringSeq;
+
+struct MyTypeWithSequences {
+  sequence<T_String> member1;
+  sequence<T_List> member2;
+  @optional T_StringSeq member3;
+};

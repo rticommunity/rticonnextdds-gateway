@@ -1,0 +1,12 @@
+struct point {
+  int32 x;
+  int32 y;
+};
+
+struct polygonArray {
+  point polygon[4];
+};
+
+struct polygonSetArray {
+  polygonArray severalPolygons[4];
+};

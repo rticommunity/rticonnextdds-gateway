@@ -101,6 +101,22 @@ void copy_primitive_array_elements(
         uint32_t max_elements);
 
 /**
+ * @brief Copy an array or a sequence of primitive elements from a Dynamic Data
+ * into a sequence with the same type of elements in another DynamicData sample.
+ * The index specifies the sequence or array that is being copied.
+ * @param input the input DynamicData.
+ * @param output the output DynamicData.
+ * @param index that identifies the field to copy (in both, input and output).
+ * @param max_elements maximum number of element to copy. This is usually the
+ * array max elements.
+ */
+void copy_primitive_sequence_elements(
+        dds::core::xtypes::DynamicData& input,
+        dds::core::xtypes::DynamicData& output,
+        uint32_t index,
+        uint32_t max_elements);
+
+/**
  * @brief Copy a primitive element from a Dynamic Data to another. The element
  * in both Dynamic Data should be located at 'index'
  * @param input the input DynamicData.
