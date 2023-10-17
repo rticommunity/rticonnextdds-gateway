@@ -1,33 +1,12 @@
-# Example Sequence2Array Polygon
+# Example Array2Sequence Polygon
 
 ## Description of the Example
 
-This example shows how to translate Dynamic Data objects with sequences of type
-`polygonSeq` and `polygonSetSeq` to a compatible type with arrays instead of
-sequences.
+This example shows how to translate Dynamic Data objects with arrays of type
+`polygonArray` and `polygonSetArray` to a compatible type with sequences instead
+of arrays.
 
-The IDL definitions for `polygonSeq` and `polygonSetSeq` are:
-
-```idl
-struct point {
-  int32 x;
-  int32 y;
-};
-
-struct polygonSeq {
-  sequence<point> polygon;
-};
-
-struct polygonSetSeq {
-  sequence<polygonSeq> severalPolygons;
-};
-
-```
-
-A compatible type means that the type is the same but the sequences are replaced
-by arrays. The names may be different, but the index should match.
-
-Therefore, their compatible types are `polygonArray` and `polygonSetArray`:
+The IDL definitions for `polygonArray` and `polygonSetArray` are:
 
 ```idl
 struct point {
@@ -45,39 +24,62 @@ struct polygonSetArray {
 
 ```
 
+A compatible type means that the type is the same but the arrays are replaced
+by sequences. The names may be different, but the index should match.
+
+Therefore, their compatible types are `polygonSeq` and `polygonSetSeq`:
+
+```idl
+struct point {
+  int32 x;
+  int32 y;
+};
+
+struct polygonSeq {
+  sequence<point> polygon;
+};
+
+struct polygonSetSeq {
+  sequence<polygonSeq> severalPolygons;
+};
+
+```
+
+
+
 ### Routing Service Configuration
 
 The example provides a Routing Service configurations in file
-[RsSequence2ArrayTransf.xml](RsSequence2AraryTransf.xml) which demonstrate
+[RsArray2SequenceTransf.xml](RsArray2SequenceTransf.xml) which demonstrate
 the use of the Sequence2Array transformation.
 
-- `RsSequence2ArrayTransf`
-  - Read `polygonSeq` and `polygonSetSeq` samples from topic `PolygonTopicSeq`
-    and `PolygonSetTopicSeq` respectively. Then, it converts these samples to
-    `polygonArray` and `polygonSetArray` in topics `PolygonTopicArray` and
-    `PolygonSetTopicArray`.
+- `RsArray2SequenceTransf`
+  - Read `polygonArray` and `polygonSetArray` samples from topic `PolygonTopicArray`
+    and `PolygonSetTopicArray` respectively. Then, it converts these samples to
+    `polygonSeq` and `polygonSetSeq` in topics `PolygonTopicSeq` and
+    `PolygonSetTopicSeq`.
 
 ## Running the Example
 
 In order to run the integration test, three elements are required (all of them
-must be run from directory `<install dir>/examples/tsfm_sequence2array/polygon/`):
+must be run from directory `<install dir>/examples/tsfm_sequence2array/polygon2/`):
 
 - Publisher:
 
 ```sh
-./publisher/PolygonSeq_publisher
+./publisher/PolygonArray_publisher
 ```
 
 - Subscriber:
 
 ```sh
-./subscriber/PolygonArray_subscriber
+./subscriber/PolygonSeq_subscriber
 ```
 
 Start a Routing Service instance:
 
 ```sh
-rtiroutingservice -cfgFile RsSequence2ArrayTransf.xml -cfgName RsSequence2ArrayTransf
+rtiroutingservice -cfgFile RsArray2SequenceTransf.xml -cfgName RsArray2SequenceTransf
 ```
 
 > **NOTE**: the `rtisequence2arraytransf` library should be reachable by the OS. Add
@@ -86,5 +88,5 @@ rtiroutingservice -cfgFile RsSequence2ArrayTransf.xml -cfgName RsSequence2ArrayT
 > followed the default building instructions, the folder to include is:
 > `<path to rticonnextdds-gateway>/install/lib`.
 
-At this time, you should be receiving `polygonArray` and `polygonSetArray` in
+At this time, you should be receiving `polygonSeq` and `polygonSetSeq` in
 the subscriber application.
