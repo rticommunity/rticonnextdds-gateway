@@ -59,6 +59,32 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
 
     /* Check holding registers from the writer */
 
+    /* First nested_field */
+    ASSERT_COND(*(sample->test_type.nested_field.enum_field) == ENUM_VALUE);
+    /*
+     * The optional is not set, but the adapter reads a value from
+     * the modbus server. This case is the default 0
+     */
+    ASSERT_COND(*(sample->test_type.nested_field.optional_non_set) == 0);
+    ASSERT_COND(sample->test_type.nested_field.bool_field == BOOLEAN_VALUE);
+    /*
+     * The following conversion to DDS_Octet is done to ensure compatibility
+     * between 6.0.1, where int8 are represented as octets, and 6.1.0, where
+     * int8 are represented by signed int8
+     */
+    ASSERT_COND((DDS_Octet)sample->test_type.nested_field.int8_field == (DDS_Octet)SIGNED_VALUE);
+    ASSERT_COND(sample->test_type.nested_field.uint8_field == (DDS_Octet)UNSIGNED_VALUE);
+    ASSERT_COND(*(sample->test_type.nested_field.int16_field) == SIGNED_VALUE);
+    ASSERT_COND(sample->test_type.nested_field.uint16_field == UNSIGNED_VALUE);
+    ASSERT_COND(sample->test_type.nested_field.int32_field == SIGNED_VALUE);
+    ASSERT_COND(sample->test_type.nested_field.uint32_field == UNSIGNED_VALUE);
+    ASSERT_COND(sample->test_type.nested_field.int64_field == SIGNED_VALUE);
+    ASSERT_COND(sample->test_type.nested_field.uint64_field == UNSIGNED_VALUE);
+    ASSERT_COND(sample->test_type.nested_field.float_abcd_field == FLOAT_VALUE);
+    ASSERT_COND(sample->test_type.nested_field.float_badc_field == FLOAT_NEGATIVE_VALUE);
+    ASSERT_COND(sample->test_type.nested_field.float_cdab_field == FLOAT_VALUE);
+    ASSERT_COND(sample->test_type.nested_field.float_dcba_field == FLOAT_NEGATIVE_VALUE);
+
     ASSERT_COND(*(sample->test_type.enum_field) == ENUM_VALUE);
     /*
      * The optional is not set, but the adapter reads a value from
@@ -114,6 +140,38 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
                         == FLOAT_ARRAY_NEGATIVE_VALUE(i));
         ASSERT_COND(DDS_FloatSeq_get(
                 &sample->test_type.float_dcba_seq_field, i)
+                        == FLOAT_ARRAY_NEGATIVE_VALUE(i));
+
+        /* Nested field */
+        ASSERT_COND(sample->test_type.nested_field.bool_array_field[i] == i % 2);
+        ASSERT_COND(DDS_BooleanSeq_get(
+                &sample->test_type.nested_field.bool_seq_field, i) == (DDS_Boolean)BOOLEAN_ARRAY_VALUE(i));
+        /*
+         * The following conversion to DDS_Octet is done to ensure compatibility
+         * between 6.0.1, where int8 are represented as octets, and 6.1.0, where
+         * int8 are represented by signed int8
+         */
+        ASSERT_COND((DDS_Octet) (sample->test_type.nested_field.int8_array_field[i])
+                == (DDS_Octet) (SIGNED_ARRAY_VALUE(i)));
+        ASSERT_COND(DDS_UInt8Seq_get(
+                &sample->test_type.nested_field.uint8_seq_field, i) == (DDS_Octet)UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->test_type.nested_field.int16_array_field[i] == SIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_UnsignedShortSeq_get(
+                &sample->test_type.nested_field.uint16_seq_field, i) == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->test_type.nested_field.int32_array_field[i] == SIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_UnsignedLongSeq_get(
+                &sample->test_type.nested_field.uint32_seq_field, i) == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->test_type.nested_field.int64_array_field[i] == SIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_UnsignedLongLongSeq_get(
+                &sample->test_type.nested_field.uint64_seq_field, i) == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->test_type.nested_field.float_abcd_array_field[i] == FLOAT_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_FloatSeq_get(&sample->test_type.nested_field.float_badc_seq_field, i) ==
+                FLOAT_ARRAY_VALUE(i));
+        ASSERT_COND(
+                sample->test_type.nested_field.float_cdab_array_field[i]
+                        == FLOAT_ARRAY_NEGATIVE_VALUE(i));
+        ASSERT_COND(DDS_FloatSeq_get(
+                &sample->test_type.nested_field.float_dcba_seq_field, i)
                         == FLOAT_ARRAY_NEGATIVE_VALUE(i));
     }
 
@@ -396,6 +454,24 @@ int publish_data_test(DDS_DomainParticipant *participant)
     }
 
     /* Fill out the instance */
+    instance->nested_field.enum_field = (ShapeFillKind*) malloc(sizeof(ShapeFillKind));
+    *instance->nested_field.enum_field = ENUM_VALUE;
+    instance->nested_field.optional_non_set = NULL;
+    instance->nested_field.bool_field = BOOLEAN_VALUE;
+    instance->nested_field.int8_field = SIGNED_VALUE;
+    instance->nested_field.uint8_field = UNSIGNED_VALUE;
+    instance->nested_field.int16_field = (short*) malloc(sizeof(short));
+    *instance->nested_field.int16_field = SIGNED_VALUE;
+    instance->nested_field.uint16_field = UNSIGNED_VALUE;
+    instance->nested_field.int32_field = SIGNED_VALUE;
+    instance->nested_field.uint32_field = UNSIGNED_VALUE;
+    instance->nested_field.int64_field = SIGNED_VALUE;
+    instance->nested_field.uint64_field = UNSIGNED_VALUE;
+    instance->nested_field.float_abcd_field = FLOAT_VALUE;
+    instance->nested_field.float_badc_field = FLOAT_NEGATIVE_VALUE;
+    instance->nested_field.float_cdab_field = FLOAT_VALUE;
+    instance->nested_field.float_dcba_field = FLOAT_NEGATIVE_VALUE;
+
     instance->enum_field = (ShapeFillKind*) malloc(sizeof(ShapeFillKind));
     *instance->enum_field = ENUM_VALUE;
     instance->optional_non_set = NULL;
@@ -442,6 +518,36 @@ int publish_data_test(DDS_DomainParticipant *participant)
         instance->float_cdab_array_field[i] = FLOAT_ARRAY_NEGATIVE_VALUE(i);
         DDS_FloatSeq_set_length(&instance->float_dcba_seq_field, 2);
         *DDS_FloatSeq_get_reference(&instance->float_dcba_seq_field, i) =
+                FLOAT_ARRAY_NEGATIVE_VALUE(i);
+
+        /* Nested field */
+        instance->nested_field.bool_array_field[i] = i % 2;
+        DDS_BooleanSeq_set_length(&instance->nested_field.bool_seq_field, 2);
+        *DDS_BooleanSeq_get_reference(&instance->nested_field.bool_seq_field, i) =
+                BOOLEAN_ARRAY_VALUE(i);
+        instance->nested_field.int8_array_field[i] = SIGNED_ARRAY_VALUE(i);
+        DDS_UInt8Seq_set_length(&instance->nested_field.uint8_seq_field, 2);
+        *DDS_UInt8Seq_get_reference(&instance->nested_field.uint8_seq_field, i) =
+                UNSIGNED_ARRAY_VALUE(i);
+        instance->nested_field.int16_array_field[i] = SIGNED_ARRAY_VALUE(i);
+        DDS_UnsignedShortSeq_set_length(&instance->nested_field.uint16_seq_field, 2);
+        *DDS_UnsignedShortSeq_get_reference(&instance->nested_field.uint16_seq_field, i) =
+                UNSIGNED_ARRAY_VALUE(i);
+        instance->nested_field.int32_array_field[i] = SIGNED_ARRAY_VALUE(i);
+        DDS_UnsignedLongSeq_set_length(&instance->nested_field.uint32_seq_field, 2);
+        *DDS_UnsignedLongSeq_get_reference(&instance->nested_field.uint32_seq_field, i) =
+                UNSIGNED_ARRAY_VALUE(i);
+        instance->nested_field.int64_array_field[i] = SIGNED_ARRAY_VALUE(i);
+        DDS_UnsignedLongLongSeq_set_length(&instance->nested_field.uint64_seq_field, 2);
+        *DDS_UnsignedLongLongSeq_get_reference(&instance->nested_field.uint64_seq_field, i) =
+                UNSIGNED_ARRAY_VALUE(i);
+        instance->nested_field.float_abcd_array_field[i] = FLOAT_ARRAY_VALUE(i);
+        DDS_FloatSeq_set_length(&instance->nested_field.float_badc_seq_field, 2);
+        *DDS_FloatSeq_get_reference(&instance->nested_field.float_badc_seq_field, i) =
+                FLOAT_ARRAY_VALUE(i);
+        instance->nested_field.float_cdab_array_field[i] = FLOAT_ARRAY_NEGATIVE_VALUE(i);
+        DDS_FloatSeq_set_length(&instance->nested_field.float_dcba_seq_field, 2);
+        *DDS_FloatSeq_get_reference(&instance->nested_field.float_dcba_seq_field, i) =
                 FLOAT_ARRAY_NEGATIVE_VALUE(i);
     }
 

@@ -30,7 +30,7 @@ enum {
     RTU
 };
 
-const uint16_t UT_BITS_NB = 0x5;
+const uint16_t UT_BITS_NB = 0xA5;
 const uint16_t UT_INPUT_BITS_NB = 0x3;
 const uint16_t UT_REGISTERS_NB_MAX = 0x600; //1536
 /*

@@ -5,6 +5,12 @@
 Release Notes
 =============
 
+Bug fixes (February 2024)
+--------------------------
+
+#. Fixed an issue accessing nested fields in the Dynamic Data, or when setting
+   a string constant in a Dynamic Data nested field. This issue has been fixed.
+
 Bug fixes (January 2023)
 --------------------------
 

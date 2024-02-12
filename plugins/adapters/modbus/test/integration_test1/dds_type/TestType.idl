@@ -3,8 +3,43 @@ enum ShapeFillKind {
   @value(1) SOLID_FILL,
   @value(2) TRANSPARENT_FILL
 };
+
+@appendable
+struct TestType_nested_pub {
+    @optional ShapeFillKind enum_field;
+    @optional int32 optional_non_set;
+    boolean bool_field;
+    boolean bool_array_field[2];
+    sequence<boolean,2> bool_seq_field;
+    int8 int8_field;
+    int8 int8_array_field[2];
+    uint8 uint8_field;
+    sequence<uint8,2> uint8_seq_field;
+    @optional int16 int16_field;
+    int16 int16_array_field[2];
+    uint16 uint16_field;
+    sequence<uint16,2> uint16_seq_field;
+    int32 int32_field;
+    int32 int32_array_field[2];
+    uint32 uint32_field;
+    sequence<uint32,2> uint32_seq_field;
+    int64 int64_field;
+    int64 int64_array_field[2];
+    uint64 uint64_field;
+    sequence<uint64,2> uint64_seq_field;
+    float float_abcd_field;
+    float float_abcd_array_field[2];
+    float float_badc_field;
+    sequence<float,2> float_badc_seq_field;
+    float float_cdab_field;
+    float float_cdab_array_field[2];
+    float float_dcba_field;
+    sequence<float,2> float_dcba_seq_field;
+};
+
 @appendable
 struct TestType_pub {
+    TestType_nested_pub nested_field;
     @optional ShapeFillKind enum_field;
     @optional int32 optional_non_set;
     boolean bool_field;
