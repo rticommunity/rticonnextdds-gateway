@@ -23,7 +23,7 @@ namespace rti { namespace utils { namespace long_double {
 
 /**
  * @brief These safe_cast functions ensure that the long double is correctly
- * casted to an unsigned value. In some architectures, the casting from a
+ * casted to an unsigned value. In some architectures, casting from a
  * floating number value to a unsigned value is not defined if the value doesn't
  * fit in the unsigned value. For example:
  *     long double x = -1.0;
@@ -40,14 +40,15 @@ namespace rti { namespace utils { namespace long_double {
  *   - Signed integer: value < INTx_MIN || value > INTx_MAX
  *   - Unsigned integer: value > UINTx_MAX || value < INTx_MIN
  * The last condition overflows when doing the first casting to signed integer
- * from a negative value. The value cannot be casted to a number that is less
+ * from a negative value. The value cannot be cast to a number that is less
  * than the minimum integer number of the same size.
  * @param value The long double value that will be casted.
  * @return The value casted safely to the specified size.
  */
 
 template<typename T>
-inline T safe_cast(long double value) {
+inline T safe_cast(long double value)
+{
     return static_cast<T>(value);
 }
 
@@ -169,7 +170,7 @@ inline int64_t safe_cast(long double value)
 template<>
 inline bool safe_cast(long double value)
 {
-    return static_cast<bool>(value != 0 ? 1 : 0);
+    return static_cast<bool>(value != 0 ? true : false);
 }
 
 
