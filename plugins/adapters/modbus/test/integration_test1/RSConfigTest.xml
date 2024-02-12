@@ -51,8 +51,48 @@
             <member name="float_dcba_field" type="float"/>
             <member name="float_dcba_seq_field" type="float" sequenceMaxLength="2"/>
         </struct>
+        <struct name="TestType_sub_nested_constants">
+            <member name="string_constant" type="string" stringMaxLength="64"/>
+            <member name="int8_constant" type="int8"/>
+            <member name="int16_constant" type="int16"/>
+            <member name="int32_constant" type="int32"/>
+            <member name="int64_constant" type="int64"/>
+            <member name="uint8_constant" type="uint8"/>
+            <member name="uint16_constant" type="uint16"/>
+            <member name="uint32_constant" type="uint32"/>
+            <member name="uint64_constant" type="uint64"/>
+            <member name="float32_constant" type="float32"/>
+            <member name="float64_constant" type="float64"/>
+            <member name="boolean_constant" type="boolean"/>
+            <member name="enum_constant" type="nonBasic" nonBasicTypeName="ShapeFillKind"/>
+            <member name="int8_array_constant" type="int8" arrayDimensions="2"/>
+            <member name="int16_array_constant" type="int16" arrayDimensions="2"/>
+            <member name="int32_array_constant" type="int32" arrayDimensions="2"/>
+            <member name="int64_array_constant" type="int64" arrayDimensions="2"/>
+            <member name="uint8_array_constant" type="uint8" arrayDimensions="2"/>
+            <member name="uint16_array_constant" type="uint16" arrayDimensions="2"/>
+            <member name="uint32_array_constant" type="uint32" arrayDimensions="2"/>
+            <member name="uint64_array_constant" type="uint64" arrayDimensions="2"/>
+            <member name="float32_array_constant" type="float32" arrayDimensions="2"/>
+            <member name="float64_array_constant" type="float64" arrayDimensions="2"/>
+            <member name="bool_array_constant" type="boolean" arrayDimensions="2"/>
+            <member name="enum_array_constant" type="nonBasic" nonBasicTypeName="ShapeFillKind" arrayDimensions="2"/>
+            <member name="int8_seq_constant" type="int8" sequenceMaxLength="2"/>
+            <member name="int16_seq_constant" type="int16" sequenceMaxLength="2"/>
+            <member name="int32_seq_constant" type="int32" sequenceMaxLength="2"/>
+            <member name="int64_seq_constant" type="int64" sequenceMaxLength="2"/>
+            <member name="uint8_seq_constant" type="uint8" sequenceMaxLength="2"/>
+            <member name="uint16_seq_constant" type="uint16" sequenceMaxLength="2"/>
+            <member name="uint32_seq_constant" type="uint32" sequenceMaxLength="2"/>
+            <member name="uint64_seq_constant" type="uint64" sequenceMaxLength="2"/>
+            <member name="float32_seq_constant" type="float32" sequenceMaxLength="2"/>
+            <member name="float64_seq_constant" type="float64" sequenceMaxLength="2"/>
+            <member name="bool_seq_constant" type="boolean" sequenceMaxLength="2"/>
+            <member name="enum_seq_constant" type="nonBasic" nonBasicTypeName="ShapeFillKind" sequenceMaxLength="2"/>
+          </struct>
         <struct name="TestType_sub">
             <member name="test_type" type="nonBasic" nonBasicTypeName="TestType_pub" />
+            <member name="inner_constants" type="nonBasic" nonBasicTypeName="TestType_sub_nested_constants"/>
             <member name="string_constant" type="string" stringMaxLength="64" />
             <member name="int8_constant" type="int8"/>
             <member name="int16_constant" type="int16"/>
