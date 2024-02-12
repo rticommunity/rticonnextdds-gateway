@@ -170,6 +170,154 @@
         "modbus_register_count": 2
     },
     {
+        "field": "inner_constants.string_constant",
+        "value": "value"
+    },
+    {
+        "field": "inner_constants.int8_constant",
+        "value": -42
+    },
+    {
+        "field": "inner_constants.int16_constant",
+        "value": -42
+    },
+    {
+        "field": "inner_constants.int32_constant",
+        "value": -42
+    },
+    {
+        "field": "inner_constants.int64_constant",
+        "value": -42
+    },
+    {
+        "field": "inner_constants.uint8_constant",
+        "value": 11
+    },
+    {
+        "field": "inner_constants.uint16_constant",
+        "value": 11
+    },
+    {
+        "field": "inner_constants.uint32_constant",
+        "value": 11
+    },
+    {
+        "field": "inner_constants.uint64_constant",
+        "value": 11
+    },
+    {
+        "field": "inner_constants.float32_constant",
+        "value": 0.5
+    },
+    {
+        "field": "inner_constants.float64_constant",
+        "value": 0.5
+    },
+    {
+        "field": "inner_constants.boolean_constant",
+        "value": true
+    },
+    {
+        "field": "inner_constants.enum_constant",
+        "value": 1
+    },
+    {
+        "field": "inner_constants.int8_array_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "inner_constants.int16_array_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "inner_constants.int32_array_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "inner_constants.int64_array_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "inner_constants.uint8_array_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "inner_constants.uint16_array_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "inner_constants.uint32_array_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "inner_constants.uint64_array_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "inner_constants.float32_array_constant",
+        "value": [0.5, 1.5]
+    },
+    {
+        "field": "inner_constants.float64_array_constant",
+        "value": [-0.5, -1.5]
+    },
+    {
+        "field": "inner_constants.bool_array_constant",
+        "value": [false, true]
+    },
+    {
+        "field": "inner_constants.enum_array_constant",
+        "value": [1, 2]
+    },
+    {
+        "field": "inner_constants.int8_seq_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "inner_constants.int16_seq_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "inner_constants.int32_seq_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "inner_constants.int64_seq_constant",
+        "value": [0, -1]
+    },
+    {
+        "field": "inner_constants.uint8_seq_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "inner_constants.uint16_seq_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "inner_constants.uint32_seq_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "inner_constants.uint64_seq_constant",
+        "value": [0, 1]
+    },
+    {
+        "field": "inner_constants.float32_seq_constant",
+        "value": [0.5, 1.5]
+    },
+    {
+        "field": "inner_constants.float64_seq_constant",
+        "value": [-0.5, -1.5]
+    },
+    {
+        "field": "inner_constants.bool_seq_constant",
+        "value": [false, true]
+    },
+    {
+        "field": "inner_constants.enum_seq_constant",
+        "value": [1, 2]
+    },
+    {
         "field": "string_constant",
         "value": "value"
     },
