@@ -174,8 +174,6 @@ void ModbusStreamReader::read_data_from_modbus()
                     dynamic_data::get_member_type(struct_type, mace.field());
                 const StringType &string_type = static_cast<const StringType &>(
                         dynamic_type);
-                // const StringType &string_type = static_cast<const StringType &>(
-                //         struct_type.member(mace.field()).type());
                 // If the type is a string, check that the content fits into
                 // the DDS String
                 if (string_type.bounds() >= mace.value_string().length()) {
