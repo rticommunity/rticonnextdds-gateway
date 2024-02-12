@@ -19,6 +19,12 @@
 
   <qos_library name="ModbusAdapterLibrary">
     <qos_profile name="MyTypeProfile" base_name="BuiltinQosLibExp::Generic.BestEffort" is_default_qos="true">
+        <domain_participant_qos>
+            <resource_limits>
+                <type_code_max_serialized_length>65530</type_code_max_serialized_length>
+                <type_object_max_serialized_length>65530</type_object_max_serialized_length>
+            </resource_limits>
+        </domain_participant_qos>
       <datawriter_qos>
         <reliability>
           <kind>RELIABLE_RELIABILITY_QOS</kind>

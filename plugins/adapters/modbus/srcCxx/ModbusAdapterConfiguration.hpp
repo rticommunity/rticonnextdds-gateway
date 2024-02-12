@@ -136,7 +136,7 @@ public:
      * @brief Check that the dds_datatype is compatible with the corresponding
      * element configuration
      * @param dds_datatype the output/input DDS TypeKind. Depending on this
-     * datatype, different checkings should be performed to be compatible.
+     * datatype, different checks should be performed to be compatible.
      * @return A boolean that says if the current configuration is compatible
      * with the DDS Datatype.
      */
@@ -268,7 +268,7 @@ private:
     /**
      * @brief Calculates the number of registers that a primitive type will use
      * @return The number of modbus registers that a specific datatype uses,
-     * depeneding on the configuration provided.
+     * depending on the configuration provided.
      */
 
     size_t number_of_registers_primitive_type();
@@ -357,7 +357,7 @@ public:
     /**
      * @brief Check that the configuration created (for every element) is
      * consistent with the dds_type provided from RS.
-     * @param dds_type the type that will be writting or reading data
+     * @param dds_type the type that will be writing or reading data
      * to/from DDS.
      */
     void check_configuration_consistency(

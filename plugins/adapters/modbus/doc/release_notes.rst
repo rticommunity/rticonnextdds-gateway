@@ -5,6 +5,12 @@
 Release Notes
 =============
 
+Bug fixes (January 2023)
+--------------------------
+
+#. Unexpected behavior when reading DDS negative values in some platforms.
+   This issue has been fixed.
+
 New features (September 2021)
 -----------------------------
 

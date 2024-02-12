@@ -192,6 +192,10 @@
                             <nanosec>0</nanosec>
                         </shutdown_cleanup_period>
                     </database>
+                    <resource_limits>
+                        <type_code_max_serialized_length>65530</type_code_max_serialized_length>
+                        <type_object_max_serialized_length>65530</type_object_max_serialized_length>
+                    </resource_limits>
                 </participant_qos>
             </participant>
             <connection name="TestConnection" plugin_name="AdapterLib::ModbusAdapter">
