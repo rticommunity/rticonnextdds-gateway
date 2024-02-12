@@ -76,8 +76,8 @@ int ModbusStreamWriter::write(
                 const StructType &dynamic_struct =
                         static_cast<const StructType &>(sample->type());
                 auto member_kind = dynamic_data::get_member_type(
-                                           dynamic_struct,
-                                           mace.field()).kind();
+                        dynamic_struct,
+                        mace.field()).kind();
                 TypeKind element_kind = member_kind;
                 std::vector<long double> float_vector;
 
@@ -103,8 +103,10 @@ int ModbusStreamWriter::write(
                 }
 
                 // get the values that will be written for this specific field
-                if (is_primitive_type(
-                            dynamic_struct.member(mace.field()).type())
+                DynamicType dynamic_type = dynamic_data::get_member_type(
+                        dynamic_struct,
+                        mace.field());
+                if (is_primitive_type(dynamic_type)
                         || member_kind == TypeKind::ENUMERATION_TYPE) {
                     // an array with one element means that it's a simple value
                     float_vector.push_back(
