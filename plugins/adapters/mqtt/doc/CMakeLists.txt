@@ -20,7 +20,7 @@ rtigw_generate_doc(
     PLUGIN "MQTT Adapter"
     TARGET mqtt-adapter-doc
     INPUT "${CMAKE_CURRENT_SOURCE_DIR}"
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS
         "${CMAKE_CURRENT_SOURCE_DIR}/conf.py"
         "${CMAKE_CURRENT_SOURCE_DIR}/additional_resources.rst"
@@ -39,5 +39,11 @@ rtigw_generate_doc(
 # staging documentation
 install(
     DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html/"
-    DESTINATION "${STAGING_DOC_DIR}/adapters/${STAGING_PLUGIN_DIR}"
+    DESTINATION "${STAGING_DOC_HTML_DIR}/adapters/${STAGING_PLUGIN_DIR}"
+)
+
+install(
+    DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/pdf/latex/"
+    DESTINATION "${STAGING_DOC_PDF_DIR}/adapters/${STAGING_PLUGIN_DIR}"
+    FILES_MATCHING PATTERN "*.pdf"
 )

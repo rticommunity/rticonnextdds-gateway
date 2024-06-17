@@ -83,11 +83,11 @@ function(rtigw_generate_doc)
 
     add_custom_command(
         OUTPUT
-            ${_args_OUTPUT}
+            ${_args_OUTPUT}/html
         COMMENT
             "Generating ${_args_PLUGIN} Documentation"
         COMMAND
-            ${SPHINX_BIN} ${_args_INPUT} ${_args_OUTPUT} ${SPHINX_OPTS}
+            ${SPHINX_BIN} ${_args_INPUT} ${_args_OUTPUT}/html
         DEPENDS
             ${_args_DEPENDS}
         VERBATIM
@@ -95,9 +95,31 @@ function(rtigw_generate_doc)
 
     add_custom_target(${_args_TARGET} ALL
         DEPENDS
-            "${_args_OUTPUT}"
+            ${_args_OUTPUT}/html
     )
 
+    # Generate documentation in PDF. PDF documentation requires HTML doc to be
+    # built first
+    if(${RTIGATEWAY_ENABLE_PDF_DOCS})
+        add_custom_command(
+            OUTPUT
+                ${_args_OUTPUT}/pdf
+            COMMENT
+                "Generating ${_args_PLUGIN} PDF Documentation"
+            COMMAND
+                ${SPHINX_BIN} -M latexpdf ${_args_INPUT} ${_args_OUTPUT}/pdf
+            DEPENDS
+                ${_args_DEPENDS}
+            VERBATIM
+        )
+
+        add_custom_target(${_args_TARGET}-pdf ALL
+            DEPENDS
+                ${_args_OUTPUT}/pdf
+        )
+    endif()
+
+    # generate doxygen documentation
     if (${_args_DOXYGEN})
         if (NOT doxygen_bin)
             set(doxygen_bin "doxygen")
@@ -233,7 +255,8 @@ macro(rtigw_init_globals)
 
     set(STAGING_LIB_DIR "lib")
     set(STAGING_BIN_DIR "bin")
-    set(STAGING_DOC_DIR "doc")
+    set(STAGING_DOC_HTML_DIR "doc/html")
+    set(STAGING_DOC_PDF_DIR "doc/pdf")
     set(STAGING_TEST_DIR "test")
     set(STAGING_EXAMPLES_DIR "examples")
     set(STAGING_RESOURCE_DIR "resource")
@@ -252,9 +275,14 @@ macro(rtigw_init_globals)
     option(RTIGATEWAY_ENABLE_TESTS "Build tester applications for enabled plugins" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_EXAMPLES "Build examples applications for enabled plugins" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_DOCS "Build documentation for enabled plugins" OFF)
+    option(RTIGATEWAY_ENABLE_PDF_DOCS "Build PDF documentation for enabled plugins" OFF)
     option(RTIGATEWAY_ENABLE_SSL "Enable support for SSL/TLS" OFF)
     option(RTIGATEWAY_ENABLE_LOG "Enable logging to stdout" OFF)
     option(RTIGATEWAY_ENABLE_TRACE "Enable support for trace-level logging" OFF)
+
+    if (NOT ${RTIGATEWAY_ENABLE_DOCS} AND RTIGATEWAY_ENABLE_PDF_DOCS)
+        message(WARNING "Generation of PDF doc requires to define RTIGATEWAY_ENABLE_DOCS")
+    endif()
 
     rtigw_init_install_path()
 
