@@ -22,8 +22,8 @@
         <transformation_plugin name="Sequence2ArrayTransformation">
             <!--
             By specifing this value, RTI Router will search for
-            libSequence2Arraytransf.so in Unix systems and Sequence2Arraytransf.dll
-            on Windows systems. RTI Routing Service will attempt to load this
+            libSequence2Arraytransf.so, libSequence2Arraytransf.dylib or
+            Sequence2Arraytransf.dll. RTI Routing Service will attempt to load this
             library from:
                 - Working directory or plugin_search_path
                 - Executable directory

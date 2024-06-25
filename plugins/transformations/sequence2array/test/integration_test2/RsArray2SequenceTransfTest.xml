@@ -19,7 +19,7 @@
     Here we're loading our custom transformation class
     -->
     <plugin_library name="MyPluginLib">
-        <transformation_plugin name="Sequence2ArrayTransformation">
+        <transformation_plugin name="Array2SequenceTransformation">
             <!--
             By specifing this value, RTI Router will search for
             libSequence2Arraytransf.so, libSequence2Arraytransf.dylib or
@@ -31,15 +31,15 @@
             -->
             <dll>rtisequence2arraytransf</dll>
             <create_function>
-                Sequence2ArrayTransformationPlugin_create_transformation_plugin
+                Array2SequenceTransformationPlugin_create_transformation_plugin
             </create_function>
         </transformation_plugin>
     </plugin_library>
 
-    <routing_service name="RsSequence2ArrayTransfTest">
+    <routing_service name="RsArray2SequenceTransfTest">
         <annotation>
             <documentation>
-                Uses a transformation to convert sequences to arrays.
+                Uses a transformation to convert arrays to sequences.
             </documentation>
         </annotation>
          <!-- The administration tag enables remote administration, and is
@@ -93,15 +93,15 @@
                 <domain_id>0</domain_id>
             </participant>
             <session name="Session">
-                <topic_route name="Sequence2ArrayTestRoute">
+                <topic_route name="Array2SequenceTestRoute">
                     <input participant="myDomain">
-                        <registered_type_name>MyTypeWithSequences</registered_type_name>
-                        <topic_name>MyTypeWithSequencesTopic</topic_name>
-                    </input>
-                    <output participant="myDomain">
                         <registered_type_name>MyTypeWithArrays</registered_type_name>
                         <topic_name>MyTypeWithArraysTopic</topic_name>
-                        <transformation plugin_name="MyPluginLib::Sequence2ArrayTransformation"/>
+                    </input>
+                    <output participant="myDomain">
+                        <registered_type_name>MyTypeWithSequences</registered_type_name>
+                        <topic_name>MyTypeWithSequencesTopic</topic_name>
+                        <transformation plugin_name="MyPluginLib::Array2SequenceTransformation"/>
                     </output>
                 </topic_route>
             </session>

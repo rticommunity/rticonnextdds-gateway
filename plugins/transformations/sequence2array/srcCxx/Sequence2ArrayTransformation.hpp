@@ -12,6 +12,8 @@
 #ifndef STRUCT_ARRAY_TRANSF_HPP_
 #define STRUCT_ARRAY_TRANSF_HPP_
 
+#define SEQUENCE_MAX_SIZE 100
+
 #include <dds/dds.hpp>
 
 /**
@@ -41,15 +43,6 @@ public:
             std::vector<dds::sub::SampleInfo *> &info_seq);
 
 private:
-    template<typename T>
-    bool is_union_or_struct_type_compatible(
-        const dds::core::xtypes::DynamicType & input_type,
-        const dds::core::xtypes::DynamicType & output_type);
-
-    bool are_types_compatible(
-        const dds::core::xtypes::DynamicType & input_type,
-        const dds::core::xtypes::DynamicType & output_type);
-
     void convert_sample(
             dds::core::xtypes::DynamicData & input_sample,
             dds::core::xtypes::DynamicData & output_sample);
@@ -57,6 +50,52 @@ private:
     dds::core::xtypes::DynamicType input_type_info_;
     dds::core::xtypes::DynamicType output_type_info_;
 };
+
+
+/**
+ *  @class Array2SequenceTransformation
+ *
+ * @brief implementation of the Transformation.
+ *
+ * This transformation replaces arrays of any type with sequences
+ */
+class Array2SequenceTransformation
+        : public rti::routing::transf::DynamicDataTransformation {
+public:
+    Array2SequenceTransformation(
+            const rti::routing::TypeInfo &input_type_info,
+            const rti::routing::TypeInfo &output_type_info,
+            const rti::routing::PropertySet &properties);
+
+    void transform(
+            std::vector<dds::core::xtypes::DynamicData *> &output_sample_seq,
+            std::vector<dds::sub::SampleInfo *> &output_info_seq,
+            const std::vector<dds::core::xtypes::DynamicData *>
+                    &input_sample_seq,
+            const std::vector<dds::sub::SampleInfo *> &input_info_seq);
+
+    void return_loan(
+            std::vector<dds::core::xtypes::DynamicData *> &sample_seq,
+            std::vector<dds::sub::SampleInfo *> &info_seq);
+
+private:
+    void convert_sample(
+            dds::core::xtypes::DynamicData & input_sample,
+            dds::core::xtypes::DynamicData & output_sample);
+
+    dds::core::xtypes::DynamicType input_type_info_;
+    dds::core::xtypes::DynamicType output_type_info_;
+};
+
+
+template<typename T>
+    static bool is_union_or_struct_type_compatible(
+        const dds::core::xtypes::DynamicType & input_type,
+        const dds::core::xtypes::DynamicType & output_type);
+
+    static bool are_types_compatible(
+        const dds::core::xtypes::DynamicType & input_type,
+        const dds::core::xtypes::DynamicType & output_type);
 
 
 /**
@@ -91,6 +130,37 @@ public:
             rti::routing::transf::Transformation *transformation);
 };
 
+/**
+ * @class Array2SequenceTransformationPlugin
+ *
+ * @brief This class will be used by Routing Service to create and initialize
+ * our custom Transformation Subclass. In this example, that class is
+ * Array2SequenceTransformation.
+ *
+ * This class must use the macro
+ * RTI_TRANSFORMATION_PLUGIN_CREATE_FUNCTION_DECL(classname) in order to
+ * create a C wrapper function that will be the dynamic library entry point
+ * used by Routing Service.
+ *
+ */
+
+class Array2SequenceTransformationPlugin
+        : public rti::routing::transf::TransformationPlugin {
+public:
+    Array2SequenceTransformationPlugin(
+            const rti::routing::PropertySet &properties);
+
+    /*
+     * @brief Creates an instance of Sequence2ArrayTransformation
+     */
+    rti::routing::transf::Transformation *create_transformation(
+            const rti::routing::TypeInfo &input_type_info,
+            const rti::routing::TypeInfo &output_type_info,
+            const rti::routing::PropertySet &properties);
+
+    void delete_transformation(
+            rti::routing::transf::Transformation *transformation);
+};
 
 /**
  * This macro defines a C-linkage symbol that can be used as create function
@@ -100,8 +170,10 @@ public:
  *
  * \code
  * Sequence2ArrayTransformationPlugin_create_transformation_plugin
+ * Array2SequenceTransformationPlugin_create_transformation_plugin
  * \endcode
  */
 RTI_TRANSFORMATION_PLUGIN_CREATE_FUNCTION_DECL(Sequence2ArrayTransformationPlugin)
+RTI_TRANSFORMATION_PLUGIN_CREATE_FUNCTION_DECL(Array2SequenceTransformationPlugin)
 
 #endif /* STRUCT_ARRAY_TRANSF_HPP_ */

@@ -1,0 +1,29 @@
+enum NewEnum1 {
+  ENUM_VALUE_1,
+  ENUM_VALUE_2,
+  ENUM_VALUE_3
+};
+
+struct NewStruct1 {
+  string member1;
+  double member2;
+  int8 member3;
+  NewEnum1 member4;
+};
+
+union NewUnion1Array switch(NewEnum1) {
+  case ENUM_VALUE_1:   uint16 NewMember1;
+  case ENUM_VALUE_2:   boolean NewMember2;
+  default:   NewStruct1 NewMember3[5];
+};
+
+struct MyTypeWithArrays {
+  NewStruct1 member1[5];
+  NewEnum1 member2[5];
+  NewUnion1Array member3[5];
+  sequence<NewStruct1, 2> member4;
+  NewStruct1 member5;
+  uint64 member6;
+  NewEnum1 member7;
+};
+

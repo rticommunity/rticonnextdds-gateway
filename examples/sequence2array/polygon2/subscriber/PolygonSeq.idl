@@ -1,0 +1,12 @@
+struct point {
+  int32 x;
+  int32 y;
+};
+
+struct polygonSeq {
+  sequence<point> polygon;
+};
+
+struct polygonSetSeq {
+  sequence<polygonSeq> severalPolygons;
+};
