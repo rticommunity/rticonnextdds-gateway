@@ -8,7 +8,10 @@ interface with DDS, establishing communication from and to DDS.
 RTI Connext Gateway provides an open framework based on the RTI Routing Service SDK
 that enables users to easily add communication protocols as needed, in addition
 to any other protocol implementations that may be included as part of the
-framework.  There's another example in this repository: https://github.com/rticommunity/rticonnextdds-dnp3
+framework.
+
+*NOTE*: A Routing Service adapter between DDS and DNP3 can be found in this
+repository: https://github.com/rticommunity/rticonnextdds-dnp3
 
 ## Installation
 
