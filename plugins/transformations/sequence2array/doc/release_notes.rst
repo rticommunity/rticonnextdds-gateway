@@ -5,6 +5,11 @@
 Release Notes
 =============
 
+New features (June 2024)
+-----------------------------
+
+#. Support for array to sequence transformation.
+
 Supported Platforms
 --------------------
 
