@@ -403,18 +403,17 @@ void Sequence2ArrayTransformation::convert_sample(
 
             // Check that the size of the ouput array is enough
             if (input_loaned_member.get().member_count() > array_type.total_element_count()) {
-                std::string error("not enough space to copy output field");
-                        // CAN'T GET TYPE NAME ERROR
-                        /*
-                        + output_loaned_member.get().type().name()
-                        + "> (max size <"
-                        + std::to_string(array_type.total_element_count())
-                        + ">) into input field <"
-                        + input_loaned_member.get().type().name()
-                        + "> (actual size <"
-                        + std::to_string(input_loaned_member.get().member_count())
-                        + ">).");
-                        */
+                std::string error("not enough space to copy input sequence from <"
+                    + input_sample.type().name()
+                    + "> (element index <"
+                    + std::to_string(member_to_process)
+                    + "> actual size <"
+                    + std::to_string(input_loaned_member.get().member_count())
+                    + ">) into output array in <"
+                    + output_sample.type().name()
+                    + "> (max size <"
+                    + std::to_string(array_type.total_element_count())
+                    + ">).");
                 throw std::runtime_error(error);
             }
 
@@ -518,18 +517,17 @@ void Array2SequenceTransformation::convert_sample(
 
             // Check that the bounds of the ouput sequence is enough
             if (input_loaned_member.get().member_count() > sequence_type.bounds()) {
-                std::string error("not enough space to copy output field");
-                        // CAN'T GET TYPE NAME ERROR
-                        /*
-                        + output_loaned_member.get().type().name()
-                        + "> (max size <"
-                        + std::to_string(sequence_type.bounds())
-                        + ">) into input field <"
-                        + input_loaned_member.get().type().name()
-                        + "> (actual size <"
-                        + std::to_string(input_loaned_member.get().member_count())
-                        + ">).");
-                        */
+                std::string error("not enough space to copy input array from <"
+                    + input_sample.type().name()
+                    + "> (element index <"
+                    + std::to_string(member_to_process)
+                    + "> array size <"
+                    + std::to_string(input_loaned_member.get().member_count())
+                    + ">) into output sequence in <"
+                    + output_sample.type().name()
+                    + "> (bounds <"
+                    + std::to_string(sequence_type.bounds())
+                    + ">).");
                 throw std::runtime_error(error);
             }
 
