@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://community.rti.com/static/schemas/rticonnextdds-gateway/current/modbus_adapter_definitions.schema.json",
+    "$id": "https://community.rti.com/static/schemas/rticonnextdds-gateway/latest/modbus_adapter_definitions.schema.json",
     "title": "JSON Schema RTI Connext DDS Modbus Adapter",
     "description": "This schema defines the syntax to represent the common configuration for the RTI DDS Connext DDS Modbus Adapter",
     "definitions" : {
