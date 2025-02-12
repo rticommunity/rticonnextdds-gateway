@@ -18,6 +18,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <climits>
 
 namespace rti { namespace utils { namespace long_double {
 
