@@ -454,12 +454,6 @@ static DDS_ReturnCode_t RTI_MQTT_Client_create_publication_requests(
         goto done;
     }
 
-    RTI_MQTT_LOG_2(
-        "PUB-REQ created",
-        "pub->req_ctx=%p, pub->req=%p",
-        &pub->req_ctx,
-        pub->req)
-
     retcode = DDS_RETCODE_OK;
 
 done:
