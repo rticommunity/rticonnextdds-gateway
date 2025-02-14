@@ -560,31 +560,6 @@ void *RTI_MQTT_ClientMqttApi_Paho_connection_lost_thread(void *arg)
 
     RTI_MQTT_LOG_1("restoring state from connection LOST", "client=%p", self)
 
-    /* When connection is lost, pending requests are not immediately
-     * cancelled by Paho. The requests are finalized (by calling their
-     * error handler) only when the Paho client is deleted and the
-     * associated (MQTT) session is closed. This can lead to a race
-     * condition, if connection is lost e.g. while subscriptions are being
-     * submitted. In this case, the request state might have been already
-     * deleted when Paho calls the error handler. To avoid crazy attempts
-     * to provide safety in all cases, we force triggering of the error
-     * handler for all currently pending requests by forcing deletion of
-     * the session. The only way to do that is to delete the client and to
-     * recreate it. */
-    RTI_MQTT_Mutex_assert_w_state(&self->mqtt_lock, &locked);
-
-    if (DDS_RETCODE_OK != RTI_MQTT_ClientMqttApi_delete_client(self)) {
-        RTI_MQTT_ERROR_1("failed to delete MQTT Client:", "client=%p", self)
-        goto done;
-    }
-
-    if (DDS_RETCODE_OK != RTI_MQTT_ClientMqttApi_create_client(self)) {
-        RTI_MQTT_ERROR_1("failed to create MQTT Client:", "client=%p", self)
-        goto done;
-    }
-
-    RTI_MQTT_Mutex_release_w_state(&self->mqtt_lock, &locked);
-
     if (DDS_RETCODE_OK != RTI_MQTT_Client_on_connection_lost(self)) {
         /* TODO Log error */
         goto done;

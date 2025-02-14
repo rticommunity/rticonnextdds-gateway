@@ -190,6 +190,9 @@
 #define RTI_MQTT_LOG_CLIENT_PAHO_C_CONNECT_FAILED(c_) \
     RTI_MQTT_ERROR_1("failed to connect using Paho C:","client=%p",(c_))
 
+#define RTI_MQTT_LOG_CLIENT_PAHO_C_RECONNECT_FAILED(c_) \
+    RTI_MQTT_ERROR_1("failed to reconnect using Paho C:","client=%p",(c_))
+
 #define RTI_MQTT_LOG_CLIENT_PAHO_C_DISCONNECT_FAILED(c_) \
     RTI_MQTT_ERROR_1("failed to disconnect using Paho C:","client=%p",(c_))
 

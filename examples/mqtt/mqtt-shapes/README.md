@@ -214,15 +214,15 @@ demo on your system.
     ```sh
     sudo apt install mosquitto mosquitto-clients
     # Stop broker and disable automatic execution
-    sudo service mosquitto stop
-    sudo service mosquitto disable
+    sudo systemctl stop mosquitto
+    sudo systemctl disable mosquitto
     ```
 
 3. On Linux and macOS systems, optionally, you can also install `tmux` in order
    to spawn all components in a single window split into multiple panes:
 
     ```sh
-    apt install tmux
+    sudo apt install tmux
     ```
 
 ## Running
@@ -260,8 +260,8 @@ Configuration steps:
     Kill `mosquitto` if it is already running:
 
     ```sh
-    sudo service mosquitto stop
-    sudo service mosquitto disable
+    sudo systemctl stop mosquitto
+    sudo systemctl disable mosquitto
     ```
 
     or

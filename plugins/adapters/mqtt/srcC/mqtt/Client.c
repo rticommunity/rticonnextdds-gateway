@@ -38,8 +38,6 @@ static RTI_MQTT_ClientStateKind
 #define RTI_MQTT_Client_get_state(c_) \
     (((c_) != NULL) ? (c_)->data->state : RTI_MQTT_ClientStateKind_ERROR)
 
-static DDS_ReturnCode_t RTI_MQTT_Client_reconnect(struct RTI_MQTT_Client *self);
-
 static DDS_ReturnCode_t
         RTI_MQTT_Client_submit_all_subscriptions(struct RTI_MQTT_Client *self);
 
@@ -456,6 +454,12 @@ static DDS_ReturnCode_t RTI_MQTT_Client_create_publication_requests(
         goto done;
     }
 
+    RTI_MQTT_LOG_2(
+        "PUB-REQ created",
+        "pub->req_ctx=%p, pub->req=%p",
+        &pub->req_ctx,
+        pub->req)
+
     retcode = DDS_RETCODE_OK;
 
 done:
@@ -602,16 +606,8 @@ DDS_ReturnCode_t
 
     RTI_MQTT_ERROR_1("connection LOST", "client=%p", self)
 
-    RTI_MQTT_Mutex_assert_w_state(&self->cfg_lock, &locked) if (
-            RTI_MQTT_Client_get_state(self)
-            != RTI_MQTT_ClientStateKind_CONNECTED)
-    {
-        retcode = DDS_RETCODE_OK;
-        goto done;
-    }
-    RTI_MQTT_Mutex_release_w_state(&self->cfg_lock, &locked)
-
-            if (DDS_RETCODE_OK
+    RTI_MQTT_Mutex_assert_w_state(&self->cfg_lock, &locked)
+    if (DDS_RETCODE_OK
                 != RTI_MQTT_Client_set_state(
                         self,
                         RTI_MQTT_ClientStateKind_DISCONNECTED,
@@ -621,10 +617,21 @@ DDS_ReturnCode_t
         goto done;
     }
 
-    /* Try to re-establish a connection */
-    if (DDS_RETCODE_OK != RTI_MQTT_Client_reconnect(self)) {
-        RTI_MQTT_LOG_CLIENT_RECONNECT_FAILED(self)
-        goto done;
+    while (1) {
+        RTI_MQTT_Mutex_release_w_state(&self->cfg_lock, &locked)
+        /* Try to re-establish a connection */
+        RTI_MQTT_LOG("attempting reconnection to broker...")
+        if (DDS_RETCODE_OK != RTI_MQTT_Client_connect(self)) {
+            RTI_MQTT_LOG_CLIENT_RECONNECT_FAILED(self)
+        }
+        RTI_MQTT_Mutex_assert_w_state(&self->cfg_lock, &locked)
+        if (RTI_MQTT_Client_get_state(self)
+                == RTI_MQTT_ClientStateKind_CONNECTED)
+        {
+            RTI_MQTT_LOG("reconnection successful.")
+            retcode = DDS_RETCODE_OK;
+            goto done;
+        }
     }
 
     retcode = DDS_RETCODE_OK;
@@ -632,7 +639,7 @@ DDS_ReturnCode_t
 done:
     RTI_MQTT_Mutex_release_from_state(&self->cfg_lock, &locked)
 
-            if (retcode != DDS_RETCODE_OK)
+    if (retcode != DDS_RETCODE_OK)
     {
         if (DDS_RETCODE_OK
             != RTI_MQTT_Client_set_state(
@@ -801,7 +808,19 @@ static void RTI_MQTT_Client_on_connection_result(
     }
 #endif /* RTI_MQTT_USE_LOG */
 
-    RTI_MQTT_Client_handle_request_result(req, result);
+    // The adapter might have lost connection.
+    // In that case, trigger recovery path, unless
+    // we're configured to not reconnect
+    if (RTI_MQTT_Client_get_state(req->client)
+            == RTI_MQTT_ClientStateKind_CONNECTED
+        && result != DDS_RETCODE_OK
+        && req->client->data->config->reconnect) {
+        RTI_MQTT_ClientMqttApi_Paho_on_connection_lost(
+            req->client,
+            "connection ERROR");
+    } else {
+        RTI_MQTT_Client_handle_request_result(req, result);
+    }
 }
 
 static void RTI_MQTT_Client_on_disconnection_result(
@@ -1039,7 +1058,10 @@ DDS_ReturnCode_t RTI_MQTT_Client_connect(struct RTI_MQTT_Client *self)
 {
     DDS_ReturnCode_t retval = DDS_RETCODE_ERROR;
     DDS_Boolean cond_triggered = DDS_BOOLEAN_FALSE,
-                wait_timedout = DDS_BOOLEAN_FALSE, locked = DDS_BOOLEAN_FALSE;
+                wait_timedout = DDS_BOOLEAN_FALSE,
+                locked = DDS_BOOLEAN_FALSE,
+                connecting = DDS_BOOLEAN_FALSE,
+                connected = DDS_BOOLEAN_FALSE;
     DDS_UnsignedLong tot_servers = 0;
     RTI_MQTT_ClientStateKind client_state = RTI_MQTT_ClientStateKind_ERROR;
 
@@ -1053,9 +1075,7 @@ DDS_ReturnCode_t RTI_MQTT_Client_connect(struct RTI_MQTT_Client *self)
         goto done;
     }
 
-    if (RTI_MQTT_Client_get_state(self) == RTI_MQTT_ClientStateKind_CONNECTING
-        || RTI_MQTT_Client_get_state(self)
-                == RTI_MQTT_ClientStateKind_DISCONNECTING) {
+    if (RTI_MQTT_Client_get_state(self) != RTI_MQTT_ClientStateKind_DISCONNECTED) {
         RTI_MQTT_ERROR_2(
                 "invalid client state for connection:",
                 "client=%p, state=%s",
@@ -1073,6 +1093,8 @@ DDS_ReturnCode_t RTI_MQTT_Client_connect(struct RTI_MQTT_Client *self)
         /* TODO Log error */
         goto done;
     }
+
+    connecting = DDS_BOOLEAN_TRUE;
     RTI_MQTT_Mutex_release_w_state(&self->cfg_lock, &locked);
 
     if (DDS_RETCODE_OK != RTI_MQTT_ClientMqttApi_connect(self)) {
@@ -1086,13 +1108,10 @@ DDS_ReturnCode_t RTI_MQTT_Client_connect(struct RTI_MQTT_Client *self)
         goto done;
     }
 
-    /* We always resubmit current subscriptions to make sure they exist
-       on the broker. */
-    if (DDS_RETCODE_OK != RTI_MQTT_Client_submit_all_subscriptions(self)) {
-        RTI_MQTT_LOG_CLIENT_SUBMIT_SUBSCRIPTIONS_FAILED(self)
-        goto done;
-    }
+    connecting = DDS_BOOLEAN_FALSE;
+    connected = DDS_BOOLEAN_TRUE;
 
+    RTI_MQTT_Mutex_assert_w_state(&self->cfg_lock, &locked);
     if (DDS_RETCODE_OK
         != RTI_MQTT_Client_set_state(
                 self,
@@ -1101,10 +1120,34 @@ DDS_ReturnCode_t RTI_MQTT_Client_connect(struct RTI_MQTT_Client *self)
         /* TODO Log error */
         goto done;
     }
+    RTI_MQTT_Mutex_release_w_state(&self->cfg_lock, &locked);
     RTI_MQTT_LOG_1("client CONNECTED", "client=%p", self)
+
+    /* We always resubmit current subscriptions to make sure they exist
+       on the broker. */
+    if (DDS_RETCODE_OK != RTI_MQTT_Client_submit_all_subscriptions(self)) {
+        RTI_MQTT_LOG_CLIENT_SUBMIT_SUBSCRIPTIONS_FAILED(self)
+        goto done;
+    }
 
     retval = DDS_RETCODE_OK;
 done:
+    if (retval != DDS_RETCODE_OK) {
+        if (connected) {
+            if (DDS_RETCODE_OK != RTI_MQTT_Client_disconnect(self)) {
+                /* TODO Log error */
+            }
+        } else if (connecting) {
+            RTI_MQTT_Mutex_assert_w_state(&self->cfg_lock, &locked);
+            if (DDS_RETCODE_OK
+                != RTI_MQTT_Client_set_state(
+                        self,
+                        RTI_MQTT_ClientStateKind_DISCONNECTED,
+                        NULL)) {
+                /* TODO Log error */
+            }
+        }
+    }
     RTI_MQTT_Mutex_release_from_state(&self->cfg_lock, &locked);
 
     return retval;
@@ -1819,47 +1862,6 @@ done:
         RTI_MQTT_SubscriptionParamsSeq_set_length(params, 0);
     }
     return retcode;
-}
-
-static DDS_ReturnCode_t RTI_MQTT_Client_reconnect(struct RTI_MQTT_Client *self)
-{
-    DDS_ReturnCode_t retval = DDS_RETCODE_ERROR;
-    RTI_MQTT_ClientStateKind client_state = RTI_MQTT_Client_get_state(self);
-    DDS_Boolean locked = DDS_BOOLEAN_FALSE;
-
-    RTI_MQTT_LOG_FN(RTI_MQTT_Client_reconnect)
-
-#if 0
-    /* This function can only be called while the client is connected
-       to the Broker (or just thinks it still is) */
-    if (client_state != RTI_MQTT_ClientStateKind_CONNECTED)
-    {
-        RTI_MQTT_LOG_UNEXPECTED_CLIENT_STATE_DETECTED(
-                    self, RTI_MQTT_ClientStateKind_CONNECTED, client_state)
-        goto done;
-    }
-#endif
-
-    RTI_MQTT_Mutex_assert_w_state(&self->cfg_lock, &locked);
-
-    /* If we're configured to not reconnect, we do nothing and exit */
-    if (!self->data->config->reconnect) {
-        RTI_MQTT_LOG_1("SKIP reconnect:", "client=%s", self->data->config->id)
-        retval = DDS_RETCODE_OK;
-        goto done;
-    }
-
-    RTI_MQTT_Mutex_release_w_state(&self->cfg_lock, &locked);
-
-    if (DDS_RETCODE_OK != RTI_MQTT_Client_connect(self)) {
-        /* TODO Log error */
-        goto done;
-    }
-
-    retval = DDS_RETCODE_OK;
-done:
-    RTI_MQTT_Mutex_release_from_state(&self->cfg_lock, &locked);
-    return retval;
 }
 
 static DDS_ReturnCode_t
