@@ -17,6 +17,7 @@
 #define UTILSLONGDOUBLE_HPP
 
 #include <cstdint>
+#include <climits>
 #include <iostream>
 
 namespace rti { namespace utils { namespace long_double {
