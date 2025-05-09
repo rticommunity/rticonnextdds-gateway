@@ -48,7 +48,7 @@ The following figure presents the overall architecture of the example scenario.
 
 ## Run Kafka infrastructure components
 To run this example, the following Kafka components are required to run.
-- ZooKeeper
+- ZooKeeper (or Kafka using KRaft)
 - Kafka Broker
 - Confluent Control Center (only with Docker Compose option)
 
@@ -61,18 +61,28 @@ infrastructure components: 1) Script option 2) Docker Compose option
    [Download](https://kafka.apache.org/quickstart) the latest Kafka release and
    extract it:
     ```sh
-    $ tar -xzf kafka_2.13-2.8.0.tgz
-    $ cd kafka_2.13-2.8.0
+    $ tar -xzf kafka_2.13-4.0.0.tgz
+    $ cd kafka_2.13-4.0.0
 
     ```
 
 2. Run Kafka infrastructure components:
    Run the following commands in order to start all services in the correct
    order:
+   (Optional, only if using ZooKeeper)
     ```sh
     # Start the ZooKeeper service
     # Note: Soon, ZooKeeper will no longer be required by Apache Kafka.
     $ bin/zookeeper-server-start.sh config/zookeeper.properties
+    ```
+
+   (Optional, if using KRaft)
+   Modify `<Kafka installation path>/config/server.properties` by adding
+   `controller.quorum.voters=1@localhost:9093` at the end of the file.
+
+    ```sh
+    # Initialize metadata log and creates meta.properties
+    ./bin/kafka-storage.sh format -t $(./bin/kafka-storage.sh random-uuid) -c config/kraft/server.properties
     ```
 
    Open another terminal session and run:
@@ -122,7 +132,7 @@ infrastructure components: 1) Script option 2) Docker Compose option
 
 1. Get the Docker Compose file.
    You can get the Docker Compose file provided by Confluent at
-   [this link](https://github.com/confluentinc/cp-all-in-one/tree/6.2.0-post/cp-all-in-one).
+   [this link](https://github.com/confluentinc/cp-all-in-one/tree/7.9.0-post/cp-all-in-one).
 
 2. Run Kafka infrastructure components:
    Please install [Docker Engine](https://docs.docker.com/engine/install) and
