@@ -5,6 +5,11 @@
 Release Notes
 =============
 
+New Features (May 2024)
+-----------------------
+
+#. Updated librdkafka to version 2.10.0
+
 Supported Platforms
 -------------------
 
