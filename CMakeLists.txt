@@ -48,6 +48,14 @@ rtigw_add_plugin(
     PLUGIN_TYPE "ADAPTER"
 )
 
+rtigw_add_plugin(
+    ENABLE_PLUGIN RTIGATEWAY_ENABLE_DATA_DIODE
+    PREFIX "RTI_DATA_DIODE"
+    STAGING_DIR "data-diode"
+    PLUGIN_DIR_NAME "data-diode"
+    PLUGIN_TYPE "ADAPTER"
+)
+
 # Adding processors
 rtigw_add_plugin(
     ENABLE_PLUGIN RTIGATEWAY_ENABLE_FWD

@@ -1,0 +1,131 @@
+DynamicData field,|CONF_MODBUS_DATATYPE|,Number of (16-bit) Modbus registers written
+BOOL,COIL_BOOLEAN,"1 |BR|
+(writes coils, not registers)"
+"**Array or Sequence of:** |BR|
+BOOL",COIL_BOOLEAN,"|CONF_MODBUS_REGISTER_COUNT| |BR|
+(writes coils, not registers)"
+"INT8 |BR|
+UINT8 |BR|
+ENUM literals fitting into its type",HOLDING_REGISTER_INT8,1
+"**Array or Sequence of:** |BR|
+INT8 |BR|
+UINT8 |BR|
+ENUM with all literals fitting into its type",HOLDING_REGISTER_INT8,"|CONF_MODBUS_REGISTER_COUNT| |BR|
+|BR|
+If an Array, the size must be exactly |CONF_MODBUS_REGISTER_COUNT| |BR|
+|BR|
+If a Sequence, then the length must be exactly |CONF_MODBUS_REGISTER_COUNT|"
+"INT16 |BR|
+UINT16 |BR|
+ENUM with all literals fitting into its type |BR|
+|BR|
+If |CONF_OUTPUT_DATA_OFFSET| or |CONF_OUTPUT_DATA_FACTOR| are set, the value written to Modbus will be a linear transformation of the DynamicData field value: |BR|
+
+- <register value> = |CONF_OUTPUT_DATA_OFFSET| + |CONF_OUTPUT_DATA_FACTOR| * <field value>
+","HOLDING_REGISTER_INT16 |BR|
+|BR|
+The value will be written to Modbus in big endian order (this is the Modbus standard).",1
+"**Array or Sequence of:** |BR|
+INT16 |BR|
+UINT16 |BR|
+ENUM with all literals fitting into their type
+|BR|
+If |CONF_OUTPUT_DATA_OFFSET| or |CONF_OUTPUT_DATA_FACTOR| are set, then the value written to each Modbus register “i” will be a linear transformation of the DynamicData field value: |BR|
+
+- <register value>[i] = |CONF_OUTPUT_DATA_OFFSET| + |CONF_OUTPUT_DATA_FACTOR| * <field value>[i]
+","HOLDING_REGISTER_INT16 |BR|
+|BR|
+The value will be written to Modbus in big endian order (this is the Modbus standard).","|CONF_MODBUS_REGISTER_COUNT| |BR|
+|BR|
+If an Array, the size must be exactly |CONF_MODBUS_REGISTER_COUNT| |BR|
+|BR|
+If a Sequence, the length must be exactly |CONF_MODBUS_REGISTER_COUNT|"
+"INT32 |BR|
+UINT32 |BR|
+ENUM with all literals fitting into its type |BR|
+|BR|
+If output_data_offset or output_data_factor are set, the value written to Modbus will be a linear transformation of the DynamicData field value: |BR|
+
+- <register value> = |CONF_OUTPUT_DATA_OFFSET| + |CONF_OUTPUT_DATA_FACTOR| * <field value> |BR|
+","HOLDING_REGISTER_INT32 |BR|
+|BR|
+The value will be written to Modbus in big endian order. |BR|
+|BR|
+The 32-bit integer field is written to two consecutive Modbus registers",2
+"INT64 |BR|
+UINT64 |BR|
+|BR|
+If output_data_offset or output_data_factor are set, the value written to Modbus will be a linear transformation of the DynamicData field value: |BR|
+
+- <register value> = |CONF_OUTPUT_DATA_OFFSET| + |CONF_OUTPUT_DATA_FACTOR| * <field value>
+","HOLDING_REGISTER_INT64 |BR|
+|BR|
+The value will be written to Modbus in big endian order. |BR|
+|BR|
+The 64-bit integer field is written to four consecutive Modbus registers",4
+"FLOAT32 |BR|
+|BR|
+If output_data_offset or output_data_factor are set, the value written to Modbus will be a linear transformation of the DynamicData field value: |BR|
+
+- <register value> = |CONF_OUTPUT_DATA_OFFSET| + |CONF_OUTPUT_DATA_FACTOR| * <field value>
+","HOLDING_REGISTER_FLOAT_ABCD |BR|
+HOLDING_REGISTER_FLOAT_BADC |BR|
+HOLDING_REGISTER_FLOAT_CDAB |BR|
+HOLDING_REGISTER_FLOAT_DCBA |BR|
+|BR|
+The float value is written to two consecutive Modbus registers according to the format specified in the suffix. |BR|",2
+"**Array or Sequence of:** |BR|
+INT32 |BR|
+UINT32 |BR|
+ENUM with all literals fitting into its type |BR|
+|BR|
+If output_data_offset or output_data_factor are set. Then the value written to each Modbus register “i” will be a linear transformation of the DynamicData field value: |BR|
+
+- <register value>[i] = |CONF_OUTPUT_DATA_OFFSET| + |CONF_OUTPUT_DATA_FACTOR| * <field value>[i]
+","HOLDING_REGISTER_INT32 |BR|
+|BR|
+The value will be written to Modbus in big endian order. |BR|
+|BR|
+Each 32-bit integer Array/Sequence element is written to 2 consecutive Modbus registers. |BR|","|CONF_MODBUS_REGISTER_COUNT| |BR|
+|BR|
+Note that it must be a multiple of 2. |BR|
+|BR|
+If an Array, the size must be exactly |CONF_MODBUS_REGISTER_COUNT| / 2 |BR|
+|BR|
+If a Sequence, the length must be exactly |CONF_MODBUS_REGISTER_COUNT| / 2"
+"**Array or Sequence of:** |BR|
+INT64 |BR|
+UINT64 |BR|
+|BR|
+If output_data_offset or output_data_factor are set. Then the value written to each Modbus register “i” will be a linear transformation of the DynamicData field value: |BR|
+
+- <register value>[i] = |CONF_OUTPUT_DATA_OFFSET| + |CONF_OUTPUT_DATA_FACTOR| * <field value>[i] |BR|
+","HOLDING_REGISTER_INT64 |BR|
+|BR|
+The value will be written to Modbus in big endian order. |BR|
+|BR|
+Each 64-bit integer Array/Sequence element is written to 4 consecutive Modbus registers. |BR|","|CONF_MODBUS_REGISTER_COUNT| |BR|
+|BR|
+Note that it must be a multiple of 4. |BR|
+|BR|
+If an Array, the size must be exactly |CONF_MODBUS_REGISTER_COUNT| / 4 |BR|
+|BR|
+If a Sequence, the length must be exactly |CONF_MODBUS_REGISTER_COUNT| / 4"
+"**Array or Sequence of:** |BR|
+FLOAT32 |BR|
+|BR|
+If output_data_offset or output_data_factor are set, the value written to each Modbus register “i” will be a linear transformation of the DynamicData field value: |BR|
+
+- <register value>[i] = |CONF_OUTPUT_DATA_OFFSET| + |CONF_OUTPUT_DATA_FACTOR| * <field value>[i]
+","HOLDING_REGISTER_FLOAT_ABCD |BR|
+HOLDING_REGISTER_FLOAT_BADC |BR|
+HOLDING_REGISTER_FLOAT_CDAB |BR|
+HOLDING_REGISTER_FLOAT_DCBA |BR|
+|BR|
+Each 32-bit integer Array/Sequence element is written to two consecutive Modbus registers according to the format specified in the suffix.","|CONF_MODBUS_REGISTER_COUNT| / 2 |BR|
+|BR|
+Note that it must be a multiple of 2. |BR|
+|BR|
+If an Array, the size must be exactly |CONF_MODBUS_REGISTER_COUNT| / 2 |BR|
+|BR|
+If a Sequence, the length must be exactly |CONF_MODBUS_REGISTER_COUNT| / 2"
