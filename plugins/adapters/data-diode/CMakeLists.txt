@@ -17,14 +17,13 @@ set(RSPLUGIN_LIB_NAME "rtidatadiodeadapter")
 
 add_library(${RSPLUGIN_LIB_NAME}
     SHARED
-        "${JSON_PARSER_DIR}/json.c"
         "${DDS_COMMON_DIR}/srcCxx/DynamicDataHelpers.cxx"
-        "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/ModbusAdapter.cxx"
-        "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/ModbusAdapterConfiguration.cxx"
-        "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/ModbusConnection.cxx"
-        "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/ModbusStreamWriter.cxx"
-        "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/ModbusStreamReader.cxx"
-        "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/LibModbusClient.cxx"
+        "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/SocketAdapter.cxx"
+        "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/SocketConnection.cxx"
+        "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/SocketInputDiscoveryStreamReader.cxx"
+        "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/SocketStreamWriter.cxx"
+        "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/SocketStreamReader.cxx"
+        "${CMAKE_CURRENT_SOURCE_DIR}/srcCxx/UdpSocketUtils.cxx"
 )
 
 set_target_properties(${RSPLUGIN_LIB_NAME} PROPERTIES DEBUG_POSTFIX "d")
