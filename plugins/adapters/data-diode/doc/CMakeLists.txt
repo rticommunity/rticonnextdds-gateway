@@ -18,8 +18,8 @@ cmake_minimum_required (VERSION 3.5)
 include("${RTICMAKE_COMMON_DIR}/CommonFunctions.cmake")
 
 rtigw_generate_doc(
-    PLUGIN "Modbus Adapter"
-    TARGET modbus-adapter-doc
+    PLUGIN "Data diode Adapter"
+    TARGET datadiode-adapter-doc
     INPUT "${CMAKE_CURRENT_SOURCE_DIR}"
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}"
     DEPENDS

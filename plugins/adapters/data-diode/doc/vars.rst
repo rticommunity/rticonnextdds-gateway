@@ -1,24 +1,24 @@
 .. include:: ../../../../doc/vars.rst
 
-.. |RSMODBUS_TM| replace:: |RTI_RS_TM| *Modbus® Adapter*
-.. |RTI_RSMODBUS| replace:: |RTI_RS| *Modbus Adapter*
-.. |MODBUS_CLIENT| replace:: *Modbus Client*
-.. |MODBUS_CLIENTs| replace:: *Modbus Clients*
-.. |MODBUS_SERVER| replace:: *Modbus Server*
-.. |MODBUS_DEVICE| replace:: *Modbus Device*
-.. |MODBUS_DEVICEs| replace:: *Modbus Devices*
-.. |MODBUS_ADAPTER_LIB_NAME_LINUX| replace:: ``librtidatadiodeadapter.so``
-.. |MODBUS_ADAPTER_LIB_NAME_MAC| replace:: ``librtidatadiodeadapter.dylib``
-.. |MODBUS_ADAPTER_LIB_NAME_WIN| replace:: ``rtidatadiodeadapter.dll``
+.. |DATADIODE_NAME| replace:: *Data diode Adapter*
+.. |RTI_RSDATADIODE| replace:: |RTI_RS| *Data Diode Adapter*
+.. |DATADIODE_CLIENT| replace:: *Data Diode Client*
+.. |DATADIODE_CLIENTs| replace:: *Data Diode Clients*
+.. |DATADIODE_SERVER| replace:: *Data Diode Server*
+.. |DATADIODE_DEVICE| replace:: *Data Diode Device*
+.. |DATADIODE_DEVICEs| replace:: *Data Diode Devices*
+.. |DATADIODE_ADAPTER_LIB_NAME_LINUX| replace:: ``librtidatadiodeadapter.so``
+.. |DATADIODE_ADAPTER_LIB_NAME_MAC| replace:: ``librtidatadiodeadapter.dylib``
+.. |DATADIODE_ADAPTER_LIB_NAME_WIN| replace:: ``rtidatadiodeadapter.dll``
 .. |CONF_FIELD| replace:: *field*
 .. |CONF_VALUE| replace:: *value*
-.. |CONF_MODBUS_REGISTER_ADDRESS| replace:: *modbus_register_address*
-.. |CONF_MODBUS_REGISTER_COUNT| replace:: *modbus_register_count*
-.. |CONF_MODBUS_DATATYPE| replace:: *modbus_datatype*
-.. |CONF_MODBUS_SLAVE_DEVICE_ID| replace:: *modbus_slave_device_id*
-.. |CONF_MODBUS_MIN_VALUE| replace:: *modbus_min_value*
-.. |CONF_MODBUS_MAX_VALUE| replace:: *modbus_max_value*
-.. |CONF_MODBUS_VALID_VALUES| replace:: *modbus_valid_values*
+.. |CONF_DATADIODE_REGISTER_ADDRESS| replace:: *datadiode_register_address*
+.. |CONF_DATADIODE_REGISTER_COUNT| replace:: *datadiode_register_count*
+.. |CONF_DATADIODE_DATATYPE| replace:: *datadiode_datatype*
+.. |CONF_DATADIODE_SLAVE_DEVICE_ID| replace:: *datadiode_slave_device_id*
+.. |CONF_DATADIODE_MIN_VALUE| replace:: *datadiode_min_value*
+.. |CONF_DATADIODE_MAX_VALUE| replace:: *datadiode_max_value*
+.. |CONF_DATADIODE_VALID_VALUES| replace:: *datadiode_valid_values*
 .. |CONF_INPUT_DATA_FACTOR| replace:: *input_data_factor*
 .. |CONF_INPUT_DATA_OFFSET| replace:: *input_data_offset*
 .. |CONF_OUTPUT_DATA_FACTOR| replace:: *ouput_data_factor*

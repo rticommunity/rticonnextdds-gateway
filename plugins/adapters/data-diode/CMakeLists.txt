@@ -41,7 +41,6 @@ target_include_directories(${RSPLUGIN_LIB_NAME}
 target_link_libraries(${RSPLUGIN_LIB_NAME}
     PRIVATE
         RTIConnextDDS::routing_service_cpp2
-        modbus
 )
 
 # Stagging targets

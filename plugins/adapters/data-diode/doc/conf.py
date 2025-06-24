@@ -45,8 +45,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'RTI Routing Service Modbus Adapter'
-copyright = '2020, Real-Time Innovations, Inc'
+project = 'RTI Routing Service Data Diode Adapter'
+copyright = '2025, Real-Time Innovations, Inc'
 author = 'Real-Time Innovations, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -123,7 +123,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'RTIConnextGatewayModbusDoc'
+htmlhelp_basename = 'RTIConnextGatewayDataDiodeDoc'
 
 rst_epilog = """
 .. |version| replace:: {0}

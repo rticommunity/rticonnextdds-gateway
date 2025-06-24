@@ -5,26 +5,18 @@
 Introduction
 ============
 
-|RSMODBUS_TM| is a plugin for |RTI_RS| that enables communication between
-*Modbus* and *DDS* applications.
+|DATADIODE_NAME| is a plugin for |RTI_RS| that enables communication through a data diode.
 
-Using |RSMODBUS|, |RS| can act as a |MODBUS_CLIENT|, connect to a
-|MODBUS_SERVER|, send requests to write or read holding
-registers and coils, or read input registers or discrete inputs.
+To achieve this, |DATADIODE_NAME| serializes DDS data and sends it through a UDP socket.
+At the other end, another instance of |DATADIODE_NAME| deserializes the data and
+publishes it to a DDS domain.
 
-You can configure |RS| to route data between multiple |DDS_DOMAINS| and
-|MODBUS_DEVICEs|.
+.. _section-udp-socket:
 
-.. _section-adapter-registers-addresses:
-
-This document assumes you have a basic understanding of the MODBUS protocol,
-DDS and Routing Service, and their terminology.
-
-Modbus Registers and Addresses
+UDP sockets
 ------------------------------
 
-|RSMODBUS| differentiates between a "register address" and a "register number".
-Register addresses use a 0-based index; register numbers use a 1-based index.
+|DATADIODE_NAME| requires some socket configuration that is accesible through the |RS| file.
 
-Throughout this documentation, only "register address" is used. Therefore,
-code snippets and examples will consider the register 0 as a valid register.
+
+

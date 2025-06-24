@@ -117,6 +117,7 @@ information on its use and configuration:
     * `Modbus® <adapters/modbus/index.html>`__ : Integration plugin for the MODBUS protocol.
     * `MQTT <adapters/mqtt/index.html>`__ : Integration plugin for the MQTT protocol.
     * `Kafka® <adapters/kafka/index.html>`__ : Integration plugin for the Kafka protocol.
+    * `Data Diode <adapters/data-diode/index.html>`__ : Integration plugin for creating a Data Diode.
 
   * Processors
 
