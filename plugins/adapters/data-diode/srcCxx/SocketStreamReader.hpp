@@ -27,7 +27,8 @@
 #define RECEIVE_ADDRESS_STRING "receive_address"
 #define RECEIVE_PORT_STRING "receive_port"
 
-class SocketStreamReader : public rti::routing::adapter::DynamicDataStreamReader {
+class SocketStreamReader
+        : public rti::routing::adapter::DynamicDataStreamReader {
 public:
     SocketStreamReader(
             SocketConnection *connection,
@@ -70,27 +71,11 @@ private:
 
     std::ifstream input_socket_stream_;
     std::string receive_address_;
-    char received_buffer_[BUFFER_MAX_SIZE]; // Value that's high enough
+    char received_buffer_[BUFFER_MAX_SIZE];  // Value that's high enough
     int received_bytes_;
 
     rti::routing::StreamInfo stream_info_;
     dds::core::xtypes::DynamicType *adapter_type_;
-
-    struct ShapeType {
-        int x;
-        int y;
-        int shapesize;
-    };
-	struct doNothing {
-		RTI_INT32 CountUp;
-		RTI_INT32 CountDown;
-		RTI_INT32 Pause;
-		//dds::core::optional<RTI_UINT32>ObjectId;
-		RTI_UINT32 ObjectId;
-	};
-    
-
-    void print_shape(ShapeType shape);
 };
 
 #endif

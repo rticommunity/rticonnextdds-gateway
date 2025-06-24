@@ -16,12 +16,12 @@
     #include <winsock2.h>
     #include <ws2tcpip.h>
 #else
-    #include <sys/socket.h>
-    #include <netinet/in.h>
     #include <arpa/inet.h>
-    #include <unistd.h>
-    #include <fcntl.h>
     #include <cstring>
+    #include <fcntl.h>
+    #include <netinet/in.h>
+    #include <sys/socket.h>
+    #include <unistd.h>
 #endif
 
 #include <iostream>
@@ -32,24 +32,24 @@
 
 class UdpSocket {
 public:
-    UdpSocket(const char* ip, int port);
+    UdpSocket(const char *ip, int port);
     ~UdpSocket();
     void receive_data(
-            char* received_buffer,
-            int* received_bytes,
+            char *received_buffer,
+            int *received_bytes,
             int size_of_original_buffer);
     int send_data(
-            char* tx_buffer, 
-            int tx_length, 
-            const char* destAddr,
-			int destPort);        
+            char *tx_buffer,
+            int tx_length,
+            const char *destAddr,
+            int destPort);
 
 private:
     int sockfd;
     struct sockaddr_in server_addr, client_addr;
 
     void init_socket();
-    void bind_socket(const char* ip, int port);
+    void bind_socket(const char *ip, int port);
 };
 
 #endif

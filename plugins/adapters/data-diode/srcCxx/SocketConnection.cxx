@@ -10,10 +10,10 @@
  * use or inability to use the software.
  */
 
-#include <rti/routing/Logger.hpp>
 #include "SocketConnection.hpp"
 #include "SocketStreamReader.hpp"
 #include "SocketStreamWriter.hpp"
+#include <rti/routing/Logger.hpp>
 
 using namespace rti::routing;
 using namespace rti::routing::adapter;
@@ -22,10 +22,9 @@ SocketConnection::SocketConnection(
         StreamReaderListener *input_stream_discovery_listener,
         StreamReaderListener *output_stream_discovery_listener,
         const PropertySet &properties)
-        : input_discovery_reader_(
-                properties,
-                input_stream_discovery_listener) {};
-		
+        : input_discovery_reader_(properties, input_stream_discovery_listener) {
+          };
+
 
 StreamReader *SocketConnection::create_stream_reader(
         Session *session,
@@ -33,7 +32,7 @@ StreamReader *SocketConnection::create_stream_reader(
         const PropertySet &properties,
         StreamReaderListener *listener)
 {
-    //Logger::instance().local("********Creating Stream Reader*********"); 
+    // Logger::instance().local("********Creating Stream Reader*********");
     return new SocketStreamReader(this, info, properties, listener);
 }
 
@@ -42,23 +41,26 @@ StreamWriter *SocketConnection::create_stream_writer(
         const StreamInfo &info,
         const PropertySet &properties)
 {
-    //rti::routing::Logger::instance().local("********Creating Stream Writer*********");  
+    // rti::routing::Logger::instance().local("********Creating Stream
+    // Writer*********");
     return new SocketStreamWriter(this, info, properties);
 }
 
 void SocketConnection::delete_stream_reader(StreamReader *reader)
 {
-    SocketStreamReader *socket_reader = dynamic_cast<SocketStreamReader *>(reader);
+    SocketStreamReader *socket_reader =
+            dynamic_cast<SocketStreamReader *>(reader);
     socket_reader->shutdown_socket_reader_thread();
     delete reader;
-    //Logger::instance().local("********Deleting Stream Reader*********"); 
+    // Logger::instance().local("********Deleting Stream Reader*********");
 }
 
 void SocketConnection::delete_stream_writer(StreamWriter *writer)
 {
-    SocketStreamWriter *socket_writer = dynamic_cast<SocketStreamWriter *>(writer);
+    SocketStreamWriter *socket_writer =
+            dynamic_cast<SocketStreamWriter *>(writer);
     delete writer;
-    //Logger::instance().local("********Deleting Stream Writer*********"); 
+    // Logger::instance().local("********Deleting Stream Writer*********");
 }
 
 DiscoveryStreamReader *SocketConnection::output_stream_discovery_reader()

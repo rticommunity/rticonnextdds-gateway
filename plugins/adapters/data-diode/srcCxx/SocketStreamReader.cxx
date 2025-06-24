@@ -12,25 +12,26 @@
 
 #include <algorithm>
 #include <cctype>
+#include <chrono>
 #include <sstream>
 #include <thread>
-#include <chrono>
 
-#include <iostream>
 #include <cstring>
+#include <iostream>
 #ifdef _WIN32
     #include <winsock2.h>
     #pragma comment(lib, "ws2_32.lib")
 #else
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
     #include <arpa/inet.h>
+    #include <netinet/in.h>
+    #include <sys/socket.h>
+    #include <sys/types.h>
     #include <unistd.h>
 #endif
-#include <rti/routing/Logger.hpp>
 #include "SocketStreamReader.hpp"
 #include <rti/core/Exception.hpp>
+#include <rti/routing/Logger.hpp>
+#include <rti/topic/cdr/Serialization.hpp>
 
 
 using namespace dds::core::xtypes;
@@ -39,14 +40,18 @@ using namespace rti::routing::adapter;
 
 void SocketStreamReader::socket_reading_thread()
 {
-	//rti::routing::Logger::instance().local("************Create Reader Thread***************");
+    // rti::routing::Logger::instance().local("************Create Reader
+    // Thread***************");
     while (!stop_thread_) {
-
-        socket->receive_data(received_buffer_, &received_bytes_, BUFFER_MAX_SIZE);
+        int received_bytes = 0;
+        socket->receive_data(
+                received_buffer_,
+                &received_bytes,
+                BUFFER_MAX_SIZE);
 
         // Most likely received nothing or there was an error
         // Not doing any error handling here
-        if (received_bytes_ <= 0) {
+        if (received_bytes <= 0) {
             // Sleep for a small period of time to avoid busy waiting
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             continue;
@@ -56,6 +61,9 @@ void SocketStreamReader::socket_reading_thread()
          * Here we notify Routing Service, that there is data available
          * on the StreamReader, triggering a call to take().
          */
+
+         received_bytes_ = received_bytes;
+
         reader_listener_->on_data_available(this);
     }
 
@@ -84,9 +92,8 @@ SocketStreamReader::SocketStreamReader(
         }
     }
 
-    socket = std::unique_ptr<UdpSocket>(new UdpSocket(
-            receive_address_.c_str(),
-            receive_port_));
+    socket = std::unique_ptr<UdpSocket>(
+            new UdpSocket(receive_address_.c_str(), receive_port_));
 
     socketreader_thread_ =
             std::thread(&SocketStreamReader::socket_reading_thread, this);
@@ -96,45 +103,23 @@ void SocketStreamReader::take(
         std::vector<dds::core::xtypes::DynamicData *> &samples,
         std::vector<dds::sub::SampleInfo *> &infos)
 {
-   if (stream_info_.stream_name() == "Square") {
 
-		ShapeType* shape = reinterpret_cast<ShapeType*>(received_buffer_);
-		//print_shape(*shape);
+    dds::core::xtypes::DynamicData deserialized_sample(*adapter_type_);
+    std::vector<char> received_buffer = std::vector<char>(received_buffer_, received_buffer_ + received_bytes_);
+    rti::core::xtypes::from_cdr_buffer(deserialized_sample, received_buffer);
+    
+    samples.resize(1);
+    infos.resize(1);
+    
+    std::unique_ptr<DynamicData> sample(new DynamicData(*adapter_type_));
+    *sample = deserialized_sample;
+    samples[0] = sample.release();
 
-		/**
-		 * Note that we read one packet at a time socket_reading_thread()
-		 */
-		samples.resize(1);
-		infos.resize(1);
-
-		std::unique_ptr<DynamicData> sample(new DynamicData(*adapter_type_));
-
-		/**
-		 * This is the hardcoded type information about ShapeType.
-		 * You are advised to change this as per your type definition
-		 */
-		sample->value("color", std::string("RED")); // Hardcoding red because strings are hard to serialize
-		sample->value("x", shape->x);
-		sample->value("y", shape->y);
-		sample->value("shapesize", shape->shapesize);
-
-		samples[0] = sample.release();
-	}
-	else
-	{
-		std::cout << stream_info_.stream_name() << std::endl;
-	}
+    std::unique_ptr<dds::sub::SampleInfo> info(new dds::sub::SampleInfo());
+    infos[0] = info.release();
 
     return;
 }
-
-void SocketStreamReader::print_shape(ShapeType shape) {
-
-    std::cout << "x: " << shape.x << std::endl;
-    std::cout << "y: " << shape.y << std::endl;
-    std::cout << "shapesize: " << shape.shapesize << std::endl;
-};
-
 
 void SocketStreamReader::take(
         std::vector<dds::core::xtypes::DynamicData *> &samples,

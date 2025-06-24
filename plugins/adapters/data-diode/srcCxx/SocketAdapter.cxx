@@ -9,14 +9,13 @@
  * not be liable for any incidental or consequential damages arising out of the
  * use or inability to use the software.
  */
-#include <rti/rti.hpp>
+#include <rti/routing/Logger.hpp>
 #include <rti/routing/adapter/AdapterPlugin.hpp>
 #include <rti/routing/adapter/Connection.hpp>
-#include <rti/routing/Logger.hpp>
+#include <rti/rti.hpp>
 
 #include "SocketAdapter.hpp"
 #include "SocketConnection.hpp"
-
 
 
 using namespace rti::routing;
@@ -37,8 +36,8 @@ Connection *SocketAdapter::create_connection(
             input_stream_discovery_listener,
             output_stream_discovery_listener,
             properties);
-	rti::routing::Logger::instance().service_verbosity(rti::config::Verbosity::STATUS_LOCAL);
-    //rti::routing::Logger::instance().local("********Creating connection*********");        
+    rti::routing::Logger::instance().service_verbosity(
+            rti::config::Verbosity::STATUS_LOCAL);
     return sc;
 }
 
@@ -47,13 +46,13 @@ void SocketAdapter::delete_connection(Connection *connection)
     /**
      * Perform cleanup pertaining to the connection object here.
      */
-    //Logger::instance().local("Delete connection");
+    // Logger::instance().local("Delete connection");
     delete connection;
 }
 
 rti::config::LibraryVersion SocketAdapter::get_version() const
 {
-	return { 1, 0, 0, 'r' };
+    return { 1, 0, 0, 'r' };
 }
 
 RTI_ADAPTER_PLUGIN_CREATE_FUNCTION_DEF(SocketAdapter)

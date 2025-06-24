@@ -32,17 +32,17 @@ public:
             const rti::routing::StreamInfo &info,
             const rti::routing::PropertySet &properties,
             rti::routing::adapter::StreamReaderListener *listener) final;
-    
+
     rti::routing::adapter::StreamWriter *create_stream_writer(
             rti::routing::adapter::Session *session,
             const rti::routing::StreamInfo &info,
-            const rti::routing::PropertySet &properties) final;        
+            const rti::routing::PropertySet &properties) final;
 
     void delete_stream_reader(
             rti::routing::adapter::StreamReader *reader) final;
 
     void delete_stream_writer(
-            rti::routing::adapter::StreamWriter *writer) final;        
+            rti::routing::adapter::StreamWriter *writer) final;
 
     rti::routing::adapter::DiscoveryStreamReader *
             input_stream_discovery_reader() final;
@@ -51,22 +51,21 @@ public:
             output_stream_discovery_reader() final;
 
 
-
     /**
      * @brief This function is called by the SocketStreamReader to indicate that
      * it has reached EOF and its time to dispose the route. The dispose set by
-     * the SocketInputDiscoveryStreamReader starts the chain of cleanup procedure.
-     * Remember that the <creation_mode> for <output> should be ON_ROUTE_MATCH
-     * for the cleanup to be propagated to the StreamWriter as well.
+     * the SocketInputDiscoveryStreamReader starts the chain of cleanup
+     * procedure. Remember that the <creation_mode> for <output> should be
+     * ON_ROUTE_MATCH for the cleanup to be propagated to the StreamWriter as
+     * well.
      *
      * @param stream_info \b in. Reference to a StreamInfo object which should
      * be used when creating a new StreamInfo sample with disposed set to true
      */
-    void dispose_discovery_stream(
-            const rti::routing::StreamInfo &stream_info);
+    void dispose_discovery_stream(const rti::routing::StreamInfo &stream_info);
 
- private:
-     SocketInputDiscoveryStreamReader input_discovery_reader_;
+private:
+    SocketInputDiscoveryStreamReader input_discovery_reader_;
 };
 
 #endif

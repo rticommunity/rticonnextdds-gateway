@@ -13,10 +13,10 @@
 #ifndef SOCKETSTREAMWRITER_HPP
 #define SOCKETSTREAMWRITER_HPP
 
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <thread>
-#include <cstring>
 
 #include "SocketConnection.hpp"
 #include "UdpSocketUtils.hpp"
@@ -30,13 +30,13 @@
 #define DEST_ADDRESS_STRING "dest_address"
 #define DEST_PORT_STRING "dest_port"
 
-class SocketStreamWriter : public rti::routing::adapter::DynamicDataStreamWriter {
+class SocketStreamWriter
+        : public rti::routing::adapter::DynamicDataStreamWriter {
 public:
     explicit SocketStreamWriter(
             SocketConnection *connection,
             const rti::routing::StreamInfo &info,
-            const rti::routing::PropertySet &
-            );
+            const rti::routing::PropertySet &);
 
     virtual int
             write(const std::vector<dds::core::xtypes::DynamicData *> &,
@@ -52,43 +52,26 @@ public:
             std::vector<dds::sub::SampleInfo *> &) final;
 
     ~SocketStreamWriter();
-	
+
 
 private:
     /**
      * @brief Function used by socketreader_thread_ to read samples from the
      * socket.
      */
-    
+
 
     SocketConnection *socket_connection_;
-    //rti::routing::adapter::StreamReaderListener *reader_listener_;
 
     std::unique_ptr<UdpSocket> socket;
 
-    //std::thread socketreader_thread_;
-    //bool stop_thread_;
     int send_port_;
-	int dest_port_;
+    int dest_port_;
 
     std::string send_address_;
-	std::string dest_address_;
-	rti::routing::StreamInfo stream_info_;
+    std::string dest_address_;
+    rti::routing::StreamInfo stream_info_;
     dds::core::xtypes::DynamicType *adapter_type_;
-
-	struct doNothing {
-		RTI_INT32 CountUp;
-		RTI_INT32 CountDown;
-		RTI_INT32 Pause;
-		//dds::core::optional<RTI_UINT32>ObjectId;
-		RTI_UINT32 ObjectId;
-	};
-    struct ShapeType {
-        int x;
-        int y;
-        int shapesize;
-    };
-
 };
 
 #endif

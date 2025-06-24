@@ -18,7 +18,6 @@
 #include <rti/routing/PropertySet.hpp>
 #include <rti/routing/RoutingService.hpp>
 #include <rti/routing/adapter/AdapterPlugin.hpp>
-//#include <rti/routing/Logger.hpp>
 
 class SocketAdapter : public rti::routing::adapter::AdapterPlugin {
 public:

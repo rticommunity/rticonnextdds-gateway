@@ -12,28 +12,29 @@
 
 #include <algorithm>
 #include <cctype>
+#include <chrono>
 #include <sstream>
 #include <thread>
-#include <chrono>
 
-#include <iostream>
 #include <cstring>
+#include <iostream>
 #ifdef _WIN32
     #include <winsock2.h>
     #pragma comment(lib, "ws2_32.lib")
 #else
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
     #include <arpa/inet.h>
+    #include <netinet/in.h>
+    #include <sys/socket.h>
+    #include <sys/types.h>
     #include <unistd.h>
 #endif
 
-#include <dds/dds.hpp>
-#include <rti/rti.hpp>
-#include <rti/routing/Logger.hpp>
+#include "SocketStreamReader.hpp"  //use ShapeType from here
 #include "SocketStreamWriter.hpp"
-#include "SocketStreamReader.hpp" //use ShapeType from here 
+#include <dds/dds.hpp>
+#include <rti/routing/Logger.hpp>
+#include <rti/rti.hpp>
+#include <rti/topic/cdr/Serialization.hpp>
 
 using namespace dds::core::xtypes;
 using namespace rti::routing;
@@ -42,74 +43,51 @@ using namespace rti::routing::adapter;
 SocketStreamWriter::SocketStreamWriter(
         SocketConnection *connection,
         const StreamInfo &info,
-        const PropertySet &properties
-        )
+        const PropertySet &properties)
         : stream_info_(info.stream_name(), info.type_info().type_name())
 {
-	//Logger::instance().local("********Create Writer Socket*********");
     socket_connection_ = connection;
-   
+
     adapter_type_ =
             static_cast<DynamicType *>(info.type_info().type_representation());
 
-	//std::cout << "Stream Name: " << info.stream_name() << " Type Name  " << info.type_info().type_name() << std::endl;
-	// Parse the properties provided in the xml configuration file
-	for (const auto &property : properties) {
-		//std::cout << "Add Property "<< property.first << std::endl;
-		if (property.first == SEND_ADDRESS_STRING) {
-			send_address_ = property.second;
-			//std::cout << "send address: " << send_address_ << std::endl;
-		}
-		else if (property.first == SEND_PORT_STRING) {
-			send_port_ = std::stoi(property.second);
-			//std::cout << "send port: " << send_port_ << std::endl;
-		}
-		else if (property.first == DEST_ADDRESS_STRING)
-		{
-			dest_address_ = property.second;
-			//std::cout << "dest address: " << dest_address_ << std::endl;
-		}
-		else if (property.first == DEST_PORT_STRING)
-		{
-			dest_port_ = std::stoi(property.second);
-			//std::cout << "dest port: " << dest_port_ << std::endl;
-		}		
-	}
+    // Parse the properties provided in the xml configuration file
+    for (const auto &property : properties) {
+        if (property.first == SEND_ADDRESS_STRING) {
+            send_address_ = property.second;
+        } else if (property.first == SEND_PORT_STRING) {
+            send_port_ = std::stoi(property.second);
+        } else if (property.first == DEST_ADDRESS_STRING) {
+            dest_address_ = property.second;
+        } else if (property.first == DEST_PORT_STRING) {
+            dest_port_ = std::stoi(property.second);
+        }
+    }
 
-	//std::cout << "**********Create Socket********** " << std::endl;
-	socket = std::unique_ptr<UdpSocket>(new UdpSocket(
-		send_address_.c_str(),
-		send_port_));
+    socket = std::unique_ptr<UdpSocket>(
+            new UdpSocket(send_address_.c_str(), send_port_));
 }
 
 int SocketStreamWriter::write(
         const std::vector<dds::core::xtypes::DynamicData *> &samples,
-        const std::vector<dds::sub::SampleInfo *> &infos)        
+        const std::vector<dds::sub::SampleInfo *> &infos)
 {
-        size_t len = 0;
+    size_t len = 0;
 
-		ShapeType shapes;
-		uint32_t tempObject=0;
 
-        for (const auto sample : samples) {               
+    for (const auto sample : samples) {
+        // send sample out UDP interface
 
-             //send sample out UDP interface
- 			
-			if (sample->member_exists_in_type("shapesize"))
-			{
-				shapes.shapesize = sample->value<int32_t>("shapesize");
-				shapes.x = sample->value<int32_t>("x");
-				shapes.y = sample->value<int32_t>("y");
-				//std::cout << "Found shapesize of type" << sample->member_type("shapesize") << " index " << sample->member_index("shapesize") 
-				//	<< " size= "<< shapes.shapeSize << " x=" << shapes.x << " y=" << shapes.y << std::endl;
-				len = +socket->send_data((char*)&shapes, sizeof(shapes), dest_address_.c_str(), dest_port_);
-			}
-			else 
-			{
-				Logger::instance().local("Received Sample that is not valid ShapeType");
-			}
-        }      
-        return len;
+        std::vector<char> buffer;
+        rti::core::xtypes::to_cdr_buffer(buffer, *sample);
+		// Send the serialized data
+        len = socket->send_data(
+                buffer.data(),
+                buffer.size(),
+                dest_address_.c_str(),
+                dest_port_);
+    }
+    return len;
 }
 
 int SocketStreamWriter::write(

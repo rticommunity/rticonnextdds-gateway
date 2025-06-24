@@ -52,7 +52,6 @@ public:
     void dispose(const rti::routing::StreamInfo &stream_info);
 
 private:
-
     std::mutex data_samples_mutex_;
     std::vector<std::unique_ptr<rti::routing::StreamInfo>> data_samples_;
     rti::routing::adapter::StreamReaderListener

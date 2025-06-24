@@ -9,9 +9,9 @@
  * not be liable for any incidental or consequential damages arising out of the
  * use or inability to use the software.
  */
-#include <rti/rti.hpp>
-#include <rti/routing/Logger.hpp>
 #include "UdpSocketUtils.hpp"
+#include <rti/routing/Logger.hpp>
+#include <rti/rti.hpp>
 
 #include <rti/core/Exception.hpp>
 #include <rti/routing/adapter/AdapterPlugin.hpp>
@@ -21,8 +21,8 @@ using namespace rti::routing;
 using namespace rti::routing::adapter;
 
 
-UdpSocket::UdpSocket(const char* ip, int port) {
-
+UdpSocket::UdpSocket(const char *ip, int port)
+{
 #ifdef _WIN32
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
@@ -41,19 +41,18 @@ UdpSocket::UdpSocket(const char* ip, int port) {
         std::cerr << "Error setting socket to non-blocking\n";
         closesocket(sockfd);
         WSACleanup();
-        throw dds::core::IllegalOperationError(
-                "ioctlsocket failed");
+        throw dds::core::IllegalOperationError("ioctlsocket failed");
     }
 #else
     fcntl(sockfd, F_SETFL, O_NONBLOCK);
 #endif
 
     bind_socket(ip, port);
-    //Logger::instance().local("********Binding Socket slk *********");
-    
+    // Logger::instance().local("********Binding Socket slk *********");
 }
 
-UdpSocket::~UdpSocket() {
+UdpSocket::~UdpSocket()
+{
 #ifdef _WIN32
     closesocket(sockfd);
     WSACleanup();
@@ -62,30 +61,33 @@ UdpSocket::~UdpSocket() {
 #endif
 }
 
-void UdpSocket::init_socket() {
+void UdpSocket::init_socket()
+{
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-        throw dds::core::IllegalOperationError(
-                "Socket creation failed");
+        throw dds::core::IllegalOperationError("Socket creation failed");
     }
-    //Logger::instance().local("********Init Socket slk *********");
+    // Logger::instance().local("********Init Socket slk *********");
 }
 
-void UdpSocket::bind_socket(const char* ip, int port) {
-
+void UdpSocket::bind_socket(const char *ip, int port)
+{
     server_addr.sin_family = AF_INET;
     inet_pton(AF_INET, ip, &(server_addr.sin_addr));
     server_addr.sin_port = htons(port);
-	//Logger::instance().local("********Bind Socket slk *********");
-    if (bind(sockfd, (const struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
-        throw dds::core::IllegalOperationError(
-                "Bind failed");
+    // Logger::instance().local("********Bind Socket slk *********");
+    if (bind(sockfd,
+             (const struct sockaddr *) &server_addr,
+             sizeof(server_addr))
+        == -1) {
+        throw dds::core::IllegalOperationError("Bind failed");
     }
 }
 
 void UdpSocket::receive_data(
-        char* received_buffer,
+        char *received_buffer,
         int *received_bytes,
-        int size_of_original_buffer) {
+        int size_of_original_buffer)
+{
     socklen_t len = sizeof(server_addr);
 
     socklen_t client_addr_len = sizeof(client_addr);
@@ -95,20 +97,29 @@ void UdpSocket::receive_data(
             received_buffer,
             size_of_original_buffer,
             0,
-            (struct sockaddr*)&client_addr,
+            (struct sockaddr *) &client_addr,
             &client_addr_len);
 
     return;
 }
 
-int UdpSocket::send_data(char* tx_buffer, int tx_length, const char* destAddr, int destPort)
+int UdpSocket::send_data(
+        char *tx_buffer,
+        int tx_length,
+        const char *destAddr,
+        int destPort)
 {
     sockaddr_in dest_addr;
     dest_addr.sin_family = AF_INET;
-	dest_addr.sin_port = htons(destPort);
+    dest_addr.sin_port = htons(destPort);
     dest_addr.sin_addr.s_addr = inet_addr(destAddr);
 
-    size_t length = sendto(sockfd, tx_buffer, tx_length, 0, (struct sockaddr*)&dest_addr, sizeof(dest_addr));
-    //Logger::instance().local("********Send Socket Data slk *********"); 
-    return (int)length;
+    size_t length =
+            sendto(sockfd,
+                   tx_buffer,
+                   tx_length,
+                   0,
+                   (struct sockaddr *) &dest_addr,
+                   sizeof(dest_addr));
+    return (int) length;
 }
