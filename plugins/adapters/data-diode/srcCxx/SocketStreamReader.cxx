@@ -115,9 +115,6 @@ void SocketStreamReader::take(
     *sample = deserialized_sample;
     samples[0] = sample.release();
 
-    std::unique_ptr<dds::sub::SampleInfo> info(new dds::sub::SampleInfo());
-    infos[0] = info.release();
-
     return;
 }
 
