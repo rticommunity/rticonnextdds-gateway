@@ -16,9 +16,17 @@
 #ifndef TransformationUserPlugin_h
 #define TransformationUserPlugin_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 RTI_TSFM_UserTypePlugin *RTI_TSFM_UserTypePlugin_create_dynamic(
         RTI_TSFM_TransformationPlugin *transform_plugin,
         const char *plugin_lib,
         const char *plugin_create_fn);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif /* TransformationUserPlugin_h */

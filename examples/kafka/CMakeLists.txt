@@ -13,4 +13,12 @@
 #                                                                             #
 ###############################################################################
 
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/kafka_shapes")
+if (RTIGATEWAY_ENABLE_KAFKA
+        AND RTIGATEWAY_ENABLE_TSFM_JSON)
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/kafka-shapes-json")
+endif()
+
+if (RTIGATEWAY_ENABLE_KAFKA
+        AND RTIGATEWAY_ENABLE_TSFM_PROTOBUF)
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/kafka-shapes-protobuf")
+endif()

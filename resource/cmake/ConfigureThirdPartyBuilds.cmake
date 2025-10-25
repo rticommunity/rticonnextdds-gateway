@@ -63,16 +63,41 @@ macro (rtigw_install_dependencies_dll)
 endmacro()
 
 macro (rtigw_configure_rd_kafka_build)
-    set(RDKAFKA_BUILD_EXAMPLES        FALSE
+    set(RDKAFKA_BUILD_EXAMPLES      FALSE
         CACHE INTERNAL "Enable building RD Kafka's documentation"
         FORCE)
-    set(RDKAFKA_BUILD_TESTS              FALSE
+    set(RDKAFKA_BUILD_TESTS         FALSE
         CACHE INTERNAL "Enable building RD Kafka's sample programs"
         FORCE)
-    set(WITH_BUNDLED_SSL ${RTIGATEWAY_ENABLE_SSL}
+    set(WITH_BUNDLED_SSL            FALSE
+        CACHE INTERNAL "Enable building RD Kafka with bundled OpenSSL library"
+        FORCE)
+    set(WITH_SSL                    ${RTIGATEWAY_ENABLE_SSL}
         CACHE INTERNAL "Enable building RD Kafka with OpenSSL support"
         FORCE)
-    set(WITH_SSL ${RTIGATEWAY_ENABLE_SSL}
-        CACHE INTERNAL "Enable building RD Kafka with OpenSSL support"
+endmacro()
+
+macro (rtigw_configure_protobuf_build)
+    set(protobuf_BUILD_TESTS OFF
+        CACHE INTERNAL "Disable building Protobuf tests"
         FORCE)
+    if(WIN32)
+        set(BUILD_SHARED_LIBS OFF)
+    endif()
+endmacro()
+
+macro(rtigw_find_protobuf)
+    # Make sure that protobuf is available
+    if(NOT TARGET protobuf::libprotobuf)
+        # We are not building the included Protobuf library, so
+        # look up a system installation
+        if(WIN32)
+            set(Protobuf_USE_STATIC_LIBS ON)
+        endif()
+        find_package(Protobuf)
+    else()
+        set(Protobuf_PROTOC_EXECUTABLE protobuf::protoc)
+        set(Protobuf_LIBRARIES protobuf::libprotobuf)
+        set(Protobuf_FOUND TRUE)
+    endif()
 endmacro()

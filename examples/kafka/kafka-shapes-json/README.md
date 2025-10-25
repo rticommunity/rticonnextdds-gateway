@@ -1,0 +1,204 @@
+# Kafka Shapes - An example integration of DDS and Kafka
+
+This directory contains an example that demonstrates how DDS and Kafka can be
+integrated to allow DDS applications to access Kafka data and vice versa.
+
+The integration is achieved by deploying RTI Routing Service with the Kafka
+adapter plugin. The plugin establishes client connections to Kafka brokers, and
+to access Kafka data which encapsulates Kafka payload in JSON.
+
+## Data Types
+
+The example uses the following `ShapeType` as a data type:
+
+```idl
+struct ShapeType
+{
+    string<128> color; //@key
+    long x;
+    long y;
+    long shapesize;
+};
+```
+
+Kafka applications use JSON to encode data, following the defined data type. An
+example encoded data looks like:
+
+```json
+{
+    "color": "BLUE",
+    "x": 1,
+    "y": 2,
+    "shapesize": 10
+}
+```
+
+The following figure presents the overall architecture of the example scenario.
+
+![Example Scenario Architecture](./demo_scenario.png "Example Scenario Architecture")
+
+- **Kafka Subscriber**: subscribes to Kafka topic `Square` via the *Kafka Server*.
+  Shapes are read as JSON strings from the Kafka message payload.
+
+- **Kafka Server**: provides the necessary infrastructure to distribute data between
+  various Kafka clients.
+
+- **RTI Shapes Demo**: publishes and subscribes to squares on DDS topic `Square`.
+  Shapes are encoded as DDS sample of type `ShapeType`.
+
+- **RTI Routing Service**: bridges the *DDS Databus* and the *Kafka Server*, allowing
+  data to flow bi-directionaly between applications on each side. The service uses
+  three plugins:
+
+  - The built-in **DDS Adapter** plugin, which creates a *DDS DomainParticipant*, and
+    other DDS entities required to exchanged data on the *Databus*.
+
+  - The **Kafka Adapter** plugin, which creates a client connection to the *Kafka Server*
+    to allow the service to interact with other Kafka applications.
+
+  - The **JSON Transformation** plugin, which is configured on the output of each
+    route to transform the data between the DDS and JSON representations.
+
+## Run Kafka infrastructure components
+
+To run this example, the following Kafka components are required to run.
+
+- ZooKeeper (or Kafka using KRaft)
+- Kafka Broker
+- Confluent Control Center (only with Docker Compose option)
+
+## Running RTI Routing Service with the Kafka adapter plugin
+
+We would like to provide instructions with two options to set up Kafka
+infrastructure components: 1) Script option 2) Docker Compose option
+
+### Option 1: Running with scripts
+
+1. Get Kafka.
+   [Download](https://kafka.apache.org/quickstart) the latest Kafka release and
+   extract it:
+
+   ```sh
+   tar -xzf kafka_2.13-4.0.0.tgz
+   cd kafka_2.13-4.0.0
+
+   ```
+
+2. Run Kafka infrastructure components:
+   Run the following commands in order to start all services in the correct
+   order:
+
+   (Optional, only if using ZooKeeper)
+
+   ```sh
+   # Start the ZooKeeper service
+   # Note: Soon, ZooKeeper will no longer be required by Apache Kafka.
+   bin/zookeeper-server-start.sh config/zookeeper.properties
+   ```
+
+   (Optional, if using KRaft)
+   Modify `<Kafka installation path>/config/server.properties` by adding
+   `controller.quorum.voters=1@localhost:9093` at the end of the file.
+
+   ```sh
+   # Initialize metadata log and creates meta.properties
+   ./bin/kafka-storage.sh format -t $(./bin/kafka-storage.sh random-uuid) -c config/kraft/server.properties
+   ```
+
+   Open another terminal session and run:
+
+   ```sh
+   # Start the Kafka broker service
+   bin/kafka-server-start.sh config/server.properties
+   ```
+
+   Once all services have successfully launched, you will have a basic Kafka
+   environment running and ready to use.
+
+3. Create a `Square` topic
+
+   ```sh
+   bin/kafka-topics.sh --create --topic Square --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+   ```
+
+4. Start an *RTI Shapes Demo* instance:
+
+    ```sh
+    $NDDSHOME/bin/rtishapesdemo
+    ```
+
+5. Publish a `Square` topic.
+
+   You can create a shapes publisher by clicking in the following
+   menu items in the *RTI Shapes Demo* application:
+
+   - "Publish/Square..." and click 'OK' to use the default parameters.
+
+6. In a separate terminal, start an *RTI Routing Service* instance with the
+   example XML configuration:
+
+   ```sh
+   $NDDSHOME/bin/rtiroutingservice -cfgFile  shapesdemo_kafka_json.xml -cfgName shapesdemo_bridge
+   ```
+
+7. In a separate terminal, run the console consumer client to see the `Square`
+   topic data from the RTI Gateway.
+
+   ```sh
+   bin/kafka-console-consumer.sh --topic Square --from-beginning --bootstrap-server localhost:9092
+
+    { "color":"BLUE", "x":120, "y":180, "shapesize":30 }
+    { "color":"BLUE", "x":120, "y":178, "shapesize":30 }
+    { "color":"BLUE", "x":120, "y":176, "shapesize":30 }
+   ```
+
+### Option 2: Running with Docker Compose
+
+1. Get the Docker Compose file.
+   You can get the Docker Compose file provided by Confluent at
+   [this link](https://github.com/confluentinc/cp-all-in-one/tree/7.9.0-post/cp-all-in-one).
+
+2. Run Kafka infrastructure components:
+   Please install [Docker Engine](https://docs.docker.com/engine/install) and
+   [Docker Compose](https://docs.docker.com/compose/install) to run the
+   containers for Kafka.
+
+    Download the Docker Compose file provided by Confluent.
+
+    ```sh
+    git clone https://github.com/confluentinc/cp-all-in-one.git
+    ```
+
+    Start up the Docker containers for Kafka.
+
+    ```sh
+    cd cp-all-in-one/cp-all-in-one
+    docker-compose up -d
+    ```
+
+3. After the Kafka services are running, you can access the Web-based management
+   UI called `Confluent Control Center` at `localhost:9021`.
+
+4. Start an *RTI Shapes Demo* instance:
+
+    ```sh
+    $NDDSHOME/bin/rtishapesdemo
+    ```
+
+5. Publish a `Square` topic.
+
+    You can create a shapes publisher by clicking in the following
+    menu items in the *RTI Shapes Demo* application:
+
+    - "Publish/Square..." and click 'OK' to use the default parameters.
+
+6. In a separate terminal, start an *RTI Routing Service* instance with the
+   example XML configuration:
+
+    ```sh
+    $NDDSHOME/bin/rtiroutingservice -cfgFile  shapesdemo_kafka_json.xml -cfgName shapesdemo_bridge
+    ```
+
+7. In Confluent Control Center(localhost:9021), you can see the `Square` topic
+   under the `Topics` tab. After clicking the `Square` topic, You can see the
+   `Square` topic data coming from the RTI Gateway.

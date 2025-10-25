@@ -161,12 +161,72 @@ RTIGATEWAY_ENABLE_DOCS
 ^^^^^^^^^^^^^^^^^^^^^^
 
 :Required: No
-:Default: ``ON``
+:Default: ``OFF``
 :Description: If enabled, the |RTI_GATEWAY| user manual (this document)
               will be built, along with specific documentation for every enabled
               plugin. Make sure to have Sphinx, breathe and doxygen installed.
 
-Plugins CMake Specific Options
+
+RTIGATEWAY_ENABLE_SSL
+^^^^^^^^^^^^^^^^^^^^^
+
+:Required: No
+:Default: ``OFF``
+:Description: 
+
+
+
+:Required: No
+:Default: ``OFF``
+:Description: Build plugins and dependencies with support for OpenSSL and other security features
+              (e.g. |RSMQTT|, and |PAHO_ASYNC|).
+              |OPENSSL| must be available on the system, if support for SSL/TLS is required.
+              ``OPENSSLHOME`` can be used to specify the location of the required |OPENSSL| dependencies.
+              You can specify ``OPENSSLHOME`` when calling |CMAKE| by adding
+              ``-DOPENSSLHOME=/path/to/openssl``.
+
+.. note::
+    
+    You can also specify with the path to the |OPENSSL| installation by setting |CMAKE| variable
+    ``OPENSSL_ROOT_DIR``. This directory must contain
+    header files in an ``include/`` subdirectory, and libraries in a
+    ``lib/`` subdirectory. In Windows, there will be dll files in
+    the ``bin/`` subdirectory as well.
+
+
+RTIGATEWAY_ENABLE_LOG
+^^^^^^^^^^^^^^^^^^^^^
+
+:Required: No
+:Default: ``OFF`` (for ``Release``), ``ON`` (for ``Debug``)
+:Description: By default, plugins will not print any messages to standard
+              output when built in ``Release`` mode. When built in ``Debug``
+              mode, or if ``RTIGATEWAY_ENABLE_LOG`` is enabled, plugins will
+              print informational and error messages to standard output. These
+              messages cannot be disabled at run-time.
+:Note: This doesn't apply to the Modbus Adapter.
+
+RTIGATEWAY_ENABLE_TRACE
+^^^^^^^^^^^^^^^^^^^^^^^
+
+:Required: No
+:Default: ``OFF``
+:Description: If enabled, this option will cause plugins to produce a much
+              more verbose logging output, which can be used to trace all
+              function calls within the adapter code.
+:Note: This doesn't apply to the Modbus Adapter.
+
+
+RTIGATEWAY_ENABLE_PROTOBUF_BUILD
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:Required: No
+:Default: ``OFF``
+:Description: Build the included Protocol Buffers submodule, instead of
+              relying on a system-wide installation.
+
+
+CMake Plugin Selection Options
 ------------------------------
 
 RTIGATEWAY_ENABLE_MODBUS
@@ -229,6 +289,26 @@ RTIGATEWAY_ENABLE_TSFM_JSON
               enabled, unless they have been explicitly disabled using the
               dedicated variables.
 
+RTIGATEWAY_ENABLE_TSFM_PROTOBUF
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:Required: No
+:Default: ``ON``
+:Description: If this variable is enabled, the Protocol Buffers transformation
+              and all of its components (tests, examples, docs...) will be
+              enabled, unless they have been explicitly disabled using the
+              dedicated variables.
+
+.. warning::
+    The transformation requires the Protocol Buffers compiler (``protoc``), and
+    libraries to be installed on the system. If these dependencies are not
+    available, the build process will emit a warning and skip the transformation.
+
+    It is also possible to provision these dependencies by enabling the
+    ``RTIGATEWAY_ENABLE_PROTOBUF_BUILD`` CMake option, which will build the
+    Protocol Buffers version included as a submodule of this repository.
+
+
 RTIGATEWAY_ENABLE_TSFM_SEQUENCE2ARRAY
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -238,50 +318,4 @@ RTIGATEWAY_ENABLE_TSFM_SEQUENCE2ARRAY
               and all of its components (tests, examples, docs...) will be
               enabled, unless they have been explicitly disabled using the
               dedicated variables.
-
-
-RTIGATEWAY_ENABLE_LOG
-^^^^^^^^^^^^^^^^^^^^^
-
-:Required: No
-:Default: ``OFF`` (for ``Release``), ``ON`` (for ``Debug``)
-:Description: By default, plugins will not print any messages to standard
-              output when built in ``Release`` mode. When built in ``Debug``
-              mode, or if ``RTIGATEWAY_ENABLE_LOG`` is enabled, plugins will
-              print informational and error messages to standard output. These
-              messages cannot be disabled at run-time.
-:Note: This doesn't apply to the Modbus Adapter.
-
-RTIGATEWAY_ENABLE_TRACE
-^^^^^^^^^^^^^^^^^^^^^^^
-
-:Required: No
-:Default: ``OFF``
-:Description: If enabled, this option will cause plugins to produce a much
-              more verbose logging output, which can be used to trace all
-              function calls within the adapter code.
-:Note: This doesn't apply to the Modbus Adapter.
-
-MQTT Adapter CMake Options
---------------------------
-
-RTIGATEWAY_ENABLE_SSL
-^^^^^^^^^^^^^^^^^^^^^
-
-|OPENSSL| must be available on the system, if support for SSL/TLS is required.
-
-.. note:: In case that this fails or do not find the correct version, you can
-          provide |CMAKE| with the correct path by setting the variable
-          ``-DOPENSSL_ROOT_DIR=<path_to_openssl>``. This directory must contain
-          header files in an ``include/`` subdirectory, and libraries in a
-          ``lib/`` subdirectory. In Windows, there will be dll files in
-          the ``bin/`` subdirectory as well.
-
-:Required: No
-:Default: ``OFF``
-:Description: When this option is enabled, SSL/TLS support will be compiled in
-              |RSMQTT|, and |PAHO_ASYNC|. ``OPENSSLHOME`` must also be
-              specified to provide the required |OPENSSL| dependencies. You can
-              specify ``OPENSSLHOME`` when calling |CMAKE| by adding
-              ``-DOPENSSLHOME=/path/to/openssl``.
 

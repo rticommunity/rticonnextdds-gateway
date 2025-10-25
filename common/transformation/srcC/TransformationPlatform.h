@@ -16,6 +16,10 @@
 #ifndef TransformationPlatform_h
 #define TransformationPlatform_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*****************************************************************************
  *                          DDS C API Selection
  *****************************************************************************/
@@ -139,5 +143,9 @@ DDS_ReturnCode_t RTI_TSFM_Mutex_take(RTI_TSFM_Mutex *self);
 
 DDS_ReturnCode_t RTI_TSFM_Mutex_give(RTI_TSFM_Mutex *self);
 #endif /* RTI_TSFM_USE_MUTEX */
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif /* TransformationPlatform_h */

@@ -19,12 +19,14 @@
 #include "SequenceHelpers.h"
 #include "TransformationLog.h"
 
-DDS_TypeCode * RTI_COMMON_TypeCode_get_member_type(
-    DDS_TypeCode * self,
+#define RTI_TSFM_LOG_ARGS "rti::dynhelpers"
+
+const struct DDS_TypeCode * RTI_COMMON_TypeCode_get_member_type(
+    const struct DDS_TypeCode * self,
     const char * member_name)
 {
     DDS_UnsignedLong id = 0;
-    DDS_TypeCode *member_tc = NULL;
+    const struct DDS_TypeCode *member_tc = NULL;
     DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
     char *original_name = NULL;
 
@@ -102,6 +104,7 @@ done:
 DDS_ReturnCode_t RTI_COMMON_DynamicData_get_octet_seq_contiguous_buffer(
         DDS_DynamicData *self,
         char **contiguous_buffer,
+        DDS_UnsignedLong *contiguous_buffer_len,
         struct DDS_OctetSeq *seq,
         const char *member)
 {
@@ -120,18 +123,21 @@ DDS_ReturnCode_t RTI_COMMON_DynamicData_get_octet_seq_contiguous_buffer(
         goto done;
     }
 
-    /*
-     * The buffer might or might not be well terminated with '\0'. We
-     * need to ensure that it is.
-     */
-    ok = DDS_OctetSeq_assert_nul_terminator(seq);
-    if (!ok) {
-        RTI_TSFM_ERROR_1("failed to assert nul terminator: ", "%s", member)
-        retcode = DDS_RETCODE_ERROR;
-        goto done;
+    if (contiguous_buffer_len != NULL) {
+        *contiguous_buffer_len = DDS_OctetSeq_get_length(seq);
+    } else {
+        /*
+        * The buffer might or might not be well terminated with '\0'. We
+        * need to ensure that it is.
+        */
+        ok = DDS_OctetSeq_assert_nul_terminator(seq);
+        if (!ok) {
+            RTI_TSFM_ERROR_1("failed to assert nul terminator: ", "%s", member)
+            retcode = DDS_RETCODE_ERROR;
+            goto done;
+        }
     }
 
-    /* We have successfully added a nul terminator to the sequence */
     *contiguous_buffer = (char *) DDS_OctetSeq_get_contiguous_buffer(seq);
     if (*contiguous_buffer == NULL) {
         RTI_TSFM_ERROR_1(
@@ -149,6 +155,7 @@ done:
 DDS_ReturnCode_t RTI_COMMON_DynamicData_get_char_seq_contiguous_buffer(
         DDS_DynamicData *self,
         char **contiguous_buffer,
+        DDS_UnsignedLong *contiguous_buffer_len,
         struct DDS_CharSeq *seq,
         const char *member)
 {
@@ -167,18 +174,21 @@ DDS_ReturnCode_t RTI_COMMON_DynamicData_get_char_seq_contiguous_buffer(
         goto done;
     }
 
-    /*
-     * The buffer might or might not be well terminated with '\0'. We
-     * need to ensure that it is.
-     */
-    ok = DDS_CharSeq_assert_nul_terminator(seq);
-    if (!ok) {
-        RTI_TSFM_ERROR_1("failed to assert nul terminator: ", "%s", member)
-        retcode = DDS_RETCODE_ERROR;
-        goto done;
+    if (contiguous_buffer_len != NULL) {
+        *contiguous_buffer_len = DDS_CharSeq_get_length(seq);
+    } else {
+        /*
+        * The buffer might or might not be well terminated with '\0'. We
+        * need to ensure that it is.
+        */
+        ok = DDS_CharSeq_assert_nul_terminator(seq);
+        if (!ok) {
+            RTI_TSFM_ERROR_1("failed to assert nul terminator: ", "%s", member)
+            retcode = DDS_RETCODE_ERROR;
+            goto done;
+        }
     }
 
-    /* We have successfully added a nul terminator to the sequence */
     *contiguous_buffer = (char *) DDS_CharSeq_get_contiguous_buffer(seq);
     if (*contiguous_buffer == NULL) {
         RTI_TSFM_ERROR_1(
@@ -198,7 +208,8 @@ DDS_ReturnCode_t RTI_COMMON_DynamicData_set_octet_seq_from_string(
         struct DDS_OctetSeq *seq,
         const char *member,
         const char *buffer,
-        DDS_UnsignedLong max_size)
+        DDS_UnsignedLong max_size,
+        DDS_UnsignedLong buffer_size)
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
     DDS_Boolean ok = DDS_BOOLEAN_FALSE;
@@ -210,13 +221,17 @@ DDS_ReturnCode_t RTI_COMMON_DynamicData_set_octet_seq_from_string(
      * As this will be representing flat data in sequences, we should take into
      * account the nul terminator
      */
-    current_size = (DDS_Long) strlen(buffer) + 1;
-    if (current_size == 1) {
-        RTI_TSFM_ERROR_1("the buffer is empty for member", "%s", member);
-    }
-    if (current_size - 1 == max_size) {
-        /* If there is no room for the nul terminator, don't add it */
-        current_size--;
+     if (buffer_size > 0) {
+        current_size = buffer_size;
+    } else {
+        current_size = (DDS_Long) strlen(buffer) + 1;
+        if (current_size == 1) {
+            RTI_TSFM_ERROR_1("the buffer is empty for member", "%s", member);
+        }
+        if (current_size - 1 == max_size) {
+            /* If there is no room for the nul terminator, don't add it */
+            current_size--;
+        }
     }
 
     ok = DDS_OctetSeq_loan_contiguous(
@@ -240,7 +255,7 @@ DDS_ReturnCode_t RTI_COMMON_DynamicData_set_octet_seq_from_string(
         RTI_TSFM_ERROR_1(
             "unable to set_octet_seq for member",
             "%s",
-            self->config->buffer_member)
+            member)
         goto done;
     }
 
@@ -261,7 +276,8 @@ DDS_ReturnCode_t RTI_COMMON_DynamicData_set_char_seq_from_string(
         struct DDS_CharSeq *seq,
         const char *member,
         const char *buffer,
-        DDS_UnsignedLong max_size)
+        DDS_UnsignedLong max_size,
+        DDS_UnsignedLong buffer_size)
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
     DDS_Boolean ok = DDS_BOOLEAN_FALSE;
@@ -273,13 +289,17 @@ DDS_ReturnCode_t RTI_COMMON_DynamicData_set_char_seq_from_string(
      * As this will be representing flat data in sequences, we should take into
      * account the nul terminator
      */
-    current_size = (DDS_Long) strlen(buffer) + 1;
-    if (current_size == 1) {
-        RTI_TSFM_ERROR_1("the buffer is empty for member", "%s", member);
-    }
-    if (current_size - 1 == max_size) {
-        /* If there is no room for the nul terminator, don't add it */
-        current_size--;
+    if (buffer_size > 0) {
+        current_size = buffer_size;
+    } else {
+        current_size = (DDS_Long) strlen(buffer) + 1;
+        if (current_size == 1) {
+            RTI_TSFM_ERROR_1("the buffer is empty for member", "%s", member);
+        }
+        if (current_size - 1 == max_size) {
+            /* If there is no room for the nul terminator, don't add it */
+            current_size--;
+        }
     }
 
     ok = DDS_CharSeq_loan_contiguous(
@@ -303,7 +323,7 @@ DDS_ReturnCode_t RTI_COMMON_DynamicData_set_char_seq_from_string(
         RTI_TSFM_ERROR_1(
             "unable to set_char_seq for member",
             "%s",
-            self->config->buffer_member)
+            member)
         goto done;
     }
 

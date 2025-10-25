@@ -16,6 +16,10 @@
 #ifndef TransformationPlugin_h
 #define TransformationPlugin_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "TransformationTypes.h"
 
 #include "ndds/ndds_c.h"
@@ -30,5 +34,8 @@ DDS_ReturnCode_t RTI_TSFM_TransformationPluginConfig_new(
 void RTI_TSFM_TransformationPluginConfig_delete(
         RTI_TSFM_TransformationPluginConfig *self);
 
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif /* TransformationPlugin_h */

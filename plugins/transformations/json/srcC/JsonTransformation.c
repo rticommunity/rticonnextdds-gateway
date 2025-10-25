@@ -28,12 +28,12 @@
 static DDS_ReturnCode_t
         RTI_TSFM_JsonTransformation_validate_buffer_member(
                 RTI_TSFM_JsonTransformation *self,
-                struct DDS_TypeCode *base_type,
+                const struct DDS_TypeCode *base_type,
                 const char *member_name)
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
     DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
-    struct DDS_TypeCode *member_type = NULL, *member_content_type = NULL;
+    const struct DDS_TypeCode *member_type = NULL, *member_content_type = NULL;
     DDS_TCKind tckind = DDS_TK_NULL;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_validate_buffer_member)
@@ -123,7 +123,7 @@ done:
 static DDS_ReturnCode_t
         RTI_TSFM_JsonTransformation_validate_input_type(
                 RTI_TSFM_JsonTransformation *self,
-                struct DDS_TypeCode *input_type)
+                const struct DDS_TypeCode *input_type)
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
 
@@ -151,12 +151,12 @@ done:
 static DDS_ReturnCode_t
         RTI_TSFM_JsonTransformation_validate_output_type(
                 RTI_TSFM_JsonTransformation *self,
-                struct DDS_TypeCode *output_type)
+                const struct DDS_TypeCode *output_type)
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
     DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
     DDS_UnsignedLong members_count = 0, i = 0, buffer_member_id = 0;
-    struct DDS_TypeCode *member_type = NULL, *member_content_type = NULL;
+    const struct DDS_TypeCode *member_type = NULL, *member_content_type = NULL;
     DDS_TCKind tckind = DDS_TK_NULL;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_validate_output_type)
@@ -208,12 +208,12 @@ done:
 
 DDS_Boolean RTI_TSFM_JsonTransformation_preallocate_buffers(
         RTI_TSFM_JsonTransformation *self,
-        struct DDS_TypeCode *tc)
+        const struct DDS_TypeCode *tc)
 {
     DDS_Boolean ok = DDS_BOOLEAN_FALSE;
     DDS_ExceptionCode_t ex = DDS_NO_EXCEPTION_CODE;
     DDS_TCKind member_kind = DDS_TK_NULL;
-    DDS_TypeCode *content_tc = NULL;
+    const struct DDS_TypeCode *content_tc = NULL;
     DDS_TCKind content_kind = DDS_TK_NULL;
     DDS_UnsignedLong length = 0;
 
@@ -301,7 +301,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_initialize(
         RTI_RoutingServiceEnvironment *env)
 {
     DDS_ReturnCode_t retcode = DDS_RETCODE_ERROR;
-    struct DDS_TypeCode *tc = NULL;
+    const struct DDS_TypeCode *tc = NULL;
     DDS_TCKind member_kind = DDS_TK_NULL;
 
     RTI_TSFM_LOG_FN(RTI_TSFM_JsonTransformation_initialize)
@@ -325,7 +325,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_initialize(
         goto done;
     }
 
-    tc = (struct DDS_TypeCode *) input_type_info->type_representation;
+    tc = (const struct DDS_TypeCode *) input_type_info->type_representation;
 
     retcode = RTI_TSFM_JsonTransformation_validate_input_type(self, tc);
     if (retcode != DDS_RETCODE_OK) {
@@ -333,7 +333,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_initialize(
         goto done;
     }
 
-    tc = (struct DDS_TypeCode *) output_type_info->type_representation;
+    tc = (const struct DDS_TypeCode *) output_type_info->type_representation;
 
     retcode = RTI_TSFM_JsonTransformation_validate_output_type(self, tc);
     if (retcode != DDS_RETCODE_OK) {
@@ -349,7 +349,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_initialize(
          */
         if (!RTI_TSFM_JsonTransformation_preallocate_buffers(
                 self,
-                (struct DDS_TypeCode *) output_type_info->type_representation)) {
+                (const struct DDS_TypeCode *) output_type_info->type_representation)) {
             /* TODO Log error */
             retcode = DDS_RETCODE_ERROR;
             goto done;
@@ -361,7 +361,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_initialize(
          */
         if (!RTI_TSFM_JsonTransformation_preallocate_buffers(
                 self,
-                (struct DDS_TypeCode *) input_type_info->type_representation)) {
+                (const struct DDS_TypeCode *) input_type_info->type_representation)) {
             /* TODO Log error */
             retcode = DDS_RETCODE_ERROR;
             goto done;
@@ -539,7 +539,8 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_serialize(
                     &self->state->char_seq,
                     self->config->buffer_member,
                     self->state->json_buffer,
-                    serialized_size);
+                    serialized_size,
+                    0 /* buffer_size */);
             if (retcode != DDS_RETCODE_OK) {
                 RTI_TSFM_ERROR_1(
                         "unable to set_char_seq_from_string for member",
@@ -555,7 +556,8 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_serialize(
                     &self->state->octet_seq,
                     self->config->buffer_member,
                     self->state->json_buffer,
-                    serialized_size);
+                    serialized_size,
+                    0 /* buffer_size */);
             if (retcode != DDS_RETCODE_OK) {
                 RTI_TSFM_ERROR_1(
                         "unable to set_octet_seq_from_string for member",
@@ -775,6 +777,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_deserialize(
             retcode = RTI_COMMON_DynamicData_get_char_seq_contiguous_buffer(
                     sample_in,
                     &buffer,
+                    NULL /* contiguous_buffer_len */,
                     &self->state->char_seq,
                     self->config->buffer_member);
             break;
@@ -783,6 +786,7 @@ DDS_ReturnCode_t RTI_TSFM_JsonTransformation_deserialize(
             retcode = RTI_COMMON_DynamicData_get_octet_seq_contiguous_buffer(
                     sample_in,
                     &buffer,
+                    NULL /* contiguous_buffer_len */,
                     &self->state->octet_seq,
                     self->config->buffer_member);
             break;

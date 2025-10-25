@@ -343,7 +343,9 @@ Sequence2ArrayTransformation::Sequence2ArrayTransformation(
           output_type_info_(output_type_info.dynamic_type())
 {
     if (!are_types_compatible(input_type_info_, output_type_info_)) {
-        throw std::runtime_error("input and ouput types are not compatible.");
+        std::string error = "input and ouput types are not compatible.";
+        rti::routing::Logger::instance().error(error);
+        throw std::runtime_error(error);
     }
     // properties are not used because there is no additional configuration for
     // this transformation
@@ -357,7 +359,9 @@ Array2SequenceTransformation::Array2SequenceTransformation(
           output_type_info_(output_type_info.dynamic_type())
 {
     if (!are_types_compatible(input_type_info_, output_type_info_)) {
-        throw std::runtime_error("input and output types are not compatible.");
+        std::string error = "input and ouput types are not compatible.";
+        rti::routing::Logger::instance().error(error);
+        throw std::runtime_error(error);
     }
     // properties are not used because there is no additional configuration for
     // this transformation
@@ -414,6 +418,7 @@ void Sequence2ArrayTransformation::convert_sample(
                     + "> (max size <"
                     + std::to_string(array_type.total_element_count())
                     + ">).");
+                rti::routing::Logger::instance().error(error);
                 throw std::runtime_error(error);
             }
 
@@ -444,7 +449,7 @@ void Sequence2ArrayTransformation::convert_sample(
                          input_sample,
                          output_sample,
                          member_to_process,
-                         output_sample.member_info(member_to_process).element_count());
+                         array_type.total_element_count());
                 break;
 
             }
@@ -528,6 +533,7 @@ void Array2SequenceTransformation::convert_sample(
                     + "> (bounds <"
                     + std::to_string(sequence_type.bounds())
                     + ">).");
+                rti::routing::Logger::instance().error(error);
                 throw std::runtime_error(error);
             }
 
@@ -558,7 +564,7 @@ void Array2SequenceTransformation::convert_sample(
                          input_sample,
                          output_sample,
                          member_to_process,
-                         output_sample.member_info(member_to_process).element_count());
+                         sequence_type.bounds());
                 break;
 
             }
@@ -609,7 +615,6 @@ void Sequence2ArrayTransformation::transform(
         // convert data
         output_sample_seq[i] = new DynamicData(output_type_info_);
         convert_sample(*input_sample_seq[i], *output_sample_seq[i]);
-
         // copy info as is
         output_info_seq[i] = new SampleInfo(*input_info_seq[i]);
     }

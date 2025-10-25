@@ -18,19 +18,6 @@ include(ConnextDdsCodegen)
 
 set(TEST_NAME modbus_integration_test1)
 
-# Copy the USER_QOS_PROFILES before generating the code
-# This is not needed since we could install that file directly. However, for
-# consistency between the 'build' and 'install' directories, this is copied
-# to the binary directory so codegen doesn't generate 'USER_QOS_PROFILES.xml' in
-# the binary directory.
-
-connextdds_copy_files(
-    INPUT_FILES
-        "dds_type/USER_QOS_PROFILES.xml"
-    OUTPUT_DIR
-        "${CMAKE_CURRENT_BINARY_DIR}/dds_type"
-)
-
 set(IDL_NAME "TestType")
 set(IDL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dds_type")
 
@@ -55,29 +42,39 @@ target_link_libraries(${TEST_NAME}
     RTIConnextDDS::c_api
 )
 
-# staging rules
-# Config files
-
-set(MODBUS_ADAPTER_TEST_INSTALL_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/config/test_pub_config.json"
-        "${CMAKE_CURRENT_SOURCE_DIR}/config/test_sub_config.json"
-        "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
-        "${CMAKE_CURRENT_SOURCE_DIR}/RSConfigTest.xml"
-        "${CMAKE_CURRENT_BINARY_DIR}/dds_type/USER_QOS_PROFILES.xml"
+add_custom_command(
+    OUTPUT
+        ${CMAKE_CURRENT_BINARY_DIR}/test_pub_config.json
+        ${CMAKE_CURRENT_BINARY_DIR}/test_sub_config.json
+        ${CMAKE_CURRENT_BINARY_DIR}/USER_QOS_PROFILES.xml
+    COMMAND
+        ${CMAKE_COMMAND} -E copy
+            ${CMAKE_CURRENT_SOURCE_DIR}/config/test_pub_config.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/config/test_sub_config.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/dds_type/USER_QOS_PROFILES.xml
+            ${CMAKE_CURRENT_BINARY_DIR}/
+    DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/config/test_pub_config.json
+        ${CMAKE_CURRENT_SOURCE_DIR}/config/test_sub_config.json
+        ${CMAKE_CURRENT_SOURCE_DIR}/dds_type/USER_QOS_PROFILES.xml
 )
 
-install(
-    TARGETS ${TEST_NAME}
-    DESTINATION "${STAGING_TEST_DIR}/${STAGING_PLUGIN_DIR}/${TEST_NAME}"
-    PERMISSIONS OWNER_EXECUTE OWNER_WRITE
+rtigw_generate_test_routing_service_config(
+    ${CMAKE_CURRENT_SOURCE_DIR}/RSConfigTest.xml
+    ${CMAKE_CURRENT_BINARY_DIR}/RSConfigTest.xml
 )
 
-install(
-    FILES ${MODBUS_ADAPTER_TEST_INSTALL_FILES}
-    DESTINATION "${STAGING_TEST_DIR}/${STAGING_PLUGIN_DIR}/${TEST_NAME}"
+add_custom_target(
+    modbus_adapter_test1_files ALL
+    DEPENDS
+        ${CMAKE_CURRENT_BINARY_DIR}/test_pub_config.json
+        ${CMAKE_CURRENT_BINARY_DIR}/test_sub_config.json
+        ${CMAKE_CURRENT_BINARY_DIR}/RSConfigTest.xml
+        ${CMAKE_CURRENT_BINARY_DIR}/USER_QOS_PROFILES.xml
 )
 
-install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/dds_type/TestType.idl"
-    DESTINATION "${STAGING_TEST_DIR}/${STAGING_PLUGIN_DIR}/${TEST_NAME}/idl"
+###############################################################################
+rtigw_register_test(
+    adapt_modbus_inttest1
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/run_test.py
 )

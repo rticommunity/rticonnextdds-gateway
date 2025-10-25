@@ -16,6 +16,10 @@
 #ifndef DynamicDataHelpers_h
 #define DynamicDataHelpers_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <ndds/ndds_c.h>
 
 #define TYPE_CODE_LENGTH 256
@@ -28,18 +32,20 @@
  * @param[in] kind the name of the element to find, it may be a nested element.
  * @return A Typecode of the element found. NULL otherwise.
  */
-DDS_TypeCode * RTI_COMMON_TypeCode_get_member_type(
-    DDS_TypeCode * self,
+const struct DDS_TypeCode * RTI_COMMON_TypeCode_get_member_type(
+    const struct DDS_TypeCode * self,
     const char * member_name);
 
 /**
  * @brief Function that gets the DDS_OctetSeq contiguous buffer from a
  * field in a DynamicData object identified by a member name. This operation
  * will resize the sequence if necessary, and will ensure that the sequence
- * is nul-terminated.
+ * is nul-terminated, if contiguous_buffer_len is NULL.
  * @param[in] self DynamicData which contains the sequence.
  * @param[out] contiguous_buffer pointer that will be pointing to the contiguous
  * buffer of the sequence.
+ * @param[out] contiguous_buffer_len if specified, the length of the returned
+ * buffer.
  * @param[in,out] seq sequence that will be used to store the value of the
  * DynamicData sequence member.
  * @param[in] member the member that identifies the sequence in the DynamicData.
@@ -49,6 +55,7 @@ DDS_TypeCode * RTI_COMMON_TypeCode_get_member_type(
 DDS_ReturnCode_t RTI_COMMON_DynamicData_get_octet_seq_contiguous_buffer(
         DDS_DynamicData *self,
         char **contiguous_buffer,
+        DDS_UnsignedLong *contiguous_buffer_len,
         struct DDS_OctetSeq *seq,
         const char *member);
 
@@ -56,10 +63,12 @@ DDS_ReturnCode_t RTI_COMMON_DynamicData_get_octet_seq_contiguous_buffer(
  * @brief Function that gets the DDS_CharSeq contiguous buffer from a
  * field in a DynamicData object identified by a member name. This operation
  * will resize the sequence if necessary, and will ensure that the sequence
- * is nul-terminated.
+ * is nul-terminated, if contiguous_buffer_len is NULL.
  * @param[in] self DynamicData which contains the sequence.
  * @param[out] contiguous_buffer pointer that will be pointing to the contiguous
  * buffer of the sequence.
+ * @param[out] contiguous_buffer_len if specified, the length of the returned
+ * buffer.
  * @param[in,out] seq sequence that will be used to store the value of the
  * DynamicData sequence member.
  * @param[in] member the member that identifies the sequence in the DynamicData.
@@ -69,6 +78,7 @@ DDS_ReturnCode_t RTI_COMMON_DynamicData_get_octet_seq_contiguous_buffer(
 DDS_ReturnCode_t RTI_COMMON_DynamicData_get_char_seq_contiguous_buffer(
         DDS_DynamicData *self,
         char **contiguous_buffer,
+        DDS_UnsignedLong *contiguous_buffer_len,
         struct DDS_CharSeq *seq,
         const char *member);
 
@@ -91,7 +101,8 @@ DDS_ReturnCode_t RTI_COMMON_DynamicData_set_octet_seq_from_string(
         struct DDS_OctetSeq *seq,
         const char *member,
         const char *buffer,
-        DDS_UnsignedLong max_size);
+        DDS_UnsignedLong max_size,
+        DDS_UnsignedLong buffer_size);
 
 /**
  * @brief Function that sets a DynamicData DDS_CharSeq element from a string
@@ -112,6 +123,11 @@ DDS_ReturnCode_t RTI_COMMON_DynamicData_set_char_seq_from_string(
         struct DDS_CharSeq *seq,
         const char *member,
         const char *buffer,
-        DDS_UnsignedLong max_size);
+        DDS_UnsignedLong max_size,
+        DDS_UnsignedLong buffer_size);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif /* DynamicDataHelpers_h */

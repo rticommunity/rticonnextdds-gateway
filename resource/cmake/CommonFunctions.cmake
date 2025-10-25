@@ -150,13 +150,19 @@ function(rtigw_configure_plugin_defines)
     if (RTIGATEWAY_ENABLE_LOG
             OR CMAKE_BUILD_TYPE STREQUAL "Debug"
             OR NOT CMAKE_BUILD_TYPE)
-        list(APPEND ${RSPLUGIN_PREFIX}_DEFINES ${RSPLUGIN_PREFIX}_ENABLE_LOG)
+        list(APPEND ${RSPLUGIN_PREFIX}_DEFINES
+            ${RSPLUGIN_PREFIX}_ENABLE_LOG
+            RTI_TSFM_ENABLE_LOG
+        )
     else()
         list(APPEND ${RSPLUGIN_PREFIX}_DEFINES ${RSPLUGIN_PREFIX}_DISABLE_LOG)
     endif()
 
     if (RTIGATEWAY_ENABLE_TRACE)
-        list(APPEND ${RSPLUGIN_PREFIX}_DEFINES ${RSPLUGIN_PREFIX}_ENABLE_TRACE)
+        list(APPEND ${RSPLUGIN_PREFIX}_DEFINES
+            ${RSPLUGIN_PREFIX}_ENABLE_TRACE
+            RTI_TSFM_ENABLE_TRA
+        )
     endif()
 
     if (RTIGATEWAY_ENABLE_SSL)
@@ -204,7 +210,48 @@ function(rtigw_configure_connextdds _CONNEXTDDS_VERSION)
         COMPONENTS
             routing_service core
         REQUIRED)
+    
+    set(RTICONNEXTDDS_VERSION ${RTICONNEXTDDS_VERSION}
+        CACHE INTERNAL "RTI Connext DDS version"
+        FORCE
+    )
 
+    # Connext 7.6.0 changed the default C++11 API, so existing
+    # code must pass an extra argument to rtiddsgen.
+    if (RTICONNEXTDDS_VERSION VERSION_GREATER_EQUAL "7.6.0")
+        set(
+            RTIDDSGEN_CXX11_LEGACY_API_ARGS
+            -standard DDS_PSM_Cxx
+            CACHE INTERNAL "rtiddsgen arguments for legacy C++11 API"
+            FORCE
+        )
+
+        set(
+            RTICONNEXTDDS_HAS_INT8_TYPE
+            TRUE
+            CACHE INTERNAL "Indicates that RTI Connext DDS version has int8 type"
+            FORCE
+        )
+    endif()
+
+    # Connext < 7.5.0 does not have stream operators for certain types
+    if (RTICONNEXTDDS_VERSION VERSION_LESS "7.5.0")
+        set(
+            RTICONNEXTDDS_HAS_OSTREAM_OPERATORS
+            FALSE
+        )
+    else()
+        set(
+            RTICONNEXTDDS_HAS_OSTREAM_OPERATORS
+            TRUE
+        )
+    endif()
+    set(
+        RTICONNEXTDDS_HAS_OSTREAM_OPERATORS
+        ${RTICONNEXTDDS_HAS_OSTREAM_OPERATORS}
+        CACHE INTERNAL "Indicates that RTI Connext DDS version has ostream operators"
+        FORCE
+    )
 endfunction()
 
 #[[
@@ -246,12 +293,17 @@ macro(rtigw_init_globals)
     set(PAHO_MQTT_C_DIR "${THIRD_PARTY_DIR}/paho.mqtt.c")
     set(LIBRD_KAFKA_C_DIR "${THIRD_PARTY_DIR}/librdkafka")
     set(JSON_PARSER_DIR "${THIRD_PARTY_DIR}/json_parser")
+    set(PROTOBUF_DIR "${THIRD_PARTY_DIR}/protobuf")
     set(UTILS_COMMON_DIR "${COMMON_DIR}/utils")
     set(JSON_PARSER_WRAPPER_DIR "${COMMON_DIR}/json_parser")
     set(TRANSFORMATION_COMMON_DIR "${COMMON_DIR}/transformation")
     set(DDS_COMMON_DIR "${COMMON_DIR}/dds_specific")
+    set(PROTOBUF2DDS_COMMON_DIR "${COMMON_DIR}/protobuf2dds")
     set(RTICMAKE_COMMON_DIR "${RESOURCE_DIR}/cmake")
     set(RTICMAKE_UTILS_MODULES_DIR "${THIRD_PARTY_DIR}/rticonnextdds-cmake-utils/cmake/Modules")
+    set(TEST_COMMON_DIR "${COMMON_DIR}/test")
+    set(TEST_COMMON_PY_DIR "${TEST_COMMON_DIR}/srcPy")
+    set(TEST_COMMON_SCRIPTS_DIR "${TEST_COMMON_DIR}/scripts")
 
     set(STAGING_LIB_DIR "lib")
     set(STAGING_BIN_DIR "bin")
@@ -272,13 +324,15 @@ macro(rtigw_init_globals)
     option(RTIGATEWAY_ENABLE_TSFM_FIELD "Build Field Transformation" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_TSFM_JSON "Build JSON Transformation" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_TSFM_SEQUENCE2ARRAY "Build Sequence2Array Transformation" ${RTIGATEWAY_ENABLE_ALL})
+    option(RTIGATEWAY_ENABLE_TSFM_PROTOBUF "Build Protobuf Transformation" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_TESTS "Build tester applications for enabled plugins" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_EXAMPLES "Build examples applications for enabled plugins" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_DOCS "Build documentation for enabled plugins" OFF)
-    option(RTIGATEWAY_ENABLE_PDF_DOCS "Build PDF documentation for enabled plugins" OFF)
+    option(RTIGATEWAY_ENABLE_PDF_DOCS "(Internal) Build PDF documentation for enabled plugins" OFF)
     option(RTIGATEWAY_ENABLE_SSL "Enable support for SSL/TLS" OFF)
     option(RTIGATEWAY_ENABLE_LOG "Enable logging to stdout" OFF)
     option(RTIGATEWAY_ENABLE_TRACE "Enable support for trace-level logging" OFF)
+    option(RTIGATEWAY_ENABLE_PROTOBUF_BUILD "Build Protobuf library and compiler" OFF)
 
     if (NOT ${RTIGATEWAY_ENABLE_DOCS} AND RTIGATEWAY_ENABLE_PDF_DOCS)
         message(WARNING "Generation of PDF doc requires to define RTIGATEWAY_ENABLE_DOCS")
@@ -292,6 +346,12 @@ macro(rtigw_init_globals)
 
     if (RTIGATEWAY_ENABLE_TESTS)
         enable_testing()
+
+        if(WIN32)
+            set(PYTHON_EXE "python")
+        else()
+            set(PYTHON_EXE "python3")
+        endif()
     endif()
 
 endmacro()
@@ -363,6 +423,73 @@ rtigw_add_tests
 ]]
 function(rtigw_add_tests)
     rtigw_add_subdirectory_if("${CMAKE_CURRENT_SOURCE_DIR}/test" IF RTIGATEWAY_ENABLE_TESTS)
+endfunction()
+
+#[[
+
+rtigw_register_test
+-------------------
+
+ * Brief: register a test command to be run by CTest.
+ * Params:
+ ** test_name: name of the test's target
+ ** ARGN: all other arguments will be interprepted as the test command to run.
+ * How to use it:
+
+    rtigw_register_test(myplugin_test ${CMAKE_CURRENT_SOURCE_DIR}/scripts/run_test.py)
+]]
+function(rtigw_register_test test_name)
+    set(common_args)
+    if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "")
+        list(APPEND common_args "-C" "${CMAKE_BUILD_TYPE}")
+    endif()
+
+    add_test(NAME ${test_name}
+        COMMAND ${PYTHON_EXE} ${ARGN} ${common_args}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+    set_tests_properties(${test_name} PROPERTIES
+        ENVIRONMENT
+            "PYTHONPATH=${TEST_COMMON_PY_DIR}"
+    )
+endfunction()
+
+#[[
+
+rtigw_generate_test_routing_service_config
+------------------------------------------
+
+ * Brief: copy a Routing Service configuration files to the build directory for testing.
+          If building a "Debug" configuration, any referenced library name will be suffixed with "d"
+          (by searching for '<dll>$libname</dll>').
+ * Params:
+ ** input_xml: path to the input XML file
+ ** output_xml: path to the output XML file
+ * How to use it:
+
+    rtigw_generate_test_routing_service_config(
+        ${CMAKE_CURRENT_SOURCE_DIR}/xml/input.xml
+        ${CMAKE_CURRENT_BINARY_DIR}/output.xml
+    )
+]]
+function(rtigw_generate_test_routing_service_config input_xml output_xml)
+    set(common_args)
+    if (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "")
+        list(APPEND common_args "-C" "${CMAKE_BUILD_TYPE}")
+    endif()
+    add_custom_command(
+        OUTPUT
+            ${output_xml}
+        COMMAND
+            ${PYTHON_EXE}
+                ${TEST_COMMON_SCRIPTS_DIR}/generate_rs_config.py
+                ${common_args}
+                ${input_xml}
+                ${output_xml}
+        DEPENDS
+            ${input_xml}
+    )
 endfunction()
 
 #[[

@@ -42,6 +42,10 @@ target_link_libraries(
     RTIConnextDDS::routing_service_cpp2
 )
 
+if(RTICONNEXTDDS_HAS_INT8_TYPE)
+    target_compile_definitions(${RSPLUGIN_LIB_NAME} PRIVATE RTICONNEXTDDS_HAS_INT8_TYPE=1)
+endif()
+
 # Stagging targets
 install(
     TARGETS ${RSPLUGIN_LIB_NAME}

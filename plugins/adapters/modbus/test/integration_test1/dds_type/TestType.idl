@@ -1,3 +1,18 @@
+/******************************************************************************/
+/* (c) 2025 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. */
+/*                                                                            */
+/* RTI grants Licensee a license to use, modify, compile, and create          */
+/* derivative works of the software solely for use with RTI Connext DDS.      */
+/* Licensee may redistribute copies of the software provided that all such    */
+/* copies are subject to this license.                                        */
+/* The software is provided "as is", with no warranty of any type, including  */
+/* any warranty for fitness for any purpose. RTI is under no obligation to    */
+/* maintain or support the software.  RTI shall not be liable for any         */
+/* incidental or consequential damages arising out of the use or inability to */
+/* use the software.                                                          */
+/*                                                                            */
+/******************************************************************************/
+
 @appendable
 enum ShapeFillKind {
   @value(1) SOLID_FILL,
@@ -8,6 +23,9 @@ enum ShapeFillKind {
 struct TestType_nested_pub {
     @optional ShapeFillKind enum_field;
     @optional int32 optional_non_set;
+    char char_field;
+    char char_array_field[2];
+    sequence<char,2> char_seq_field;
     boolean bool_field;
     boolean bool_array_field[2];
     sequence<boolean,2> bool_seq_field;
@@ -42,6 +60,9 @@ struct TestType_pub {
     TestType_nested_pub nested_field;
     @optional ShapeFillKind enum_field;
     @optional int32 optional_non_set;
+    char char_field;
+    char char_array_field[2];
+    sequence<char,2> char_seq_field;
     boolean bool_field;
     boolean bool_array_field[2];
     sequence<boolean,2> bool_seq_field;
@@ -74,6 +95,7 @@ struct TestType_pub {
 @appendable
 struct TestType_sub_nested_constants {
     string<64> string_constant;
+    char char_constant;
     int8 int8_constant;
     int16 int16_constant;
     int32 int32_constant;
@@ -86,6 +108,7 @@ struct TestType_sub_nested_constants {
     double float64_constant;
     boolean boolean_constant;
     ShapeFillKind enum_constant;
+    char char_array_constant[2];
     int8 int8_array_constant[2];
     int16 int16_array_constant[2];
     int32 int32_array_constant[2];
@@ -98,6 +121,7 @@ struct TestType_sub_nested_constants {
     double float64_array_constant[2];
     boolean bool_array_constant[2];
     ShapeFillKind enum_array_constant[2];
+    sequence<char,2> char_seq_constant;
     sequence<int8,2> int8_seq_constant;
     sequence<int16,2> int16_seq_constant;
     sequence<int32,2> int32_seq_constant;
@@ -117,6 +141,7 @@ struct TestType_sub {
     TestType_pub test_type;
     TestType_sub_nested_constants inner_constants;
     string<64> string_constant;
+    char char_constant;
     int8 int8_constant;
     int16 int16_constant;
     int32 int32_constant;
@@ -129,6 +154,7 @@ struct TestType_sub {
     double float64_constant;
     boolean boolean_constant;
     ShapeFillKind enum_constant;
+    char char_array_constant[2];
     int8 int8_array_constant[2];
     int16 int16_array_constant[2];
     int32 int32_array_constant[2];
@@ -141,6 +167,7 @@ struct TestType_sub {
     double float64_array_constant[2];
     boolean bool_array_constant[2];
     ShapeFillKind enum_array_constant[2];
+    sequence<char,2> char_seq_constant;
     sequence<int8,2> int8_seq_constant;
     sequence<int16,2> int16_seq_constant;
     sequence<int32,2> int32_seq_constant;
@@ -159,6 +186,10 @@ struct TestType_sub {
       boolean input_bool_field;
     boolean input_bool_array_field[2];
     sequence<boolean,2> input_bool_seq_field;
+    @optional
+      char input_char_field;
+    char input_char_array_field[2];
+    sequence<char,2> input_char_seq_field;
     @optional
       int8 input_int8_field;
     int8 input_int8_array_field[2];

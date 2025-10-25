@@ -46,6 +46,16 @@ if (RTIGATEWAY_ENABLE_KAFKA)
     add_subdirectory("${LIBRD_KAFKA_C_DIR}")
 endif()
 
+function(build_protobuf)
+    rtigw_configure_protobuf_build()
+
+    add_subdirectory("${PROTOBUF_DIR}")
+endfunction()
+
+if (RTIGATEWAY_ENABLE_TSFM_PROTOBUF AND RTIGATEWAY_ENABLE_PROTOBUF_BUILD)
+    build_protobuf()
+endif()
+
 # The following subdirectory should copy dlls that are in the bin directory to
 # lib folder, that is where the dlls should be. This has to be the last thing
 # we do in this CMakeLists.txt file, because it needs the dlls to be created

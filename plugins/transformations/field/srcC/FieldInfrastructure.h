@@ -21,18 +21,6 @@
 #include "TransformationInfrastructure.h"
 #include "TransformationTypes.h"
 
-#ifdef RTI_TSFM_FIELD_ENABLE_LOG
-    #define RTI_TSFM_ENABLE_LOG
-#endif /* RTI_TSFM_FIELD_ENABLE_LOG */
-
-#ifdef RTI_TSFM_FIELD_DISABLE_LOG
-    #define RTI_TSFM_DISABLE_LOG
-#endif /* RTI_TSFM_FIELD_DISABLE_LOG */
-
-#ifdef RTI_TSFM_FIELD_ENABLE_TRACE
-    #define RTI_TSFM_ENABLE_TRACE
-#endif /* RTI_TSFM_FIELD_ENABLE_TRACE */
-
 /*****************************************************************************
  *                         Configuration Properties
  *****************************************************************************/

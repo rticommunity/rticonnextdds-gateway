@@ -153,6 +153,23 @@
         "modbus_register_count": 4
     },
     {
+        "field": "test_type.nested_field.char_field",
+        "modbus_register_address": 76,
+        "modbus_datatype": "HOLDING_REGISTER_INT8"
+    },
+    {
+        "field": "test_type.nested_field.char_array_field",
+        "modbus_register_address": 77,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "test_type.nested_field.char_seq_field",
+        "modbus_register_address": 79,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_register_count": 2
+    },
+    {
         "field": "test_type.nested_field.bool_field",
         "modbus_register_address": 0,
         "modbus_datatype": "COIL_BOOLEAN"
@@ -340,8 +357,29 @@
         "modbus_register_count": 2
     },
     {
+        "field": "test_type.char_field",
+        "modbus_register_address": 176,
+        "modbus_datatype": "HOLDING_REGISTER_INT8"
+    },
+    {
+        "field": "test_type.char_array_field",
+        "modbus_register_address": 177,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "test_type.char_seq_field",
+        "modbus_register_address": 179,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_register_count": 2
+    },
+    {
         "field": "inner_constants.string_constant",
         "value": "value"
+    },
+    {
+        "field": "inner_constants.char_constant",
+        "value": 11
     },
     {
         "field": "inner_constants.int8_constant",
@@ -392,6 +430,10 @@
         "value": 1
     },
     {
+        "field": "inner_constants.char_array_constant",
+        "value": [0, 1]
+    },
+    {
         "field": "inner_constants.int8_array_constant",
         "value": [0, -1]
     },
@@ -438,6 +480,10 @@
     {
         "field": "inner_constants.enum_array_constant",
         "value": [1, 2]
+    },
+    {
+        "field": "inner_constants.char_seq_constant",
+        "value": [0, 1]
     },
     {
         "field": "inner_constants.int8_seq_constant",
@@ -492,6 +538,10 @@
         "value": "value"
     },
     {
+        "field": "char_constant",
+        "value": 11
+    },
+    {
         "field": "int8_constant",
         "value": -42
     },
@@ -540,6 +590,10 @@
         "value": 1
     },
     {
+        "field": "char_array_constant",
+        "value": [0, 1]
+    },
+    {
         "field": "int8_array_constant",
         "value": [0, -1]
     },
@@ -586,6 +640,10 @@
     {
         "field": "enum_array_constant",
         "value": [1, 2]
+    },
+    {
+        "field": "char_seq_constant",
+        "value": [0, 1]
     },
     {
         "field": "int8_seq_constant",
@@ -655,7 +713,6 @@
         "modbus_register_count": 1,
         "input_data_factor": 10,
         "input_data_offset": 5
-
     },
     {
         "field": "input_uint8_seq_field",
@@ -664,6 +721,23 @@
         "modbus_register_count": 2,
         "input_data_factor": 10,
         "input_data_offset": 5
+    },
+    {
+        "field": "input_char_field",
+        "modbus_register_address": 0,
+        "modbus_datatype": "INPUT_REGISTER_INT8"
+    },
+    {
+        "field": "input_char_array_field",
+        "modbus_register_address": 1,
+        "modbus_datatype": "INPUT_REGISTER_INT8",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "input_char_seq_field",
+        "modbus_register_address": 1,
+        "modbus_datatype": "INPUT_REGISTER_INT8",
+        "modbus_register_count": 2
     },
     {
         "field": "input_int16_field",

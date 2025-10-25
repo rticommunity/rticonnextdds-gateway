@@ -17,6 +17,10 @@
 
 #include <dds/dds.hpp>
 
+#ifndef RTICONNEXTDDS_HAS_INT8_TYPE
+#define RTICONNEXTDDS_HAS_INT8_TYPE 0
+#endif
+
 namespace rti { namespace common { namespace dynamic_data {
 /**
  * @brief Gets a DDS primitive or enum value for a specific field.

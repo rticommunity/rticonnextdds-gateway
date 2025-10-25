@@ -16,6 +16,10 @@
 #ifndef TransformationSimple_h
 #define TransformationSimple_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ndds/ndds_c.h"
 #include "routingservice/routingservice_transformation.h"
 
@@ -220,5 +224,9 @@ DDS_ReturnCode_t RTI_TSFM_TransformationPlugin_finalize_transformation(
         RTI_RoutingServiceEnvironment *env);
 
 #include "TransformationLog.h"
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif /* TransformationSimple_h */

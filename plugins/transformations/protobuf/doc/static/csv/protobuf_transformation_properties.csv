@@ -1,0 +1,7 @@
+Property,Required,Default,Accepted Values, Description
+|PROP_BUFFER_MEMBER|,YES,\-, String, An identifier for a member of a type (e.g. 'foo.bar')
+|PROP_TRANSFORM_TYPE|, YES,\-, 'serialize' or 'deserialize', "
+* 'serialize' transforms the buffer from DDS to Protobuf
+* 'deserialize' transforms the buffer from Protobuf to DDS."
+|PROP_DESCRIPTOR_FILE|, YES,\-, Path, A descriptor set file containing the target Protobuf message tgype and all included data types.
+|PROP_MESSAGE_TYPE|, NO, Derived from DDS type, String, The fully-qualified name of the Protobuf type. It will be automatically derived from the DDS type by replacing "::" with "." if not specified.

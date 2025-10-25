@@ -18,7 +18,18 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/mqtt-agent")
 # Shapes example uses other plugins different to the MQTT adapter and all of
 # them should be enabled to add this example
 if (RTIGATEWAY_ENABLE_MQTT
-        AND RTIGATEWAY_ENABLE_TSFM_FIELD
         AND RTIGATEWAY_ENABLE_TSFM_JSON)
-    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/mqtt-shapes")
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/mqtt-shapes-json")
+endif()
+
+if (RTIGATEWAY_ENABLE_MQTT
+        AND RTIGATEWAY_ENABLE_TSFM_PROTOBUF)
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/mqtt-shapes-protobuf")
+endif()
+
+if (RTIGATEWAY_ENABLE_MQTT
+        AND RTIGATEWAY_ENABLE_TSFM_FIELD
+        AND RTIGATEWAY_ENABLE_TSFM_JSON
+        AND RTIGATEWAY_ENABLE_TSFM_PROTOBUF)
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/mqtt-shapes-advanced")
 endif()

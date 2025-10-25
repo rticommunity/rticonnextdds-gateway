@@ -36,13 +36,16 @@ git submodule update --init --recursive
 
 **Requirements**:
 
-- [Connext DDS 7.3.0](https://community.rti.com/content/page/downloads)
+- [Connext DDS 7.3.0 or newer](https://community.rti.com/content/page/downloads)
+  - See [below](#compatibility-with-rti-connext) for more details on version compatibility.
 - [cmake 3.10+](https://cmake.org/download/)
+- [Python 3.8+](https://www.python.org/downloads/) (only required to run tests).
 
 In order to build the RTI Connext Gateway components you have to run the following
 command:
 
 Linux® and macOS® systems
+
 ```sh
 mkdir build
 cd build
@@ -54,7 +57,7 @@ cmake --build . -- install
 By default CMake builds debug artifacts. Debug libraries should be loaded and
 run with the debug version of Routing Service debug, which is located at:
 
-```
+```sh
 $NDDSHOME/resource/app/bin/<architecture>/rtiroutingserviceappd
 ```
 
@@ -95,6 +98,30 @@ specify the configuration mode when building it:
 --config Debug|Release
 ```
 
+## Compatibility with RTI Connext
+
+The RTI Connext Gateway is an experimental, source-based, add-on compatible with the most
+recent versions of RTI Connext.
+
+The repository will always support the most recently released version of Connext, and
+the most recent LTS version.
+
+A dedicated branch will be created whenever support for an LTS version is dropped
+from the main development branch. These version-specific branches will receive bug fixes
+as long as the associated Connext version is still within its planned support window.
+
+The following table summarizes the versions of Connext currently supported by the
+RTI Connext Gateway:
+
+| Connext Version | Repository Branch | Status |
+|-----------------|-------------------|--------|
+| 7.6.0           | `develop`         | Active |
+| 7.5.0           | `develop`         | EOL |
+| 7.3.0 (LTS)     | `develop`         | Active |
+| 6.1.2 (LTS)     | `release/6.1.2`   | EOL |
+| 6.1.1 (LTS)     | `release/6.1.1`   | EOL |
+| 6.0.1 (LTS)     | `release/6.0.1`   | EOL |
+
 ## Documentation
 
 The documentation can be found online in the following link:
@@ -110,25 +137,10 @@ https://community.rti.com/static/documentation/gateway/current/index.html
 the `dot` command.
 - [docutils 0.14+](https://docutils.sourceforge.io/)
 
-> **NOTE**: you may need to install manually `sphinx_rtd_theme`,
-> `breathe` and `docutils`. See below how to install them.
-
-- Installing `sphinx_rtd_theme` 0.5.1:
+- You can used the included manifest to install all Python dependencies:
 
     ```sh
-    pip install sphinx_rtd_theme
-    ```
-
-- Installing `breathe`:
-
-    ```sh
-    pip install breathe
-    ```
-
-- Installing `docutils`:
-
-    ```sh
-    pip install docutils
+    pip install -r doc/requirements.txt
     ```
 
 In order to build the RTI Connext Gateway documentation, you have to add the

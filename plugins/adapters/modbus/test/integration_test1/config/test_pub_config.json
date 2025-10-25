@@ -154,6 +154,23 @@
         "modbus_register_count": 4
     },
     {
+        "field": "nested_field.char_field",
+        "modbus_register_address": 76,
+        "modbus_datatype": "HOLDING_REGISTER_INT8"
+    },
+    {
+        "field": "nested_field.char_array_field",
+        "modbus_register_address": 77,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "nested_field.char_seq_field",
+        "modbus_register_address": 79,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_register_count": 2
+    },
+    {
         "field": "nested_field.bool_field",
         "modbus_register_address": 0,
         "modbus_datatype": "COIL_BOOLEAN"
@@ -323,6 +340,23 @@
         "modbus_register_address": 172,
         "modbus_datatype": "HOLDING_REGISTER_FLOAT_DCBA",
         "modbus_register_count": 4
+    },
+    {
+        "field": "char_field",
+        "modbus_register_address": 176,
+        "modbus_datatype": "HOLDING_REGISTER_INT8"
+    },
+    {
+        "field": "char_array_field",
+        "modbus_register_address": 177,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_register_count": 2
+    },
+    {
+        "field": "char_seq_field",
+        "modbus_register_address": 179,
+        "modbus_datatype": "HOLDING_REGISTER_INT8",
+        "modbus_register_count": 2
     },
     {
         "field": "bool_field",

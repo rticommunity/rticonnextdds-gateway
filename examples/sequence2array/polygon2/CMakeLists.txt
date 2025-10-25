@@ -25,6 +25,8 @@ connextdds_rtiddsgen_run(
     IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/publisher/${PUBLISHER_NAME}.idl"
     LANG "C++11"
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/publisher"
+    EXTRA_ARGS
+        ${RTIDDSGEN_CXX11_LEGACY_API_ARGS}
 )
 
 add_executable(${PUBLISHER_NAME}_publisher
@@ -47,6 +49,8 @@ connextdds_rtiddsgen_run(
     IDL_FILE "${CMAKE_CURRENT_SOURCE_DIR}/subscriber/${SUBSCRIBER_NAME}.idl"
     LANG "C++11"
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/subscriber"
+    EXTRA_ARGS
+        ${RTIDDSGEN_CXX11_LEGACY_API_ARGS}
 )
 
 add_executable(${SUBSCRIBER_NAME}_subscriber

@@ -18,6 +18,8 @@
 #include "SequenceHelpers.h"
 #include "TransformationLog.h"
 
+#define RTI_TSFM_LOG_ARGS "rti::seqhelpers"
+
 DDS_Boolean DDS_CharSeq_assert_nul_terminator(struct DDS_CharSeq *self)
 {
     DDS_Long length = 0;

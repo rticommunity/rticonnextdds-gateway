@@ -6,10 +6,12 @@ BOOL",COIL_BOOLEAN,"|CONF_MODBUS_REGISTER_COUNT| |BR|
 (writes coils, not registers)"
 "INT8 |BR|
 UINT8 |BR|
+CHAR |BR|
 ENUM literals fitting into its type",HOLDING_REGISTER_INT8,1
 "**Array or Sequence of:** |BR|
 INT8 |BR|
 UINT8 |BR|
+CHAR |BR|
 ENUM with all literals fitting into its type",HOLDING_REGISTER_INT8,"|CONF_MODBUS_REGISTER_COUNT| |BR|
 |BR|
 If an Array, the size must be exactly |CONF_MODBUS_REGISTER_COUNT| |BR|

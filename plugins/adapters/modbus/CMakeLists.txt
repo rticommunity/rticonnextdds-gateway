@@ -46,6 +46,10 @@ target_link_libraries(${RSPLUGIN_LIB_NAME}
         modbus
 )
 
+if(RTICONNEXTDDS_HAS_INT8_TYPE)
+    target_compile_definitions(${RSPLUGIN_LIB_NAME} PRIVATE RTICONNEXTDDS_HAS_INT8_TYPE=1)
+endif()
+
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/utilities")
 
 # Stagging targets

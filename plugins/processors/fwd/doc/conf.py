@@ -91,7 +91,7 @@ html_theme = "sphinx_rtd_theme"
 
 def setup(app):
     app.add_css_file('css/custom.css')
-    #app.add_javascript('js/custom.js')
+
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -100,7 +100,6 @@ def setup(app):
 html_logo = "_static/img/rti-logo.png"
 html_favicon = "_static/img/favicon.ico"
 html_css_files = ['css/custom.css']
-html_js_files = ['js/custom.js']
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

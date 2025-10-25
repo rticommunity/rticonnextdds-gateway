@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  (c) 2025 Copyright, Real-Time Innovations, Inc.  All rights reserved.
+
+  RTI grants Licensee a license to use, modify, compile, and create derivative
+  works of the Software.  Licensee has the right to distribute object form
+  only for use with RTI products.  The Software is provided "as is", with no
+  warranty of any type, including any warranty for fitness for any purpose.
+  RTI is under no obligation to maintain or support the Software.  RTI shall
+  not be liable for any incidental or consequential damages arising out of the
+  use or inability to use the software.
+ -->
+
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:////opt/rti.com/rti_connext_dds-7.6.0/bin/../resource/app/app_support/rtiddsgen/schema/rti_dds_profiles.xsd">
+<types>
+<module name="test">
+  <enum name="TestEnum">
+    <enumerator name="TEST_ENUM_VALUE_1"/>
+    <enumerator name="TEST_ENUM_VALUE_2"/>
+    <enumerator name="TEST_ENUM_VALUE_3"/>
+  </enum> 
+  <struct name= "TestStruct">
+    <member name="member1" stringMaxLength="255" type="string"/>
+    <member name="member2" type="float64"/>
+    <member name="member3" type="int8"/>
+    <member name="member4" type="nonBasic"  nonBasicTypeName= "test::TestEnum"/>
+  </struct>
+  <union name="TestUnionSeq">
+    <discriminator type="nonBasic" nonBasicTypeName="test::TestEnum"/>
+    <case>
+      <caseDiscriminator value="(test::TEST_ENUM_VALUE_1)"/>
+        <member name="member1" type="uint16"/>
+    </case>
+    <case>
+      <caseDiscriminator value="(test::TEST_ENUM_VALUE_2)"/>
+        <member name="member2" type="boolean"/>
+    </case>
+    <case>
+      <caseDiscriminator value="default"/>
+        <member name="member3" sequenceMaxLength="5" type="nonBasic"  nonBasicTypeName= "test::TestStruct"/>
+    </case>
+  </union>
+  <union name="TestUnionArray">
+    <discriminator type="nonBasic" nonBasicTypeName="test::TestEnum"/>
+    <case>
+      <caseDiscriminator value="(test::TEST_ENUM_VALUE_1)"/>
+        <member name="member1" type="uint16"/>
+    </case>
+    <case>
+      <caseDiscriminator value="(test::TEST_ENUM_VALUE_2)"/>
+        <member name="member2" type="boolean"/>
+    </case>
+    <case>
+      <caseDiscriminator value="default"/>
+        <member name="member3" type="nonBasic"  nonBasicTypeName= "test::TestStruct" arrayDimensions="5"/>
+    </case>
+  </union>
+  <typedef name="TSeq_String" sequenceMaxLength="10" type="char8"/>
+  <typedef name="TSeq_List" sequenceMaxLength="10" type="int32"/>
+  <typedef name="TSeq_StringSeq" sequenceMaxLength="5" type="nonBasic"  nonBasicTypeName= "test::TSeq_String"/>
+  <typedef name="TArr_String" type="char8" arrayDimensions="10"/>
+  <typedef name="TArr_List" type="int32" arrayDimensions="10"/>
+  <typedef name="TArr_StringArr" type="nonBasic"  nonBasicTypeName= "test::TArr_String" arrayDimensions="5"/>
+  <module name="inttest1">
+    <struct name= "PubType">
+      <member name="member1" sequenceMaxLength="100" type="nonBasic"  nonBasicTypeName= "test::TestStruct"/>
+      <member name="member2" sequenceMaxLength="100" type="nonBasic"  nonBasicTypeName= "test::TestEnum"/>
+      <member name="member3" sequenceMaxLength="100" type="nonBasic"  nonBasicTypeName= "test::TestUnionSeq"/>
+      <member name="member4" type="nonBasic"  nonBasicTypeName= "test::TestStruct" arrayDimensions="2"/>
+      <member name="member5" type="nonBasic"  nonBasicTypeName= "test::TestStruct"/>
+      <member name="member6" type="uint64"/>
+      <member name="member7" type="nonBasic"  nonBasicTypeName= "test::TestEnum"/>
+    </struct>
+    <struct name= "SubType">
+      <member name="member1" type="nonBasic"  nonBasicTypeName= "test::TestStruct" arrayDimensions="5"/>
+      <member name="member2" type="nonBasic"  nonBasicTypeName= "test::TestEnum" arrayDimensions="5"/>
+      <member name="member3" type="nonBasic"  nonBasicTypeName= "test::TestUnionArray" arrayDimensions="5"/>
+      <member name="member4" type="nonBasic"  nonBasicTypeName= "test::TestStruct" arrayDimensions="2"/>
+      <member name="member5" type="nonBasic"  nonBasicTypeName= "test::TestStruct"/>
+      <member name="member6" type="uint64"/>
+      <member name="member7" type="nonBasic"  nonBasicTypeName= "test::TestEnum"/>
+    </struct>
+  </module>
+  <module name="inttest2">
+    <struct name= "PubType">
+      <member name="member1" type="nonBasic"  nonBasicTypeName= "test::TestStruct" arrayDimensions="5"/>
+      <member name="member2" type="nonBasic"  nonBasicTypeName= "test::TestEnum" arrayDimensions="5"/>
+      <member name="member3" type="nonBasic"  nonBasicTypeName= "test::TestUnionArray" arrayDimensions="5"/>
+      <member name="member4" sequenceMaxLength="2" type="nonBasic"  nonBasicTypeName= "test::TestStruct"/>
+      <member name="member5" type="nonBasic"  nonBasicTypeName= "test::TestStruct"/>
+      <member name="member6" type="uint64"/>
+      <member name="member7" type="nonBasic"  nonBasicTypeName= "test::TestEnum"/>
+    </struct>
+    <struct name= "SubType">
+      <member name="member1" sequenceMaxLength="100" type="nonBasic"  nonBasicTypeName= "test::TestStruct"/>
+      <member name="member2" sequenceMaxLength="100" type="nonBasic"  nonBasicTypeName= "test::TestEnum"/>
+      <member name="member3" sequenceMaxLength="100" type="nonBasic"  nonBasicTypeName= "test::TestUnionSeq"/>
+      <member name="member4" sequenceMaxLength="2" type="nonBasic"  nonBasicTypeName= "test::TestStruct"/>
+      <member name="member5" type="nonBasic"  nonBasicTypeName= "test::TestStruct"/>
+      <member name="member6" type="uint64"/>
+      <member name="member7" type="nonBasic"  nonBasicTypeName= "test::TestEnum"/>
+    </struct>
+  </module>
+  <module name="inttest3">
+    <struct name= "PubType">
+      <member name="member1" sequenceMaxLength="5" type="nonBasic"  nonBasicTypeName= "test::TSeq_String"/>
+      <member name="member2" sequenceMaxLength="5" type="nonBasic"  nonBasicTypeName= "test::TSeq_List"/>
+      <member name="member3" type="nonBasic"  nonBasicTypeName= "test::TSeq_StringSeq" optional="true"/>
+    </struct>
+    <struct name= "SubType">
+      <member name="member1" type="nonBasic"  nonBasicTypeName= "test::TArr_String" arrayDimensions="5"/>
+      <member name="member2" type="nonBasic"  nonBasicTypeName= "test::TArr_List" arrayDimensions="5"/>
+      <member name="member3" type="nonBasic"  nonBasicTypeName= "test::TArr_StringArr" optional="true"/>
+    </struct>
+  </module>
+  <module name="inttest4">
+    <struct name= "PubType">
+      <member name="member1" type="nonBasic"  nonBasicTypeName= "test::TArr_String" arrayDimensions="5"/>
+      <member name="member2" type="nonBasic"  nonBasicTypeName= "test::TArr_List" arrayDimensions="5"/>
+      <member name="member3" type="nonBasic"  nonBasicTypeName= "test::TArr_StringArr" optional="true"/>
+    </struct>
+    <struct name= "SubType">
+      <member name="member1" sequenceMaxLength="100" type="nonBasic"  nonBasicTypeName= "test::TSeq_String"/>
+      <member name="member2" sequenceMaxLength="100" type="nonBasic"  nonBasicTypeName= "test::TSeq_List"/>
+      <member name="member3" type="nonBasic"  nonBasicTypeName= "test::TSeq_StringSeq" optional="true"/>
+    </struct>
+  </module>
+</module>
+</types>
+</dds>

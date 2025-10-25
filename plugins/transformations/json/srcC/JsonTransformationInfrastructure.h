@@ -16,18 +16,6 @@
 #ifndef Json_Transformation_Infrastructure_h
 #define Json_Transformation_Infrastructure_h
 
-#ifdef RTI_TSFM_JSON_ENABLE_LOG
-    #define RTI_TSFM_ENABLE_LOG
-#endif /* RTI_TSFM_JSON_ENABLE_LOG */
-
-#ifdef RTI_TSFM_JSON_DISABLE_LOG
-    #define RTI_TSFM_DISABLE_LOG
-#endif /* RTI_TSFM_JSON_DISABLE_LOG */
-
-#ifdef RTI_TSFM_JSON_ENABLE_TRACE
-    #define RTI_TSFM_ENABLE_TRACE
-#endif /* RTI_TSFM_JSON_ENABLE_TRACE */
-
 #include "ndds/ndds_c.h"
 
 #include "TransformationTypes.h"

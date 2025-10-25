@@ -1,0 +1,108 @@
+#! /usr/bin/env bash
+#
+###############################################################################
+#  (c) 2020 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved. #
+#                                                                             #
+#  RTI grants Licensee a license to use, modify, compile, and create          #
+#  derivative works of the software solely for use with RTI Connext DDS.      #
+#  Licensee may redistribute copies of the software provided that all such    #
+#  copies are subject to this license.                                        #
+#  The software is provided "as is", with no warranty of any type, including  #
+#  any warranty for fitness for any purpose. RTI is under no obligation to    #
+#  maintain or support the software.  RTI shall not be liable for any         #
+#  incidental or consequential damages arising out of the use or inability to #
+#  use the software.                                                          #
+#                                                                             #
+###############################################################################
+
+DEMO_DIR="${RTI_MQTTSHAPES_DEMO_DIR:-$(pwd)}"
+
+#== initialization
+set -o nounset
+set -ex
+
+readonly session_name="${RTI_MQTTSHAPES_TMUX_SESSION:-Kafka+PB DEMO}"
+
+
+#== function definitions
+
+function send_tmux_commands {
+    # Create sessions first, then windows, then panes, then send commands to
+    # panes. This parallelizes commands best as commands in all windows to can
+    # start parallel, but we may need to sequence some commands in some panes.
+    # Additionally there's less variability on sessions/windows than
+    # panes/commands so this way we are making it easier to compose where
+    # there's more variability.
+
+
+    # window creation
+    # the first window doesn't need to be created because session creates it
+    tmux new-window  -t  "$session_name:1" -n "Routing Service"
+    tmux new-window  -t  "$session_name:2" -n "MQTT"
+
+    ## pane creation
+
+    # note: pane creation syntax:
+    #   * create a pane to the right of the current pane, width 66% of current
+    #     pane, with:  split-window -h -p 66
+    #   * create a pane below the current pane, height 66% of current pane's,
+    #     with: split-window -v -p 66
+
+    # window 1 panes (domain_A):
+    # ------------------------------
+    # |             |              |
+    # | agent-dds   | monitor      |
+    # |             |              |
+    # ------------------------------
+    tmux split-window -t "$session_name:1.0" -v -p 50
+    tmux split-window -t "$session_name:1.0" -h -p 50
+    # tmux split-window -t "$session_name:1.2" -h -p 50
+
+    ## pane commands (if possible, all panes should be created already, so
+    ## commands in panes can startup in parallel).
+
+    #######################################################################
+
+    tmux send-keys -t "$session_name:0.0" \
+        "$NDDSHOME/bin/rtishapesdemo -compact -dataType Shape -pubInterval 1000" C-m
+
+    #######################################################################
+
+    tmux send-keys -t "$session_name:1.2" \
+        "sleep 4 && DYLD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH " \
+            "LD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH " \
+            "$NDDSHOME/bin/rtiroutingservice -cfgFile ${DEMO_DIR}/shapesdemo_kafka_protobuf.xml -cfgName shapesdemo_bridge" C-m
+
+    tmux send-keys -t "$session_name:1.0" \
+        "sleep 2 && DYLD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH " \
+            "LD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH " \
+            "${DEMO_DIR}/bin/shapes_kafka_publisher localhost:9092 GREEN Square" C-m
+
+    tmux send-keys -t "$session_name:1.1" \
+        "sleep 2 && DYLD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH " \
+            "LD_LIBRARY_PATH=${DEMO_DIR}/../../../lib:$NDDSHOME/lib/$CONNEXTDDS_ARCH " \
+            "${DEMO_DIR}/bin/shapes_kafka_subscriber localhost:9092 Square" C-m
+
+    #######################################################################
+
+    tmux select-window -t "$session_name:1.0"
+}
+
+#== execution
+
+if tmux has-session -t "$session_name" &> /dev/null; then
+    echo "error: session '$session_name' already exists"
+    exit 64
+fi
+
+# session creation (also creates window 0)
+# note: we need -d on new-session so we don't immediately attach to the session
+# (and so we can keep creating windows in the new session)
+tmux new-session -s  "$session_name"   -n "Shapes Demo" -d
+
+# send commands in the background so we can attach and see things as they
+# happen
+send_tmux_commands &
+
+# attach like a boss
+tmux attach

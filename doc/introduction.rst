@@ -26,6 +26,31 @@ that a set of different protocols have been selected for the sake of the
 example, but the key capability of the |RTI_GATEWAY| is that it
 can *adapt* **any** connectivity protocol.
 
+|RTI_GATEWAY_PLAIN| Plugins
+---------------------------
+
+|RTI_GATEWAY| ships with a set of ready-to-use plugins. These include
+both some examples of protocol integration, and some useful utilities for
+common data processing needs. Please refer to each plugin's user manual for more
+information on its use and configuration:
+
+  * Adapters
+
+    * `Modbus® <adapters/modbus/index.html>`__ : Integration plugin for the MODBUS protocol.
+    * `MQTT <adapters/mqtt/index.html>`__ : Integration plugin for the MQTT protocol.
+    * `Kafka® <adapters/kafka/index.html>`__ : Integration plugin for the Kafka protocol.
+
+  * Processors
+
+    * `Forwarder <processors/fwd/index.html>`__ : Custom forwarding of data within a route.
+
+  * Transformations
+
+    * `Field <transformations/tsfm_field/index.html>`__ : Extract an attribute from input samples and convert its value to a string.
+    * `JSON <transformations/tsfm_json/index.html>`__ : Convert DDS samples to JSON format.
+    * `Protobuf <transformations/tsfm_protobuf/index.html>`__ : Convert DDS samples to Protocol Buffers serialized messages.
+    * `Sequence2Array <transformations/tsfm_sequence2array/index.html>`__ : Convert a sample into a type which uses arrays instead of sequences.
+
 Routing Service Plugins Architecture
 ------------------------------------
 
@@ -103,27 +128,3 @@ different modules are shown in figure below:
   facilitate the development process of the user plugins. It mainly
   consists of a build system, a unit test framework, and
   documentation generation infrastructure.
-
-|RTI_GATEWAY_PLAIN| Plugins
----------------------------
-
-|RTI_GATEWAY| ships with a set of ready-to-use plugins. These include
-both some examples of protocol integration, and some useful utilities for
-common data processing needs. Please refer to each plugin's user manual for more
-information on its use and configuration:
-
-  * Adapters
-
-    * `Modbus® <adapters/modbus/index.html>`__ : Integration plugin for the MODBUS protocol.
-    * `MQTT <adapters/mqtt/index.html>`__ : Integration plugin for the MQTT protocol.
-    * `Kafka® <adapters/kafka/index.html>`__ : Integration plugin for the Kafka protocol.
-
-  * Processors
-
-    * `Forwarder <processors/fwd/index.html>`__ : Custom forwarding of data within a route.
-
-  * Transformations
-
-    * `Field <transformations/tsfm_field/index.html>`__ : Extract an attribute from input samples and convert its value to a string.
-    * `JSON <transformations/tsfm_json/index.html>`__ : Convert DDS samples to JSON format.
-    * `Sequence2Array <transformations/tsfm_sequence2array/index.html>`__ : Convert a sample into a type which uses arrays instead of sequences.

@@ -67,12 +67,8 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
      */
     ASSERT_COND(*(sample->test_type.nested_field.optional_non_set) == 0);
     ASSERT_COND(sample->test_type.nested_field.bool_field == BOOLEAN_VALUE);
-    /*
-     * The following conversion to DDS_Octet is done to ensure compatibility
-     * between 6.0.1, where int8 are represented as octets, and 6.1.0, where
-     * int8 are represented by signed int8
-     */
-    ASSERT_COND((DDS_Octet)sample->test_type.nested_field.int8_field == (DDS_Octet)SIGNED_VALUE);
+    ASSERT_COND(sample->test_type.nested_field.int8_field == SIGNED_VALUE);
+    ASSERT_COND(sample->test_type.nested_field.char_field == UNSIGNED_VALUE);
     ASSERT_COND(sample->test_type.nested_field.uint8_field == (DDS_Octet)UNSIGNED_VALUE);
     ASSERT_COND(*(sample->test_type.nested_field.int16_field) == SIGNED_VALUE);
     ASSERT_COND(sample->test_type.nested_field.uint16_field == UNSIGNED_VALUE);
@@ -92,12 +88,8 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
      */
     ASSERT_COND(*(sample->test_type.optional_non_set) == 0);
     ASSERT_COND(sample->test_type.bool_field == BOOLEAN_VALUE);
-    /*
-     * The following conversion to DDS_Octet is done to ensure compatibility
-     * between 6.0.1, where int8 are represented as octets, and 6.1.0, where
-     * int8 are represented by signed int8
-     */
-    ASSERT_COND((DDS_Octet)sample->test_type.int8_field == (DDS_Octet)SIGNED_VALUE);
+    ASSERT_COND(sample->test_type.int8_field == SIGNED_VALUE);
+    ASSERT_COND(sample->test_type.char_field == UNSIGNED_VALUE);
     ASSERT_COND(sample->test_type.uint8_field == (DDS_Octet)UNSIGNED_VALUE);
     ASSERT_COND(*(sample->test_type.int16_field) == SIGNED_VALUE);
     ASSERT_COND(sample->test_type.uint16_field == UNSIGNED_VALUE);
@@ -114,13 +106,10 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
         ASSERT_COND(sample->test_type.bool_array_field[i] == i % 2);
         ASSERT_COND(DDS_BooleanSeq_get(
                 &sample->test_type.bool_seq_field, i) == (DDS_Boolean)BOOLEAN_ARRAY_VALUE(i));
-        /*
-         * The following conversion to DDS_Octet is done to ensure compatibility
-         * between 6.0.1, where int8 are represented as octets, and 6.1.0, where
-         * int8 are represented by signed int8
-         */
-        ASSERT_COND((DDS_Octet) (sample->test_type.int8_array_field[i])
-                == (DDS_Octet) (SIGNED_ARRAY_VALUE(i)));
+        ASSERT_COND(sample->test_type.int8_array_field[i] == SIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->test_type.char_array_field[i] == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_CharSeq_get(
+                &sample->test_type.char_seq_field, i) == UNSIGNED_ARRAY_VALUE(i));
         ASSERT_COND(DDS_UInt8Seq_get(
                 &sample->test_type.uint8_seq_field, i) == (DDS_Octet)UNSIGNED_ARRAY_VALUE(i));
         ASSERT_COND(sample->test_type.int16_array_field[i] == SIGNED_ARRAY_VALUE(i));
@@ -146,13 +135,10 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
         ASSERT_COND(sample->test_type.nested_field.bool_array_field[i] == i % 2);
         ASSERT_COND(DDS_BooleanSeq_get(
                 &sample->test_type.nested_field.bool_seq_field, i) == (DDS_Boolean)BOOLEAN_ARRAY_VALUE(i));
-        /*
-         * The following conversion to DDS_Octet is done to ensure compatibility
-         * between 6.0.1, where int8 are represented as octets, and 6.1.0, where
-         * int8 are represented by signed int8
-         */
-        ASSERT_COND((DDS_Octet) (sample->test_type.nested_field.int8_array_field[i])
-                == (DDS_Octet) (SIGNED_ARRAY_VALUE(i)));
+        ASSERT_COND(sample->test_type.nested_field.char_array_field[i] == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(DDS_CharSeq_get(
+                &sample->test_type.nested_field.char_seq_field, i) == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->test_type.nested_field.int8_array_field[i] == SIGNED_ARRAY_VALUE(i));
         ASSERT_COND(DDS_UInt8Seq_get(
                 &sample->test_type.nested_field.uint8_seq_field, i) == (DDS_Octet)UNSIGNED_ARRAY_VALUE(i));
         ASSERT_COND(sample->test_type.nested_field.int16_array_field[i] == SIGNED_ARRAY_VALUE(i));
@@ -177,6 +163,7 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
 
     /* Check constants */
     ASSERT_COND(strcmp(sample->string_constant, STRING_CONSTANT_VALUE) == 0);
+    ASSERT_COND(sample->char_constant == UNSIGNED_CONSTANT_VALUE);
     ASSERT_COND(sample->int8_constant == SIGNED_CONSTANT_VALUE);
     ASSERT_COND(sample->int16_constant == SIGNED_CONSTANT_VALUE);
     ASSERT_COND(sample->int32_constant == SIGNED_CONSTANT_VALUE);
@@ -192,6 +179,7 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
 
     /* Inner constants */
     ASSERT_COND(strcmp(sample->inner_constants.string_constant, STRING_CONSTANT_VALUE) == 0);
+    ASSERT_COND(sample->inner_constants.char_constant == UNSIGNED_CONSTANT_VALUE);
     ASSERT_COND(sample->inner_constants.int8_constant == SIGNED_CONSTANT_VALUE);
     ASSERT_COND(sample->inner_constants.int16_constant == SIGNED_CONSTANT_VALUE);
     ASSERT_COND(sample->inner_constants.int32_constant == SIGNED_CONSTANT_VALUE);
@@ -206,13 +194,8 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
     ASSERT_COND(sample->inner_constants.enum_constant == ENUM_CONSTANT_VALUE);
 
     for (i = 0; i < 2; ++i) {
-        /*
-         * The following conversion to DDS_Octet is done to ensure compatibility
-         * between 6.0.1, where int8 are represented as octets, and 6.1.0, where
-         * int8 are represented by signed int8
-         */
-        ASSERT_COND((DDS_Octet) (sample->int8_array_constant[i])
-                == (DDS_Octet) (SIGNED_ARRAY_VALUE(i)));
+        ASSERT_COND(sample->char_array_constant[i] == UNSIGNED_ARRAY_VALUE(i));
+        ASSERT_COND(sample->int8_array_constant[i] == SIGNED_ARRAY_VALUE(i));
         ASSERT_COND(sample->int16_array_constant[i] == SIGNED_ARRAY_VALUE(i));
         ASSERT_COND(sample->int32_array_constant[i] == SIGNED_ARRAY_VALUE(i));
         ASSERT_COND(sample->int64_array_constant[i] == SIGNED_ARRAY_VALUE(i));
@@ -225,6 +208,8 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
         ASSERT_COND(sample->bool_array_constant[i] == BOOLEAN_ARRAY_VALUE(i));
         ASSERT_COND(sample->enum_array_constant[i] == ENUM_VALUE_ARRAY(i));
 
+        ASSERT_COND(DDS_CharSeq_get(&sample->char_seq_constant, i)
+                == (DDS_Octet)UNSIGNED_ARRAY_VALUE(i));
         ASSERT_COND(DDS_Int8Seq_get(&sample->int8_seq_constant, i)
                 == (DDS_Octet)SIGNED_ARRAY_VALUE(i));
         ASSERT_COND(DDS_ShortSeq_get(&sample->int16_seq_constant, i)
@@ -251,8 +236,8 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
                 == ENUM_VALUE_ARRAY(i));
 
         /* Nested constant values */
-        ASSERT_COND((DDS_Octet) (sample->inner_constants.int8_array_constant[i])
-                == (DDS_Octet) (SIGNED_ARRAY_VALUE(i)));
+        ASSERT_COND(sample->inner_constants.char_constant == UNSIGNED_CONSTANT_VALUE);
+        ASSERT_COND(sample->inner_constants.int8_array_constant[i] == SIGNED_ARRAY_VALUE(i));
         ASSERT_COND(sample->inner_constants.int16_array_constant[i] == SIGNED_ARRAY_VALUE(i));
         ASSERT_COND(sample->inner_constants.int32_array_constant[i] == SIGNED_ARRAY_VALUE(i));
         ASSERT_COND(sample->inner_constants.int64_array_constant[i] == SIGNED_ARRAY_VALUE(i));
@@ -265,8 +250,10 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
         ASSERT_COND(sample->inner_constants.bool_array_constant[i] == BOOLEAN_ARRAY_VALUE(i));
         ASSERT_COND(sample->inner_constants.enum_array_constant[i] == ENUM_VALUE_ARRAY(i));
 
+        ASSERT_COND(DDS_CharSeq_get(&sample->inner_constants.char_seq_constant, i)
+                == UNSIGNED_ARRAY_VALUE(i));
         ASSERT_COND(DDS_Int8Seq_get(&sample->inner_constants.int8_seq_constant, i)
-                == (DDS_Octet)SIGNED_ARRAY_VALUE(i));
+                == SIGNED_ARRAY_VALUE(i));
         ASSERT_COND(DDS_ShortSeq_get(&sample->inner_constants.int16_seq_constant, i)
                 == SIGNED_ARRAY_VALUE(i));
         ASSERT_COND(DDS_LongSeq_get(&sample->inner_constants.int32_seq_constant, i)
@@ -293,6 +280,7 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
     /* Check input registers */
     ASSERT_COND(*sample->input_enum_field == ENUM_VALUE);
     ASSERT_COND(*sample->input_bool_field == DDS_BOOLEAN_TRUE);
+    ASSERT_COND(*sample->input_char_field == UNSIGNED_VALUE);
     ASSERT_COND(*sample->input_int8_field == UNSIGNED_VALUE);
     ASSERT_COND(*sample->input_uint8_field
             == VALUE_WITH_OFFSET_DATA_FACTOR(UNSIGNED_VALUE));
@@ -312,6 +300,8 @@ DDS_Boolean check_received_parameters(TestType_sub *sample)
         ASSERT_COND(sample->input_bool_array_field[i] == value % 2);
         ASSERT_COND(DDS_BooleanSeq_get(
                 &sample->input_bool_seq_field, i) == BOOLEAN_ARRAY_VALUE(value));
+        ASSERT_COND(sample->input_char_array_field[i] == UNSIGNED_ARRAY_VALUE(value));
+        ASSERT_COND(DDS_CharSeq_get(&sample->input_char_seq_field, i) == UNSIGNED_ARRAY_VALUE(value));
         ASSERT_COND(sample->input_int8_array_field[i] == UNSIGNED_ARRAY_VALUE(value));
         ASSERT_COND(DDS_UInt8Seq_get(
                 &sample->input_uint8_seq_field, i)
@@ -457,6 +447,7 @@ int publish_data_test(DDS_DomainParticipant *participant)
     instance->nested_field.enum_field = (ShapeFillKind*) malloc(sizeof(ShapeFillKind));
     *instance->nested_field.enum_field = ENUM_VALUE;
     instance->nested_field.optional_non_set = NULL;
+    instance->nested_field.char_field = UNSIGNED_VALUE;
     instance->nested_field.bool_field = BOOLEAN_VALUE;
     instance->nested_field.int8_field = SIGNED_VALUE;
     instance->nested_field.uint8_field = UNSIGNED_VALUE;
@@ -475,6 +466,7 @@ int publish_data_test(DDS_DomainParticipant *participant)
     instance->enum_field = (ShapeFillKind*) malloc(sizeof(ShapeFillKind));
     *instance->enum_field = ENUM_VALUE;
     instance->optional_non_set = NULL;
+    instance->char_field = UNSIGNED_VALUE;
     instance->bool_field = BOOLEAN_VALUE;
     instance->int8_field = SIGNED_VALUE;
     instance->uint8_field = UNSIGNED_VALUE;
@@ -495,6 +487,10 @@ int publish_data_test(DDS_DomainParticipant *participant)
         DDS_BooleanSeq_set_length(&instance->bool_seq_field, 2);
         *DDS_BooleanSeq_get_reference(&instance->bool_seq_field, i) =
                 BOOLEAN_ARRAY_VALUE(i);
+        instance->char_array_field[i] = UNSIGNED_ARRAY_VALUE(i);
+        DDS_CharSeq_set_length(&instance->char_seq_field, 2);
+        *DDS_CharSeq_get_reference(&instance->char_seq_field, i) =
+                UNSIGNED_ARRAY_VALUE(i);
         instance->int8_array_field[i] = SIGNED_ARRAY_VALUE(i);
         DDS_UInt8Seq_set_length(&instance->uint8_seq_field, 2);
         *DDS_UInt8Seq_get_reference(&instance->uint8_seq_field, i) =
@@ -525,6 +521,9 @@ int publish_data_test(DDS_DomainParticipant *participant)
         DDS_BooleanSeq_set_length(&instance->nested_field.bool_seq_field, 2);
         *DDS_BooleanSeq_get_reference(&instance->nested_field.bool_seq_field, i) =
                 BOOLEAN_ARRAY_VALUE(i);
+        instance->nested_field.char_array_field[i] = UNSIGNED_ARRAY_VALUE(i);
+        DDS_CharSeq_set_length(&instance->nested_field.char_seq_field, 2);
+        *DDS_CharSeq_get_reference(&instance->nested_field.char_seq_field, i) = UNSIGNED_ARRAY_VALUE(i);
         instance->nested_field.int8_array_field[i] = SIGNED_ARRAY_VALUE(i);
         DDS_UInt8Seq_set_length(&instance->nested_field.uint8_seq_field, 2);
         *DDS_UInt8Seq_get_reference(&instance->nested_field.uint8_seq_field, i) =
@@ -609,6 +608,11 @@ int publish_data_test(DDS_DomainParticipant *participant)
 
             /* Subscription matched */
             if (triggeredmask & DDS_PUBLICATION_MATCHED_STATUS) {
+
+                printf("-------- Writing ModBus Sample: --------\n");
+                TestType_pubTypeSupport_print_data(instance);
+                printf("-----------------------------------------\n");
+
                 retcode = TestType_pubDataWriter_write(
                         TestType_pub_writer, instance, &instance_handle);
                 if (retcode != DDS_RETCODE_OK) {
@@ -742,6 +746,7 @@ int read_data_test(DDS_DomainParticipant *participant)
 
     for (i = 0; i < DDS_ConditionSeq_get_length(&active_conditions); ++i) {
         /* Compare with Status Conditions */
+        DDS_Boolean sample_ok = DDS_BOOLEAN_TRUE;
         if (DDS_ConditionSeq_get(&active_conditions, i) ==
                 (DDS_Condition *) status_condition_sub) {
             /* A status condition triggered--see which ones */
@@ -773,13 +778,19 @@ int read_data_test(DDS_DomainParticipant *participant)
                 }
                 sample = TestType_subSeq_get_reference(&data_seq, 0);
 
-                check_received_parameters(sample);
+                if (!check_received_parameters(sample)) {
+                        sample_ok = DDS_BOOLEAN_FALSE;
+                }
 
                 TestType_subDataReader_return_loan(
                         TestType_sub_reader,
                         &data_seq,
                         &info_seq);
             }
+        }
+        if (!sample_ok) {
+            errCode = -1;
+            goto done;
         }
     }
 

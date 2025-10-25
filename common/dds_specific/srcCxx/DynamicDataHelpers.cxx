@@ -34,7 +34,15 @@ long double
     case TypeKind::CHAR_8_TYPE:
         float_value = data.value<char>(field);
         break;
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::INT_8_TYPE:
+        float_value = data.value<int8_t>(field);
+        break;
+#endif
     case TypeKind::UINT_8_TYPE:
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::OCTET_TYPE:
+#endif
         float_value = data.value<uint8_t>(field);
         break;
     case TypeKind::INT_16_TYPE:
@@ -86,9 +94,23 @@ std::vector<long double>
         }
         break;
     }
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::INT_8_TYPE: {
+        std::vector<int8_t> members(size);
+        data.get_values<int8_t>(field, members);
+        for (auto member : members) {
+            float_vector.push_back(member);
+        }
+        break;
+    }
+#endif
     case TypeKind::BOOLEAN_TYPE:
     // booleans are stored in memory as uint8_t for arrays/seqs
-    case TypeKind::UINT_8_TYPE: {
+    case TypeKind::UINT_8_TYPE:
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::OCTET_TYPE:
+#endif
+    {
         std::vector<uint8_t> members(size);
         data.get_values<uint8_t>(field, members);
         for (auto member : members) {
@@ -186,7 +208,17 @@ void rti::common::dynamic_data::set_dds_primitive_or_enum_type_value(
                 field,
                 rti::utils::long_double::safe_cast<char>(float_value));
         break;
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::INT_8_TYPE:
+        data.value<int8_t>(
+                field,
+                rti::utils::long_double::safe_cast<int8_t>(float_value));
+        break;
+#endif
     case TypeKind::UINT_8_TYPE:
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::OCTET_TYPE:
+#endif
         data.value<uint8_t>(
                 field,
                 rti::utils::long_double::safe_cast<uint8_t>(float_value));
@@ -245,7 +277,8 @@ void rti::common::dynamic_data::set_vector_values(
         const std::vector<long double>& float_vector)
 {
     switch (type.underlying()) {
-    case TypeKind::CHAR_8_TYPE: {
+    case TypeKind::CHAR_8_TYPE:
+    {
         std::vector<char> values;
         for (auto element : float_vector) {
             values.push_back(rti::utils::long_double::safe_cast<char>(element));
@@ -253,9 +286,23 @@ void rti::common::dynamic_data::set_vector_values(
         data.set_values<char>(field, values);
         break;
     }
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::INT_8_TYPE: {
+        std::vector<int8_t> values;
+        for (auto element : float_vector) {
+            values.push_back(rti::utils::long_double::safe_cast<int8_t>(element));
+        }
+        data.set_values<int8_t>(field, values);
+        break;
+    }
+#endif
     case TypeKind::BOOLEAN_TYPE:
     // booleans are stored in memory as an uint8 for arrays/seqs
-    case TypeKind::UINT_8_TYPE: {
+    case TypeKind::UINT_8_TYPE:
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::OCTET_TYPE:
+#endif
+    {
         std::vector<uint8_t> values;
         for (auto element : float_vector) {
             values.push_back(
@@ -347,6 +394,9 @@ bool rti::common::dynamic_data::is_signed_kind(TypeKind kind)
 {
     switch (kind.underlying()) {
     case TypeKind::CHAR_8_TYPE:
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::INT_8_TYPE:
+#endif
     case TypeKind::INT_16_TYPE:
     case TypeKind::ENUMERATION_TYPE:
     case TypeKind::INT_32_TYPE:
@@ -359,6 +409,9 @@ bool rti::common::dynamic_data::is_signed_kind(TypeKind kind)
     case TypeKind::UINT_16_TYPE:
     case TypeKind::UINT_32_TYPE:
     case TypeKind::UINT_64_TYPE:
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::OCTET_TYPE:
+#endif
         return false;
     default:
         std::string error("unsupported numeric member type.");
@@ -429,30 +482,53 @@ void rti::common::dynamic_data::copy_primitive_array_elements(
     switch (input.member_info(index).element_kind().underlying()) {
     case TypeKind::BOOLEAN_TYPE:
     // booleans are stored in memory as uint8_t for arrays/seqs
-    case TypeKind::UINT_8_TYPE: {
+    case TypeKind::UINT_8_TYPE:
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::OCTET_TYPE:
+#endif
+    {
         auto values = input.get_values<uint8_t>(index);
-        values.resize(max_elements);
+        if (values.size() != max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<uint8_t>(index, values);
 
         break;
     }
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::INT_8_TYPE: {
+        auto values = input.get_values<int8_t>(index);
+        if (values.size() != max_elements) {
+            values.resize(max_elements);
+        }
+        output.set_values<int8_t>(index, values);
+
+        break;
+    }
+#endif
     case TypeKind::CHAR_8_TYPE: {
         auto values = input.get_values<char>(index);
-        values.resize(max_elements);
+        if (values.size() != max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<char>(index, values);
 
         break;
     }
     case TypeKind::INT_16_TYPE: {
         auto values = input.get_values<int16_t>(index);
-        values.resize(max_elements);
+        if (values.size() != max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<int16_t>(index, values);
 
         break;
     }
     case TypeKind::UINT_16_TYPE: {
         auto values = input.get_values<uint16_t>(index);
-        values.resize(max_elements);
+        if (values.size() != max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<uint16_t>(index, values);
 
         break;
@@ -460,50 +536,64 @@ void rti::common::dynamic_data::copy_primitive_array_elements(
     case TypeKind::INT_32_TYPE:
     case TypeKind::ENUMERATION_TYPE: {
         auto values = input.get_values<DDS_Long>(index);
-        values.resize(max_elements);
+        if (values.size() != max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<DDS_Long>(index, values);
 
         break;
     }
     case TypeKind::UINT_32_TYPE: {
         auto values = input.get_values<DDS_UnsignedLong>(index);
-        values.resize(max_elements);
+        if (values.size() != max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<DDS_UnsignedLong>(index, values);
 
         break;
     }
     case TypeKind::INT_64_TYPE: {
         auto values = input.get_values<DDS_LongLong>(index);
-        values.resize(max_elements);
+        if (values.size() != max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<DDS_LongLong>(index, values);
 
         break;
     }
     case TypeKind::UINT_64_TYPE: {
         auto values = input.get_values<DDS_UnsignedLongLong>(index);
-        values.resize(max_elements);
+        if (values.size() != max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<DDS_UnsignedLongLong>(index, values);
 
         break;
     }
     case TypeKind::FLOAT_32_TYPE: {
         auto values = input.get_values<float>(index);
-        values.resize(max_elements);
+        if (values.size() != max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<float>(index, values);
 
-        output.set_values<float>(index, input.get_values<float>(index));
         break;
     }
     case TypeKind::FLOAT_64_TYPE: {
         auto values = input.get_values<double>(index);
-        values.resize(max_elements);
+        if (values.size() != max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<double>(index, values);
 
-        output.set_values<double>(index, input.get_values<double>(index));
         break;
     }
     case TypeKind::STRING_TYPE: {
-        for (int i = 1; i <= max_elements; ++i) {
+        int max_input = input.member_count();
+        if (max_input > max_elements) {
+            max_input = max_elements;
+        }
+        for (int i = 1; i <= max_input; ++i) {
             output.value<std::string>(i, input.value<std::string>(i));
         }
         break;
@@ -548,30 +638,53 @@ void rti::common::dynamic_data::copy_primitive_sequence_elements(
     switch (input.member_info(index).element_kind().underlying()) {
     case TypeKind::BOOLEAN_TYPE:
     // booleans are stored in memory as uint8_t for arrays/seqs
-    case TypeKind::UINT_8_TYPE: {
+    case TypeKind::UINT_8_TYPE:
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::OCTET_TYPE:
+#endif
+    {
         auto values = input.get_values<uint8_t>(index);
-        values.resize(max_elements);
+        if (values.size() > max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<uint8_t>(index, values);
 
         break;
     }
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::INT_8_TYPE: {
+        auto values = input.get_values<int8_t>(index);
+        if (values.size() > max_elements) {
+            values.resize(max_elements);
+        }
+        output.set_values<int8_t>(index, values);
+
+        break;
+    }
+#endif
     case TypeKind::CHAR_8_TYPE: {
         auto values = input.get_values<char>(index);
-        values.resize(max_elements);
+        if (values.size() > max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<char>(index, values);
 
         break;
     }
     case TypeKind::INT_16_TYPE: {
         auto values = input.get_values<int16_t>(index);
-        values.resize(max_elements);
+        if (values.size() > max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<int16_t>(index, values);
 
         break;
     }
     case TypeKind::UINT_16_TYPE: {
         auto values = input.get_values<uint16_t>(index);
-        values.resize(max_elements);
+        if (values.size() > max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<uint16_t>(index, values);
 
         break;
@@ -579,50 +692,63 @@ void rti::common::dynamic_data::copy_primitive_sequence_elements(
     case TypeKind::INT_32_TYPE:
     case TypeKind::ENUMERATION_TYPE: {
         auto values = input.get_values<DDS_Long>(index);
-        values.resize(max_elements);
+        if (values.size() > max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<DDS_Long>(index, values);
-
         break;
     }
     case TypeKind::UINT_32_TYPE: {
         auto values = input.get_values<DDS_UnsignedLong>(index);
-        values.resize(max_elements);
+        if (values.size() > max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<DDS_UnsignedLong>(index, values);
 
         break;
     }
     case TypeKind::INT_64_TYPE: {
         auto values = input.get_values<DDS_LongLong>(index);
-        values.resize(max_elements);
+        if (values.size() > max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<DDS_LongLong>(index, values);
 
         break;
     }
     case TypeKind::UINT_64_TYPE: {
         auto values = input.get_values<DDS_UnsignedLongLong>(index);
-        values.resize(max_elements);
+        if (values.size() > max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<DDS_UnsignedLongLong>(index, values);
 
         break;
     }
     case TypeKind::FLOAT_32_TYPE: {
         auto values = input.get_values<float>(index);
-        values.resize(max_elements);
+        if (values.size() > max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<float>(index, values);
 
-        output.set_values<float>(index, input.get_values<float>(index));
         break;
     }
     case TypeKind::FLOAT_64_TYPE: {
         auto values = input.get_values<double>(index);
-        values.resize(max_elements);
+        if (values.size() > max_elements) {
+            values.resize(max_elements);
+        }
         output.set_values<double>(index, values);
 
-        output.set_values<double>(index, input.get_values<double>(index));
         break;
     }
     case TypeKind::STRING_TYPE: {
-        for (int i = 1; i <= max_elements; ++i) {
+        int max_input = input.member_count();
+        if (max_input > max_elements) {
+            max_input = max_elements;
+        }
+        for (int i = 1; i <= max_input; ++i) {
             output.value<std::string>(i, input.value<std::string>(i));
         }
         break;
@@ -646,14 +772,25 @@ void rti::common::dynamic_data::copy_primitive_member(
         DynamicData& output,
         uint32_t index)
 {
-    switch (input.member_info(index).member_kind().underlying()) {
+    const auto member_kind =
+            input.member_info(index).member_kind().underlying();
+
+    switch (member_kind) {
     case TypeKind::BOOLEAN_TYPE:
         output.value<bool>(index, input.value<bool>(index));
         break;
     case TypeKind::CHAR_8_TYPE:
         output.value<char>(index, input.value<char>(index));
         break;
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::INT_8_TYPE:
+        output.value<int8_t>(index, input.value<int8_t>(index));
+        break;
+#endif
     case TypeKind::UINT_8_TYPE:
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::OCTET_TYPE:
+#endif
         output.value<uint8_t>(index, input.value<uint8_t>(index));
         break;
     case TypeKind::INT_16_TYPE:
@@ -699,7 +836,7 @@ void rti::common::dynamic_data::copy_primitive_member(
     }
     default:
         std::string error("cannot copy primitive member, unsupported "
-                "member kind of <" + input.type().name() + "> index <"
+                "member kind (" + std::to_string(member_kind) + ") of <" + input.type().name() + "> index <"
                 + std::to_string(index) + ">.");
         throw std::runtime_error(error);
     }

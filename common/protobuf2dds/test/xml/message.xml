@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  (c) 2025 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved.
+
+  RTI grants Licensee a license to use, modify, compile, and create
+  derivative works of the software solely for use with RTI Connext DDS.
+  Licensee may redistribute copies of the software provided that all such
+  copies are subject to this license.
+  The software is provided "as is", with no warranty of any type, including
+  any warranty for fitness for any purpose. RTI is under no obligation to
+  maintain or support the software.  RTI shall not be liable for any
+  incidental or consequential damages arising out of the use or inability to
+  use the software.
+-->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:////opt/rti.com/rti_connext_dds-7.6.0/bin/../resource/app/app_support/rtiddsgen/schema/rti_dds_profiles.xsd">
+<types>
+<include file="another_message.xml"/>
+<module name="test">
+  <enum name="Message_SubEnum">
+    <enumerator name="Message_SubEnum_HELLO" value="0" defaultLiteral="true"/>
+    <enumerator name="Message_SubEnum_WORLD" value="1"/>
+  </enum> 
+  <forward_dcl name="AllRequiredMessage" kind="struct"/>
+  <forward_dcl name="Message_SubMessage" kind="struct"/>
+  <typedef name="Message_SubMessage_OctetSeq" sequenceMaxLength="-1" type="byte"/>
+  <forward_dcl name="Message_GroupOpt" kind="struct"/>
+  <forward_dcl name="Message_GroupReq" kind="struct"/>
+  <forward_dcl name="Message_GroupRep" kind="struct"/>
+  <forward_dcl name="Message" kind="struct"/>
+  <forward_dcl name="Message_MapPair_string_int32" kind="struct"/>
+  <forward_dcl name="Message_MapPair_int32_string" kind="struct"/>
+  <forward_dcl name="Message_MapPair_string_test_AnEnum" kind="struct"/>
+  <forward_dcl name="Message_MapPair_int64_test_Message_SubEnum" kind="struct"/>
+  <forward_dcl name="Message_MapPair_string_test_Message_SubMessage" kind="struct"/>
+  <forward_dcl name="Message_MapPair_uint32_test_AnotherMessage" kind="struct"/>
+  <forward_dcl name="Message_MapPair_boolean_double" kind="struct"/>
+  <forward_dcl name="Message_MapPair_int32_boolean" kind="struct"/>
+  <typedef name="Message_OctetSeq" sequenceMaxLength="-1" type="byte"/>
+  <struct name= "AllRequiredMessage" autoid="hash">
+    <member name="req_int32" id="0" type="int32"/>
+    <member name="req_string" stringMaxLength="-1" type="string"/>
+    <member name="req_enum" hashid="Hello Enum World!" type="nonBasic"  nonBasicTypeName= "test::AnEnum"/>
+  </struct>
+  <struct name= "Message_SubMessage" extensibility= "mutable" nested="true">
+    <member name="req_int32" type="int32"/>
+    <member name="req_string" stringMaxLength="-1" hashid="req_string" type="string"/>
+    <member name="req_bytes" sequenceMaxLength="-1" id="1" type="byte"/>
+    <member name="req_enum" id="4" type="nonBasic"  nonBasicTypeName= "test::AnEnum"/>
+    <member name="req_msg" id="5" type="nonBasic"  nonBasicTypeName= "test::AnotherMessage"/>
+    <member name="opt_int32" type="int32" optional="true"/>
+    <member name="opt_string" stringMaxLength="-1" hashid="Hello Optional World!" type="string" optional="true"/>
+    <member name="opt_bytes" sequenceMaxLength="-1" id="11" type="byte" optional="true"/>
+    <member name="opt_enum" id="14" type="nonBasic"  nonBasicTypeName= "test::AnEnum" optional="true"/>
+    <member name="opt_msg" id="15" type="nonBasic"  nonBasicTypeName= "test::AnotherMessage" optional="true"/>
+    <member name="rep_int32" sequenceMaxLength="-1" type="int32"/>
+    <member name="rep_string" sequenceMaxLength="-1" stringMaxLength="-1" hashid="Hello Repeated World!" type="string"/>
+    <member name="rep_bytes" sequenceMaxLength="-1" id="21" type="nonBasic"  nonBasicTypeName= "test::Message_SubMessage_OctetSeq"/>
+    <member name="rep_enum" sequenceMaxLength="-1" id="24" type="nonBasic"  nonBasicTypeName= "test::AnEnum"/>
+    <member name="rep_msg" sequenceMaxLength="-1" id="25" type="nonBasic"  nonBasicTypeName= "test::AnotherMessage"/>
+    <member name="oneof_int32" type="int32" optional="true"/>
+    <member name="oneof_string" stringMaxLength="-1" hashid="oneof_string" type="string" optional="true"/>
+    <member name="oneof_bytes" sequenceMaxLength="-1" id="31" type="byte" optional="true"/>
+    <member name="oneof_enum" id="34" type="nonBasic"  nonBasicTypeName= "test::AnEnum" optional="true"/>
+    <member name="oneof_msg" id="35" type="nonBasic"  nonBasicTypeName= "test::AnotherMessage" optional="true"/>
+  </struct>
+  <struct name= "Message_GroupOpt" extensibility= "mutable" nested="true">
+    <member name="group_opt_string" stringMaxLength="-1" id="1" type="string" optional="true"/>
+  </struct>
+  <struct name= "Message_GroupReq" extensibility= "mutable" nested="true">
+    <member name="group_req_string" stringMaxLength="-1" id="1" type="string" optional="true"/>
+  </struct>
+  <struct name= "Message_GroupRep" extensibility= "mutable" nested="true">
+    <member name="group_rep_string" stringMaxLength="-1" id="1" type="string" optional="true"/>
+  </struct>
+  <struct name= "Message" extensibility= "mutable">
+    <member name="key_primitive" id="1" type="int32" key="true"/>
+    <member name="key_string" stringMaxLength="-1" id="2" type="string" key="true"/>
+    <member name="key_enum" id="3" type="nonBasic"  nonBasicTypeName= "test::Message_SubEnum" key="true"/>
+    <member name="key_msg" id="4" type="nonBasic"  nonBasicTypeName= "test::AllRequiredMessage" key="true"/>
+    <member name="req_int32" id="10" type="int32" default="-1001"/>
+    <member name="req_uint32" id="11" type="uint32" default="1001"/>
+    <member name="req_sint32" id="12" type="int32" default="-1001"/>
+    <member name="req_fixed32" id="13" type="uint32" default="1001"/>
+    <member name="req_sfixed32" id="14" type="int32" default="-1001"/>
+    <member name="req_int64" id="15" type="int64" default="-1000001"/>
+    <member name="req_uint64" id="16" type="uint64" default="1000001"/>
+    <member name="req_sint64" id="17" type="int64" default="-1000001"/>
+    <member name="req_fixed64" id="18" type="uint64" default="1000001"/>
+    <member name="req_sfixed64" id="19" type="int64" default="-1000001"/>
+    <member name="req_float" id="20" type="float32" default="-1001.100098"/>
+    <member name="req_double" id="21" type="float64" default="-1001.100100"/>
+    <member name="req_string" stringMaxLength="-1" id="22" type="string" default="Hello World"/>
+    <member name="req_bytes" sequenceMaxLength="-1" id="23" type="byte"/>
+    <member name="req_bool" id="24" type="boolean" default="TRUE"/>
+    <member name="req_enum" id="25" type="nonBasic"  nonBasicTypeName= "test::Message_SubEnum" default="Message_SubEnum_WORLD"/>
+    <member name="req_msg" id="26" type="nonBasic"  nonBasicTypeName= "test::Message_SubMessage"/>
+    <member name="opt_int32" id="50" type="int32" optional="true"/>
+    <member name="opt_uint32" id="51" type="uint32" optional="true"/>
+    <member name="opt_sint32" id="52" type="int32" optional="true"/>
+    <member name="opt_fixed32" id="53" type="uint32" optional="true"/>
+    <member name="opt_sfixed32" id="54" type="int32" optional="true"/>
+    <member name="opt_int64" id="55" type="int64" optional="true"/>
+    <member name="opt_uint64" id="56" type="uint64" optional="true"/>
+    <member name="opt_sint64" id="57" type="int64" optional="true"/>
+    <member name="opt_fixed64" id="58" type="uint64" optional="true"/>
+    <member name="opt_sfixed64" id="59" type="int64" optional="true"/>
+    <member name="opt_float" id="60" type="float32" optional="true"/>
+    <member name="opt_double" id="61" type="float64" optional="true"/>
+    <member name="opt_string" stringMaxLength="-1" id="62" type="string" optional="true"/>
+    <member name="opt_bytes" sequenceMaxLength="-1" id="63" type="byte" optional="true"/>
+    <member name="opt_bool" id="64" type="boolean" optional="true"/>
+    <member name="opt_enum" id="65" type="nonBasic"  nonBasicTypeName= "test::Message_SubEnum" optional="true"/>
+    <member name="opt_msg" id="66" type="nonBasic"  nonBasicTypeName= "test::Message_SubMessage" optional="true"/>
+    <member name="rep_int32" sequenceMaxLength="-1" id="110" type="int32"/>
+    <member name="rep_uint32" sequenceMaxLength="-1" id="111" type="uint32"/>
+    <member name="rep_sint32" sequenceMaxLength="-1" id="112" type="int32"/>
+    <member name="rep_fixed32" sequenceMaxLength="-1" id="113" type="uint32"/>
+    <member name="rep_sfixed32" sequenceMaxLength="-1" id="114" type="int32"/>
+    <member name="rep_int64" sequenceMaxLength="-1" id="115" type="int64"/>
+    <member name="rep_uint64" sequenceMaxLength="-1" id="116" type="uint64"/>
+    <member name="rep_sint64" sequenceMaxLength="-1" id="117" type="int64"/>
+    <member name="rep_fixed64" sequenceMaxLength="-1" id="118" type="uint64"/>
+    <member name="rep_sfixed64" sequenceMaxLength="-1" id="119" type="int64"/>
+    <member name="rep_float" sequenceMaxLength="-1" id="120" type="float32"/>
+    <member name="rep_double" sequenceMaxLength="-1" id="121" type="float64"/>
+    <member name="rep_string" sequenceMaxLength="-1" stringMaxLength="-1" id="122" type="string"/>
+    <member name="rep_bytes" sequenceMaxLength="-1" id="123" type="nonBasic"  nonBasicTypeName= "test::Message_OctetSeq"/>
+    <member name="rep_bool" sequenceMaxLength="-1" id="124" type="boolean"/>
+    <member name="rep_enum" sequenceMaxLength="-1" id="125" type="nonBasic"  nonBasicTypeName= "test::Message_SubEnum"/>
+    <member name="rep_msg" sequenceMaxLength="-1" id="126" type="nonBasic"  nonBasicTypeName= "test::Message_SubMessage"/>
+    <member name="oneof_primitive" id="200" type="int32" optional="true"/>
+    <member name="oneof_string" stringMaxLength="-1" id="201" type="string" optional="true"/>
+    <member name="oneof_bytes" sequenceMaxLength="-1" id="202" type="byte" optional="true"/>
+    <member name="oneof_bool" id="203" type="boolean" optional="true"/>
+    <member name="oneof_enum" id="204" type="nonBasic"  nonBasicTypeName= "test::Message_SubEnum" optional="true"/>
+    <member name="oneof_msg" id="205" type="nonBasic"  nonBasicTypeName= "test::Message_SubMessage" optional="true"/>
+    <member name="map_string_primitive" sequenceMaxLength="-1" id="300" type="nonBasic"  nonBasicTypeName= "test::Message_MapPair_string_int32"/>
+    <member name="map_primitive_string" sequenceMaxLength="-1" id="301" type="nonBasic"  nonBasicTypeName= "test::Message_MapPair_int32_string"/>
+    <member name="map_string_enum" sequenceMaxLength="-1" id="302" type="nonBasic"  nonBasicTypeName= "test::Message_MapPair_string_test_AnEnum"/>
+    <member name="map_primitive_enum" sequenceMaxLength="-1" id="303" type="nonBasic"  nonBasicTypeName= "test::Message_MapPair_int64_test_Message_SubEnum"/>
+    <member name="map_string_msg" sequenceMaxLength="-1" id="304" type="nonBasic"  nonBasicTypeName= "test::Message_MapPair_string_test_Message_SubMessage"/>
+    <member name="map_primitive_msg" sequenceMaxLength="-1" id="305" type="nonBasic"  nonBasicTypeName= "test::Message_MapPair_uint32_test_AnotherMessage"/>
+    <member name="map_bool_primitive" sequenceMaxLength="-1" id="306" type="nonBasic"  nonBasicTypeName= "test::Message_MapPair_boolean_double"/>
+    <member name="map_primitive_bool" sequenceMaxLength="-1" id="307" type="nonBasic"  nonBasicTypeName= "test::Message_MapPair_int32_boolean"/>
+    <member name="groupopt" id="400" type="nonBasic"  nonBasicTypeName= "test::Message_GroupOpt" optional="true"/>
+    <member name="groupreq" id="401" type="nonBasic"  nonBasicTypeName= "test::Message_GroupReq"/>
+    <member name="grouprep" sequenceMaxLength="-1" id="402" type="nonBasic"  nonBasicTypeName= "test::Message_GroupRep"/>
+  </struct>
+  <struct name= "Message_MapPair_string_int32" extensibility= "final" nested="true">
+    <member name="key" stringMaxLength="-1" type="string"/>
+    <member name="value" type="int32"/>
+  </struct>
+  <struct name= "Message_MapPair_int32_string" extensibility= "final" nested="true">
+    <member name="key" type="int32"/>
+    <member name="value" stringMaxLength="-1" type="string"/>
+  </struct>
+  <struct name= "Message_MapPair_string_test_AnEnum" extensibility= "final" nested="true">
+    <member name="key" stringMaxLength="-1" type="string"/>
+    <member name="value" type="nonBasic"  nonBasicTypeName= "test::AnEnum"/>
+  </struct>
+  <struct name= "Message_MapPair_int64_test_Message_SubEnum" extensibility= "final" nested="true">
+    <member name="key" type="int64"/>
+    <member name="value" type="nonBasic"  nonBasicTypeName= "test::Message_SubEnum"/>
+  </struct>
+  <struct name= "Message_MapPair_string_test_Message_SubMessage" extensibility= "final" nested="true">
+    <member name="key" stringMaxLength="-1" type="string"/>
+    <member name="value" type="nonBasic"  nonBasicTypeName= "test::Message_SubMessage"/>
+  </struct>
+  <struct name= "Message_MapPair_uint32_test_AnotherMessage" extensibility= "final" nested="true">
+    <member name="key" type="uint32"/>
+    <member name="value" type="nonBasic"  nonBasicTypeName= "test::AnotherMessage"/>
+  </struct>
+  <struct name= "Message_MapPair_boolean_double" extensibility= "final" nested="true">
+    <member name="key" type="boolean"/>
+    <member name="value" type="float64"/>
+  </struct>
+  <struct name= "Message_MapPair_int32_boolean" extensibility= "final" nested="true">
+    <member name="key" type="int32"/>
+    <member name="value" type="boolean"/>
+  </struct>
+</module>
+</types>
+</dds>

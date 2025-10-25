@@ -15,3 +15,6 @@
 [submodule "third-party/rticonnextdds-cmake-utils"]
 	path = third-party/rticonnextdds-cmake-utils
 	url = https://github.com/rticommunity/rticonnextdds-cmake-utils
+[submodule "third-party/protobuf"]
+	path = third-party/protobuf
+	url = https://github.com/protocolbuffers/protobuf.git

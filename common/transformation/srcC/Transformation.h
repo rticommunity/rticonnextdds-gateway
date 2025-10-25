@@ -16,6 +16,10 @@
 #ifndef Transformation_h
 #define Transformation_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "TransformationSimple.h"
 #include "TransformationTypes.h"
 
@@ -44,5 +48,8 @@ RTIBool RTI_TSFM_TransformationPluginConfig_copy(
         RTI_TSFM_TransformationPluginConfig *dst,
         const RTI_TSFM_TransformationPluginConfig *src);
 
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif /* Transformation_h */

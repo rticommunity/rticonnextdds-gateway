@@ -103,7 +103,12 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
         case ModbusDataType::holding_register_int8:
         case ModbusDataType::input_register_int8:
             is_compatible = (dds_datatype == TypeKind::CHAR_8_TYPE
-                    || dds_datatype == TypeKind::UINT_8_TYPE);
+                    || dds_datatype == TypeKind::UINT_8_TYPE
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+                    || dds_datatype == TypeKind::INT_8_TYPE
+                    || dds_datatype == TypeKind::OCTET_TYPE
+#endif
+                    );
         case ModbusDataType::holding_register_int16:
         case ModbusDataType::input_register_int16:
             is_compatible = (is_compatible
@@ -137,6 +142,10 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
             is_compatible = (dds_datatype == TypeKind::BOOLEAN_TYPE
                     || dds_datatype == TypeKind::CHAR_8_TYPE
                     || dds_datatype == TypeKind::UINT_8_TYPE
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+                    || dds_datatype == TypeKind::INT_8_TYPE
+                    || dds_datatype == TypeKind::OCTET_TYPE
+#endif
                     || dds_datatype == TypeKind::INT_16_TYPE
                     || dds_datatype == TypeKind::UINT_16_TYPE
                     || dds_datatype == TypeKind::INT_32_TYPE
@@ -148,6 +157,10 @@ bool ModbusAdapterConfigurationElement::is_compatible_dds_datatype(
             is_compatible = (dds_datatype == TypeKind::STRING_TYPE
                     || dds_datatype == TypeKind::CHAR_8_TYPE
                     || dds_datatype == TypeKind::UINT_8_TYPE
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+                    || dds_datatype == TypeKind::INT_8_TYPE
+                    || dds_datatype == TypeKind::OCTET_TYPE
+#endif
                     || dds_datatype == TypeKind::INT_16_TYPE
                     || dds_datatype == TypeKind::UINT_16_TYPE
                     || dds_datatype == TypeKind::INT_32_TYPE
@@ -175,8 +188,14 @@ std::string ModbusAdapterConfigurationElement::get_value_string(
 {
     switch (element_kind.underlying()) {
     case TypeKind::CHAR_8_TYPE:
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::INT_8_TYPE:
+#endif
         return std::to_string((int8_t) value);
     case TypeKind::UINT_8_TYPE:
+#if RTICONNEXTDDS_HAS_INT8_TYPE
+    case TypeKind::OCTET_TYPE:
+#endif
         return std::to_string((uint8_t) value);
     case TypeKind::INT_16_TYPE:
         return std::to_string((int16_t) value);

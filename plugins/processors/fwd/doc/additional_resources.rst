@@ -14,6 +14,6 @@ Examples
 ^^^^^^^^
 
 There is only one example that uses |RSFWD|, it is located under
-``<RTI Connext Gateway main folder>/examples/mqtt/mqtt-shapes``.
+``<RTI Connext Gateway main folder>/examples/mqtt/mqtt-shapes-advanced``.
 If you have provided CMake with an installation directory, it will be under
-``<CMake Installation directory>/examples/mqtt/mqtt-shapes``.
+``<CMake Installation directory>/examples/mqtt/mqtt-shapes-advanced``.

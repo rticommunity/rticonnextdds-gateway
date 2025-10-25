@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<!--
+  (c) 2022 Copyright, Real-Time Innovations, Inc.  All rights reserved.
+
+  RTI grants Licensee a license to use, modify, compile, and create derivative
+  works of the Software.  Licensee has the right to distribute object form
+  only for use with RTI products.  The Software is provided "as is", with no
+  warranty of any type, including any warranty for fitness for any purpose.
+  RTI is under no obligation to maintain or support the Software.  RTI shall
+  not be liable for any incidental or consequential damages arising out of the
+  use or inability to use the software.
+ -->
+
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="https://community.rti.com/schema/7.3.0/rti_routing_service.xsd">
+
+    <plugin_library name="TestPlugins">
+        <transformation_plugin name="Seq2Array">
+            <dll>rtisequence2arraytransf</dll>
+            <create_function>
+                Sequence2ArrayTransformationPlugin_create_transformation_plugin
+            </create_function>
+        </transformation_plugin>
+    </plugin_library>
+
+    <!-- <types>
+        <include file="tsfm_seq2array_test_message.xml"/>
+    </types> -->
+
+    <routing_service name="TestService">
+        <domain_route>
+            <participant name="tester">
+                <domain_id>0</domain_id>
+                <participant_qos base_name="TestQos::default"></participant_qos>
+                <!-- <registered_type name="test::inttest1::PubType" type_name="test::inttest1::PubType"/>
+                <registered_type name="test::inttest1::SubType" type_name="test::inttest1::SubType"/> -->
+            </participant>
+            <session name="TestSession">
+                <topic_route name="TestRoute">
+                    <input participant="tester">
+                        <registered_type_name>test::inttest1::PubType</registered_type_name>
+                        <topic_name>Seq2ArrayIntTest1Seq</topic_name>
+                        <datareader_qos base_name="TestQos::default"></datareader_qos>
+                    </input>
+                    <output participant="tester">
+                        <registered_type_name>test::inttest1::SubType</registered_type_name>
+                        <topic_name>Seq2ArrayIntTest1Array</topic_name>
+                        <datawriter_qos base_name="TestQos::default"></datawriter_qos>
+                        <transformation plugin_name="TestPlugins::Seq2Array"/>
+                    </output>
+                </topic_route>
+            </session>
+        </domain_route>
+    </routing_service>
+</dds>

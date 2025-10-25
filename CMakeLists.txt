@@ -82,5 +82,13 @@ rtigw_add_plugin(
     PLUGIN_TYPE "TRANSFORMATION"
 )
 
+rtigw_add_plugin(
+    ENABLE_PLUGIN RTIGATEWAY_ENABLE_TSFM_PROTOBUF
+    PREFIX "RTI_TSFM_PROTOBUF"
+    STAGING_DIR "tsfm_protobuf"
+    PLUGIN_DIR_NAME "protobuf"
+    PLUGIN_TYPE "TRANSFORMATION"
+)
+
 # Add doc if exists
 rtigw_add_doc()

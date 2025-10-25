@@ -16,6 +16,10 @@
 #ifndef TransformationTypes_h
 #define TransformationTypes_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ndds/ndds_c.h"
 
 typedef enum RTI_TSFM_TransformationKind {
@@ -35,5 +39,9 @@ typedef struct RTI_TSFM_TransformationConfig {
     DDS_Char *output_type;
 
 } RTI_TSFM_TransformationConfig;
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif /* TransformationTypes_h */

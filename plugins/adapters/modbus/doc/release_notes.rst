@@ -5,6 +5,12 @@
 Release Notes
 =============
 
+New Features (February 2024)
+----------------------------
+
+#. Added support for DDS chars and int8 in |RTI_RSMODBUS| separately. Both types
+   are mapped to Modbus HOLDING_REGISTER_INT8 / INPUT_REGISTER_INT8 datatype.
+
 Bug fixes (February 2024)
 --------------------------
 

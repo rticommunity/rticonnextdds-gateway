@@ -16,6 +16,10 @@
 #ifndef SequenceHelpers_h
 #define SequenceHelpers_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <ndds/ndds_c.h>
 
 /**
@@ -64,5 +68,9 @@ DDS_Boolean DDS_OctetSeq_assert_nul_terminator(struct DDS_OctetSeq *self);
  * occurred while asserting the terminator.
  */
 DDS_Boolean DDS_CharSeq_assert_nul_terminator(struct DDS_CharSeq *self);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif /* SequenceHelpers_h */

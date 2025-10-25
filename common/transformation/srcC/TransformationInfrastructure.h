@@ -16,6 +16,10 @@
 #ifndef TransformationInfrastructure_h
 #define TransformationInfrastructure_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ndds/ndds_c.h"
 
 RTIBool RTI_TSFM_DDS_DynamicDataPtr_initialize_w_params(
@@ -31,5 +35,9 @@ RTIBool RTI_TSFM_DDS_DynamicDataPtr_copy(
         const DDS_DynamicData **src);
 
 DDS_SEQUENCE(RTI_TSFM_DDS_DynamicDataPtrSeq, DDS_DynamicData *);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif /* TransformationInfrastructure_h */

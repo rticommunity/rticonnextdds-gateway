@@ -1,0 +1,156 @@
+//  (c) 2025 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved.
+//
+//  RTI grants Licensee a license to use, modify, compile, and create
+//  derivative works of the software solely for use with RTI Connext DDS.
+//  Licensee may redistribute copies of the software provided that all such
+//  copies are subject to this license.
+//  The software is provided "as is", with no warranty of any type, including
+//  any warranty for fitness for any purpose. RTI is under no obligation to
+//  maintain or support the software.  RTI shall not be liable for any
+//  incidental or consequential damages arising out of the use or inability to
+//  use the software.
+
+syntax = "proto2";
+
+import "another_message.proto";
+
+package test;
+
+message AllRequiredMessage {
+  optional int32 req_int32 = 1;
+  optional string req_string = 2;
+  optional AnEnum req_enum = 3;
+}
+
+message Message {
+  extensions 1000 to 1999;
+
+  enum SubEnum {
+    HELLO = 0;
+    WORLD = 1;
+  }
+
+  message SubMessage {
+    required int32 req_int32 = 1;
+    required string req_string = 2;
+    required bytes req_bytes = 3;
+    required AnEnum req_enum = 4;
+    required AnotherMessage req_msg = 5;
+
+    optional int32 opt_int32 = 11;
+    optional string opt_string = 12;
+    optional bytes opt_bytes = 13;
+    optional AnEnum opt_enum = 14;
+    optional AnotherMessage opt_msg = 15;
+
+    repeated int32 rep_int32 = 21;
+    repeated string rep_string = 22;
+    repeated bytes rep_bytes = 23;
+    repeated AnEnum rep_enum = 24;
+    repeated AnotherMessage rep_msg = 25;
+
+    oneof oneof_field {
+      int32 oneof_int32 = 31;
+      string oneof_string = 32;
+      bytes oneof_bytes = 33;
+      AnEnum oneof_enum = 34;
+      AnotherMessage oneof_msg = 35;
+    }
+  }
+
+  required int32 key_primitive  = 1;
+  required string key_string  = 2;
+  required SubEnum key_enum  = 3;
+  required AllRequiredMessage key_msg  = 4;
+
+  required int32  req_int32  = 10 [ default = -1001 ];
+  required uint32 req_uint32  = 11 [ default = 1001 ];
+  required sint32 req_sint32  = 12 [ default = -1001 ];
+  required fixed32 req_fixed32  = 13 [ default = 1001 ];
+  required sfixed32 req_sfixed32  = 14 [ default = -1001 ];
+  required int64  req_int64  = 15 [ default = -1000001 ];
+  required uint64 req_uint64  = 16 [ default = 1000001 ];
+  required sint64 req_sint64  = 17 [ default = -1000001];
+  required fixed64 req_fixed64  = 18 [ default = 1000001 ];
+  required sfixed64 req_sfixed64  = 19 [ default = -1000001];
+  required float  req_float  = 20 [ default = -1001.1001 ];
+  required double req_double = 21 [ default = -1001.1001];
+  required string req_string = 22 [ default = "Hello World" ];
+  required bytes  req_bytes  = 23;
+  required bool req_bool = 24 [ default = true ];
+  required SubEnum req_enum = 25 [ default = WORLD ];
+  required SubMessage req_msg = 26;
+
+  optional int32  opt_int32  = 50;
+  optional uint32 opt_uint32  = 51;
+  optional sint32 opt_sint32  = 52;
+  optional fixed32 opt_fixed32  = 53;
+  optional sfixed32 opt_sfixed32  = 54;
+  optional int64  opt_int64  = 55;
+  optional uint64 opt_uint64  = 56;
+  optional sint64 opt_sint64  = 57;
+  optional fixed64 opt_fixed64  = 58;
+  optional sfixed64 opt_sfixed64  = 59;
+  optional float  opt_float  = 60;
+  optional double opt_double = 61;
+  optional string opt_string = 62;
+  optional bytes  opt_bytes  = 63;
+  optional bool opt_bool = 64;
+  optional SubEnum opt_enum = 65;
+  optional SubMessage opt_msg = 66;
+
+  repeated int32  rep_int32  = 110;
+  repeated uint32 rep_uint32  = 111;
+  repeated sint32 rep_sint32  = 112;
+  repeated fixed32 rep_fixed32  = 113;
+  repeated sfixed32 rep_sfixed32  = 114;
+  repeated int64  rep_int64  = 115;
+  repeated uint64 rep_uint64  = 116;
+  repeated sint64 rep_sint64  = 117;
+  repeated fixed64 rep_fixed64  = 118;
+  repeated sfixed64 rep_sfixed64  = 119;
+  repeated float  rep_float  = 120;
+  repeated double rep_double = 121;
+  repeated string rep_string = 122;
+  repeated bytes  rep_bytes  = 123;
+  repeated bool rep_bool = 124;
+  repeated SubEnum rep_enum = 125;
+  repeated SubMessage rep_msg = 126;
+
+  oneof oneof_field {
+    int32  oneof_primitive  = 200;
+    string oneof_string = 201;
+    bytes  oneof_bytes  = 202;
+    bool oneof_bool = 203;
+    SubEnum oneof_enum = 204;
+    SubMessage oneof_msg = 205;
+  }
+
+  map<string, int32> map_string_primitive = 300;
+  map<int32, string> map_primitive_string = 301;
+  map<string, AnEnum> map_string_enum = 302;
+  map<int64, SubEnum> map_primitive_enum = 303;
+  map<string, SubMessage> map_string_msg = 304;
+  map<uint32, AnotherMessage> map_primitive_msg = 305;
+  map<bool, double> map_bool_primitive = 306;
+  map<int32, bool> map_primitive_bool = 307;
+
+  optional group GroupOpt = 400 {
+    optional string group_opt_string = 1;
+  }
+  required group GroupReq = 401 {
+    optional string group_req_string = 1;
+  }
+  repeated group GroupRep = 402 {
+    optional string group_rep_string = 1;
+  }
+
+  /* Ignored features: extensions */
+  extend AnotherMessage {
+    optional string ext_string = 10010;
+    optional int32 ext_int32 = 10011;
+    repeated string ext_rep_string = 10012;
+    repeated int32 ext_rep_int32 = 10013;
+  }
+}
+

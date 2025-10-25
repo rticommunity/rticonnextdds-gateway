@@ -1,0 +1,34 @@
+//  (c) 2025 Copyright, Real-Time Innovations, Inc. (RTI) All rights reserved.
+//
+//  RTI grants Licensee a license to use, modify, compile, and create
+//  derivative works of the software solely for use with RTI Connext DDS.
+//  Licensee may redistribute copies of the software provided that all such
+//  copies are subject to this license.
+//  The software is provided "as is", with no warranty of any type, including
+//  any warranty for fitness for any purpose. RTI is under no obligation to
+//  maintain or support the software.  RTI shall not be liable for any
+//  incidental or consequential damages arising out of the use or inability to
+//  use the software.
+
+syntax = "proto2";
+
+package test;
+
+enum AnEnum {
+  HELLO = 0;
+  WORLD = 1;
+}
+
+message AnotherMessage {
+  required int32 req_int32 = 1;
+  required string req_string = 2;
+  required AnEnum req_enum = 3;
+
+  optional int32 opt_int32 = 11;
+  optional string opt_string = 12;
+  optional AnEnum opt_enum = 13;
+
+  /* Ignored features: extensions */
+  extensions 10000 to 19999;
+}
+
