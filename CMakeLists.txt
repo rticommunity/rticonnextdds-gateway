@@ -48,6 +48,14 @@ rtigw_add_plugin(
     PLUGIN_TYPE "ADAPTER"
 )
 
+rtigw_add_plugin(
+    ENABLE_PLUGIN RTIGATEWAY_ENABLE_DIA
+    PREFIX "RTI_DIA"
+    STAGING_DIR "dia"
+    PLUGIN_DIR_NAME "dia"
+    PLUGIN_TYPE "ADAPTER"
+)
+
 # Adding processors
 rtigw_add_plugin(
     ENABLE_PLUGIN RTIGATEWAY_ENABLE_FWD

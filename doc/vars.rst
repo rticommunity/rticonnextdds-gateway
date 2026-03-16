@@ -26,4 +26,5 @@
 .. |RSMQTT| replace:: |RS| *MQTT Adapter*
 .. |RSMODBUS| replace:: |RS| *Modbus Adapter*
 .. |RSKAFKA| replace:: |RS| *Kafka Adapter*
+.. |RSDIA| replace:: |RS| *Database Integration Adapter*
 .. |OPENSSL| replace:: *OpenSSL*

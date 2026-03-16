@@ -1,0 +1,12 @@
+{
+    "topic_properties": [
+        {
+            "topic_name_expression": "*",
+            "delete_on_dispose": false,
+            "drop_table_on_dispose": false,
+            "delete_type_on_dispose": false,
+            "instance_history": 0,
+            "format": "JSON"
+        }
+    ]
+}

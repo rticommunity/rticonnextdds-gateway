@@ -56,13 +56,20 @@ External Librarires
               implementation of the client side of the Kafka protocol.
 :License: `2-clause BSD license <https://github.com/edenhill/librdkafka/blob/master/LICENSE>`__
 
-
 Other Dependencies
 ------------------
 
 :json_parser: :link_json_parser:`json_parser <>` is used in order to parse json
               files.
 :License: `BSD with no dependencies <https://github.com/udp/json-parser/blob/master/LICENSE>`__
+
+|RSDIA|
+~~~~~~~
+
+The |RSDIA| has additional third-party dependencies whose source code is not
+provided with |RTI_GATEWAY|. For the complete list and their licenses, see
+``plugins/adapters/dia/doc/third_party.rst`` or the
+`online documentation <https://community.rti.com/static/documentation/gateway/current/adapters/dia/third_party.html>`__.
 
 Documentation
 -------------

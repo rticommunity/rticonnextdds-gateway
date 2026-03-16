@@ -208,7 +208,7 @@ function(rtigw_configure_connextdds _CONNEXTDDS_VERSION)
         RTIConnextDDS
             ${_CONNEXTDDS_VERSION}
         COMPONENTS
-            routing_service core
+            test routing_service core
         REQUIRED)
     
     set(RTICONNEXTDDS_VERSION ${RTICONNEXTDDS_VERSION}
@@ -320,6 +320,7 @@ macro(rtigw_init_globals)
     option(RTIGATEWAY_ENABLE_MODBUS "Build Modbus Adapter" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_MQTT "Build MQTT Adapter" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_KAFKA "Build KAFKA Adapter" ${RTIGATEWAY_ENABLE_ALL})
+    option(RTIGATEWAY_ENABLE_DIA "Build Database Integration Adapter" OFF)
     option(RTIGATEWAY_ENABLE_FWD "Build Forwarder Processor" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_TSFM_FIELD "Build Field Transformation" ${RTIGATEWAY_ENABLE_ALL})
     option(RTIGATEWAY_ENABLE_TSFM_JSON "Build JSON Transformation" ${RTIGATEWAY_ENABLE_ALL})

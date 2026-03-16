@@ -259,6 +259,17 @@ RTIGATEWAY_ENABLE_KAFKA
               enabled, unless they have been explicitly disabled using the
               dedicated variables.
 
+RTIGATEWAY_ENABLE_DIA
+^^^^^^^^^^^^^^^^^^^^^
+
+:Required: No
+:Default: ``OFF``
+:Description: If this variable is enabled, the Database Integration Adapter (DIA) adapter
+              and all of its components (tests, examples, docs...) will be
+              enabled. This adapter requires ODBC drivers and database client libraries
+              to be installed on the system. See the DIA documentation for
+              detailed requirements.
+
 RTIGATEWAY_ENABLE_FWD
 ^^^^^^^^^^^^^^^^^^^^^
 

@@ -1,0 +1,54 @@
+services:
+  dia:
+    build:
+      context: ./
+      args:
+        RTI_LICENSE_AGREEMENT_ACCEPTED:
+    image: dia-container:latest
+    container_name: dia_container
+    volumes:
+      - ./../../:/gateway
+    tty: true
+    stdin_open: true
+    depends_on:
+      - mariadb
+      - postgres
+    ports:
+      - "52022:22"
+    networks:
+      network:
+        ipv4_address: 172.20.0.2
+
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb_container
+    environment:
+      MYSQL_DATABASE: mariadb_test_database
+      MYSQL_ROOT_PASSWORD: mypassword
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    ports:
+      - "3306:3306"
+    networks:
+      network:
+        ipv4_address: 172.20.0.3
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: postgres_test_database
+    ports:
+      - "5432:5432"
+    networks:
+      network:
+        ipv4_address: 172.20.0.4
+
+networks:
+  network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16

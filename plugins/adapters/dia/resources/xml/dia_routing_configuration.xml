@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<!--
+(c) 2023 Copyright, Real-Time Innovations, Inc.  All rights reserved.
+
+RTI grants Licensee a license to use, modify, compile, and create derivative
+works of the Software.  Licensee has the right to distribute object form
+only for use with RTI products.  The Software is provided "as is", with no
+warranty of any type, including any warranty for fitness for any purpose.
+RTI is under no obligation to maintain or support the Software.  RTI shall
+not be liable for any incidental or consequential damages arising out of the
+use or inability to use the software.
+-->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://community.rti.com/schema/latest/rti_routing_service.xsd">
+
+<plugin_library name="plugin_library">
+	<adapter_plugin name="dia_adapter">
+		<dll>build/plugins/adapters/dia/rtiDatabaseIntegrationAdapter</dll>
+		<create_function>DiaAdapter_create_adapter_plugin</create_function>
+	</adapter_plugin>
+</plugin_library>
+
+<routing_service name="bridge_DDS_DIA">
+	<annotation>
+		<documentation>
+			Bridge DDS data to DIA
+		</documentation>
+	</annotation>
+	<domain_route name="domain_route">
+		<participant name="dds_participant">
+			<domain_id>0</domain_id>
+		</participant>
+		<connection name="mariadb_dia_connection" plugin_name="plugin_library::dia_adapter">
+			<property>
+				<value>
+					<element>
+						<name>DSN</name>
+						<value>mariadb</value>
+					</element>
+					<element>
+						<name>topic_properties</name>
+						<value>plugins/adapters/dia/resources/json/example_topic_properties.json</value>
+					</element>
+					<element>
+						<name>query_converter</name>
+						<value>mariadb</value>
+					</element>
+				</value>
+			</property>
+		</connection>
+		<connection name="postgres_dia_connection" plugin_name="plugin_library::dia_adapter">
+			<property>
+				<value>
+					<element>
+						<name>DSN</name>
+						<value>postgres</value>
+					</element>
+					<element>
+						<name>query_converter</name>
+						<value>postgresql</value>
+					</element>
+				</value>
+			</property>
+		</connection>
+		<session name="dis_session">
+			<auto_route name="from_dds_to_mariadb">
+				<dds_input participant="dds_participant">
+					<allow_topic_name_filter>*</allow_topic_name_filter>
+					<allow_registered_type_name_filter>*</allow_registered_type_name_filter>
+					<deny_topic_name_filter>rti/*</deny_topic_name_filter>
+				</dds_input>
+				<output connection="mariadb_dia_connection">
+					<property>
+						<value>
+							<element>
+								<name>dds.domain_id</name>
+								<value>0</value>
+							</element>
+						</value>
+					</property>
+					<allow_stream_name_filter>*</allow_stream_name_filter>
+					<allow_registered_type_name_filter>*</allow_registered_type_name_filter>
+					<deny_stream_name_filter>rti/*</deny_stream_name_filter>
+				</output>
+			</auto_route>
+			<auto_route name="from_dds_to_postgresql">
+				<dds_input participant="dds_participant">
+					<allow_topic_name_filter>*</allow_topic_name_filter>
+					<allow_registered_type_name_filter>*</allow_registered_type_name_filter>
+					<deny_topic_name_filter>rti/*</deny_topic_name_filter>
+				</dds_input>
+				<output connection="postgres_dia_connection">
+					<property>
+						<value>
+							<element>
+								<name>dds.domain_id</name>
+								<value>0</value>
+							</element>
+						</value>
+					</property>
+					<allow_stream_name_filter>*</allow_stream_name_filter>
+					<allow_registered_type_name_filter>*</allow_registered_type_name_filter>
+					<deny_stream_name_filter>rti/*</deny_stream_name_filter>
+				</output>
+			</auto_route>
+		</session>
+	</domain_route>
+</routing_service>
+</dds>
