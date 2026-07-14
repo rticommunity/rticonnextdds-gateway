@@ -115,7 +115,8 @@ RTI Connext Gateway:
 
 | Connext Version | Repository Branch | Status |
 |-----------------|-------------------|--------|
-| 7.6.0           | `develop`         | Active |
+| 7.7.0 (LTS)     | `develop`         | Active |
+| 7.6.0           | `develop`         | EOL |
 | 7.5.0           | `develop`         | EOL |
 | 7.3.0 (LTS)     | `develop`         | Active |
 | 6.1.2 (LTS)     | `release/6.1.2`   | EOL |
