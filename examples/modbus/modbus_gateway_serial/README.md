@@ -3,7 +3,7 @@
 ## Description of the Example
 
 This example shows how to connect to the serial device [XY-MD02](http://www.sah.rs/media/sah/techdocs/xy-md02-manual.pdf)
-through a Modbus gateway [USR-W610](https://www.pusr.com/products/rs232/rs485-to-wifi-converters-usr-w610.html)
+through a Modbus gateway [USR-W610](https://www.pusr.com/products/rs232-rs485-to-wifi-converters-usr-w610.html)
 and RS485.
 The configuration used for this example contains the following fields:
 
