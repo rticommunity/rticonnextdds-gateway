@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<dds>
+    <qos_library name="Unbounded2BoundedQos">
+        <qos_profile name="default" is_default_qos="true">
+            <participant_qos>
+                <discovery>
+                    <initial_peers><element>10@builtin.shmem://</element></initial_peers>
+                </discovery>
+                <transport_builtin><mask>SHMEM</mask></transport_builtin>
+            </participant_qos>
+            <datareader_qos>
+                <reliability><kind>RELIABLE_RELIABILITY_QOS</kind></reliability>
+                <history><kind>KEEP_ALL_HISTORY_QOS</kind></history>
+                <resource_limits>
+                    <max_samples>256</max_samples>
+                    <max_instances>1</max_instances>
+                    <max_samples_per_instance>256</max_samples_per_instance>
+                    <initial_instances>1</initial_instances>
+                </resource_limits>
+                <durability><kind>VOLATILE_DURABILITY_QOS</kind></durability>
+            </datareader_qos>
+            <datawriter_qos>
+                <reliability><kind>RELIABLE_RELIABILITY_QOS</kind></reliability>
+                <history><kind>KEEP_ALL_HISTORY_QOS</kind></history>
+                <resource_limits>
+                    <max_samples>256</max_samples>
+                    <max_instances>1</max_instances>
+                    <max_samples_per_instance>256</max_samples_per_instance>
+                    <initial_instances>1</initial_instances>
+                </resource_limits>
+                <durability><kind>VOLATILE_DURABILITY_QOS</kind></durability>
+            </datawriter_qos>
+        </qos_profile>
+    </qos_library>
+</dds>

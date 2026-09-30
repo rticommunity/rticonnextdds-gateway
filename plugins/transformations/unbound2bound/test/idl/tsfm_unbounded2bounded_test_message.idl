@@ -1,0 +1,16 @@
+module processor {
+    struct unbounddata {
+        sequence<long> data;
+    };
+    struct BoundData {
+        sequence<long, 1000> data;
+        boolean more_data;
+    };
+    struct UnboundedFloatData {
+        sequence<double> data;
+    };
+    struct BoundedFloatData {
+        sequence<double, 3> data;
+        boolean more_data;
+    };
+};

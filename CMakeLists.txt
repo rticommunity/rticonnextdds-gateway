@@ -98,5 +98,13 @@ rtigw_add_plugin(
     PLUGIN_TYPE "TRANSFORMATION"
 )
 
+rtigw_add_plugin(
+    ENABLE_PLUGIN RTIGATEWAY_ENABLE_TSFM_UNBOUNDED2BOUNDED
+    PREFIX "RTI_TSFM_UNBOUNDED2BOUNDED"
+    STAGING_DIR "tsfm_unbounded2bounded"
+    PLUGIN_DIR_NAME "unbound2bound"
+    PLUGIN_TYPE "TRANSFORMATION"
+)
+
 # Add doc if exists
 rtigw_add_doc()

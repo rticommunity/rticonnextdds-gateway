@@ -1,0 +1,28 @@
+module processor {
+
+  @appendable
+  struct UnboundData {
+    sequence<int32> data;
+  };
+
+
+  @appendable
+  struct BoundData {
+    sequence<int32,500> data;
+    boolean more_data;
+  };
+
+
+  @appendable
+  struct UnboundedFloatData {
+    sequence<double> data;
+  };
+
+
+  @appendable
+  struct BoundedFloatData {
+    sequence<double,3> data;
+    boolean more_data;
+  };
+
+};

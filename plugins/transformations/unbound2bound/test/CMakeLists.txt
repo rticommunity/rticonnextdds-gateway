@@ -1,0 +1,43 @@
+add_executable(tsfm_unbounded2bounded_unit srcCxx/Unbounded2BoundedTest.cxx)
+target_link_libraries(tsfm_unbounded2bounded_unit PRIVATE rtiunbounded2boundedtransf)
+add_test(NAME tsfm_unbounded2bounded_unit COMMAND tsfm_unbounded2bounded_unit)
+set_tests_properties(tsfm_unbounded2bounded_unit PROPERTIES TIMEOUT 30)
+
+include(ConnextDdsCodegen)
+connextdds_rtiddsgen_run(
+	IDL_FILE ${CMAKE_CURRENT_SOURCE_DIR}/idl/tsfm_unbounded2bounded_test_message.idl
+	LANG "C++11"
+	OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/idl
+	EXTRA_ARGS -unboundedSupport ${RTIDDSGEN_CXX11_LEGACY_API_ARGS}
+)
+add_library(tsfm_unbounded2bounded_test_message STATIC
+	${CMAKE_CURRENT_BINARY_DIR}/idl/tsfm_unbounded2bounded_test_message.cxx
+	${CMAKE_CURRENT_BINARY_DIR}/idl/tsfm_unbounded2bounded_test_messagePlugin.cxx
+)
+target_include_directories(tsfm_unbounded2bounded_test_message PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/idl)
+target_link_libraries(tsfm_unbounded2bounded_test_message PUBLIC RTIConnextDDS::cpp2_api)
+add_executable(tsfm_unbounded2bounded_integration
+	srcCxx/Unbounded2BoundedIntegrationTest.cxx
+	${TEST_COMMON_DIR}/srcCxx/BaseTester.cxx
+)
+target_include_directories(tsfm_unbounded2bounded_integration PRIVATE ${TEST_COMMON_DIR}/srcCxx)
+target_link_libraries(tsfm_unbounded2bounded_integration PRIVATE tsfm_unbounded2bounded_test_message)
+rtigw_generate_test_routing_service_config(
+	${CMAKE_CURRENT_SOURCE_DIR}/xml/tsfm_unbounded2bounded.xml
+	${CMAKE_CURRENT_BINARY_DIR}/tsfm_unbounded2bounded.xml
+)
+configure_file(xml/tsfm_unbounded2bounded_test_qos.xml tsfm_unbounded2bounded_test_qos.xml COPYONLY)
+add_custom_target(tsfm_unbounded2bounded_test_files ALL
+	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/tsfm_unbounded2bounded.xml
+)
+add_dependencies(tsfm_unbounded2bounded_integration
+	tsfm_unbounded2bounded_test_files rtiunbounded2boundedtransf)
+rtigw_register_test(tsfm_unbounded2bounded_integration
+	${CMAKE_CURRENT_SOURCE_DIR}/scripts/run_test.py)
+rtigw_register_test(tsfm_unbounded2bounded_reject_extra
+	${CMAKE_CURRENT_SOURCE_DIR}/scripts/run_test.py --reject extra)
+rtigw_register_test(tsfm_unbounded2bounded_reject_mismatch
+	${CMAKE_CURRENT_SOURCE_DIR}/scripts/run_test.py --reject mismatch)
+set_tests_properties(tsfm_unbounded2bounded_integration
+	tsfm_unbounded2bounded_reject_extra tsfm_unbounded2bounded_reject_mismatch
+	PROPERTIES TIMEOUT 60 RESOURCE_LOCK unbounded2bounded_domain)
