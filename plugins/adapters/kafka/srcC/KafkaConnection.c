@@ -60,16 +60,17 @@ void RTI_RS_KafkaConnection_cleanup_stream_writer(struct RTI_RS_KafkaStreamWrite
             "%s",
             __func__);
 
+    if (self == NULL) {
+        return;
+    }
+
     /* Free allocated resources */
     if (self->rk != NULL) {
         rd_kafka_destroy(self->rk);
         self->rk = NULL;
     }
 
-    if (self != NULL) {
-        free(self);
-        self = NULL;
-    }
+    free(self);
 }
 
 RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
@@ -86,6 +87,7 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
     int i = 0;
     rd_kafka_conf_res_t res = RD_KAFKA_CONF_UNKNOWN;
     rd_kafka_conf_t *conf = NULL;   /* rdkafka configuration object */
+    const char *payload_format = NULL;
 
     RTI_RoutingServiceLogger_log(
             RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
@@ -113,7 +115,25 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
         goto error;
     }
 
+    /* Adapter property; never forward it to librdkafka. */
+    payload_format = RTI_RoutingServiceProperties_lookup_property(
+            properties, "payload_format");
+    stream_writer->text_payload = DDS_BOOLEAN_TRUE;
+    if (payload_format != NULL) {
+        if (strcmp(payload_format, "binary") == 0) {
+            stream_writer->text_payload = DDS_BOOLEAN_FALSE;
+        } else if (strcmp(payload_format, "text") != 0) {
+            RTI_RoutingServiceEnvironment_set_error(
+                    env, "payload_format must be text or binary");
+            goto error;
+        }
+    }
+
     conf = rd_kafka_conf_new();
+    if (conf == NULL) {
+        RTI_RoutingServiceEnvironment_set_error(env, "Kafka configuration allocation failed");
+        goto error;
+    }
 
     /* Set bootstrap broker(s) as a comma-separated list of
      * host or host:port (default port 9092).
@@ -126,7 +146,7 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
                 errstr,
                 sizeof(errstr))
         != RD_KAFKA_CONF_OK) {
-        RTI_RoutingServiceEnvironment_set_error(env, errstr);
+        RTI_RoutingServiceEnvironment_set_error(env, "%s", errstr);
         goto error;
     }
 
@@ -137,13 +157,9 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
                 "property name[%d]: %s\n",
                 i,
                 properties->properties[i].name);
-        RTI_RoutingServiceLogger_log(
-                RTI_ROUTING_SERVICE_VERBOSITY_INFO,
-                "property value[%d]: %s\n",
-                i,
-                properties->properties[i].value);
         /* Skip RTI Connext configurations */
         if ((strcmp(properties->properties[i].name, "topic") == 0)
+            || (strcmp(properties->properties[i].name, "payload_format") == 0)
             || (strcmp(properties->properties[i].name,
                        "rti.routing_service.entity.resource_name")
                 == 0)) {
@@ -159,7 +175,7 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
                     errstr,
                     sizeof(errstr));
             if (res != RD_KAFKA_CONF_OK) {
-                RTI_RoutingServiceEnvironment_set_error(env, errstr);
+                RTI_RoutingServiceEnvironment_set_error(env, "%s", errstr);
                 goto error;
             }
         }
@@ -186,13 +202,17 @@ RTI_RoutingServiceStreamWriter RTI_RS_KafkaConnection_create_stream_writer(
             errstr,
             sizeof(errstr));
     if (!stream_writer->rk) {
-        RTI_RoutingServiceEnvironment_set_error(env, errstr);
+        RTI_RoutingServiceEnvironment_set_error(env, "%s", errstr);
         goto error;
     }
 
+    conf = NULL; /* Owned by the producer after successful creation. */
     return stream_writer;
 
 error:
+    if (conf != NULL) {
+        rd_kafka_conf_destroy(conf);
+    }
     RTI_RS_KafkaConnection_cleanup_stream_writer(stream_writer);
     return NULL;
 }
@@ -237,35 +257,50 @@ void RTI_RS_KafkaConnection_cleanup_stream_reader(struct RTI_RS_KafkaStreamReade
             "%s",
             __func__);
 
-    /* Free allocated resources */
-    if (self->rk != NULL) {
-        rd_kafka_destroy(self->rk);
+    if (self == NULL) {
+        return;
     }
 
-    // TODO: Check self->payload is not NULL?
+    if (!DDS_OctetSeq_has_ownership(&self->payload)) {
+        DDS_OctetSeq_unloan(&self->payload);
+    }
+    if (self->rkm != NULL) {
+        rd_kafka_message_destroy(self->rkm);
+    }
     DDS_OctetSeq_finalize(&self->payload);
 
+    if (self->rk != NULL) {
+        rd_kafka_resp_err_t error = rd_kafka_consumer_close(self->rk);
+        if (error != RD_KAFKA_RESP_ERR_NO_ERROR) {
+            RTI_RoutingServiceLogger_log(
+                    RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
+                    "Error closing consumer: %s", rd_kafka_err2str(error));
+        }
+        rd_kafka_destroy(self->rk);
+    }
     if (self->poll_sem != NULL) {
         RTIOsapiSemaphore_delete(self->poll_sem);
     }
-
     if (self->read_sem != NULL) {
         RTIOsapiSemaphore_delete(self->read_sem);
     }
-
+    if (self->stop_sem != NULL) {
+        RTIOsapiSemaphore_delete(self->stop_sem);
+    }
     if (self->sample_list != NULL) {
+        if (self->sample_list[0] != NULL) {
+            DDS_DynamicData_delete(self->sample_list[0]);
+        }
         free(self->sample_list);
-        self->sample_list = NULL;
     }
-
     if (self->info_list != NULL) {
+        free(self->info_list[0]);
         free(self->info_list);
-        self->info_list = NULL;
     }
-
-    if (self != NULL) {
-        free(self);
+    if (self->type_support != NULL) {
+        DDS_DynamicDataTypeSupport_delete(self->type_support);
     }
+    free(self);
 }
 
 RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
@@ -281,7 +316,7 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
     struct RTI_RS_KafkaStreamReader *stream_reader = NULL;
     char errstr[ERR_MSG_BUF_SIZE]; /* librdkafka API error reporting buffer */
     int error = 0;
-    rd_kafka_topic_partition_list_t *subscription; /* Subscribed topics */
+    rd_kafka_topic_partition_list_t *subscription = NULL; /* Subscribed topics */
     struct DDS_DynamicDataProperty_t dynamicDataProps =
             DDS_DynamicDataProperty_t_INITIALIZER;
     struct DDS_DynamicDataTypeProperty_t dynamicDataTypeProp =
@@ -303,10 +338,16 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
         goto error;
     }
 
+    if (!DDS_OctetSeq_initialize(&stream_reader->payload)) {
+        RTI_RoutingServiceEnvironment_set_error(
+                env,
+                "DDS_OctetSeq_initialize error");
+        goto error;
+    }
+
     stream_reader->listener = *listener;
     stream_reader->type_code =
             (struct DDS_TypeCode *) stream_info->type_info.type_representation;
-    stream_reader->run_thread = RTI_TRUE;
 
     stream_reader->sample_list = calloc(1, sizeof(DDS_DynamicData *));
     stream_reader->info_list = calloc(1, sizeof(struct DDS_SampleInfo *));
@@ -328,15 +369,24 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
             stream_reader->type_code,
             &dynamicDataTypeProp);
 
+    if (stream_reader->type_support == NULL) {
+        RTI_RoutingServiceEnvironment_set_error(env, "Failure creating type support");
+        goto error;
+    }
+
     stream_reader->sample_list[0] =
             DDS_DynamicData_new(stream_reader->type_code, &dynamicDataProps);
+    if (stream_reader->sample_list[0] == NULL) {
+        RTI_RoutingServiceEnvironment_set_error(env, "Failure creating sample");
+        goto error;
+    }
     stream_reader->info_list[0] =
             (struct DDS_SampleInfo *) calloc(1, sizeof(struct DDS_SampleInfo));
     if (stream_reader->info_list[0] == NULL) {
         RTI_RoutingServiceEnvironment_set_error(
                 env,
                 "Failure creating sample info");
-        return NULL;
+        goto error;
     }
 
     *(stream_reader->info_list[0]) = DDS_SAMPLEINFO_DEFAULT;
@@ -356,11 +406,8 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
     }
 
     conf = rd_kafka_conf_new();
-
-    if (!DDS_OctetSeq_initialize(&stream_reader->payload)) {
-        RTI_RoutingServiceEnvironment_set_error(
-                env,
-                "DDS_OctetSeq_initialize error");
+    if (conf == NULL) {
+        RTI_RoutingServiceEnvironment_set_error(env, "Kafka configuration allocation failed");
         goto error;
     }
 
@@ -375,7 +422,7 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
                 errstr,
                 sizeof(errstr))
         != RD_KAFKA_CONF_OK) {
-        RTI_RoutingServiceEnvironment_set_error(env, errstr);
+        RTI_RoutingServiceEnvironment_set_error(env, "%s", errstr);
         goto error;
     }
 
@@ -391,7 +438,7 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
                 errstr,
                 sizeof(errstr))
         != RD_KAFKA_CONF_OK) {
-        RTI_RoutingServiceEnvironment_set_error(env, errstr);
+        RTI_RoutingServiceEnvironment_set_error(env, "%s", errstr);
         goto error;
     }
 
@@ -402,11 +449,6 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
                 "property name[%d]: %s\n",
                 i,
                 properties->properties[i].name);
-        RTI_RoutingServiceLogger_log(
-                RTI_ROUTING_SERVICE_VERBOSITY_INFO,
-                "property value[%d]: %s\n",
-                i,
-                properties->properties[i].value);
         // Skip RTI Connext configurations
         if ((strcmp(properties->properties[i].name, "topic") == 0)
             || (strcmp(properties->properties[i].name,
@@ -424,7 +466,7 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
                     errstr,
                     sizeof(errstr));
             if (res != RD_KAFKA_CONF_OK) {
-                RTI_RoutingServiceEnvironment_set_error(env, errstr);
+                RTI_RoutingServiceEnvironment_set_error(env, "%s", errstr);
                 goto error;
             }
         }
@@ -443,9 +485,11 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
             errstr,
             sizeof(errstr));
     if (!stream_reader->rk) {
-        RTI_RoutingServiceEnvironment_set_error(env, errstr);
+        RTI_RoutingServiceEnvironment_set_error(env, "%s", errstr);
         goto error;
     }
+
+    conf = NULL; /* Owned by the consumer after successful creation. */
 
     /* Redirect all messages from per-partition queues to
      * the main queue so that messages can be consumed with one
@@ -455,15 +499,27 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
      * and each partition queue separately, which requires setting
      * up a rebalance callback and keeping track of the assignment:
      * but that is more complex and typically not recommended. */
-    rd_kafka_poll_set_consumer(stream_reader->rk);
+    error = rd_kafka_poll_set_consumer(stream_reader->rk);
+    if (error != RD_KAFKA_RESP_ERR_NO_ERROR) {
+        RTI_RoutingServiceEnvironment_set_error(env, "Error redirecting consumer queue: %s",
+                rd_kafka_err2str(error));
+        goto error;
+    }
 
     subscription = rd_kafka_topic_partition_list_new(1);
-    rd_kafka_topic_partition_list_add(
+    if (subscription == NULL) {
+        RTI_RoutingServiceEnvironment_set_error(env, "Subscription allocation failed");
+        goto error;
+    }
+    if (rd_kafka_topic_partition_list_add(
             subscription,
             stream_reader->topic,
             /* the partition is ignored
              * by subscribe() */
-            RD_KAFKA_PARTITION_UA);
+            RD_KAFKA_PARTITION_UA) == NULL) {
+        RTI_RoutingServiceEnvironment_set_error(env, "Error adding subscription topic");
+        goto error;
+    }
 
     /* Subscribe to a topic */
     error = rd_kafka_subscribe(stream_reader->rk, subscription);
@@ -473,7 +529,6 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
                 "Failed to subscribe to %d topic(s): %s",
                 subscription->cnt,
                 rd_kafka_err2str(error));
-        rd_kafka_topic_partition_list_destroy(subscription);
         goto error;
     }
 
@@ -483,7 +538,7 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
             subscription->cnt);
 
     rd_kafka_topic_partition_list_destroy(subscription);
-
+    subscription = NULL;
 
     stream_reader->poll_sem =
             RTIOsapiSemaphore_new(RTI_OSAPI_SEMAPHORE_KIND_BINARY, NULL);
@@ -503,24 +558,22 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
         goto error;
     }
 
-    stream_reader->poll_sem =
+    stream_reader->stop_sem =
             RTIOsapiSemaphore_new(RTI_OSAPI_SEMAPHORE_KIND_BINARY, NULL);
-    if (!stream_reader->poll_sem) {
-        RTI_RoutingServiceEnvironment_set_error(env, "Error creating mutex");
+    if (stream_reader->stop_sem == NULL) {
+        RTI_RoutingServiceEnvironment_set_error(env, "Error creating stop semaphore");
         goto error;
     }
-    // Initialize semaphore to available
-    RTIOsapiSemaphore_give(stream_reader->poll_sem);
 
-    stream_reader->read_sem =
-            RTIOsapiSemaphore_new(RTI_OSAPI_SEMAPHORE_KIND_BINARY, NULL);
-    if (!stream_reader->read_sem) {
-        RTI_RoutingServiceEnvironment_set_error(env, "Error creating mutex");
+    /* Initialize the poll semaphore before starting the worker. */
+    if (RTIOsapiSemaphore_give(stream_reader->poll_sem)
+            != RTI_OSAPI_SEMAPHORE_STATUS_OK) {
+        RTI_RoutingServiceEnvironment_set_error(env, "Error initializing poll semaphore");
         goto error;
     }
 
     stream_reader->polling_thread = RTIOsapiJoinableThread_new(
-            "KafkaStreamReader_run",
+            "KafkaReader",
             RTI_OSAPI_THREAD_PRIORITY_DEFAULT,
             RTI_OSAPI_THREAD_OPTION_DEFAULT,
             RTI_OSAPI_THREAD_STACK_SIZE_DEFAULT,
@@ -538,6 +591,12 @@ RTI_RoutingServiceStreamReader RTI_RS_KafkaConnection_create_stream_reader(
     return stream_reader;
 
 error:
+    if (subscription != NULL) {
+        rd_kafka_topic_partition_list_destroy(subscription);
+    }
+    if (conf != NULL) {
+        rd_kafka_conf_destroy(conf);
+    }
     RTI_RS_KafkaConnection_cleanup_stream_reader(stream_reader);
     return NULL;
 }
@@ -550,31 +609,32 @@ void RTI_RS_KafkaConnection_delete_stream_reader(
     struct RTI_RS_KafkaStreamReader *self =
             (struct RTI_RS_KafkaStreamReader *) stream_reader;
 
-    void *value = NULL;
-
     RTI_RoutingServiceLogger_log(
             RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
             "%s\n",
             __func__);
 
-    self->run_thread = RTI_FALSE;
+    if (RTIOsapiSemaphore_give(self->stop_sem)
+            != RTI_OSAPI_SEMAPHORE_STATUS_OK) {
+        RTI_RoutingServiceEnvironment_set_error(env, "Error signaling reader stop");
+        return;
+    }
+    /* The worker may be blocked waiting for a sample loan to be returned. */
+    if (RTIOsapiSemaphore_give(self->poll_sem)
+            != RTI_OSAPI_SEMAPHORE_STATUS_OK) {
+        RTI_RoutingServiceEnvironment_set_error(env, "Error waking reader for stop");
+        return;
+    }
     if (!RTIOsapiJoinableThread_stopAndDelete(
                 self->polling_thread,
                 RTI_OSAPI_THREAD_INFINITE_BLOCKING_TIMEOUT)) {
-        RTI_RoutingServiceLogger_log(
-                RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
-                "Error deleting "
-                "RTI_RS_KafkaStreamReader_on_data_availabe_thread");
+        /* The worker may still use every reader-owned object. Keep the
+         * reader intact so a later deletion attempt can safely retry. */
+        RTI_RoutingServiceEnvironment_set_error(
+                env, "Error joining Kafka reader thread; reader resources retained");
+        return;
     }
     self->polling_thread = NULL;
-
-    /* Close the consumer: commit final offsets and leave the group. */
-    RTI_RoutingServiceLogger_log(
-            RTI_ROUTING_SERVICE_VERBOSITY_INFO,
-            "Closing consumer");
-    if (self->rk != NULL) {
-        rd_kafka_consumer_close(self->rk);
-    }
 
     /* Free allocated resources */
     RTI_RS_KafkaConnection_cleanup_stream_reader(stream_reader);

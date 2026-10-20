@@ -32,7 +32,7 @@ struct RTI_RS_KafkaStreamReader {
     struct RTIOsapiJoinableThread *polling_thread;
     struct RTIOsapiSemaphore *poll_sem;
     struct RTIOsapiSemaphore *read_sem;
-    int run_thread;
+    struct RTIOsapiSemaphore *stop_sem;
     struct RTI_RoutingServiceStreamReaderListener listener;
     struct DDS_DynamicData **sample_list;
     struct DDS_SampleInfo **info_list;

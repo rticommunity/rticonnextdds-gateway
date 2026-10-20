@@ -8,6 +8,18 @@ adapter plugin. The plugin establishes client connections to Kafka brokers, and
 to access Kafka data which encapsulates Kafka payload using the Protocol Buffers
 serialization format.
 
+## Kafka payload format
+
+The example sets `payload_format=binary` on the Kafka `<output>`. This is required
+for Protobuf and other binary payloads so that every byte is preserved, including
+embedded and trailing zeros. Add this property when updating existing binary
+routes; the adapter default is `text`, which removes one trailing NUL.
+
+The automated [Kafka integration suite](../../../plugins/adapters/kafka/test/integration/README.md)
+checks Protobuf wire payloads byte for byte in both directions. It does not load
+the Protobuf transformation plugin or decode the payload with a Protobuf library.
+It therefore does not validate the transformation or decoded field values.
+
 ## Data Types
 
 The example uses the common `ShapeType` defined by `rtishapesdemo`:

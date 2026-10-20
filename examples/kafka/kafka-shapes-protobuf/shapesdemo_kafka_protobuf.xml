@@ -88,6 +88,10 @@ use or inability to use the software.
                                     <value>Square</value>
                                 </element>
                                 <element>
+                                    <name>payload_format</name>
+                                    <value>binary</value>
+                                </element>
+                                <element>
                                     <name>queue.buffering.max.messages</name>
                                     <value>1000</value>
                                 </element>
