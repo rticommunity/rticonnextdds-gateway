@@ -7,6 +7,16 @@ The integration is achieved by deploying RTI Routing Service with the Kafka
 adapter plugin. The plugin establishes client connections to Kafka brokers, and
 to access Kafka data which encapsulates Kafka payload in JSON.
 
+## Kafka payload format
+
+The example sets `payload_format=text` on the Kafka `<output>`. This is also
+the adapter default. It removes exactly one trailing NUL from the JSON
+transformation's output sequence, so Kafka receives a JSON document without a
+C-string terminator. The transformation itself is unchanged.
+
+For automated DDS/Kafka checks, see the
+[integration test instructions](../../../plugins/adapters/kafka/test/integration/README.md).
+
 ## Data Types
 
 The example uses the following `ShapeType` as a data type:

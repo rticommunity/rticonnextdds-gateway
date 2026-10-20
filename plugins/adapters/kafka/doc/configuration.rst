@@ -274,6 +274,10 @@ to convert the |DDS_SAMPLES| to |KAFKA_MESSAGEs| in JSON.
                                     <name>topic</name>
                                     <value>kafka_dds</value>
                                 </element>
+                                <element>
+                                    <name>payload_format</name>
+                                    <value>text</value>
+                                </element>
                             </value>
                         </property>
                         <transformation plugin_name="plugin_library::json_transformation">
@@ -369,6 +373,20 @@ which can be configured using the ``<properties>`` tag.
       - None
       - string
       - A topic name used by a Kafka Producer.
+    * - ``payload_format``
+      - No
+      - ``text``
+      - ``text`` or ``binary``
+      - In ``text`` mode, omit exactly one trailing NUL byte, if present.
+        Embedded NUL bytes are preserved. In ``binary`` mode, publish all bytes
+        in the DDS payload sequence, including trailing zeros. This is an
+        adapter property for outputs only; it is not forwarded to librdkafka.
+
+Use the default ``text`` mode with the JSON transformation. Set
+``payload_format`` to ``binary`` on every Protobuf or other binary output.
+Existing binary configurations must add this property to preserve a final zero
+byte. Neither mode validates or converts the payload's encoding. Empty values
+are published as empty Kafka values, rather than tombstones.
 
 librdkafka Producer/Consumer Properties
 ---------------------------------------
@@ -376,4 +394,4 @@ librdkafka Producer/Consumer Properties
 Librdkafka supports several configuration properties for Kafka producers and
 consumers that can be used as |RS| ``<output>`` and ``<input>`` properties. The
 full list of these ``librdkafka`` properties can be found
-`in this table <https://github.com/rticommunity/librdkafka/blob/1.6.1/CONFIGURATION.md>`_.
+`in this table <https://github.com/rticommunity/librdkafka/blob/2.10.0/CONFIGURATION.md>`_.

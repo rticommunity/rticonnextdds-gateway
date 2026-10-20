@@ -31,9 +31,9 @@ int RTI_RS_KafkaStreamWriter_write(
     struct RTI_RS_KafkaStreamWriter *self =
             (struct RTI_RS_KafkaStreamWriter *) stream_writer;
     struct DDS_DynamicData *sample = NULL;
-    struct DDS_SampleInfo *sample_info = NULL;
     struct DDS_OctetSeq buffer_seq = DDS_SEQUENCE_INITIALIZER;
-    char *buffer = NULL;
+    DDS_Octet *buffer = NULL;
+    DDS_Octet empty_payload = 0;
 
     int i = 0;
     size_t len = 0;
@@ -52,13 +52,6 @@ int RTI_RS_KafkaStreamWriter_write(
 
     for (i = 0; i < count; i++) {
         sample = (struct DDS_DynamicData *) sample_list[i];
-        /* we are not using sample_info anywhere
-        sample_info = (struct DDS_SampleInfo *)info_list[i];
-
-        if (sample_info) {
-            sample_info = (struct DDS_SampleInfo *)info_list[i];
-        }
-        */
 
         retcode = DDS_DynamicData_get_octet_seq(
                 sample,
@@ -69,27 +62,30 @@ int RTI_RS_KafkaStreamWriter_write(
             RTI_RoutingServiceLogger_log(
                     RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
                     "Error getting payload data");
-            continue;
+            break;
         }
 
+        len = (size_t) DDS_OctetSeq_get_length(&buffer_seq);
         buffer = DDS_OctetSeq_get_contiguous_buffer(&buffer_seq);
-        if (buffer == NULL) {
+        if (len == 0) {
+            /* A non-NULL pointer distinguishes an empty value from a Kafka
+             * tombstone, even when DDS has no buffer for the empty sequence. */
+            buffer = &empty_payload;
+        } else if (buffer == NULL) {
             RTI_RoutingServiceLogger_log(
                     RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
                     "Error getting contiguous buffer");
-            continue;
+            break;
+        }
+
+        if (self->text_payload && len > 0 && buffer[len - 1] == 0) {
+            /* Only the final C-string terminator is outside the text value. */
+            len--;
         }
 
         RTI_RoutingServiceLogger_log(
                 RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-                "Payload data: %s",
-                buffer);
-
-        len = strlen(buffer);
-
-        RTI_RoutingServiceLogger_log(
-                RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-                "Payload lenth: %d",
+                "Payload length: %zu",
                 len);
 
         err = rd_kafka_producev(
@@ -146,14 +142,19 @@ int RTI_RS_KafkaStreamWriter_write(
                             rd_kafka_err2str(err));
                 }
             }
-        } else {
-            RTI_RoutingServiceLogger_log(
-                    RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-                    "Enqueued message (%zd bytes) "
-                    "for topic %s\n",
-                    len,
-                    self->topic);
         }
+
+        /* Return the successfully enqueued prefix so Routing Service can
+         * identify the first unwritten sample, including after a retry. */
+        if (err != RD_KAFKA_RESP_ERR_NO_ERROR) {
+            break;
+        }
+
+        RTI_RoutingServiceLogger_log(
+                RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
+                "Enqueued message (%zu bytes) for topic %s\n",
+                len,
+                self->topic);
 
         /* A producer application should continually serve
          * the delivery report queue by calling rd_kafka_poll()
@@ -169,5 +170,6 @@ int RTI_RS_KafkaStreamWriter_write(
         rd_kafka_poll(self->rk, 0 /*non-blocking*/);
     }
 
-    return count;
+    DDS_OctetSeq_finalize(&buffer_seq);
+    return i;
 }

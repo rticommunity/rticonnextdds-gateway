@@ -133,6 +133,7 @@ RTI_RoutingServiceConnection RTI_RS_KafkaAdapterPlugin_create_connection(
         RTI_RoutingServiceEnvironment_set_error(
                 env,
                 "bootstrap.servers missing property brokers");
+        free(connection);
         return NULL;
     }
 

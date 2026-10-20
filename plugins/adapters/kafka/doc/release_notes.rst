@@ -5,6 +5,19 @@
 Release Notes
 =============
 
+Pending Changes
+---------------
+
+#. Added the per-output ``payload_format`` property. The default ``text`` mode
+   removes one trailing NUL byte. Set ``payload_format`` to ``binary`` for
+   Protobuf and other binary payloads to preserve every byte, including zeros.
+#. Fixed binary payload truncation, empty-value handling, partial write error
+   reporting, and reader resource cleanup and notification ordering.
+#. Replaced the reader's shared stop flag with a semaphore signal. A failed
+   stop signal, wakeup or worker join reports an error and retains reader
+   resources, avoiding cleanup while the worker may still access them. A
+   successful deletion retry releases the retained resources.
+
 New Features (May 2024)
 -----------------------
 

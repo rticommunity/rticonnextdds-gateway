@@ -30,6 +30,7 @@
 struct RTI_RS_KafkaStreamWriter {
     rd_kafka_t *rk;        /* rdkafka producer instance handle */
     const char *topic;     /* Topic to produce to */
+    DDS_Boolean text_payload; /* Omit one trailing NUL for text values. */
 };
 
 int RTI_RS_KafkaStreamWriter_write(

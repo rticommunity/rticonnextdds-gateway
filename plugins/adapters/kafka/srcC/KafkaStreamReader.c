@@ -23,8 +23,12 @@
 
 int RTI_RS_KafkaStreamReader_error_cleanup(struct RTI_RS_KafkaStreamReader *stream_reader)
 {
+    if (!DDS_OctetSeq_has_ownership(&stream_reader->payload)) {
+        DDS_OctetSeq_unloan(&stream_reader->payload);
+    }
     if (stream_reader->rkm != NULL) {
         rd_kafka_message_destroy(stream_reader->rkm);
+        stream_reader->rkm = NULL;
     }
     if (RTIOsapiSemaphore_give(stream_reader->poll_sem)
         != RTI_OSAPI_SEMAPHORE_STATUS_OK) {
@@ -35,6 +39,21 @@ int RTI_RS_KafkaStreamReader_error_cleanup(struct RTI_RS_KafkaStreamReader *stre
     }
     return 0;
 }
+/* A stop token replaces the unsynchronized flag shared with the deleting
+ * thread. Only the worker consumes it, immediately before exiting. */
+static DDS_Boolean RTI_RS_KafkaStreamReader_stop_requested(
+        struct RTI_RS_KafkaStreamReader *self)
+{
+    struct RTINtpTime zero = {0, 0};
+    RTIOsapiSemaphoreStatus status = RTIOsapiSemaphore_take(self->stop_sem, &zero);
+    if (status == RTI_OSAPI_SEMAPHORE_STATUS_ERROR) {
+        RTI_RoutingServiceLogger_log(
+                RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
+                "Error checking stop semaphore");
+    }
+    return status != RTI_OSAPI_SEMAPHORE_STATUS_TIMEOUT;
+}
+
 /*
  * This function will run as a separate thread and
  * notify of data availability in Kafka consumer
@@ -48,13 +67,17 @@ void *RTI_RS_KafkaStreamReader_on_data_availabe_thread(void *thread_params)
             "%s",
             __func__);
 
-    while (self->run_thread) {
+    while (!RTI_RS_KafkaStreamReader_stop_requested(self)) {
         /* Block until the read thread returns loaned sample is done */
         if (RTIOsapiSemaphore_take(self->poll_sem, NULL)
             != RTI_OSAPI_SEMAPHORE_STATUS_OK) {
             RTI_RoutingServiceLogger_log(
                     RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
                     "Error taking poll semaphore");
+            return NULL;
+        }
+
+        if (RTI_RS_KafkaStreamReader_stop_requested(self)) {
             return NULL;
         }
 
@@ -83,7 +106,7 @@ void *RTI_RS_KafkaStreamReader_on_data_availabe_thread(void *thread_params)
                     RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
                     "Consumer error: %s\n",
                     rd_kafka_message_errstr(self->rkm));
-            if (!RTI_RS_KafkaStreamReader_error_cleanup(self)) {
+            if (RTI_RS_KafkaStreamReader_error_cleanup(self) != 0) {
                 return NULL;
             }
             continue;
@@ -97,35 +120,29 @@ void *RTI_RS_KafkaStreamReader_on_data_availabe_thread(void *thread_params)
                 self->rkm->partition,
                 self->rkm->offset);
 
-        /* Print the message value/payload. */
         RTI_RoutingServiceLogger_log(
                 RTI_ROUTING_SERVICE_VERBOSITY_DEBUG,
-                "Value: %.*s",
-                (int) self->rkm->len,
-                (const char *) self->rkm->payload);
+                "Payload length: %zu", self->rkm->len);
 
-        if (!DDS_OctetSeq_initialize(&self->payload)) {
-            RTI_RoutingServiceLogger_log(
-                    RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
-                    "Error initialize buffer");
-            if (!RTI_RS_KafkaStreamReader_error_cleanup(self)) {
-                return NULL;
+        /* Kafka permits empty values and null tombstones. Both map to an
+         * empty payload in the adapter's byte-sequence representation. */
+        if (self->rkm->len == 0) {
+            if (!DDS_OctetSeq_set_length(&self->payload, 0)) {
+                if (RTI_RS_KafkaStreamReader_error_cleanup(self) != 0) {
+                    return NULL;
+                }
+                continue;
             }
-            continue;
-        }
-
-        if (!DDS_OctetSeq_loan_contiguous(
+        } else if (!DDS_OctetSeq_loan_contiguous(
                     &self->payload,
                     (DDS_Octet *) self->rkm->payload,
                     self->rkm->len,
                     self->rkm->len)) {
-            if (!RTI_RS_KafkaStreamReader_error_cleanup(self)) {
+            if (RTI_RS_KafkaStreamReader_error_cleanup(self) != 0) {
                 return NULL;
             }
             continue;
         }
-
-        self->listener.on_data_available(self, self->listener.listener_data);
 
         if (RTIOsapiSemaphore_give(self->read_sem)
             != RTI_OSAPI_SEMAPHORE_STATUS_OK) {
@@ -134,6 +151,9 @@ void *RTI_RS_KafkaStreamReader_on_data_availabe_thread(void *thread_params)
                     "Error giving read semaphore");
             return NULL;
         }
+
+        /* Make read() ready before invoking a listener that may read inline. */
+        self->listener.on_data_available(self, self->listener.listener_data);
     }
 
     return NULL;
@@ -159,17 +179,14 @@ void RTI_RS_KafkaStreamReader_read(
     *count = 0;
 
     struct DDS_DynamicData *sample = NULL;
-    struct DDS_SampleInfo *info = NULL;
     sample = self->sample_list[0];
-    info = self->info_list[0];
 
     DDS_ReturnCode_t retcode = DDS_RETCODE_OK;
+    struct RTINtpTime zero = {0, 0};
 
-    if (RTIOsapiSemaphore_take(self->read_sem, NULL)
+    /* Routing Service may read again after draining the notification. */
+    if (RTIOsapiSemaphore_take(self->read_sem, &zero)
         != RTI_OSAPI_SEMAPHORE_STATUS_OK) {
-        RTI_RoutingServiceLogger_log(
-                RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
-                "Error taking read semaphore");
         return;
     }
 
@@ -182,6 +199,7 @@ void RTI_RS_KafkaStreamReader_read(
         RTI_RoutingServiceLogger_log(
                 RTI_ROUTING_SERVICE_VERBOSITY_EXCEPTION,
                 "Error setting payload data");
+        RTI_RS_KafkaStreamReader_error_cleanup(self);
         return;
     }
 
@@ -205,9 +223,14 @@ void RTI_RS_KafkaStreamReader_return_loan(
     struct RTI_RS_KafkaStreamReader *self =
             (struct RTI_RS_KafkaStreamReader *) stream_reader;
 
-    /* Destroy message if it exist */
+    if (!DDS_OctetSeq_has_ownership(&self->payload)) {
+        DDS_OctetSeq_unloan(&self->payload);
+    }
+
+    /* Destroy the message only after releasing the borrowed payload buffer. */
     if (self->rkm != NULL) {
         rd_kafka_message_destroy(self->rkm);
+        self->rkm = NULL;
     }
 
     if (RTIOsapiSemaphore_give(self->poll_sem)
