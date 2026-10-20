@@ -5,6 +5,11 @@
 Release Notes
 =============
 
+New Features (October 2026)
+---------------------------
+
+#. Updated librdkafka to version 2.16.0 from the official upstream repository.
+
 New Features (May 2024)
 -----------------------
 

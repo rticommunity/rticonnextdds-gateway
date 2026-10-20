@@ -376,4 +376,4 @@ librdkafka Producer/Consumer Properties
 Librdkafka supports several configuration properties for Kafka producers and
 consumers that can be used as |RS| ``<output>`` and ``<input>`` properties. The
 full list of these ``librdkafka`` properties can be found
-`in this table <https://github.com/rticommunity/librdkafka/blob/1.6.1/CONFIGURATION.md>`_.
+`in this table <https://github.com/confluentinc/librdkafka/blob/v2.16.0/CONFIGURATION.md>`_.
